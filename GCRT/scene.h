@@ -20,6 +20,8 @@ struct Scene
 {
     Camera cam;
     GLuint programID;
+    bool wireFrame;
+
     Box box1;
     Box box2;
 

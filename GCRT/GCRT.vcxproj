@@ -157,6 +157,8 @@
     <ClCompile Include="box.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="GCRTMain.cpp" />
+    <ClCompile Include="geometry.cpp" />
+    <ClCompile Include="plane.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="sphere.cpp" />
   </ItemGroup>
@@ -164,6 +166,8 @@
     <ClInclude Include="box.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="GCRT.h" />
+    <ClInclude Include="geometry.h" />
+    <ClInclude Include="plane.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="sphere.h" />
   </ItemGroup>

@@ -12,6 +12,20 @@ void Scene::HandleInputs(MSG &msg)
     {
     case WM_KEYDOWN:
 
+        if (msg.wParam == 0x46)
+        {
+            if (wireFrame == false)
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                wireFrame = true;
+            }
+            else
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                wireFrame = false;
+            }
+        }
+
         cam.HandleKeyDown(msg.wParam);
         break;
 
