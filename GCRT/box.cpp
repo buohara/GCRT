@@ -1,5 +1,15 @@
 #include "box.h"
 
+/**
+ * Create - Create a box.
+ *
+ * @param dims Box x, y, and z dimensions.
+ * @param pos Initial box position.
+ * @param color Box color when you shine white light on it.
+ * @param progID Shader program handle for setting shader parameters
+ * on on draw.
+ */
+
 void Box::Create(
     vec3 dims, 
     vec3 pos,
@@ -124,7 +134,7 @@ void Box::Create(
     norms.push_back(vec3(0.0, 0.0, -1.0));
     norms.push_back(vec3(0.0, 0.0, -1.0));
 
-    numVerts = 36;
+    numVerts = verts.size();
 
     // Create GPU vertex buffers and upload data.
 
@@ -157,6 +167,10 @@ void Box::Create(
     model = trans * rot * sc;
     modelInv = inverseTranspose(model);
 }
+
+/**
+ * Draw - Draw the box. Set it's model matrices and color in the shader.
+ */
 
 void Box::Draw()
 {

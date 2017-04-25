@@ -1,18 +1,70 @@
 #include "plane.h"
 
+/**
+ * Create
+ *
+ * @param rows
+ * @param cols
+ * @param color
+ * prodID
+ */
+
 void Plane::Create(
-    vec3 dims,
-    vec3 pos,
+    uint32_t rows,
+    uint32_t cols,
     vec3 color,
     GLuint progID)
 {
+    shaderProgID = progID;
+    clr = color;
+
+    // Generate a grid of vertices/normals.
+
     vector<vec3> verts;
     vector<vec3> norms;
 
+    float xstride = 2.0f / (float)cols;
+    float ystride = 2.0f / (float)rows;
 
+    for (uint32_t i = 0; i < rows; i++)
+    {
+        float x = -1.0f;
+        float y = 1.0f - ystride * i;
+        float z = 0.0f;
+        
+        verts.push_back({ x, y, z });
+        norms.push_back({ 0.0, 0.0, 1.0 });
 
+        for (uint32_t j = 0; j < cols; j++)
+        {
+            x = -1.0f + j * xstride;
+            y = 1.0f - ystride * (i + 1);
+            z = 0.0f;
+            
+            verts.push_back({ x, y, z });
+            norms.push_back({ 0.0, 0.0, 1.0 });
+
+            x = -1.0f + (j + 1) * xstride;
+            y = 1.0f - ystride * i;
+            z = 0.0f;
+            
+            verts.push_back({ x, y, z });
+            norms.push_back({ 0.0, 0.0, 1.0 });
+        }
+
+        x = 1.0f;
+        y = 1.0f - ystride * (i + 1);
+        z = 0.0f;
+        
+        verts.push_back({ x, y, z });
+        norms.push_back({ 0.0, 0.0, 1.0 });
+    }
+
+    numVerts = verts.size();
     size_t vertBufSize = 3 * verts.size() * sizeof(float);
     size_t normBufSize = 3 * norms.size() * sizeof(float);
+
+    // Create buffer objects and upload to GPU.
 
     glGenVertexArrays(1, &vaoID);
     glBindVertexArray(vaoID);
@@ -30,7 +82,20 @@ void Plane::Create(
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
+
+    // Create model matrices.
+
+    mat4 sc = scale(mat4(1.0), vec3(10.0f, 10.0f, 10.0f));
+    mat4 rot = mat4(1.0);
+    mat4 trans = translate(vec3(0.0f, 0.0f, -5.0f));
+
+    model = trans * rot * sc;
+    modelInv = inverseTranspose(model);
 }
+
+/**
+ * Draw
+ */
 
 void Plane::Draw()
 {
@@ -44,6 +109,6 @@ void Plane::Draw()
     glUniform3fv(kdID, 1, &clr[0]);
 
     glBindVertexArray(vaoID);
-    glDrawArrays(GL_TRIANGLES, 0, numVerts);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, numVerts);
     glBindVertexArray(0);
 }

@@ -28,6 +28,6 @@ struct Plane
 
     vec3 clr;
 
-    void Create(vec3 dims, vec3 pos, vec3 color, GLuint progID);
+    void Create(uint32_t rows, uint32_t cols, vec3 color, GLuint progID);
     void Draw();
 };

@@ -3,7 +3,7 @@
 /**
  * HandleInputs -
  *
- * @param
+ * @param msg Windows event message to handle.
  */
 
 void Scene::HandleInputs(MSG &msg)

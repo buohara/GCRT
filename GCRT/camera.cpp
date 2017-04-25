@@ -4,14 +4,19 @@ const uint32_t KEY_W = 0x57;
 const uint32_t KEY_A = 0x41;
 const uint32_t KEY_S = 0x53;
 const uint32_t KEY_D = 0x44;
- 
 const uint32_t KEY_P = 0x50;
 const uint32_t KEY_L = 0x4C;
 
 /**
- * Init -
+ * Init - Initialize camera parameters.
  *
- * @param
+ * @param posIn Camera position.
+ * @param lookAtIn Point camera is looking at.
+ * @param upIn Which direction is up for the camera.
+ * @param aspectIn Camera aspect ratio.
+ * @param fovIn Field of view angle (degrees).
+ * @param nClipIn Near clipping plane.
+ * @param fClipIn Far clipping plane.
  */
 
 void Camera::Init(
@@ -38,9 +43,9 @@ void Camera::Init(
 
 
 /**
- * HandleMouseDown -
+ * HandleMouseDown - Store mouse coordinates on click button down.
  *
- * @param
+ * @param mouse LPARAM with x and y mouse coordinates of click.
  */
 
 void Camera::HandleMouseDown(LPARAM mouse)
@@ -51,9 +56,7 @@ void Camera::HandleMouseDown(LPARAM mouse)
 }
 
 /**
- * HandleMouseUp -
- *
- * @param
+ * HandleMouseUp - Clear all mouse coordinates when mouse released.
  */
 
 void Camera::HandleMouseUp()
@@ -66,9 +69,10 @@ void Camera::HandleMouseUp()
 }
 
 /**
- * HandleMouseMove -
- *
- * @param
+ * HandleMouseMove - Update new mouse coordinates on drag
+ * (if mouse button is being held down).
+ * 
+ * @param mouse LPARAM with mouse coordinates.
  */
 
 void Camera::HandleMouseMove(LPARAM mouse)
@@ -83,9 +87,9 @@ void Camera::HandleMouseMove(LPARAM mouse)
 }
 
 /**
- * HandleKeyDown -
+ * HandleKeyDown - Mark a key as down when it's pressed.
  *
- * @param
+ * @param key VK code for pressed key.
  */
 
 void Camera::HandleKeyDown(WPARAM key)
@@ -116,9 +120,9 @@ void Camera::HandleKeyDown(WPARAM key)
 }
 
 /**
- * HandleKeyUp -
+ * HandleKeyUp - Mark when a key is released.
  *
- * @param
+ * @param key VK code of released key.
  */
 
 void Camera::HandleKeyUp(WPARAM key)
@@ -149,9 +153,9 @@ void Camera::HandleKeyUp(WPARAM key)
 }
 
 /**
- * GetView -
+ * GetView - Get view matrix from current camera orientation.
  *
- * @param
+ * @return 4x4 view matrix.
  */
 
 mat4 Camera::GetView()
@@ -164,9 +168,9 @@ mat4 Camera::GetView()
 }
 
 /**
- * GetProjection -
+ * GetProjection - Get projection matrix from current camera settings.
  *
- * @param
+ * @return 4x4 projection matrix.
  */
  
 mat4 Camera::GetProjection()
@@ -180,9 +184,7 @@ mat4 Camera::GetProjection()
 }
 
 /**
- * Update -
- *
- * @param
+ * Update - Update camera from mouse/keyboard inputs for this frame.
  */
 
 void Camera::Update()

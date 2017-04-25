@@ -84,6 +84,7 @@ void InitScene(Scene &scn)
     GLchar compileBuf[512];
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
     const char* pVSSource =
         "#version 330 core\n"
@@ -105,7 +106,7 @@ void InitScene(Scene &scn)
         "{\n"
         "    vec3 lightVec = normalize(lightPos - inPos);\n"
         "    vec4 normal4 = modelInv * vec4(inNorm, 1);\n"
-        "    vec3 normal = normal4.xyz;\n"
+        "    vec3 normal = normalize(normal4.xyz + inPos);\n"
         "    float theta = max(0, dot(normal, lightVec));\n"
         "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
         "    exColor = 0.5 * ka + theta * kd;\n"
@@ -164,11 +165,11 @@ void InitScene(Scene &scn)
     // Create camera
 
     scn.cam.Init(
-        vec3(8.0, 8.0, 8.0),
+        vec3(12.0, 12.0, 12.0),
         vec3(0.0, 0.0, 0.0),
         vec3(0.0, 0.0, 1.0),
         4.0f / 3.0f,
-        45.0f,
+        15.0f,
         0.1f,
         100.f
     );
@@ -186,6 +187,13 @@ void InitScene(Scene &scn)
         vec3(1.0, 1.0, 1.0),
         vec3(0.0, 0.0, 0.0),
         vec3(0.0, 0.7, 0.0),
+        programID
+    );
+
+    scn.plane.Create(
+        25,
+        25,
+        vec3(0.0, 0.0, 0.7),
         programID
     );
 }
@@ -225,6 +233,7 @@ void Draw(HDC hDC, Scene &scn)
     
     scn.box1.Draw();
     scn.box2.Draw();
+    scn.plane.Draw();
     SwapBuffers(hDC);
 
     t += 0.01;

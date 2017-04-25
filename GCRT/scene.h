@@ -10,6 +10,7 @@
 
 #include "camera.h"
 #include "box.h"
+#include "plane.h"
 
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
@@ -20,10 +21,11 @@ struct Scene
 {
     Camera cam;
     GLuint programID;
-    bool wireFrame;
+    bool wireFrame = false;
 
     Box box1;
     Box box2;
+    Plane plane;
 
     void HandleInputs(MSG &msg);
 };
