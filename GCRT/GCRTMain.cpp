@@ -161,7 +161,7 @@ void InitScene(Scene &scn)
         vec3(0.0, 0.0, 0.0),
         vec3(0.0, 0.0, 1.0),
         4.0f / 3.0f,
-        90.0f,
+        75.0f,
         0.1f,
         100.f
     );
@@ -307,6 +307,10 @@ int CALLBACK WinMain(
     while (true)
     {
         Draw(hDC, scn);
+        RECT rect;
+        GetWindowRect(hMainWnd, &rect);
+        scn.cam.aspect = (float)(rect.right - rect.left) / (float)(rect.bottom - rect.top);
+
         while (PeekMessage(&msg, hMainWnd, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
@@ -326,6 +330,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
+    case WM_SIZE:
+
+        glViewport(
+            0,
+            0,
+            LOWORD(lParam),
+            HIWORD(lParam)
+        );
+        break;
+
     case WM_CLOSE:
         exit(0);
     default:

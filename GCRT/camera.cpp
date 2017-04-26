@@ -211,7 +211,7 @@ void Camera::Update()
 
     if (downKeys[KEY_D] == true)
     {
-        vec3 right = cross(fwd, up);
+        vec3 right = normalize(cross(fwd, up));
         pos += txSpeed * right;
         lookDir += txSpeed * right;
     }
@@ -220,7 +220,7 @@ void Camera::Update()
 
     if (downKeys[KEY_A] == true)
     {
-        vec3 right = cross(fwd, up);
+        vec3 right = normalize(cross(fwd, up));
         pos -= txSpeed * right;
         lookDir -= txSpeed * right;
     }
