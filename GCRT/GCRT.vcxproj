@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="box.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="cylinder.cpp" />
     <ClCompile Include="GCRTMain.cpp" />
     <ClCompile Include="geometry.cpp" />
     <ClCompile Include="plane.cpp" />
@@ -165,6 +166,7 @@
   <ItemGroup>
     <ClInclude Include="box.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="cylinder.h" />
     <ClInclude Include="GCRT.h" />
     <ClInclude Include="geometry.h" />
     <ClInclude Include="plane.h" />

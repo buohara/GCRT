@@ -11,6 +11,8 @@
 #include "camera.h"
 #include "box.h"
 #include "plane.h"
+#include "cylinder.h"
+#include "sphere.h"
 
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
@@ -26,6 +28,8 @@ struct Scene
     Box box1;
     Box box2;
     Plane plane;
+    Cylinder cyl;
+    Sphere sph;
 
     void HandleInputs(MSG &msg);
 };

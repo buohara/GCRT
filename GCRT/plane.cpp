@@ -85,11 +85,10 @@ void Plane::Create(
 
     // Create model matrices.
 
-    mat4 sc = scale(mat4(1.0), vec3(10.0f, 10.0f, 10.0f));
-    mat4 rot = mat4(1.0);
-    mat4 trans = translate(vec3(0.0f, 0.0f, -5.0f));
+    mat4 sc = scale(mat4(1.0f), vec3(10.0f, 10.0f, 1.0f));
+    mat4 trans = translate(vec3(0.0, 0.0, -1.0f));
 
-    model = trans * rot * sc;
+    model = trans * sc;
     modelInv = inverseTranspose(model);
 }
 

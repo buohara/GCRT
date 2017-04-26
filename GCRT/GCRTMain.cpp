@@ -104,10 +104,11 @@ void InitScene(Scene &scn)
         "\n"
         "void main()\n"
         "{\n"
-        "    vec3 lightVec = normalize(lightPos - inPos);\n"
-        "    vec4 normal4 = modelInv * vec4(inNorm, 1);\n"
-        "    vec3 normal = normalize(normal4.xyz + inPos);\n"
-        "    float theta = max(0, dot(normal, lightVec));\n"
+        "    vec4 pos = model * vec4(inPos, 1);\n"
+        "    vec4 norm = modelInv * vec4(inNorm, 1);\n"
+        "\n"
+        "    vec3 lightVec = normalize(lightPos - pos.xyz);\n"
+        "    float theta = max(dot(norm.xyz, lightVec), 0);\n"
         "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
         "    exColor = 0.5 * ka + theta * kd;\n"
         "}\n"
@@ -135,6 +136,7 @@ void InitScene(Scene &scn)
         glGetShaderInfoLog(vsID, maxLength, &maxLength, compileBuf);
         glDeleteShader(vsID);
         printf("VS compile error: %s\n", compileBuf);
+        __debugbreak();
     }
 #endif
 
@@ -151,6 +153,7 @@ void InitScene(Scene &scn)
         glGetShaderInfoLog(psID, maxLength, &maxLength, compileBuf);
         glDeleteShader(psID);
         printf("PS compile error: %s\n", compileBuf);
+        __debugbreak();
     }
 #endif
 
@@ -165,11 +168,11 @@ void InitScene(Scene &scn)
     // Create camera
 
     scn.cam.Init(
-        vec3(12.0, 12.0, 12.0),
+        vec3(8.0, 8.0, 8.0),
         vec3(0.0, 0.0, 0.0),
         vec3(0.0, 0.0, 1.0),
         4.0f / 3.0f,
-        15.0f,
+        60.0f,
         0.1f,
         100.f
     );
@@ -196,6 +199,9 @@ void InitScene(Scene &scn)
         vec3(0.0, 0.0, 0.7),
         programID
     );
+
+    scn.cyl.Create(25, vec3(0.1, 0.3, 0.7), programID);
+    scn.sph.Create(25, 15, vec3(0.7, 0.1, 0.4), programID);
 }
 
 /**
@@ -213,6 +219,7 @@ void Draw(HDC hDC, Scene &scn)
     scn.cam.Update();
     mat4 proj = scn.cam.GetProjection();
     mat4 view = scn.cam.GetView();
+    mat4 viewInv = inverseTranspose(view);
 
     GLuint viewID = glGetUniformLocation(scn.programID, "view");
     glUniformMatrix4fv(viewID, 1, false, &view[0][0]);
@@ -223,7 +230,7 @@ void Draw(HDC hDC, Scene &scn)
     // Lighting parameters.
 
     vec3 ka(0.5, 0.5, 0.5);
-    vec3 lightPos(5.0 * cosf(t), 5.0 * sinf(t), 1.0);
+    vec3 lightPos(10.0f * cosf(t), 10.0f * sinf(t), 1.0f);
 
     GLuint kaID = glGetUniformLocation(scn.programID, "ka");
     glUniform3fv(kaID, 1, &ka[0]);
@@ -234,6 +241,9 @@ void Draw(HDC hDC, Scene &scn)
     scn.box1.Draw();
     scn.box2.Draw();
     scn.plane.Draw();
+    scn.cyl.Draw();
+    scn.sph.Draw();
+
     SwapBuffers(hDC);
 
     t += 0.01;

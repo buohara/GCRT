@@ -15,7 +15,7 @@
 using namespace std;
 using namespace glm;
 
-struct Sphere
+struct Cylinder
 {
     uint32_t numVerts;
 
@@ -33,12 +33,6 @@ struct Sphere
     uint32_t topOffset = 0;
     uint32_t bottomOffset = 0;
 
-    void Create(
-        uint32_t numSectors, 
-        uint32_t numRings, 
-        vec3 color, 
-        GLuint progID
-    );
-
+    void Create(uint32_t numSectors, vec3 color, GLuint progID);
     void Draw();
 };
