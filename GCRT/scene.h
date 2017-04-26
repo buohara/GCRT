@@ -1,23 +1,11 @@
 #pragma once
 
-#define GLEW_STATIC
-
-#include <Windows.h>
-#include <glew.h>
-#include <wglew.h>
-#include <gl/GL.h>
-#include <stdio.h>
-
-#include "camera.h"
+#include "GCRT.h"
 #include "box.h"
+#include "camera.h"
 #include "plane.h"
 #include "cylinder.h"
 #include "sphere.h"
-
-#include "glm/vec3.hpp"
-#include "glm/vec4.hpp"
-#include "glm/mat4x4.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 
 struct Scene
 {

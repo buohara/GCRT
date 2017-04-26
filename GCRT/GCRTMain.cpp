@@ -1,18 +1,6 @@
 #define GLEW_STATIC
 
-#include <Windows.h>
-#include <glew.h>
-#include <wglew.h>
-#include <gl/GL.h>
-#include <stdio.h>
-#include "box.h"
-
 #include "scene.h"
-
-#include "glm/vec3.hpp"
-#include "glm/vec4.hpp"
-#include "glm/mat4x4.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 
 // Forward declarations.
 
@@ -108,7 +96,8 @@ void InitScene(Scene &scn)
         "    vec4 norm = modelInv * vec4(inNorm, 1);\n"
         "\n"
         "    vec3 lightVec = normalize(lightPos - pos.xyz);\n"
-        "    float theta = max(dot(norm.xyz, lightVec), 0);\n"
+        "    float dist = length(lightVec);\n"
+        "    float theta = max(dot(norm.xyz, lightVec), 0) / (dist * dist);\n"
         "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
         "    exColor = 0.5 * ka + theta * kd;\n"
         "}\n"
@@ -172,36 +161,53 @@ void InitScene(Scene &scn)
         vec3(0.0, 0.0, 0.0),
         vec3(0.0, 0.0, 1.0),
         4.0f / 3.0f,
-        60.0f,
+        90.0f,
         0.1f,
         100.f
     );
 
-    // Geometry
+    // Box 1
 
     scn.box1.Create(
-        vec3(1.0, 2.0, 3.0),
-        vec3(3.0, 3.0, 0.0),
-        vec3(0.7, 0.0, 0.0),
         programID
     );
+    scn.box1.SetDiffuse(vec3(0.7, 0.0, 0.0));
+    scn.box1.Scale(vec3(1.0, 2.0, 3.0));
+    scn.box1.Translate(vec3(3.0, 3.0, 1.0));
+
+    // Box 2
 
     scn.box2.Create(
-        vec3(1.0, 1.0, 1.0),
-        vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 0.7, 0.0),
         programID
     );
+    scn.box2.SetDiffuse(vec3(0.0, 0.7, 0.0));
+    scn.box2.Scale(vec3(1.0, 1.0, 1.0));
+    scn.box2.Translate(vec3(-3.0, 3.0, 1.0));
+
+    // Plane
 
     scn.plane.Create(
         25,
         25,
-        vec3(0.0, 0.0, 0.7),
         programID
     );
+    scn.plane.SetDiffuse(vec3(0.0, 0.0, 0.7));
+    scn.plane.Scale(vec3(10.0, 10.0, 1.0));
+    scn.plane.Translate(vec3(0.0, 0.0, -1.0));
 
-    scn.cyl.Create(25, vec3(0.1, 0.3, 0.7), programID);
-    scn.sph.Create(25, 15, vec3(0.7, 0.1, 0.4), programID);
+    // Cylinder
+
+    scn.cyl.Create(25, programID);
+    scn.cyl.SetDiffuse(vec3(0.7, 0.7, 0.0));
+    scn.cyl.Scale(vec3(1.0, 1.0, 5.0));
+    scn.cyl.Translate(vec3(3.0, -3.0, 1.0));
+
+    // Sphere
+
+    scn.sph.Create(25, 15, programID);
+    scn.sph.SetDiffuse(vec3(0.0, 0.7, 0.7));
+    scn.sph.Scale(vec3(2.0, 2.0, 2.0));
+    scn.sph.Translate(vec3(-3.0, -3.0, 1.0));
 }
 
 /**
@@ -230,7 +236,7 @@ void Draw(HDC hDC, Scene &scn)
     // Lighting parameters.
 
     vec3 ka(0.5, 0.5, 0.5);
-    vec3 lightPos(10.0f * cosf(t), 10.0f * sinf(t), 1.0f);
+    vec3 lightPos(10.0f * cosf(t), 10.0f * sinf(t), 5.0f + cosf(2 * t));
 
     GLuint kaID = glGetUniformLocation(scn.programID, "ka");
     glUniform3fv(kaID, 1, &ka[0]);
@@ -246,7 +252,7 @@ void Draw(HDC hDC, Scene &scn)
 
     SwapBuffers(hDC);
 
-    t += 0.01;
+    t += 0.01f;
 }
 
 /**

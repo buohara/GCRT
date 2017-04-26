@@ -12,11 +12,10 @@
 void Plane::Create(
     uint32_t rows,
     uint32_t cols,
-    vec3 color,
     GLuint progID)
 {
     shaderProgID = progID;
-    clr = color;
+    kd = vec3(0.5, 0.5, 0.5);
 
     // Generate a grid of vertices/normals.
 
@@ -61,35 +60,9 @@ void Plane::Create(
     }
 
     numVerts = verts.size();
-    size_t vertBufSize = 3 * verts.size() * sizeof(float);
-    size_t normBufSize = 3 * norms.size() * sizeof(float);
 
-    // Create buffer objects and upload to GPU.
-
-    glGenVertexArrays(1, &vaoID);
-    glBindVertexArray(vaoID);
-
-    glGenBuffers(1, &vertVboID);
-    glBindBuffer(GL_ARRAY_BUFFER, vertVboID);
-    glBufferData(GL_ARRAY_BUFFER, vertBufSize, &verts[0], GL_STATIC_DRAW);
-    glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-
-    glGenBuffers(1, &normVboID);
-    glBindBuffer(GL_ARRAY_BUFFER, normVboID);
-    glBufferData(GL_ARRAY_BUFFER, normBufSize, &norms[0], GL_STATIC_DRAW);
-    glVertexAttribPointer((GLuint)1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-
-    // Create model matrices.
-
-    mat4 sc = scale(mat4(1.0f), vec3(10.0f, 10.0f, 1.0f));
-    mat4 trans = translate(vec3(0.0, 0.0, -1.0f));
-
-    model = trans * sc;
-    modelInv = inverseTranspose(model);
+    InitVertexObjects(verts, norms);
+    InitModelMatrices();
 }
 
 /**
@@ -105,7 +78,7 @@ void Plane::Draw()
     glUniformMatrix4fv(modelInvID, 1, false, &modelInv[0][0]);
 
     GLuint kdID = glGetUniformLocation(shaderProgID, "kd");
-    glUniform3fv(kdID, 1, &clr[0]);
+    glUniform3fv(kdID, 1, &kd[0]);
 
     glBindVertexArray(vaoID);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, numVerts);
