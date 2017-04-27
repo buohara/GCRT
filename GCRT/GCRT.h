@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <vector>
 #include <math.h>
+#include <string>
 
 // GL headers
 
@@ -29,3 +30,9 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/rotate_vector.hpp"
 #include "glm/gtc/matrix_inverse.hpp"
+
+// DevIL libraries
+
+#include "IL/il.h"
+#include "IL/ilu.h"
+#include "IL/ilut.h"

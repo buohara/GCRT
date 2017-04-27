@@ -14,6 +14,7 @@ void Sphere::Create(
 
     vector<vec3> verts;
     vector<vec3> norms;
+    vector<vec2> uvs;
 
     float dtheta = pi<float>() / (numRings + 2);
     float dphi = 2.0f * pi<float>() / numSectors;
@@ -88,7 +89,7 @@ void Sphere::Create(
         norms.push_back(normalize(vec3(x, y, z)));
     }
 
-    InitVertexObjects(verts, norms);
+    InitVertexObjects(verts, norms, uvs);
     InitModelMatrices();
 }
 

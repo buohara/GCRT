@@ -76,10 +76,13 @@ void InitScene(Scene &scn)
 
     const char* pVSSource =
         "#version 330 core\n"
+        "\n"
         "layout(location = 0) in vec3 inPos;\n"
         "layout(location = 1) in vec3 inNorm;\n"
+        "layout(location = 2) in vec2 inUV;\n"
         "\n"
         "out vec3 exColor;\n"
+        "out vec2 exUV;\n"
         "\n"
         "uniform mat4 model;\n"
         "uniform mat4 view;\n"
@@ -102,15 +105,22 @@ void InitScene(Scene &scn)
         "    float theta = max(dot(norm.xyz, lightVec), 0) / (dist * dist);\n"
         "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
         "    exColor = ia * ka + id * theta * kd;\n"
+        "    exUV = inUV;\n"
         "}\n"
         ;
 
     const char* pPSSource =
         "#version 330 core\n"
+        "\n"
         "in vec3 exColor;\n"
+        "in vec2 exUV;\n"
         "out vec4 color;\n"
-        "void main() {\n"
-        "    color = vec4(exColor, 1.0);\n"
+        "\n"
+        "uniform sampler2D texture;\n"
+        "\n"
+        "void main()\n" 
+        "{\n"
+        "    color = vec4(exColor, 1.0) + vec4(texture2D(texture, exUV), 1);\n"
         "}\n"
         ;
 
@@ -168,53 +178,15 @@ void InitScene(Scene &scn)
         100.f
     );
 
-    // Box 1
-
-    scn.box1.Create(
-        programID
-    );
-    scn.box1.SetDiffuse(vec3(0.7, 0.0, 0.0));
-    scn.box1.SetAmbient(vec3(0.7, 0.0, 0.0));
-    scn.box1.Scale(vec3(1.0, 2.0, 3.0));
-    scn.box1.Translate(vec3(3.0, 3.0, 1.0));
-
-    // Box 2
-
-    scn.box2.Create(
-        programID
-    );
-    scn.box2.SetDiffuse(vec3(0.0, 0.7, 0.0));
-    scn.box2.SetAmbient(vec3(0.0, 0.7, 0.0));
-    scn.box2.Scale(vec3(1.0, 1.0, 1.0));
-    scn.box2.Translate(vec3(-3.0, 3.0, 1.0));
-
     // Plane
 
-    scn.plane.Create(
-        25,
-        25,
-        programID
-    );
-    scn.plane.SetDiffuse(vec3(0.0, 0.0, 0.7));
-    scn.plane.SetAmbient(vec3(0.0, 0.0, 0.7));
-    scn.plane.Scale(vec3(10.0, 10.0, 1.0));
-    scn.plane.Translate(vec3(0.0, 0.0, -1.0));
+    Plane pln;
+    pln.Create(10, 10, programID);
 
-    // Cylinder
-
-    scn.cyl.Create(25, programID);
-    scn.cyl.SetDiffuse(vec3(0.7, 0.7, 0.0));
-    scn.cyl.SetAmbient(vec3(0.7, 0.7, 0.0));
-    scn.cyl.Scale(vec3(1.0, 1.0, 5.0));
-    scn.cyl.Translate(vec3(3.0, -3.0, 1.0));
-
-    // Sphere
-
-    scn.sph.Create(25, 15, programID);
-    scn.sph.SetDiffuse(vec3(0.0, 0.7, 0.7));
-    scn.sph.SetAmbient(vec3(0.0, 0.7, 0.7));
-    scn.sph.Scale(vec3(2.0, 2.0, 2.0));
-    scn.sph.Translate(vec3(-3.0, -3.0, 1.0));
+    scn.m1.geom = pln;
+    scn.m1.mat.LoadTexture(wstring(L"E:\drive\GCRT\asset\earthmap1k"));
+    scn.m1.mat.SetDiffuse(vec3(0.7, 0.1, 0.1));
+    scn.m1.mat.SetAmbient(vec3(0.7, 0.1, 0.1));
 }
 
 /**
@@ -256,11 +228,11 @@ void Draw(HDC hDC, Scene &scn)
     GLuint idID = glGetUniformLocation(scn.programID, "id");
     glUniform1fv(idID, 1, &id);
 
-    scn.box1.Draw();
-    scn.box2.Draw();
-    scn.plane.Draw();
-    scn.cyl.Draw();
-    scn.sph.Draw();
+    //scn.box1.Draw();
+    //scn.box2.Draw();
+    scn.m1.geom.Draw();
+    //scn.cyl.Draw();
+    //scn.sph.Draw();
 
     SwapBuffers(hDC);
 

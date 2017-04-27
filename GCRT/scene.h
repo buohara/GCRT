@@ -6,6 +6,7 @@
 #include "plane.h"
 #include "cylinder.h"
 #include "sphere.h"
+#include "model.h"
 
 struct Scene
 {
@@ -13,11 +14,7 @@ struct Scene
     GLuint programID;
     bool wireFrame = false;
 
-    Box box1;
-    Box box2;
-    Plane plane;
-    Cylinder cyl;
-    Sphere sph;
+    Model m1;
 
     void HandleInputs(MSG &msg);
 };

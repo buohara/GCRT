@@ -17,6 +17,7 @@ void Box::Create(GLuint progID)
 
     vector<vec3> verts;
     vector<vec3> norms;
+    vector<vec2> uvs;
 
     float hx = 0.5;
     float hy = 0.5;
@@ -132,7 +133,7 @@ void Box::Create(GLuint progID)
 
     numVerts = verts.size();
 
-    InitVertexObjects(verts, norms);
+    InitVertexObjects(verts, norms, uvs);
     InitModelMatrices();
 }
 

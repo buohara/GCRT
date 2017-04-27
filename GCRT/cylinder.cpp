@@ -13,6 +13,7 @@ void Cylinder::Create(
 
     vector<vec3> verts;
     vector<vec3> norms;
+    vector<vec2> uvs;
 
     // Verts for the sides.
 
@@ -67,7 +68,7 @@ void Cylinder::Create(
         norms.push_back(vec3(0, 0, -1.0));
     }
 
-    InitVertexObjects(verts, norms);
+    InitVertexObjects(verts, norms, uvs);
     InitModelMatrices();
 }
 

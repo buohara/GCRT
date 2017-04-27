@@ -7,11 +7,16 @@
  * @param norms
  */
 
-void Geometry::InitVertexObjects(vector<vec3> &verts, vector<vec3> &norms)
+void Geometry::InitVertexObjects(
+    vector<vec3> &verts, 
+    vector<vec3> &norms,
+    vector<vec2> &uvs)
 {
     uint32_t numVerts = verts.size();
+
     size_t vertBufSize = 3 * numVerts * sizeof(float);
     size_t normBufSize = 3 * numVerts * sizeof(float);
+    size_t uvBufSize = 2 * numVerts * sizeof(float);
 
     glGenVertexArrays(1, &vaoID);
     glBindVertexArray(vaoID);
@@ -27,6 +32,12 @@ void Geometry::InitVertexObjects(vector<vec3> &verts, vector<vec3> &norms)
     glBufferData(GL_ARRAY_BUFFER, normBufSize, &norms[0], GL_STATIC_DRAW);
     glVertexAttribPointer((GLuint)1, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(1);
+
+    glGenBuffers(1, &uvVboID);
+    glBindBuffer(GL_ARRAY_BUFFER, uvVboID);
+    glBufferData(GL_ARRAY_BUFFER, uvBufSize, &uvs[0], GL_STATIC_DRAW);
+    glVertexAttribPointer((GLuint)2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
 }
@@ -86,20 +97,7 @@ void Geometry::Scale(vec3 dims)
     modelInv = inverseTranspose(model);
 }
 
-/**
- * SetDiffuse -
- */
-
-void Geometry::SetDiffuse(vec3 kdIn)
+void Geometry::Draw()
 {
-    kd = kdIn;
-}
-
-/**
- * SetAmbient -
- */
-
-void Geometry::SetAmbient(vec3 kaIn)
-{
-    ka = kaIn;
+    return;
 }
