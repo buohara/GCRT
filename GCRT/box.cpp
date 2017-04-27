@@ -142,14 +142,7 @@ void Box::Create(GLuint progID)
 
 void Box::Draw()
 {
-    GLuint modelID = glGetUniformLocation(shaderProgID, "model");
-    glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
-
-    GLuint modelInvID = glGetUniformLocation(shaderProgID, "modelInv");
-    glUniformMatrix4fv(modelInvID, 1, false, &modelInv[0][0]);
-
-    GLuint kdID = glGetUniformLocation(shaderProgID, "kd");
-    glUniform3fv(kdID, 1, &kd[0]);
+    SetUniforms();
 
     glBindVertexArray(vaoID);
     glDrawArrays(GL_TRIANGLES, 0, numVerts);

@@ -89,6 +89,8 @@ void InitScene(Scene &scn)
         "uniform vec3 lightPos;\n"
         "uniform vec3 ka;"
         "uniform vec3 kd;"
+        "uniform float ia;"
+        "uniform float id;"
         "\n"
         "void main()\n"
         "{\n"
@@ -99,7 +101,7 @@ void InitScene(Scene &scn)
         "    float dist = length(lightVec);\n"
         "    float theta = max(dot(norm.xyz, lightVec), 0) / (dist * dist);\n"
         "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
-        "    exColor = 0.5 * ka + theta * kd;\n"
+        "    exColor = ia * ka + id * theta * kd;\n"
         "}\n"
         ;
 
@@ -172,6 +174,7 @@ void InitScene(Scene &scn)
         programID
     );
     scn.box1.SetDiffuse(vec3(0.7, 0.0, 0.0));
+    scn.box1.SetAmbient(vec3(0.7, 0.0, 0.0));
     scn.box1.Scale(vec3(1.0, 2.0, 3.0));
     scn.box1.Translate(vec3(3.0, 3.0, 1.0));
 
@@ -181,6 +184,7 @@ void InitScene(Scene &scn)
         programID
     );
     scn.box2.SetDiffuse(vec3(0.0, 0.7, 0.0));
+    scn.box2.SetAmbient(vec3(0.0, 0.7, 0.0));
     scn.box2.Scale(vec3(1.0, 1.0, 1.0));
     scn.box2.Translate(vec3(-3.0, 3.0, 1.0));
 
@@ -192,6 +196,7 @@ void InitScene(Scene &scn)
         programID
     );
     scn.plane.SetDiffuse(vec3(0.0, 0.0, 0.7));
+    scn.plane.SetAmbient(vec3(0.0, 0.0, 0.7));
     scn.plane.Scale(vec3(10.0, 10.0, 1.0));
     scn.plane.Translate(vec3(0.0, 0.0, -1.0));
 
@@ -199,6 +204,7 @@ void InitScene(Scene &scn)
 
     scn.cyl.Create(25, programID);
     scn.cyl.SetDiffuse(vec3(0.7, 0.7, 0.0));
+    scn.cyl.SetAmbient(vec3(0.7, 0.7, 0.0));
     scn.cyl.Scale(vec3(1.0, 1.0, 5.0));
     scn.cyl.Translate(vec3(3.0, -3.0, 1.0));
 
@@ -206,6 +212,7 @@ void InitScene(Scene &scn)
 
     scn.sph.Create(25, 15, programID);
     scn.sph.SetDiffuse(vec3(0.0, 0.7, 0.7));
+    scn.sph.SetAmbient(vec3(0.0, 0.7, 0.7));
     scn.sph.Scale(vec3(2.0, 2.0, 2.0));
     scn.sph.Translate(vec3(-3.0, -3.0, 1.0));
 }
@@ -235,15 +242,20 @@ void Draw(HDC hDC, Scene &scn)
 
     // Lighting parameters.
 
-    vec3 ka(0.5, 0.5, 0.5);
     vec3 lightPos(10.0f * cosf(t), 10.0f * sinf(t), 5.0f + cosf(2 * t));
-
-    GLuint kaID = glGetUniformLocation(scn.programID, "ka");
-    glUniform3fv(kaID, 1, &ka[0]);
 
     GLuint lightPosID = glGetUniformLocation(scn.programID, "lightPos");
     glUniform3fv(lightPosID, 1, &lightPos[0]);
+
+    float ia = 0.3f;
+    float id = 0.8f;
     
+    GLuint iaID = glGetUniformLocation(scn.programID, "ia");
+    glUniform1fv(iaID, 1, &ia);
+
+    GLuint idID = glGetUniformLocation(scn.programID, "id");
+    glUniform1fv(idID, 1, &id);
+
     scn.box1.Draw();
     scn.box2.Draw();
     scn.plane.Draw();

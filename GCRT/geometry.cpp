@@ -32,6 +32,25 @@ void Geometry::InitVertexObjects(vector<vec3> &verts, vector<vec3> &norms)
 }
 
 /**
+ * SetUniforms -
+ */
+
+void Geometry::SetUniforms()
+{
+    GLuint modelID = glGetUniformLocation(shaderProgID, "model");
+    glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
+
+    GLuint modelInvID = glGetUniformLocation(shaderProgID, "modelInv");
+    glUniformMatrix4fv(modelInvID, 1, false, &modelInv[0][0]);
+
+    GLuint kdID = glGetUniformLocation(shaderProgID, "kd");
+    glUniform3fv(kdID, 1, &kd[0]);
+
+    GLuint kaID = glGetUniformLocation(shaderProgID, "ka");
+    glUniform3fv(kaID, 1, &ka[0]);
+}
+
+/**
  * InitVertexObjects -
  */
 
@@ -45,12 +64,20 @@ void Geometry::InitModelMatrices()
     modelInv = inverseTranspose(model);
 }
 
+/**
+ * Translate -
+ */
+
 void Geometry::Translate(vec3 tx)
 {
     trans = translate(tx);
     model = trans * rot * scl;
     modelInv = inverseTranspose(model);
 }
+
+/**
+ * Scale -
+ */
 
 void Geometry::Scale(vec3 dims)
 {
@@ -59,7 +86,20 @@ void Geometry::Scale(vec3 dims)
     modelInv = inverseTranspose(model);
 }
 
+/**
+ * SetDiffuse -
+ */
+
 void Geometry::SetDiffuse(vec3 kdIn)
 {
     kd = kdIn;
+}
+
+/**
+ * SetAmbient -
+ */
+
+void Geometry::SetAmbient(vec3 kaIn)
+{
+    ka = kaIn;
 }
