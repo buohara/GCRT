@@ -37,7 +37,7 @@ void Material::LoadTexture(string &fileName)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.w,
-        texture.h, 0, GL_RGB, GL_BYTE, &texture.pixels[0]);
+        texture.h, 0, GL_RGB, GL_UNSIGNED_BYTE, &texture.pixels[0]);
 }
 
 /**

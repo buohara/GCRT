@@ -1,11 +1,11 @@
 #pragma once
 
-#include "geometry.h"
+#include "plane.h"
 #include "material.h"
 
 struct Model
 {
-    Geometry geom;
+    Plane geom;
     Material mat;
 
     void SetShaderParams(GLuint progID);

@@ -120,7 +120,7 @@ void InitScene(Scene &scn)
         "\n"
         "void main()\n" 
         "{\n"
-        "    color = vec4(exColor, 1.0) + vec4(texture2D(texture, exUV).bgr, 1);\n"
+        "    color = vec4(exColor, 1.0) + vec4(texture2D(texture, exUV).rgb, 1);\n"
         "}\n"
         ;
 
@@ -182,6 +182,7 @@ void InitScene(Scene &scn)
 
     Plane pln;
     pln.Create(10, 10);
+    pln.Scale(vec3(10.0, 10.0, 1.0));
 
     scn.m1.geom = pln;
     scn.m1.mat.LoadTexture(string("E:/drive/GCRT/asset/earthmap1k.jpg"));
@@ -204,7 +205,6 @@ void Draw(HDC hDC, Scene &scn)
     scn.cam.Update();
     mat4 proj = scn.cam.GetProjection();
     mat4 view = scn.cam.GetView();
-    mat4 viewInv = inverseTranspose(view);
 
     GLuint viewID = glGetUniformLocation(scn.programID, "view");
     glUniformMatrix4fv(viewID, 1, false, &view[0][0]);
@@ -219,8 +219,8 @@ void Draw(HDC hDC, Scene &scn)
     GLuint lightPosID = glGetUniformLocation(scn.programID, "lightPos");
     glUniform3fv(lightPosID, 1, &lightPos[0]);
 
-    float ia = 0.3f;
-    float id = 0.8f;
+    float ia = 0.1f;
+    float id = 0.1f;
     
     GLuint iaID = glGetUniformLocation(scn.programID, "ia");
     glUniform1fv(iaID, 1, &ia);
