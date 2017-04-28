@@ -11,7 +11,6 @@ struct Geometry
     GLuint vertVboID;
     GLuint normVboID;
     GLuint uvVboID;
-    GLuint shaderProgID;
 
     mat4 scl;
     mat4 trans;
@@ -19,10 +18,8 @@ struct Geometry
 
     mat4 model;
     mat4 modelInv;
-    vec3 kd;
-    vec3 ka;
 
-    void SetUniforms();
+    void SetShaderParams(GLuint progID);
 
     virtual void Draw();
 

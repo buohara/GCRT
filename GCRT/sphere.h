@@ -11,8 +11,7 @@ struct Sphere : Geometry
 
     void Create(
         uint32_t numSectors, 
-        uint32_t numRings,
-        GLuint progID
+        uint32_t numRings
     );
 
     void Draw();

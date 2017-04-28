@@ -11,12 +11,9 @@
 
 void Plane::Create(
     uint32_t rows,
-    uint32_t cols,
-    GLuint progID)
+    uint32_t cols
+)
 {
-    shaderProgID = progID;
-    kd = vec3(0.5, 0.5, 0.5);
-
     // Generate a grid of vertices/normals.
 
     vector<vec3> verts;
@@ -91,8 +88,6 @@ void Plane::Create(
 
 void Plane::Draw()
 {
-    SetUniforms();
-
     glBindVertexArray(vaoID);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, numVerts);
     glBindVertexArray(0);

@@ -5,6 +5,6 @@
 struct Box : Geometry
 {
     uint32_t numVerts;
-    void Create(GLuint progID);
+    void Create();
     void Draw();
 };

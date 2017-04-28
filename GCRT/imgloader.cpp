@@ -1,8 +1,10 @@
 #include "imgloader.h"
 
-void ImgLoader::LoadImg(wstring &fileName, Img &img)
+void ImgLoader::LoadImg(string &fileName, Img &img)
 {
-    ILuint imgID = 0;
+    ilInit();
+
+    ILuint imgID;
     ilGenImages(1, &imgID);
     ilBindImage(imgID);
 

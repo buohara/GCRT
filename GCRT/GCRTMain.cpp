@@ -120,7 +120,7 @@ void InitScene(Scene &scn)
         "\n"
         "void main()\n" 
         "{\n"
-        "    color = vec4(exColor, 1.0) + vec4(texture2D(texture, exUV), 1);\n"
+        "    color = vec4(exColor, 1.0) + vec4(texture2D(texture, exUV).bgr, 1);\n"
         "}\n"
         ;
 
@@ -181,10 +181,10 @@ void InitScene(Scene &scn)
     // Plane
 
     Plane pln;
-    pln.Create(10, 10, programID);
+    pln.Create(10, 10);
 
     scn.m1.geom = pln;
-    scn.m1.mat.LoadTexture(wstring(L"E:\drive\GCRT\asset\earthmap1k"));
+    scn.m1.mat.LoadTexture(string("E:/drive/GCRT/asset/earthmap1k.jpg"));
     scn.m1.mat.SetDiffuse(vec3(0.7, 0.1, 0.1));
     scn.m1.mat.SetAmbient(vec3(0.7, 0.1, 0.1));
 }
@@ -228,11 +228,8 @@ void Draw(HDC hDC, Scene &scn)
     GLuint idID = glGetUniformLocation(scn.programID, "id");
     glUniform1fv(idID, 1, &id);
 
-    //scn.box1.Draw();
-    //scn.box2.Draw();
-    scn.m1.geom.Draw();
-    //scn.cyl.Draw();
-    //scn.sph.Draw();
+    scn.m1.SetShaderParams(scn.programID);
+    scn.m1.Draw();
 
     SwapBuffers(hDC);
 
@@ -256,7 +253,7 @@ int CALLBACK WinMain(
     wc.lpfnWndProc      = WndProc;
     wc.hInstance        = hInstance;
     wc.hbrBackground    = (HBRUSH)(COLOR_BACKGROUND);
-    wc.lpszClassName    = L"GLWindow";
+    wc.lpszClassName    = "GLWindow";
     wc.style            = CS_OWNDC;
     
     if (!RegisterClass(&wc))
@@ -267,7 +264,7 @@ int CALLBACK WinMain(
     // Create the main GL Window.
 
     HWND hMainWnd = CreateWindowW(
-        wc.lpszClassName, 
+        L"GLWindow", 
         L"GLWindow", 
         WS_OVERLAPPEDWINDOW | WS_VISIBLE, 
         0, 

@@ -14,5 +14,5 @@ struct Img
 
 struct ImgLoader
 {
-    void LoadImg(wstring &fileName, Img &img);
+    void LoadImg(string &fileName, Img &img);
 };

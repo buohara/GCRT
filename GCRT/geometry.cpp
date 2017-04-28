@@ -46,19 +46,13 @@ void Geometry::InitVertexObjects(
  * SetUniforms -
  */
 
-void Geometry::SetUniforms()
+void Geometry::SetShaderParams(GLuint progID)
 {
-    GLuint modelID = glGetUniformLocation(shaderProgID, "model");
+    GLuint modelID = glGetUniformLocation(progID, "model");
     glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
 
-    GLuint modelInvID = glGetUniformLocation(shaderProgID, "modelInv");
+    GLuint modelInvID = glGetUniformLocation(progID, "modelInv");
     glUniformMatrix4fv(modelInvID, 1, false, &modelInv[0][0]);
-
-    GLuint kdID = glGetUniformLocation(shaderProgID, "kd");
-    glUniform3fv(kdID, 1, &kd[0]);
-
-    GLuint kaID = glGetUniformLocation(shaderProgID, "ka");
-    glUniform3fv(kaID, 1, &ka[0]);
 }
 
 /**
@@ -96,6 +90,10 @@ void Geometry::Scale(vec3 dims)
     model = trans * rot * scl;
     modelInv = inverseTranspose(model);
 }
+
+/**
+ * Draw -
+ */
 
 void Geometry::Draw()
 {

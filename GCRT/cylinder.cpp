@@ -5,12 +5,9 @@
  */
 
 void Cylinder::Create(
-    uint32_t numSectors,
-    GLuint progID)
+    uint32_t numSectors
+)
 {
-    shaderProgID = progID;
-    kd = vec3(0.5, 0.5, 0.5);
-
     vector<vec3> verts;
     vector<vec3> norms;
     vector<vec2> uvs;
@@ -79,8 +76,6 @@ void Cylinder::Create(
 
 void Cylinder::Draw()
 {
-    SetUniforms();
-
     glBindVertexArray(vaoID);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, numSideVerts);
     glDrawArrays(GL_TRIANGLE_FAN, topOffset, numCapVerts);

@@ -10,11 +10,8 @@
  * on on draw.
  */
 
-void Box::Create(GLuint progID)
+void Box::Create()
 {
-    shaderProgID = progID;
-    kd = vec3(0.5, 0.5, 0.5);
-
     vector<vec3> verts;
     vector<vec3> norms;
     vector<vec2> uvs;
@@ -143,8 +140,6 @@ void Box::Create(GLuint progID)
 
 void Box::Draw()
 {
-    SetUniforms();
-
     glBindVertexArray(vaoID);
     glDrawArrays(GL_TRIANGLES, 0, numVerts);
     glBindVertexArray(0);
