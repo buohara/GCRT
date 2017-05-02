@@ -9,11 +9,16 @@ using namespace glm;
 struct Material
 {
     string name;
-    GLuint textureID;
+    
+    GLuint diffuseTexID;
+    GLuint normalTexID;
+
     vec3 kd;
     vec3 ka;
 
-    void LoadTexture(string &fileName);
+    void LoadDiffuseTexture(string &fileName);
+    void LoadNormalTexture(string &fileName);
+
     void SetDiffuse(vec3 kd);
     void SetAmbient(vec3 ka);
     void SetShaderParams(GLuint progID);

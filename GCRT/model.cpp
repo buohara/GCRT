@@ -19,7 +19,8 @@ void Model::SetMaterial(const Material &matIn)
     mat.ka = matIn.ka;
     mat.kd = matIn.kd;
     mat.name = matIn.name;
-    mat.textureID = matIn.textureID;
+    mat.diffuseTexID = matIn.diffuseTexID;
+    mat.normalTexID = matIn.normalTexID;
 }
 
 /**

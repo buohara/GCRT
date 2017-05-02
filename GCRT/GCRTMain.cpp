@@ -136,14 +136,40 @@ void InitScene(Scene &scn)
         "layout(location = 2) in vec2 inUV;\n"
         "layout(location = 3) in vec3 inTan;\n"
         "\n"
-        "out vec3 exColor;\n"
-        "out vec2 exUV;\n"
-        "out float exTheta;\n"
+        "out vec4 passPos;\n"
+        "out vec4 passNorm;\n"
+        "out vec4 passTan;\n"
+        "out vec2 passUV;\n"
         "\n"
         "uniform mat4 model;\n"
         "uniform mat4 view;\n"
         "uniform mat4 proj;\n"
         "uniform mat4 modelInv;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
+        "    vec4 pos  = model * vec4(inPos, 1);\n"
+        "    vec4 norm = modelInv * vec4(inNorm, 1);\n"
+        "    vec4 tan  = model * vec4(inTan, 1); \n"
+        "\n"
+        "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
+        "\n"
+        "    passPos    = pos;\n"
+        "    passNorm   = norm;\n"
+        "    passTan    = tan;\n"
+        "    passUV     = inUV;\n"
+        "}\n"
+        ;
+
+    const char* pPSSourceNM =
+        "#version 330 core\n"
+        "\n"
+        "in vec4 passPos;\n"
+        "in vec4 passNorm;\n"
+        "in vec4 passTan;\n"
+        "in vec2 passUV;\n"
+        "\n"
+        "out vec4 color;\n"
         "\n"
         "uniform vec3 lightPos;\n"
         "uniform vec3 ka;"
@@ -151,43 +177,26 @@ void InitScene(Scene &scn)
         "uniform float ia;"
         "uniform float id;"
         "\n"
+        "uniform sampler2D diffuseTex;\n"
+        "uniform sampler2D normalTex;\n"
+        "\n"
         "void main()\n"
         "{\n"
-        "    vec4 pos = model * vec4(inPos, 1);\n"
-        "    vec4 norm = modelInv * vec4(inNorm, 1);\n"
         "\n"
-        "    vec3 bitan = cross(inTan, inNorm);\n"
-        "    mat3 tbn = transpose(mat3(inTan, bitan, inNorm));\n"
+        "    vec3 bitan = cross(passTan.xyz, passNorm.xyz);\n"
+        "    mat3 tbn = transpose(mat3(passTan.xyz, bitan, passNorm.xyz));\n"
+        "    vec3 nmNorm = tbn * texture2D(normalTex, passUV).rgb;\n"
         "\n"
-        "    vec3 lightVec = normalize(lightPos - pos.xyz);\n"
+        "    vec3 lightVec = normalize(lightPos - passPos.xyz);\n"
         "    float dist = length(lightVec);\n"
-        "    float theta = max(dot(norm.xyz, lightVec), 0) / (dist * dist);\n"
+        "    float theta = max(dot(nmNorm, lightVec), 0) / (dist * dist);\n"
         "\n"
-        "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
-        "    exColor = ia * ka + id * theta * kd;\n"
-        "    exUV = inUV;\n"
-        "    exTheta = theta;\n"
-        "}\n"
-        ;
-
-    const char* pPSSourceNM =
-        "#version 330 core\n"
-        "\n"
-        "in vec3 exColor;\n"
-        "in vec2 exUV;\n"
-        "in float exTheta;\n"
-        "out vec4 color;\n"
-        "\n"
-        "uniform sampler2D texture;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "    color = vec4(exColor, 1.0) + 1.5 * exTheta * vec4(texture2D(texture, exUV).rgb, 1);\n"
+        "    color = vec4(ia * ka, 1) + id * theta * vec4(texture2D(diffuseTex, passUV).rgb, 1);\n"
         "}\n"
         ;
 
     GLuint vsID = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vsID, 1, &pVSSource, NULL);
+    glShaderSource(vsID, 1, &pVSSourceNM, NULL);
     glCompileShader(vsID);
 
 #ifdef _DEBUG
@@ -204,7 +213,7 @@ void InitScene(Scene &scn)
 #endif
 
     GLuint psID = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(psID, 1, &pPSSource, NULL);
+    glShaderSource(psID, 1, &pPSSourceNM, NULL);
     glCompileShader(psID);
 
 #ifdef _DEBUG
@@ -245,7 +254,8 @@ void InitScene(Scene &scn)
 
     scn.materials.resize(1);
     scn.materials[0].name = "EarthMaterial";
-    scn.materials[0].LoadTexture(string("E:/drive/GCRT/asset/earthmap1k.jpg"));
+    scn.materials[0].LoadDiffuseTexture(string("E:/drive/GCRT/asset/earthmap1k.jpg"));
+    scn.materials[0].LoadNormalTexture(string("E:/drive/GCRT/asset/earthbump1k.jpg"));
     scn.materials[0].SetDiffuse(vec3(0.5, 0.5, 0.5));
     scn.materials[0].SetAmbient(vec3(0.5, 0.5, 0.5));
 
