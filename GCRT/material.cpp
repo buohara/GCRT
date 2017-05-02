@@ -31,13 +31,10 @@ void Material::LoadDiffuseTexture(string &fileName)
     glGenTextures(1, &diffuseTexID);
     glBindTexture(GL_TEXTURE_2D, diffuseTexID);
 
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.w,
         texture.h, 0, GL_RGB, GL_UNSIGNED_BYTE, &texture.pixels[0]);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 /**
@@ -53,13 +50,10 @@ void Material::LoadNormalTexture(string &fileName)
     glGenTextures(1, &normalTexID);
     glBindTexture(GL_TEXTURE_2D, normalTexID);
 
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.w,
         texture.h, 0, GL_RGB, GL_UNSIGNED_BYTE, &texture.pixels[0]);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 /**
@@ -75,7 +69,7 @@ void Material::SetShaderParams(GLuint progID)
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     GLuint diffTexID = glGetUniformLocation(progID, "diffuseTex");
@@ -88,11 +82,11 @@ void Material::SetShaderParams(GLuint progID)
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     GLuint normTexID = glGetUniformLocation(progID, "normalTex");
-    glUniform1i(diffTexID, 1);
+    glUniform1i(normTexID, 1);
 
     // Flat colors.
 

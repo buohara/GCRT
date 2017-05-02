@@ -139,6 +139,7 @@ void InitScene(Scene &scn)
         "out vec4 passPos;\n"
         "out vec4 passNorm;\n"
         "out vec4 passTan;\n"
+        "out vec4 passBitan;\n"
         "out vec2 passUV;\n"
         "\n"
         "uniform mat4 model;\n"
@@ -150,13 +151,17 @@ void InitScene(Scene &scn)
         "{\n"
         "    vec4 pos  = model * vec4(inPos, 1);\n"
         "    vec4 norm = modelInv * vec4(inNorm, 1);\n"
-        "    vec4 tan  = model * vec4(inTan, 1); \n"
+        "    vec4 tan  = model * vec4(inTan, 1);\n"
+        "\n"
+        "    vec3 bitan3 = cross(inTan, inNorm);\n"
+        "    vec4 bitan  = modelInv * vec4(bitan3, 1);\n"
         "\n"
         "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
         "\n"
         "    passPos    = pos;\n"
         "    passNorm   = norm;\n"
         "    passTan    = tan;\n"
+        "    passBitan  = bitan;\n"
         "    passUV     = inUV;\n"
         "}\n"
         ;
@@ -167,11 +172,13 @@ void InitScene(Scene &scn)
         "in vec4 passPos;\n"
         "in vec4 passNorm;\n"
         "in vec4 passTan;\n"
+        "in vec4 passBitan;\n"
         "in vec2 passUV;\n"
         "\n"
         "out vec4 color;\n"
         "\n"
         "uniform vec3 lightPos;\n"
+        "uniform mat4 modelInv;\n"
         "uniform vec3 ka;"
         "uniform vec3 kd;"
         "uniform float ia;"
@@ -183,15 +190,15 @@ void InitScene(Scene &scn)
         "void main()\n"
         "{\n"
         "\n"
-        "    vec3 bitan = cross(passTan.xyz, passNorm.xyz);\n"
-        "    mat3 tbn = transpose(mat3(passTan.xyz, bitan, passNorm.xyz));\n"
+        "    mat3 tbn = mat3(passTan.xyz, passBitan.xyz, passNorm.xyz);\n"
         "    vec3 nmNorm = tbn * texture2D(normalTex, passUV).rgb;\n"
+        "    vec4 norm = modelInv * vec4(nmNorm, 1);\n"
         "\n"
         "    vec3 lightVec = normalize(lightPos - passPos.xyz);\n"
         "    float dist = length(lightVec);\n"
-        "    float theta = max(dot(nmNorm, lightVec), 0) / (dist * dist);\n"
+        "    float theta = max(dot(norm.xyz, lightVec), 0) / (dist * dist);\n"
         "\n"
-        "    color = vec4(ia * ka, 1) + id * theta * vec4(texture2D(diffuseTex, passUV).rgb, 1);\n"
+        "    color = (ia + theta) * vec4(texture2D(diffuseTex, passUV).rgb, 1);\n"
         "}\n"
         ;
 
@@ -252,13 +259,19 @@ void InitScene(Scene &scn)
     uint32_t numModels = 1;
     scn.models.resize(numModels);
 
-    scn.materials.resize(1);
-    scn.materials[0].name = "EarthMaterial";
-    scn.materials[0].LoadDiffuseTexture(string("E:/drive/GCRT/asset/earthmap1k.jpg"));
-    scn.materials[0].LoadNormalTexture(string("E:/drive/GCRT/asset/earthbump1k.jpg"));
+    scn.materials.resize(2);
+
+    scn.materials[0].name = "Dirt";
+    scn.materials[0].LoadDiffuseTexture(string("E:/drive/GCRT/asset/dirtdiffuse.jpg"));
+    scn.materials[0].LoadNormalTexture(string("E:/drive/GCRT/asset/dirtnormal.jpg"));
     scn.materials[0].SetDiffuse(vec3(0.5, 0.5, 0.5));
     scn.materials[0].SetAmbient(vec3(0.5, 0.5, 0.5));
 
+    scn.materials[1].name = "Grass";
+    scn.materials[1].LoadDiffuseTexture(string("E:/drive/GCRT/asset/grassdiffuse.jpg"));
+    scn.materials[1].LoadNormalTexture(string("E:/drive/GCRT/asset/grassnormal.jpg"));
+    scn.materials[1].SetDiffuse(vec3(0.5, 0.5, 0.5));
+    scn.materials[1].SetAmbient(vec3(0.5, 0.5, 0.5));
 
     // Plane
 
@@ -267,7 +280,7 @@ void InitScene(Scene &scn)
     pln.Scale(vec3(10.0, 10.0, 1.0));
 
     scn.models[0].pGeom = make_unique<Plane>(pln);
-    scn.models[0].SetMaterial(scn.materials[0]);
+    scn.models[0].SetMaterial(scn.materials[1]);
 
     /*Box box;
     box.Create();
@@ -318,13 +331,13 @@ void Draw(HDC hDC, Scene &scn)
 
     // Lighting parameters.
 
-    vec3 lightPos(10.0f * cosf(t), 10.0f * sinf(t), 5.0f + cosf(2 * t));
+    vec3 lightPos(10.0f * cosf(t), 10.0f * sinf(t), 5.0f);
 
     GLuint lightPosID = glGetUniformLocation(scn.programID, "lightPos");
     glUniform3fv(lightPosID, 1, &lightPos[0]);
 
     float ia = 0.3f;
-    float id = 0.7f;
+    float id = 0.5f;
     
     GLuint iaID = glGetUniformLocation(scn.programID, "ia");
     glUniform1fv(iaID, 1, &ia);
