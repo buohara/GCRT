@@ -15,6 +15,7 @@ void Cylinder::Create(
     // Verts for the sides.
 
     float dtheta = 2 * glm::pi<float>() / numSectors;
+    float du = 1.0 / numSectors;
     float hz = 0.5;
 
     for (uint32_t i = 0; i < numSectors; i++)
@@ -23,6 +24,11 @@ void Cylinder::Create(
         float x2 = cosf((i + 1) * dtheta);
         float y1 = sinf(i * dtheta);
         float y2 = sinf((i + 1) * dtheta);
+        
+        float u1 = du * i;
+        float u2 = du * (i + 1);
+        float v1 = 0.0;
+        float v2 = 1.0;
 
         verts.push_back(vec3(x1, y1, hz));
         verts.push_back(vec3(x1, y1, -hz));
@@ -33,6 +39,11 @@ void Cylinder::Create(
         norms.push_back(normalize(vec3(x1, y1, 0)));
         norms.push_back(normalize(vec3(x2, y2, 0)));
         norms.push_back(normalize(vec3(x2, y2, 0)));
+
+        uvs.push_back(vec2(u1, v1));
+        uvs.push_back(vec2(u1, v2));
+        uvs.push_back(vec2(u2, v1));
+        uvs.push_back(vec2(u2, v2));
     }
 
     // Verts for top and bottom;
@@ -42,13 +53,16 @@ void Cylinder::Create(
 
     verts.push_back(vec3(0.0, 0.0, hz));
     norms.push_back(vec3(0, 0, 1.0));
+    uvs.push_back(vec2(0.5, 0.0));
 
     for (uint32_t i = 0; i < numSectors + 1; i++)
     {
         float x = cosf(i * dtheta);
         float y = sinf(i * dtheta);
+
         verts.push_back(vec3(x, y, hz));
         norms.push_back(vec3(0, 0, 1.0));
+        uvs.push_back(vec2(0.5, 0.0));
     }
 
     bottomOffset = verts.size();
@@ -56,13 +70,16 @@ void Cylinder::Create(
 
     verts.push_back(vec3(0.0, 0.0, -hz));
     norms.push_back(vec3(0, 0, -1.0));
+    uvs.push_back(vec2(0.5, 1.0));
 
     for (uint32_t i = 0; i < numSectors + 1; i++)
     {
         float x = cosf(i * dtheta);
         float y = -sinf(i * dtheta);
+
         verts.push_back(vec3(x, y, -hz));
         norms.push_back(vec3(0, 0, -1.0));
+        uvs.push_back(vec2(0.5, 1.0));
     }
 
     InitVertexObjects(verts, norms, uvs);

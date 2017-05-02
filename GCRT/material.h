@@ -10,7 +10,6 @@ struct Material
 {
     string name;
     GLuint textureID;
-
     vec3 kd;
     vec3 ka;
 

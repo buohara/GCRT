@@ -38,6 +38,14 @@ void Box::Create()
     norms.push_back(vec3(1.0, 0.0, 0.0));
     norms.push_back(vec3(1.0, 0.0, 0.0));
 
+    uvs.push_back(vec2(1.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 1.0f));
+
+    uvs.push_back(vec2(1.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 1.0f));
+    uvs.push_back(vec2(1.0f, 1.0f));
+
     // Back
 
     verts.push_back(vec3(-hx, -hy, hz));
@@ -55,6 +63,14 @@ void Box::Create()
     norms.push_back(vec3(-1.0, 0.0, 0.0));
     norms.push_back(vec3(-1.0, 0.0, 0.0));
     norms.push_back(vec3(-1.0, 0.0, 0.0));
+
+    uvs.push_back(vec2(1.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 1.0f));
+
+    uvs.push_back(vec2(1.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 1.0f));
+    uvs.push_back(vec2(1.0f, 1.0f));
 
     // Right
 
@@ -74,6 +90,14 @@ void Box::Create()
     norms.push_back(vec3(0.0, 1.0, 0.0));
     norms.push_back(vec3(0.0, 1.0, 0.0));
 
+    uvs.push_back(vec2(1.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 1.0f));
+
+    uvs.push_back(vec2(1.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 1.0f));
+    uvs.push_back(vec2(1.0f, 1.0f));
+
     // Left
 
     verts.push_back(vec3(hx, -hy, hz));
@@ -91,6 +115,14 @@ void Box::Create()
     norms.push_back(vec3(0.0, -1.0, 0.0));
     norms.push_back(vec3(0.0, -1.0, 0.0));
     norms.push_back(vec3(0.0, -1.0, 0.0));
+
+    uvs.push_back(vec2(1.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 1.0f));
+
+    uvs.push_back(vec2(1.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 1.0f));
+    uvs.push_back(vec2(1.0f, 1.0f));
 
     // Top
 
@@ -110,6 +142,14 @@ void Box::Create()
     norms.push_back(vec3(0.0, 0.0, 1.0));
     norms.push_back(vec3(0.0, 0.0, 1.0));
 
+    uvs.push_back(vec2(1.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 1.0f));
+
+    uvs.push_back(vec2(1.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 1.0f));
+    uvs.push_back(vec2(1.0f, 1.0f));
+
     // Bottom
 
     verts.push_back(vec3(-hx, hy, -hz));
@@ -127,6 +167,14 @@ void Box::Create()
     norms.push_back(vec3(0.0, 0.0, -1.0));
     norms.push_back(vec3(0.0, 0.0, -1.0));
     norms.push_back(vec3(0.0, 0.0, -1.0));
+
+    uvs.push_back(vec2(1.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 1.0f));
+
+    uvs.push_back(vec2(1.0f, 0.0f));
+    uvs.push_back(vec2(0.0f, 1.0f));
+    uvs.push_back(vec2(1.0f, 1.0f));
 
     numVerts = verts.size();
 

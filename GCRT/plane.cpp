@@ -32,22 +32,22 @@ void Plane::Create(
         float x = -1.0f;
         float y = 1.0f - ystride * i;
         float z = 0.0f;
-        float u = 1.0f;
-        float v = 1.0f - i * vstride;
+        float u = 0.0f;
+        float v = i * vstride;
         
         verts.push_back({ x, y, z });
         norms.push_back({ 0.0, 0.0, 1.0 });
         uvs.push_back({ u, v });
 
-        // Zig-zag down the row
+        // Zig-zag down the row making a triangle strip.
 
         for (uint32_t j = 0; j < cols; j++)
         {
             x = -1.0f + j * xstride;
             y = 1.0f - ystride * (i + 1);
             z = 0.0f;
-            u = 1.0 - j * ustride;
-            v = 1.0 - (i + 1) * vstride;
+            u = j * ustride;
+            v = (i + 1) * vstride;
             
             verts.push_back({ x, y, z });
             norms.push_back({ 0.0, 0.0, 1.0 });
@@ -56,8 +56,8 @@ void Plane::Create(
             x = -1.0f + (j + 1) * xstride;
             y = 1.0f - ystride * i;
             z = 0.0f;
-            u = 1.0 - (j + 1) * ustride;
-            v = 1.0 - i * vstride;
+            u = (j + 1) * ustride;
+            v = i * vstride;
 
             verts.push_back({ x, y, z });
             norms.push_back({ 0.0, 0.0, 1.0 });
@@ -69,8 +69,8 @@ void Plane::Create(
         x = 1.0f;
         y = 1.0f - ystride * (i + 1);
         z = 0.0f;
-        u = 0.0f;
-        v = 1.0 - (i + 1) * vstride;
+        u = 1.0f;
+        v = (i + 1) * vstride;
         
         verts.push_back({ x, y, z });
         norms.push_back({ 0.0, 0.0, 1.0 });

@@ -41,7 +41,7 @@ void Material::LoadTexture(string &fileName)
 }
 
 /**
- * SetMaterial -
+ * SetShaderParams -
  */
 
 void Material::SetShaderParams(GLuint progID)

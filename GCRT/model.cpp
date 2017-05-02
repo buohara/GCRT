@@ -7,8 +7,20 @@
 void Model::SetShaderParams(GLuint progID)
 {
     mat.SetShaderParams(progID);
-    geom.SetShaderParams(progID);
+    pGeom->SetShaderParams(progID);
 };
+
+/**
+ * SetMaterial
+ */
+
+void Model::SetMaterial(const Material &matIn)
+{
+    mat.ka = matIn.ka;
+    mat.kd = matIn.kd;
+    mat.name = matIn.name;
+    mat.textureID = matIn.textureID;
+}
 
 /**
  * Draw -
@@ -16,5 +28,5 @@ void Model::SetShaderParams(GLuint progID)
 
 void Model::Draw()
 {
-    geom.Draw();
+    pGeom->Draw();
 }

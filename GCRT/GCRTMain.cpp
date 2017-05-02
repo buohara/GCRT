@@ -83,6 +83,7 @@ void InitScene(Scene &scn)
         "\n"
         "out vec3 exColor;\n"
         "out vec2 exUV;\n"
+        "out float exTheta;\n"
         "\n"
         "uniform mat4 model;\n"
         "uniform mat4 view;\n"
@@ -106,6 +107,7 @@ void InitScene(Scene &scn)
         "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
         "    exColor = ia * ka + id * theta * kd;\n"
         "    exUV = inUV;\n"
+        "    exTheta = theta;\n"
         "}\n"
         ;
 
@@ -114,13 +116,14 @@ void InitScene(Scene &scn)
         "\n"
         "in vec3 exColor;\n"
         "in vec2 exUV;\n"
+        "in float exTheta;\n"
         "out vec4 color;\n"
         "\n"
         "uniform sampler2D texture;\n"
         "\n"
         "void main()\n" 
         "{\n"
-        "    color = vec4(exColor, 1.0) + vec4(texture2D(texture, exUV).rgb, 1);\n"
+        "    color = vec4(exColor, 1.0) + 1.5 * exTheta * vec4(texture2D(texture, exUV).rgb, 1);\n"
         "}\n"
         ;
 
@@ -178,16 +181,48 @@ void InitScene(Scene &scn)
         100.f
     );
 
+    uint32_t numModels = 4;
+    scn.models.resize(numModels);
+
+    scn.materials.resize(1);
+    scn.materials[0].name = "EarthMaterial";
+    scn.materials[0].LoadTexture(string("E:/drive/GCRT/asset/earthmap1k.jpg"));
+    scn.materials[0].SetDiffuse(vec3(0.5, 0.5, 0.5));
+    scn.materials[0].SetAmbient(vec3(0.5, 0.5, 0.5));
+
+
     // Plane
 
     Plane pln;
     pln.Create(10, 10);
     pln.Scale(vec3(10.0, 10.0, 1.0));
 
-    scn.m1.geom = pln;
-    scn.m1.mat.LoadTexture(string("E:/drive/GCRT/asset/earthmap1k.jpg"));
-    scn.m1.mat.SetDiffuse(vec3(0.7, 0.1, 0.1));
-    scn.m1.mat.SetAmbient(vec3(0.7, 0.1, 0.1));
+    scn.models[0].pGeom = make_unique<Plane>(pln);
+    scn.models[0].SetMaterial(scn.materials[0]);
+
+    Box box;
+    box.Create();
+    box.Scale(vec3(2.0, 2.0, 2.0));
+    box.Translate(vec3(5.0, 5.0, 2.0));
+
+    scn.models[1].pGeom = make_unique<Box>(box);
+    scn.models[1].SetMaterial(scn.materials[0]);
+
+    Sphere sph;
+    sph.Create(25, 25);
+    sph.Scale(vec3(2.0, 2.0, 2.0));
+    sph.Translate(vec3(5.0, -5.0, 3.0));
+
+    scn.models[2].pGeom = make_unique<Sphere>(sph);
+    scn.models[2].SetMaterial(scn.materials[0]);
+
+    Cylinder cyl;
+    cyl.Create(20);
+    cyl.Scale(vec3(2.0, 2.0, 2.0));
+    cyl.Translate(vec3(-5.0, -5.0, 3.0));
+
+    scn.models[3].pGeom = make_unique<Cylinder>(cyl);
+    scn.models[3].SetMaterial(scn.materials[0]);
 }
 
 /**
@@ -219,8 +254,8 @@ void Draw(HDC hDC, Scene &scn)
     GLuint lightPosID = glGetUniformLocation(scn.programID, "lightPos");
     glUniform3fv(lightPosID, 1, &lightPos[0]);
 
-    float ia = 0.1f;
-    float id = 0.1f;
+    float ia = 0.3f;
+    float id = 0.7f;
     
     GLuint iaID = glGetUniformLocation(scn.programID, "ia");
     glUniform1fv(iaID, 1, &ia);
@@ -228,8 +263,11 @@ void Draw(HDC hDC, Scene &scn)
     GLuint idID = glGetUniformLocation(scn.programID, "id");
     glUniform1fv(idID, 1, &id);
 
-    scn.m1.SetShaderParams(scn.programID);
-    scn.m1.Draw();
+    for (uint32_t i = 0; i < scn.models.size(); i++)
+    {
+        scn.models[i].SetShaderParams(scn.programID);
+        scn.models[i].Draw();
+    }
 
     SwapBuffers(hDC);
 

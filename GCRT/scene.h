@@ -14,7 +14,8 @@ struct Scene
     GLuint programID;
     bool wireFrame = false;
 
-    Model m1;
+    vector<Model> models;
+    vector<Material> materials;
 
     void HandleInputs(MSG &msg);
 };

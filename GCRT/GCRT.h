@@ -6,6 +6,7 @@
 #include <vector>
 #include <math.h>
 #include <string>
+#include <memory>
 
 // GL headers
 
