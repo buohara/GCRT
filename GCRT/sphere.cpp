@@ -9,14 +9,26 @@ void Sphere::Create(
     uint32_t numRings
 )
 {
-    vector<vec3> verts;
+    vector<vec3> pos;
     vector<vec3> norms;
     vector<vec2> uvs;
 
+    GenPositions(pos, numSectors, numRings);
+    GenNormals(norms, numSectors, numRings);
+    GenUVs(uvs, numSectors, numRings);
+
+    InitVertexObjects(pos, norms, uvs);
+    InitModelMatrices();
+}
+
+/**
+ * GenPositions
+ */
+
+void Sphere::GenPositions(vector<vec3> &pos, uint32_t numSectors, uint32_t numRings)
+{
     float dtheta = pi<float>() / (numRings + 2);
     float dphi = 2.0f * pi<float>() / numSectors;
-    float du = 1.0 / numSectors;
-    float dv = 1.0 / (numRings + 2);
 
     // Geometry for sphere excluding caps as a big triangle strip.
 
@@ -25,91 +37,178 @@ void Sphere::Create(
         float x = sinf(dtheta * (i + 1));
         float y = 0.0f;
         float z = cosf(dtheta * (i + 1));
-        float u = 0.0f;
-        float v = dv * (i + 1);
 
-        verts.push_back(vec3(x, y, z));
-        norms.push_back(normalize(vec3(x, y, z)));
-        uvs.push_back(vec2(u, v));
+        pos.push_back(vec3(x, y, z));
 
         for (uint32_t j = 0; j < numSectors; j++)
         {
             x = sinf(dtheta * (i + 2)) * cosf(dphi * j);
             y = sinf(dtheta * (i + 2)) * sinf(dphi * j);
             z = cosf(dtheta * (i + 2));
-            u = du * j;
-            v = dv * (i + 2);
 
-            verts.push_back(vec3(x, y, z));
-            norms.push_back(normalize(vec3(x, y, z)));
-            uvs.push_back(vec2(u, v));
+            pos.push_back(vec3(x, y, z));
 
             x = sinf(dtheta * (i + 1)) * cosf(dphi * (j + 1));
             y = sinf(dtheta * (i + 1)) * sinf(dphi * (j + 1));
             z = cosf(dtheta * (i + 1));
-            u = du * (j + 1);
-            v = dv * (i + 1);
 
-            verts.push_back(vec3(x, y, z));
-            norms.push_back(normalize(vec3(x, y, z)));
-            uvs.push_back(vec2(u, v));
+            pos.push_back(vec3(x, y, z));
         }
 
         x = sinf(dtheta * (i + 2));
         y = 0.0f;
         z = cosf(dtheta * (i + 2));
-        u = 1.0;
-        v = dv * (i + 2);
 
-        verts.push_back(vec3(x, y, z));
-        norms.push_back(normalize(vec3(x, y, z)));
-        uvs.push_back(vec2(u, v));
+        pos.push_back(vec3(x, y, z));
     }
 
     // Caps as a pair of triangle fans.
 
-    numSideVerts = verts.size();
-    topOffset = verts.size();
+    numSideVerts = pos.size();
+    topOffset = pos.size();
 
-    verts.push_back(vec3(0.0, 0.0, 1.0));
-    norms.push_back(vec3(0, 0, 1.0));
-    uvs.push_back(vec2(0.5, 0.0));
+    pos.push_back(vec3(0.0, 0.0, 1.0));
 
     for (uint32_t i = 0; i < numSectors + 1; i++)
     {
         float x = sinf(dtheta) * cosf(i * dphi);
         float y = sinf(dtheta) * sinf(i * dphi);
         float z = cosf(dtheta);
-        float u = i * du;
-        float v = dv;
 
-        verts.push_back(vec3(x, y, z));
-        norms.push_back(normalize(vec3(x, y, z)));
-        uvs.push_back(vec2(u, v));
+        pos.push_back(vec3(x, y, z));
     }
 
-    bottomOffset = verts.size();
+    bottomOffset = pos.size();
     numCapVerts = bottomOffset - topOffset;
 
-    verts.push_back(vec3(0.0, 0.0, -1.0));
-    norms.push_back(vec3(0, 0, -1.0));
-    uvs.push_back(vec2(0.5, 1.0));
+    pos.push_back(vec3(0.0, 0.0, -1.0));
 
     for (uint32_t i = 0; i < numSectors + 1; i++)
     {
         float x = sinf(dtheta) * cosf(i * dphi);
         float y = -sinf(dtheta) * sinf(i * dphi);
         float z = -cosf(dtheta);
-        float u = i * du;
-        float v = 1.0 - dv;
 
-        verts.push_back(vec3(x, y, z));
+        pos.push_back(vec3(x, y, z));
+    }
+}
+
+/**
+ * GenNormals
+ */
+
+void Sphere::GenNormals(vector<vec3> &norms, uint32_t numSectors, uint32_t numRings)
+{
+    float dtheta = pi<float>() / (numRings + 2);
+    float dphi = 2.0f * pi<float>() / numSectors;
+
+    // Geometry for sphere excluding caps as a big triangle strip.
+
+    for (uint32_t i = 0; i < numRings; i++)
+    {
+        float x = sinf(dtheta * (i + 1));
+        float y = 0.0f;
+        float z = cosf(dtheta * (i + 1));
+
         norms.push_back(normalize(vec3(x, y, z)));
+
+        for (uint32_t j = 0; j < numSectors; j++)
+        {
+            x = sinf(dtheta * (i + 2)) * cosf(dphi * j);
+            y = sinf(dtheta * (i + 2)) * sinf(dphi * j);
+            z = cosf(dtheta * (i + 2));
+            norms.push_back(normalize(vec3(x, y, z)));
+
+            x = sinf(dtheta * (i + 1)) * cosf(dphi * (j + 1));
+            y = sinf(dtheta * (i + 1)) * sinf(dphi * (j + 1));
+            z = cosf(dtheta * (i + 1));
+            norms.push_back(normalize(vec3(x, y, z)));
+        }
+
+        x = sinf(dtheta * (i + 2));
+        y = 0.0f;
+        z = cosf(dtheta * (i + 2));
+        norms.push_back(normalize(vec3(x, y, z)));
+    }
+
+    // Caps as a pair of triangle fans.
+
+    norms.push_back(vec3(0, 0, 1.0));
+
+    for (uint32_t i = 0; i < numSectors + 1; i++)
+    {
+        float x = sinf(dtheta) * cosf(i * dphi);
+        float y = sinf(dtheta) * sinf(i * dphi);
+        float z = cosf(dtheta);
+        norms.push_back(normalize(vec3(x, y, z)));
+    }
+
+    norms.push_back(vec3(0, 0, -1.0));
+
+    for (uint32_t i = 0; i < numSectors + 1; i++)
+    {
+        float x = sinf(dtheta) * cosf(i * dphi);
+        float y = -sinf(dtheta) * sinf(i * dphi);
+        float z = -cosf(dtheta);
+        norms.push_back(normalize(vec3(x, y, z)));
+    }
+}
+
+/**
+ * GenUVs
+ */
+
+void Sphere::GenUVs(vector<vec2> &uvs, uint32_t numSectors, uint32_t numRings)
+{
+    float du = 1.0 / numSectors;
+    float dv = 1.0 / (numRings + 2);
+
+    // Geometry for sphere excluding caps as a big triangle strip.
+
+    for (uint32_t i = 0; i < numRings; i++)
+    {
+        float u = 0.0f;
+        float v = dv * (i + 1);
+
+        uvs.push_back(vec2(u, v));
+
+        for (uint32_t j = 0; j < numSectors; j++)
+        {
+            u = du * j;
+            v = dv * (i + 2);
+            uvs.push_back(vec2(u, v));
+
+            u = du * (j + 1);
+            v = dv * (i + 1);
+            uvs.push_back(vec2(u, v));
+        }
+
+        u = 1.0;
+        v = dv * (i + 2);
+
         uvs.push_back(vec2(u, v));
     }
 
-    InitVertexObjects(verts, norms, uvs);
-    InitModelMatrices();
+    // Caps as a pair of triangle fans.
+
+    uvs.push_back(vec2(0.5, 0.0));
+
+    for (uint32_t i = 0; i < numSectors + 1; i++)
+    {
+        float u = i * du;
+        float v = dv;
+        uvs.push_back(vec2(u, v));
+    }
+
+    uvs.push_back(vec2(0.5, 1.0));
+
+    for (uint32_t i = 0; i < numSectors + 1; i++)
+    {
+        float u = i * du;
+        float v = 1.0 - dv;
+
+        uvs.push_back(vec2(u, v));
+    }
 }
 
 /**

@@ -104,6 +104,7 @@ void InitScene(Scene &scn)
         "    vec3 lightVec = normalize(lightPos - pos.xyz);\n"
         "    float dist = length(lightVec);\n"
         "    float theta = max(dot(norm.xyz, lightVec), 0) / (dist * dist);\n"
+        "\n"
         "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
         "    exColor = ia * ka + id * theta * kd;\n"
         "    exUV = inUV;\n"
@@ -122,6 +123,64 @@ void InitScene(Scene &scn)
         "uniform sampler2D texture;\n"
         "\n"
         "void main()\n" 
+        "{\n"
+        "    color = vec4(exColor, 1.0) + 1.5 * exTheta * vec4(texture2D(texture, exUV).rgb, 1);\n"
+        "}\n"
+        ;
+
+    const char* pVSSourceNM =
+        "#version 330 core\n"
+        "\n"
+        "layout(location = 0) in vec3 inPos;\n"
+        "layout(location = 1) in vec3 inNorm;\n"
+        "layout(location = 2) in vec2 inUV;\n"
+        "layout(location = 3) in vec3 inTan;\n"
+        "\n"
+        "out vec3 exColor;\n"
+        "out vec2 exUV;\n"
+        "out float exTheta;\n"
+        "\n"
+        "uniform mat4 model;\n"
+        "uniform mat4 view;\n"
+        "uniform mat4 proj;\n"
+        "uniform mat4 modelInv;\n"
+        "\n"
+        "uniform vec3 lightPos;\n"
+        "uniform vec3 ka;"
+        "uniform vec3 kd;"
+        "uniform float ia;"
+        "uniform float id;"
+        "\n"
+        "void main()\n"
+        "{\n"
+        "    vec4 pos = model * vec4(inPos, 1);\n"
+        "    vec4 norm = modelInv * vec4(inNorm, 1);\n"
+        "\n"
+        "    vec3 bitan = cross(inTan, inNorm);\n"
+        "    mat3 tbn = transpose(mat3(inTan, bitan, inNorm));\n"
+        "\n"
+        "    vec3 lightVec = normalize(lightPos - pos.xyz);\n"
+        "    float dist = length(lightVec);\n"
+        "    float theta = max(dot(norm.xyz, lightVec), 0) / (dist * dist);\n"
+        "\n"
+        "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
+        "    exColor = ia * ka + id * theta * kd;\n"
+        "    exUV = inUV;\n"
+        "    exTheta = theta;\n"
+        "}\n"
+        ;
+
+    const char* pPSSourceNM =
+        "#version 330 core\n"
+        "\n"
+        "in vec3 exColor;\n"
+        "in vec2 exUV;\n"
+        "in float exTheta;\n"
+        "out vec4 color;\n"
+        "\n"
+        "uniform sampler2D texture;\n"
+        "\n"
+        "void main()\n"
         "{\n"
         "    color = vec4(exColor, 1.0) + 1.5 * exTheta * vec4(texture2D(texture, exUV).rgb, 1);\n"
         "}\n"
@@ -172,16 +231,16 @@ void InitScene(Scene &scn)
     // Create camera
 
     scn.cam.Init(
-        vec3(8.0, 8.0, 8.0),
+        vec3(15.0, 15.0, 15.0),
         vec3(0.0, 0.0, 0.0),
         vec3(0.0, 0.0, 1.0),
         4.0f / 3.0f,
-        75.0f,
+        45.0f,
         0.1f,
         100.f
     );
 
-    uint32_t numModels = 4;
+    uint32_t numModels = 1;
     scn.models.resize(numModels);
 
     scn.materials.resize(1);
@@ -200,7 +259,7 @@ void InitScene(Scene &scn)
     scn.models[0].pGeom = make_unique<Plane>(pln);
     scn.models[0].SetMaterial(scn.materials[0]);
 
-    Box box;
+    /*Box box;
     box.Create();
     box.Scale(vec3(2.0, 2.0, 2.0));
     box.Translate(vec3(5.0, 5.0, 2.0));
@@ -222,7 +281,7 @@ void InitScene(Scene &scn)
     cyl.Translate(vec3(-5.0, -5.0, 3.0));
 
     scn.models[3].pGeom = make_unique<Cylinder>(cyl);
-    scn.models[3].SetMaterial(scn.materials[0]);
+    scn.models[3].SetMaterial(scn.materials[0]);*/
 }
 
 /**

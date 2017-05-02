@@ -8,9 +8,11 @@ using namespace glm;
 struct Geometry
 {
     GLuint vaoID;
-    GLuint vertVboID;
+
+    GLuint posVboID;
     GLuint normVboID;
     GLuint uvVboID;
+    GLuint tanVboID;
 
     mat4 scl;
     mat4 trans;
@@ -21,12 +23,19 @@ struct Geometry
 
     void SetShaderParams(GLuint progID);
 
-    virtual void Draw();
+    virtual void Draw() = 0;
 
     void InitVertexObjects(
-        vector<vec3> &verts, 
+        vector<vec3> &pos,
         vector<vec3> &norms,
         vector<vec2> &uvs
+    );
+
+    void InitVertexObjects(
+        vector<vec3> &pos, 
+        vector<vec3> &norms,
+        vector<vec2> &uvs,
+        vector<vec3> &tans
     );
 
     void InitModelMatrices();

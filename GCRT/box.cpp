@@ -12,23 +12,102 @@
 
 void Box::Create()
 {
-    vector<vec3> verts;
+    vector<vec3> pos;
     vector<vec3> norms;
     vector<vec2> uvs;
 
+    GenPositions(pos);
+    GenNormals(norms);
+    GenUVs(uvs);
+
+    numVerts = pos.size();
+
+    InitVertexObjects(pos, norms, uvs);
+    InitModelMatrices();
+}
+
+/**
+ * GenPositions
+ */
+
+void Box::GenPositions(vector<vec3> &pos)
+{
     float hx = 0.5;
     float hy = 0.5;
     float hz = 0.5;
 
     // Front
 
-    verts.push_back(vec3(hx, hy, hz));
-    verts.push_back(vec3(hx, -hy, hz));
-    verts.push_back(vec3(hx, -hy, -hz));
+    pos.push_back(vec3(hx, hy, hz));
+    pos.push_back(vec3(hx, -hy, hz));
+    pos.push_back(vec3(hx, -hy, -hz));
 
-    verts.push_back(vec3(hx, hy, hz));
-    verts.push_back(vec3(hx, -hy, -hz));
-    verts.push_back(vec3(hx, hy, -hz));
+    pos.push_back(vec3(hx, hy, hz));
+    pos.push_back(vec3(hx, -hy, -hz));
+    pos.push_back(vec3(hx, hy, -hz));
+
+    // Back
+
+    pos.push_back(vec3(-hx, -hy, hz));
+    pos.push_back(vec3(-hx, hy, hz));
+    pos.push_back(vec3(-hx, hy, -hz));
+
+    pos.push_back(vec3(-hx, -hy, hz));
+    pos.push_back(vec3(-hx, hy, -hz));
+    pos.push_back(vec3(-hx, -hy, -hz));
+
+    // Right
+
+    pos.push_back(vec3(-hx, hy, hz));
+    pos.push_back(vec3(hx, hy, hz));
+    pos.push_back(vec3(hx, hy, -hz));
+
+    pos.push_back(vec3(-hx, hy, hz));
+    pos.push_back(vec3(hx, hy, -hz));
+    pos.push_back(vec3(-hx, hy, -hz));
+
+    // Left
+
+    pos.push_back(vec3(hx, -hy, hz));
+    pos.push_back(vec3(-hx, -hy, hz));
+    pos.push_back(vec3(-hx, -hy, -hz));
+
+    pos.push_back(vec3(hx, -hy, hz));
+    pos.push_back(vec3(-hx, -hy, -hz));
+    pos.push_back(vec3(hx, -hy, -hz));
+
+    // Top
+
+    pos.push_back(vec3(hx, hy, hz));
+    pos.push_back(vec3(-hx, hy, hz));
+    pos.push_back(vec3(-hx, -hy, hz));
+
+    pos.push_back(vec3(hx, hy, hz));
+    pos.push_back(vec3(-hx, -hy, hz));
+    pos.push_back(vec3(hx, -hy, hz));
+
+    // Bottom
+
+    pos.push_back(vec3(-hx, hy, -hz));
+    pos.push_back(vec3(hx, hy, -hz));
+    pos.push_back(vec3(hx, -hy, -hz));
+
+    pos.push_back(vec3(-hx, hy, -hz));
+    pos.push_back(vec3(hx, -hy, -hz));
+    pos.push_back(vec3(-hx, -hy, -hz));
+}
+
+/**
+ * GenNormals
+ */
+
+void Box::GenNormals(vector<vec3> &norms)
+{
+    float hx = 0.5;
+    float hy = 0.5;
+    float hz = 0.5;
+
+    // Front
 
     norms.push_back(vec3(1.0, 0.0, 0.0));
     norms.push_back(vec3(1.0, 0.0, 0.0));
@@ -37,6 +116,69 @@ void Box::Create()
     norms.push_back(vec3(1.0, 0.0, 0.0));
     norms.push_back(vec3(1.0, 0.0, 0.0));
     norms.push_back(vec3(1.0, 0.0, 0.0));
+
+    // Back
+
+    norms.push_back(vec3(-1.0, 0.0, 0.0));
+    norms.push_back(vec3(-1.0, 0.0, 0.0));
+    norms.push_back(vec3(-1.0, 0.0, 0.0));
+
+    norms.push_back(vec3(-1.0, 0.0, 0.0));
+    norms.push_back(vec3(-1.0, 0.0, 0.0));
+    norms.push_back(vec3(-1.0, 0.0, 0.0));
+
+    // Right
+
+    norms.push_back(vec3(0.0, 1.0, 0.0));
+    norms.push_back(vec3(0.0, 1.0, 0.0));
+    norms.push_back(vec3(0.0, 1.0, 0.0));
+
+    norms.push_back(vec3(0.0, 1.0, 0.0));
+    norms.push_back(vec3(0.0, 1.0, 0.0));
+    norms.push_back(vec3(0.0, 1.0, 0.0));
+
+    // Left
+
+    norms.push_back(vec3(0.0, -1.0, 0.0));
+    norms.push_back(vec3(0.0, -1.0, 0.0));
+    norms.push_back(vec3(0.0, -1.0, 0.0));
+
+    norms.push_back(vec3(0.0, -1.0, 0.0));
+    norms.push_back(vec3(0.0, -1.0, 0.0));
+    norms.push_back(vec3(0.0, -1.0, 0.0));
+
+    // Top
+
+    norms.push_back(vec3(0.0, 0.0, 1.0));
+    norms.push_back(vec3(0.0, 0.0, 1.0));
+    norms.push_back(vec3(0.0, 0.0, 1.0));
+
+    norms.push_back(vec3(0.0, 0.0, 1.0));
+    norms.push_back(vec3(0.0, 0.0, 1.0));
+    norms.push_back(vec3(0.0, 0.0, 1.0));
+
+    // Bottom
+
+    norms.push_back(vec3(0.0, 0.0, -1.0));
+    norms.push_back(vec3(0.0, 0.0, -1.0));
+    norms.push_back(vec3(0.0, 0.0, -1.0));
+
+    norms.push_back(vec3(0.0, 0.0, -1.0));
+    norms.push_back(vec3(0.0, 0.0, -1.0));
+    norms.push_back(vec3(0.0, 0.0, -1.0));
+}
+
+/**
+ * GenUVs
+ */
+
+void Box::GenUVs(vector<vec2> &uvs)
+{
+    float hx = 0.5;
+    float hy = 0.5;
+    float hz = 0.5;
+
+    // Front
 
     uvs.push_back(vec2(1.0f, 0.0f));
     uvs.push_back(vec2(0.0f, 0.0f));
@@ -48,22 +190,6 @@ void Box::Create()
 
     // Back
 
-    verts.push_back(vec3(-hx, -hy, hz));
-    verts.push_back(vec3(-hx, hy, hz));
-    verts.push_back(vec3(-hx, hy, -hz));
-
-    verts.push_back(vec3(-hx, -hy, hz));
-    verts.push_back(vec3(-hx, hy, -hz));
-    verts.push_back(vec3(-hx, -hy, -hz));
-
-    norms.push_back(vec3(-1.0, 0.0, 0.0));
-    norms.push_back(vec3(-1.0, 0.0, 0.0));
-    norms.push_back(vec3(-1.0, 0.0, 0.0));
-
-    norms.push_back(vec3(-1.0, 0.0, 0.0));
-    norms.push_back(vec3(-1.0, 0.0, 0.0));
-    norms.push_back(vec3(-1.0, 0.0, 0.0));
-
     uvs.push_back(vec2(1.0f, 0.0f));
     uvs.push_back(vec2(0.0f, 0.0f));
     uvs.push_back(vec2(0.0f, 1.0f));
@@ -73,22 +199,6 @@ void Box::Create()
     uvs.push_back(vec2(1.0f, 1.0f));
 
     // Right
-
-    verts.push_back(vec3(-hx, hy, hz));
-    verts.push_back(vec3(hx, hy, hz));
-    verts.push_back(vec3(hx, hy, -hz));
-
-    verts.push_back(vec3(-hx, hy, hz));
-    verts.push_back(vec3(hx, hy, -hz));
-    verts.push_back(vec3(-hx, hy, -hz));
-
-    norms.push_back(vec3(0.0, 1.0, 0.0));
-    norms.push_back(vec3(0.0, 1.0, 0.0));
-    norms.push_back(vec3(0.0, 1.0, 0.0));
-
-    norms.push_back(vec3(0.0, 1.0, 0.0));
-    norms.push_back(vec3(0.0, 1.0, 0.0));
-    norms.push_back(vec3(0.0, 1.0, 0.0));
 
     uvs.push_back(vec2(1.0f, 0.0f));
     uvs.push_back(vec2(0.0f, 0.0f));
@@ -100,22 +210,6 @@ void Box::Create()
 
     // Left
 
-    verts.push_back(vec3(hx, -hy, hz));
-    verts.push_back(vec3(-hx, -hy, hz));
-    verts.push_back(vec3(-hx, -hy, -hz));
-
-    verts.push_back(vec3(hx, -hy, hz));
-    verts.push_back(vec3(-hx, -hy, -hz));
-    verts.push_back(vec3(hx, -hy, -hz));
-
-    norms.push_back(vec3(0.0, -1.0, 0.0));
-    norms.push_back(vec3(0.0, -1.0, 0.0));
-    norms.push_back(vec3(0.0, -1.0, 0.0));
-
-    norms.push_back(vec3(0.0, -1.0, 0.0));
-    norms.push_back(vec3(0.0, -1.0, 0.0));
-    norms.push_back(vec3(0.0, -1.0, 0.0));
-
     uvs.push_back(vec2(1.0f, 0.0f));
     uvs.push_back(vec2(0.0f, 0.0f));
     uvs.push_back(vec2(0.0f, 1.0f));
@@ -125,22 +219,6 @@ void Box::Create()
     uvs.push_back(vec2(1.0f, 1.0f));
 
     // Top
-
-    verts.push_back(vec3(hx, hy, hz));
-    verts.push_back(vec3(-hx, hy, hz));
-    verts.push_back(vec3(-hx, -hy, hz));
-
-    verts.push_back(vec3(hx, hy, hz));
-    verts.push_back(vec3(-hx, -hy, hz));
-    verts.push_back(vec3(hx, -hy, hz));
-
-    norms.push_back(vec3(0.0, 0.0, 1.0));
-    norms.push_back(vec3(0.0, 0.0, 1.0));
-    norms.push_back(vec3(0.0, 0.0, 1.0));
-
-    norms.push_back(vec3(0.0, 0.0, 1.0));
-    norms.push_back(vec3(0.0, 0.0, 1.0));
-    norms.push_back(vec3(0.0, 0.0, 1.0));
 
     uvs.push_back(vec2(1.0f, 0.0f));
     uvs.push_back(vec2(0.0f, 0.0f));
@@ -152,22 +230,6 @@ void Box::Create()
 
     // Bottom
 
-    verts.push_back(vec3(-hx, hy, -hz));
-    verts.push_back(vec3(hx, hy, -hz));
-    verts.push_back(vec3(hx, -hy, -hz));
-
-    verts.push_back(vec3(-hx, hy, -hz));
-    verts.push_back(vec3(hx, -hy, -hz));
-    verts.push_back(vec3(-hx, -hy, -hz));
-
-    norms.push_back(vec3(0.0, 0.0, -1.0));
-    norms.push_back(vec3(0.0, 0.0, -1.0));
-    norms.push_back(vec3(0.0, 0.0, -1.0));
-
-    norms.push_back(vec3(0.0, 0.0, -1.0));
-    norms.push_back(vec3(0.0, 0.0, -1.0));
-    norms.push_back(vec3(0.0, 0.0, -1.0));
-
     uvs.push_back(vec2(1.0f, 0.0f));
     uvs.push_back(vec2(0.0f, 0.0f));
     uvs.push_back(vec2(0.0f, 1.0f));
@@ -175,11 +237,6 @@ void Box::Create()
     uvs.push_back(vec2(1.0f, 0.0f));
     uvs.push_back(vec2(0.0f, 1.0f));
     uvs.push_back(vec2(1.0f, 1.0f));
-
-    numVerts = verts.size();
-
-    InitVertexObjects(verts, norms, uvs);
-    InitModelMatrices();
 }
 
 /**

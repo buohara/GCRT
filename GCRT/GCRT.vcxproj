@@ -163,6 +163,8 @@
     <ClCompile Include="material.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="plane.cpp" />
+    <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="renderpass.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="sphere.cpp" />
   </ItemGroup>
@@ -176,6 +178,8 @@
     <ClInclude Include="material.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="plane.h" />
+    <ClInclude Include="renderer.h" />
+    <ClInclude Include="renderpass.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="sphere.h" />
   </ItemGroup>
