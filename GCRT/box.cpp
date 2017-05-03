@@ -15,14 +15,16 @@ void Box::Create()
     vector<vec3> pos;
     vector<vec3> norms;
     vector<vec2> uvs;
+    vector<vec3> tans;
 
     GenPositions(pos);
     GenNormals(norms);
     GenUVs(uvs);
+    GenTans(tans);
 
     numVerts = pos.size();
 
-    InitVertexObjects(pos, norms, uvs);
+    InitVertexObjects(pos, norms, uvs, tans);
     InitModelMatrices();
 }
 
@@ -237,6 +239,73 @@ void Box::GenUVs(vector<vec2> &uvs)
     uvs.push_back(vec2(1.0f, 0.0f));
     uvs.push_back(vec2(0.0f, 1.0f));
     uvs.push_back(vec2(1.0f, 1.0f));
+}
+
+/**
+ * GenTans
+ */
+
+void Box::GenTans(vector<vec3> &tans)
+{
+    // Front
+
+    tans.push_back(vec3(0.0, 1.0, 0.0));
+    tans.push_back(vec3(0.0, 1.0, 0.0));
+    tans.push_back(vec3(0.0, 1.0, 0.0));
+
+    tans.push_back(vec3(0.0, 1.0, 0.0));
+    tans.push_back(vec3(0.0, 1.0, 0.0));
+    tans.push_back(vec3(0.0, 1.0, 0.0));
+
+    // Back
+
+    tans.push_back(vec3(0.0, -1.0, 0.0));
+    tans.push_back(vec3(0.0, -1.0, 0.0));
+    tans.push_back(vec3(0.0, -1.0, 0.0));
+
+    tans.push_back(vec3(0.0, -1.0, 0.0));
+    tans.push_back(vec3(0.0, -1.0, 0.0));
+    tans.push_back(vec3(0.0, -1.0, 0.0));
+
+    // Right
+
+    tans.push_back(vec3(-1.0, 0.0, 0.0));
+    tans.push_back(vec3(-1.0, 0.0, 0.0));
+    tans.push_back(vec3(-1.0, 0.0, 0.0));
+
+    tans.push_back(vec3(-1.0, 0.0, 0.0));
+    tans.push_back(vec3(-1.0, 0.0, 0.0));
+    tans.push_back(vec3(-1.0, 0.0, 0.0));
+
+    // Left
+
+    tans.push_back(vec3(1.0, 0.0, 0.0));
+    tans.push_back(vec3(1.0, 0.0, 0.0));
+    tans.push_back(vec3(1.0, 0.0, 0.0));
+
+    tans.push_back(vec3(1.0, 0.0, 0.0));
+    tans.push_back(vec3(1.0, 0.0, 0.0));
+    tans.push_back(vec3(1.0, 0.0, 0.0));
+
+    // Top
+
+    tans.push_back(vec3(1.0, 0.0, 0.0));
+    tans.push_back(vec3(1.0, 0.0, 0.0));
+    tans.push_back(vec3(1.0, 0.0, 0.0));
+
+    tans.push_back(vec3(1.0, 0.0, 0.0));
+    tans.push_back(vec3(1.0, 0.0, 0.0));
+    tans.push_back(vec3(1.0, 0.0, 0.0));
+
+    // Bottom
+
+    tans.push_back(vec3(-1.0, 0.0, 0.0));
+    tans.push_back(vec3(-1.0, 0.0, 0.0));
+    tans.push_back(vec3(-1.0, 0.0, 0.0));
+
+    tans.push_back(vec3(-1.0, 0.0, 0.0));
+    tans.push_back(vec3(-1.0, 0.0, 0.0));
+    tans.push_back(vec3(-1.0, 0.0, 0.0));
 }
 
 /**

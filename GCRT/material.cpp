@@ -1,8 +1,8 @@
 #include "material.h"
 
 /**
-* SetDiffuse -
-*/
+ * SetDiffuse -
+ */
 
 void Material::SetDiffuse(vec3 kdIn)
 {
@@ -10,8 +10,8 @@ void Material::SetDiffuse(vec3 kdIn)
 }
 
 /**
-* SetAmbient -
-*/
+ * SetAmbient -
+ */
 
 void Material::SetAmbient(vec3 kaIn)
 {
@@ -19,7 +19,7 @@ void Material::SetAmbient(vec3 kaIn)
 }
 
 /**
- * LoadTexture -
+ * LoadDiffuseTexture -
  */
 
 void Material::LoadDiffuseTexture(string &fileName)
@@ -38,7 +38,7 @@ void Material::LoadDiffuseTexture(string &fileName)
 }
 
 /**
- * LoadTexture -
+ * LoadNormalTexture -
  */
 
 void Material::LoadNormalTexture(string &fileName)

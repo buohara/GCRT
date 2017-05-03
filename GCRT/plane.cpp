@@ -159,8 +159,8 @@ void Plane::GenTangents(vector<vec3> &tans, uint32_t rows, uint32_t cols)
 
         for (uint32_t j = 0; j < cols; j++)
         {
-            tans.push_back(vec3(0.0, 1.0, 0.0));
-            tans.push_back(vec3(0.0, 1.0, 0.0));
+            tans.push_back(vec3(1.0, 0.0, 0.0));
+            tans.push_back(vec3(1.0, 0.0, 0.0));
         }
 
         // Bottom right corner of the row

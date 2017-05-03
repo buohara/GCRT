@@ -73,6 +73,7 @@ void InitScene(Scene &scn)
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glClearColor(0.1f, 0.1f, 0.1f, 0.5f);
 
     const char* pVSSource =
         "#version 330 core\n"
@@ -137,31 +138,23 @@ void InitScene(Scene &scn)
         "layout(location = 3) in vec3 inTan;\n"
         "\n"
         "out vec4 passPos;\n"
-        "out vec4 passNorm;\n"
-        "out vec4 passTan;\n"
-        "out vec4 passBitan;\n"
+        "out vec3 passNorm;\n"
+        "out vec3 passTan;\n"
+        "out vec3 passBitan;\n"
         "out vec2 passUV;\n"
         "\n"
         "uniform mat4 model;\n"
         "uniform mat4 view;\n"
         "uniform mat4 proj;\n"
-        "uniform mat4 modelInv;\n"
         "\n"
         "void main()\n"
         "{\n"
-        "    vec4 pos  = model * vec4(inPos, 1);\n"
-        "    vec4 norm = modelInv * vec4(inNorm, 1);\n"
-        "    vec4 tan  = model * vec4(inTan, 1);\n"
-        "\n"
-        "    vec3 bitan3 = cross(inTan, inNorm);\n"
-        "    vec4 bitan  = modelInv * vec4(bitan3, 1);\n"
-        "\n"
         "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
         "\n"
-        "    passPos    = pos;\n"
-        "    passNorm   = norm;\n"
-        "    passTan    = tan;\n"
-        "    passBitan  = bitan;\n"
+        "    passPos    = model * vec4(inPos, 1);\n"
+        "    passNorm   = inNorm;\n"
+        "    passTan    = inTan;\n"
+        "    passBitan  = -cross(inTan, inNorm);\n"
         "    passUV     = inUV;\n"
         "}\n"
         ;
@@ -170,17 +163,17 @@ void InitScene(Scene &scn)
         "#version 330 core\n"
         "\n"
         "in vec4 passPos;\n"
-        "in vec4 passNorm;\n"
-        "in vec4 passTan;\n"
-        "in vec4 passBitan;\n"
+        "in vec3 passNorm;\n"
+        "in vec3 passTan;\n"
+        "in vec3 passBitan;\n"
         "in vec2 passUV;\n"
         "\n"
         "out vec4 color;\n"
         "\n"
         "uniform vec3 lightPos;\n"
+        "uniform vec3 camPos;\n"
         "uniform mat4 modelInv;\n"
-        "uniform vec3 ka;"
-        "uniform vec3 kd;"
+        "\n"
         "uniform float ia;"
         "uniform float id;"
         "\n"
@@ -190,13 +183,22 @@ void InitScene(Scene &scn)
         "void main()\n"
         "{\n"
         "\n"
-        "    mat3 tbn = mat3(passTan.xyz, passBitan.xyz, passNorm.xyz);\n"
-        "    vec3 nmNorm = tbn * texture2D(normalTex, passUV).rgb;\n"
-        "    vec4 norm = modelInv * vec4(nmNorm, 1);\n"
+        "    mat3 tbn    = mat3(passTan.xyz, passBitan.xyz, passNorm.xyz);\n"
+        "    vec3 nmNorm = tbn * (2 * texture2D(normalTex, passUV).rgb - 1);\n"
+        "    vec4 norm   = modelInv * vec4(nmNorm, 1);\n"
         "\n"
         "    vec3 lightVec = normalize(lightPos - passPos.xyz);\n"
         "    float dist = length(lightVec);\n"
-        "    float theta = max(dot(norm.xyz, lightVec), 0) / (dist * dist);\n"
+        "    float theta   = max(dot(normalize(norm.xyz), lightVec), 0) / (dist * dist);\n"
+        "\n"
+        "    vec3 camVec = normalize(camPos - passPos.xyz);\n"
+        "    float spec = 0.0;"
+        "\n"
+        "    if (dot(lightVec, norm.xyz) > 0)\n"
+        "    {\n"
+        "        vec3 rflct = normalize(reflect(lightVec, norm.xyz));\n"
+        "        spec = pow(max(dot(rflct, camVec), 0), 32);\n"
+        "    }\n"
         "\n"
         "    color = (ia + theta) * vec4(texture2D(diffuseTex, passUV).rgb, 1);\n"
         "}\n"
@@ -256,10 +258,11 @@ void InitScene(Scene &scn)
         100.f
     );
 
-    uint32_t numModels = 1;
+    uint32_t numModels = 3;
     scn.models.resize(numModels);
 
-    scn.materials.resize(2);
+    uint32_t numMaterials = 2;
+    scn.materials.resize(numMaterials);
 
     scn.materials[0].name = "Dirt";
     scn.materials[0].LoadDiffuseTexture(string("E:/drive/GCRT/asset/dirtdiffuse.jpg"));
@@ -277,34 +280,36 @@ void InitScene(Scene &scn)
 
     Plane pln;
     pln.Create(10, 10);
-    pln.Scale(vec3(10.0, 10.0, 1.0));
+    pln.Scale(vec3(20.0, 20.0, 1.0));
 
     scn.models[0].pGeom = make_unique<Plane>(pln);
     scn.models[0].SetMaterial(scn.materials[1]);
 
-    /*Box box;
+    Box box;
     box.Create();
-    box.Scale(vec3(2.0, 2.0, 2.0));
-    box.Translate(vec3(5.0, 5.0, 2.0));
+    box.Scale(vec3(1.0, 1.0, 1.0));
+    box.Translate(vec3(-5.0, 5.0, 1.0));
 
     scn.models[1].pGeom = make_unique<Box>(box);
     scn.models[1].SetMaterial(scn.materials[0]);
 
     Sphere sph;
     sph.Create(25, 25);
-    sph.Scale(vec3(2.0, 2.0, 2.0));
-    sph.Translate(vec3(5.0, -5.0, 3.0));
+    sph.Scale(vec3(5.0, 5.0, 5.0));
+    sph.Translate(vec3(0.0, 0.0, 3.0));
 
     scn.models[2].pGeom = make_unique<Sphere>(sph);
     scn.models[2].SetMaterial(scn.materials[0]);
 
+    /*
     Cylinder cyl;
     cyl.Create(20);
     cyl.Scale(vec3(2.0, 2.0, 2.0));
     cyl.Translate(vec3(-5.0, -5.0, 3.0));
 
     scn.models[3].pGeom = make_unique<Cylinder>(cyl);
-    scn.models[3].SetMaterial(scn.materials[0]);*/
+    scn.models[3].SetMaterial(scn.materials[0]);
+    */
 }
 
 /**
@@ -331,12 +336,17 @@ void Draw(HDC hDC, Scene &scn)
 
     // Lighting parameters.
 
-    vec3 lightPos(10.0f * cosf(t), 10.0f * sinf(t), 5.0f);
+    vec3 lightPos(20.0f * cosf(t), 20.0 * sinf(t), 5.0f);
 
     GLuint lightPosID = glGetUniformLocation(scn.programID, "lightPos");
     glUniform3fv(lightPosID, 1, &lightPos[0]);
 
-    float ia = 0.3f;
+    vec3 camPos = scn.cam.pos;
+
+    GLuint camPosID = glGetUniformLocation(scn.programID, "camPos");
+    glUniform3fv(camPosID, 1, &camPos[0]);
+
+    float ia = 0.1f;
     float id = 0.5f;
     
     GLuint iaID = glGetUniformLocation(scn.programID, "ia");
