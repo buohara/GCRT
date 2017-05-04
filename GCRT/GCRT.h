@@ -7,6 +7,7 @@
 #include <math.h>
 #include <string>
 #include <memory>
+#include <fstream>
 
 // GL headers
 

@@ -68,183 +68,18 @@ HDC CreateGLContext(HWND hWnd)
 
 void InitScene(Scene &scn)
 {
-    GLint isCompiled = 0;
-    GLchar compileBuf[512];
-
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glClearColor(0.1f, 0.1f, 0.1f, 0.5f);
 
-    const char* pVSSource =
-        "#version 330 core\n"
-        "\n"
-        "layout(location = 0) in vec3 inPos;\n"
-        "layout(location = 1) in vec3 inNorm;\n"
-        "layout(location = 2) in vec2 inUV;\n"
-        "\n"
-        "out vec3 exColor;\n"
-        "out vec2 exUV;\n"
-        "out float exTheta;\n"
-        "\n"
-        "uniform mat4 model;\n"
-        "uniform mat4 view;\n"
-        "uniform mat4 proj;\n"
-        "uniform mat4 modelInv;\n"
-        "\n"
-        "uniform vec3 lightPos;\n"
-        "uniform vec3 ka;"
-        "uniform vec3 kd;"
-        "uniform float ia;"
-        "uniform float id;"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "    vec4 pos = model * vec4(inPos, 1);\n"
-        "    vec4 norm = modelInv * vec4(inNorm, 1);\n"
-        "\n"
-        "    vec3 lightVec = normalize(lightPos - pos.xyz);\n"
-        "    float dist = length(lightVec);\n"
-        "    float theta = max(dot(norm.xyz, lightVec), 0) / (dist * dist);\n"
-        "\n"
-        "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
-        "    exColor = ia * ka + id * theta * kd;\n"
-        "    exUV = inUV;\n"
-        "    exTheta = theta;\n"
-        "}\n"
-        ;
+    scn.shaders.resize(1);
+    scn.shaders[0].Create(
+        string("NormalShader"),
+        string("NormalShader.vs"),
+        string("NormalShader.fs")
+    );
 
-    const char* pPSSource =
-        "#version 330 core\n"
-        "\n"
-        "in vec3 exColor;\n"
-        "in vec2 exUV;\n"
-        "in float exTheta;\n"
-        "out vec4 color;\n"
-        "\n"
-        "uniform sampler2D texture;\n"
-        "\n"
-        "void main()\n" 
-        "{\n"
-        "    color = vec4(exColor, 1.0) + 1.5 * exTheta * vec4(texture2D(texture, exUV).rgb, 1);\n"
-        "}\n"
-        ;
-
-    const char* pVSSourceNM =
-        "#version 330 core\n"
-        "\n"
-        "layout(location = 0) in vec3 inPos;\n"
-        "layout(location = 1) in vec3 inNorm;\n"
-        "layout(location = 2) in vec2 inUV;\n"
-        "layout(location = 3) in vec3 inTan;\n"
-        "\n"
-        "out vec4 passPos;\n"
-        "out vec3 passNorm;\n"
-        "out vec3 passTan;\n"
-        "out vec3 passBitan;\n"
-        "out vec2 passUV;\n"
-        "\n"
-        "uniform mat4 model;\n"
-        "uniform mat4 view;\n"
-        "uniform mat4 proj;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "    gl_Position = proj * view * model * vec4(inPos, 1);\n"
-        "\n"
-        "    passPos    = model * vec4(inPos, 1);\n"
-        "    passNorm   = inNorm;\n"
-        "    passTan    = inTan;\n"
-        "    passBitan  = -cross(inTan, inNorm);\n"
-        "    passUV     = inUV;\n"
-        "}\n"
-        ;
-
-    const char* pPSSourceNM =
-        "#version 330 core\n"
-        "\n"
-        "in vec4 passPos;\n"
-        "in vec3 passNorm;\n"
-        "in vec3 passTan;\n"
-        "in vec3 passBitan;\n"
-        "in vec2 passUV;\n"
-        "\n"
-        "out vec4 color;\n"
-        "\n"
-        "uniform vec3 lightPos;\n"
-        "uniform vec3 camPos;\n"
-        "uniform mat4 modelInv;\n"
-        "\n"
-        "uniform float ia;"
-        "uniform float id;"
-        "\n"
-        "uniform sampler2D diffuseTex;\n"
-        "uniform sampler2D normalTex;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "\n"
-        "    mat3 tbn    = mat3(passTan.xyz, passBitan.xyz, passNorm.xyz);\n"
-        "    vec3 nmNorm = tbn * (2 * texture2D(normalTex, passUV).rgb - 1);\n"
-        "    vec4 norm   = modelInv * vec4(nmNorm, 1);\n"
-        "\n"
-        "    vec3 lightVec = normalize(lightPos - passPos.xyz);\n"
-        "    float dist = length(lightVec);\n"
-        "    float theta   = max(dot(normalize(norm.xyz), lightVec), 0) / (dist * dist);\n"
-        "\n"
-        "    vec3 camVec = normalize(camPos - passPos.xyz);\n"
-        "    float spec = 0.0;"
-        "\n"
-        "    if (dot(lightVec, norm.xyz) > 0)\n"
-        "    {\n"
-        "        vec3 rflct = normalize(reflect(lightVec, norm.xyz));\n"
-        "        spec = pow(max(dot(rflct, camVec), 0), 32);\n"
-        "    }\n"
-        "\n"
-        "    color = (ia + theta) * vec4(texture2D(diffuseTex, passUV).rgb, 1);\n"
-        "}\n"
-        ;
-
-    GLuint vsID = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vsID, 1, &pVSSourceNM, NULL);
-    glCompileShader(vsID);
-
-#ifdef _DEBUG
-    glGetShaderiv(vsID, GL_COMPILE_STATUS, &isCompiled);
-    if (isCompiled == GL_FALSE)
-    {
-        GLint maxLength = 0;
-        glGetShaderiv(vsID, GL_INFO_LOG_LENGTH, &maxLength);
-        glGetShaderInfoLog(vsID, maxLength, &maxLength, compileBuf);
-        glDeleteShader(vsID);
-        printf("VS compile error: %s\n", compileBuf);
-        __debugbreak();
-    }
-#endif
-
-    GLuint psID = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(psID, 1, &pPSSourceNM, NULL);
-    glCompileShader(psID);
-
-#ifdef _DEBUG
-    glGetShaderiv(psID, GL_COMPILE_STATUS, &isCompiled);
-    if (isCompiled == GL_FALSE)
-    {
-        GLint maxLength = 0;
-        glGetShaderiv(psID, GL_INFO_LOG_LENGTH, &maxLength);
-        glGetShaderInfoLog(psID, maxLength, &maxLength, compileBuf);
-        glDeleteShader(psID);
-        printf("PS compile error: %s\n", compileBuf);
-        __debugbreak();
-    }
-#endif
-
-    GLint programID = glCreateProgram();
-    glAttachShader(programID, vsID);
-    glAttachShader(programID, psID);
-    glLinkProgram(programID);
-    glUseProgram(programID);
-
-    scn.programID = programID;
+    glUseProgram(scn.shaders[0].program);
 
     // Create camera
 
@@ -258,7 +93,7 @@ void InitScene(Scene &scn)
         100.f
     );
 
-    uint32_t numModels = 3;
+    uint32_t numModels = 4;
     scn.models.resize(numModels);
 
     uint32_t numMaterials = 2;
@@ -301,7 +136,6 @@ void InitScene(Scene &scn)
     scn.models[2].pGeom = make_unique<Sphere>(sph);
     scn.models[2].SetMaterial(scn.materials[0]);
 
-    /*
     Cylinder cyl;
     cyl.Create(20);
     cyl.Scale(vec3(2.0, 2.0, 2.0));
@@ -309,7 +143,6 @@ void InitScene(Scene &scn)
 
     scn.models[3].pGeom = make_unique<Cylinder>(cyl);
     scn.models[3].SetMaterial(scn.materials[0]);
-    */
 }
 
 /**
@@ -327,37 +160,38 @@ void Draw(HDC hDC, Scene &scn)
     scn.cam.Update();
     mat4 proj = scn.cam.GetProjection();
     mat4 view = scn.cam.GetView();
+    GLuint program = scn.shaders[0].program;
 
-    GLuint viewID = glGetUniformLocation(scn.programID, "view");
+    GLuint viewID = glGetUniformLocation(program, "view");
     glUniformMatrix4fv(viewID, 1, false, &view[0][0]);
 
-    GLuint projID = glGetUniformLocation(scn.programID, "proj");
+    GLuint projID = glGetUniformLocation(program, "proj");
     glUniformMatrix4fv(projID, 1, false, &proj[0][0]);
 
     // Lighting parameters.
 
     vec3 lightPos(20.0f * cosf(t), 20.0 * sinf(t), 5.0f);
 
-    GLuint lightPosID = glGetUniformLocation(scn.programID, "lightPos");
+    GLuint lightPosID = glGetUniformLocation(program, "lightPos");
     glUniform3fv(lightPosID, 1, &lightPos[0]);
 
     vec3 camPos = scn.cam.pos;
 
-    GLuint camPosID = glGetUniformLocation(scn.programID, "camPos");
+    GLuint camPosID = glGetUniformLocation(program, "camPos");
     glUniform3fv(camPosID, 1, &camPos[0]);
 
     float ia = 0.1f;
     float id = 0.5f;
     
-    GLuint iaID = glGetUniformLocation(scn.programID, "ia");
+    GLuint iaID = glGetUniformLocation(program, "ia");
     glUniform1fv(iaID, 1, &ia);
 
-    GLuint idID = glGetUniformLocation(scn.programID, "id");
+    GLuint idID = glGetUniformLocation(program, "id");
     glUniform1fv(idID, 1, &id);
 
     for (uint32_t i = 0; i < scn.models.size(); i++)
     {
-        scn.models[i].SetShaderParams(scn.programID);
+        scn.models[i].SetShaderParams(program);
         scn.models[i].Draw();
     }
 

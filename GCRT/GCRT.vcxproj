@@ -166,6 +166,7 @@
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="renderpass.cpp" />
     <ClCompile Include="scene.cpp" />
+    <ClCompile Include="shader.cpp" />
     <ClCompile Include="sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -181,7 +182,14 @@
     <ClInclude Include="renderer.h" />
     <ClInclude Include="renderpass.h" />
     <ClInclude Include="scene.h" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="sphere.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DiffuseShader.fs" />
+    <None Include="DiffuseShader.vs" />
+    <None Include="NormalShader.fs" />
+    <None Include="NormalShader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

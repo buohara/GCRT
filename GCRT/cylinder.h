@@ -15,4 +15,5 @@ struct Cylinder : Geometry
     void GenPositions(vector<vec3> &pos, uint32_t numSectors);
     void GenNormals(vector<vec3> &norms, uint32_t numSectors);
     void GenUVs(vector<vec2> &uvs, uint32_t numSectors);
+    void GenTans(vector<vec3> &tans, uint32_t numSectors);
 };

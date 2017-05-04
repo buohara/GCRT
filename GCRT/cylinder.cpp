@@ -11,12 +11,14 @@ void Cylinder::Create(
     vector<vec3> pos;
     vector<vec3> norms;
     vector<vec2> uvs;
+    vector<vec3> tans;
 
     GenPositions(pos, numSectors);
     GenNormals(norms, numSectors);
     GenUVs(uvs, numSectors);
+    GenTans(tans, numSectors);
 
-    InitVertexObjects(pos, norms, uvs);
+    InitVertexObjects(pos, norms, uvs, tans);
     InitModelMatrices();
 }
 
@@ -156,6 +158,53 @@ void Cylinder::GenUVs(vector<vec2> &uvs, uint32_t numSectors)
     for (uint32_t i = 0; i < numSectors + 1; i++)
     {
         uvs.push_back(vec2(0.5, 1.0));
+    }
+}
+
+/**
+ * GenTans
+ */
+
+void Cylinder::GenTans(vector<vec3> &tans, uint32_t numSectors)
+{
+    // Verts for the sides.
+
+    float dtheta = 2 * glm::pi<float>() / numSectors;
+    float hz = 0.5;
+
+    for (uint32_t i = 0; i < numSectors; i++)
+    {
+        float x1 = -sinf(i * dtheta);
+        float x2 = -sinf((i + 1) * dtheta);
+        float y1 = cosf(i * dtheta);
+        float y2 = cosf((i + 1) * dtheta);
+
+        tans.push_back(normalize(vec3(x1, y1, 0)));
+        tans.push_back(normalize(vec3(x1, y1, 0)));
+        tans.push_back(normalize(vec3(x2, y2, 0)));
+        tans.push_back(normalize(vec3(x2, y2, 0)));
+    }
+
+    // Verts for top and bottom;
+
+    tans.push_back(vec3(0, 1.0, 0.0));
+
+    for (uint32_t i = 0; i < numSectors + 1; i++)
+    {
+        float x = -sinf(i * dtheta);
+        float y = cosf(i * dtheta);
+
+        tans.push_back(vec3(0, 0, 1.0));
+    }
+
+    tans.push_back(vec3(0, 1.0, 0.0));
+
+    for (uint32_t i = 0; i < numSectors + 1; i++)
+    {
+        float x = -sinf(i * dtheta);
+        float y = cosf(i * dtheta);
+
+        tans.push_back(vec3(0, 0, -1.0));
     }
 }
 

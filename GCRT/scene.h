@@ -7,13 +7,14 @@
 #include "cylinder.h"
 #include "sphere.h"
 #include "model.h"
+#include "shader.h"
 
 struct Scene
 {
     Camera cam;
-    GLuint programID;
     bool wireFrame = false;
 
+    vector<Shader> shaders;
     vector<Model> models;
     vector<Material> materials;
 

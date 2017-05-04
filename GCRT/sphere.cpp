@@ -252,7 +252,7 @@ void Sphere::GenTans(vector<vec3> &tans, uint32_t numSectors, uint32_t numRings)
 
     // Caps as a pair of triangle fans.
 
-    tans.push_back(vec3(0, 0, 1.0));
+    tans.push_back(vec3(0.0, 1.0, 0.0));
 
     for (uint32_t i = 0; i < numSectors + 1; i++)
     {
@@ -262,7 +262,7 @@ void Sphere::GenTans(vector<vec3> &tans, uint32_t numSectors, uint32_t numRings)
         tans.push_back(normalize(vec3(x, y, z)));
     }
 
-    tans.push_back(vec3(0, 0, -1.0));
+    tans.push_back(vec3(0.0, 1.0, 0.0));
 
     for (uint32_t i = 0; i < numSectors + 1; i++)
     {
