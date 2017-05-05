@@ -2,11 +2,10 @@
 
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec3 inNorm;
-layout(location = 2) in vec2 inUV;
+layout(location = 2) in vec2 inUVs;
+layout(location = 3) in vec3 inTans;
 
-out vec3 exColor;
-out vec2 exUV;
-out float exTheta;
+out vec4 passColor;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -14,10 +13,8 @@ uniform mat4 proj;
 uniform mat4 modelInv;
 
 uniform vec3 lightPos;
-uniform vec3 ka;
 uniform vec3 kd;
-uniform float ia;
-uniform float id;
+uniform vec3 camPos;
 
 void main()
 {
@@ -29,7 +26,5 @@ void main()
     float theta = max(dot(norm.xyz, lightVec), 0) / (dist * dist);
 
     gl_Position = proj * view * model * vec4(inPos, 1);
-    exColor = ia * ka + id * theta * kd;
-    exUV = inUV;
-    exTheta = theta;
+    passColor = vec4(theta * kd, 1);
 }

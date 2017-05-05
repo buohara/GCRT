@@ -106,16 +106,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="NormalShader.vs">
+    <None Include="BumpShader.fs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="NormalShader.fs">
+    <None Include="BumpShader.vs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="DiffuseShader.vs">
+    <None Include="BasicShader.fs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="DiffuseShader.fs">
+    <None Include="BasicShader.vs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

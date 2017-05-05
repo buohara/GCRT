@@ -21,8 +21,6 @@ struct Geometry
     mat4 model;
     mat4 modelInv;
 
-    void SetShaderParams(GLuint progID);
-
     virtual void Draw() = 0;
 
     void InitVertexObjects(

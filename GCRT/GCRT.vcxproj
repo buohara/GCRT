@@ -186,10 +186,10 @@
     <ClInclude Include="sphere.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DiffuseShader.fs" />
-    <None Include="DiffuseShader.vs" />
-    <None Include="NormalShader.fs" />
-    <None Include="NormalShader.vs" />
+    <None Include="BasicShader.fs" />
+    <None Include="BasicShader.vs" />
+    <None Include="BumpShader.fs" />
+    <None Include="BumpShader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

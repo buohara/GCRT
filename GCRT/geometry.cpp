@@ -98,19 +98,6 @@ void Geometry::InitVertexObjects(
 }
 
 /**
- * SetUniforms -
- */
-
-void Geometry::SetShaderParams(GLuint progID)
-{
-    GLuint modelID = glGetUniformLocation(progID, "model");
-    glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
-
-    GLuint modelInvID = glGetUniformLocation(progID, "modelInv");
-    glUniformMatrix4fv(modelInvID, 1, false, &modelInv[0][0]);
-}
-
-/**
  * InitVertexObjects -
  */
 

@@ -70,7 +70,7 @@ void InitScene(Scene &scn)
 {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    glClearColor(0.1f, 0.1f, 0.1f, 0.5f);
+    glClearColor(1.0f, 1.0f, 1.0f, 0.5f);
 
     // Create camera
 
@@ -86,16 +86,16 @@ void InitScene(Scene &scn)
 
     // Load Shaders.
 
-    scn.shaders["NormalShader"].Create(
-        string("NormalShader"),
-        string("NormalShader.vs"),
-        string("NormalShader.fs")
+    scn.shaders["BasicShader"].Create(
+        string("BasicShader"),
+        string("BasicShader.vs"),
+        string("BasicShader.fs")
     );
 
-    scn.shaders["DiffuseShader"].Create(
-        string("DiffuseShader"),
-        string("DiffuseShader.vs"),
-        string("DiffuseShader.fs")
+    scn.shaders["BumpShader"].Create(
+        string("BumpShader"),
+        string("BumpShader.vs"),
+        string("BumpShader.fs")
     );
 
     // Load textures.
@@ -118,15 +118,21 @@ void InitScene(Scene &scn)
     dirtMat.name = "Dirt";
     dirtMat.diffuseTexID = scn.textures["DirtDiffuse"];
     dirtMat.normalTexID = scn.textures["DirtNormal"];
-    dirtMat.program = scn.shaders["NormalShader"].program;
+    dirtMat.program = scn.shaders["BumpShader"].program;
     scn.materials["Dirt"] = make_shared<BumpMaterial>(dirtMat);
 
     BumpMaterial grassMat;
     dirtMat.name = "Grass";
     dirtMat.diffuseTexID = scn.textures["GrassDiffuse"];
     dirtMat.normalTexID = scn.textures["GrassNormal"];
-    dirtMat.program = scn.shaders["NormalShader"].program;
+    dirtMat.program = scn.shaders["BumpShader"].program;
     scn.materials["Grass"] = make_shared<BumpMaterial>(dirtMat);
+
+    BasicMaterial basicBlueMat;
+    basicBlueMat.name = "BasicBlue";
+    basicBlueMat.program = scn.shaders["BasicShader"].program;
+    basicBlueMat.kd = vec3(0.1, 0.1, 0.7);
+    scn.materials["BasicBlue"] = make_shared<BasicMaterial>(basicBlueMat);
 
     // Plane
 
@@ -134,7 +140,7 @@ void InitScene(Scene &scn)
     pln.Create(10, 10);
     pln.Scale(vec3(20.0, 20.0, 1.0));
 
-    scn.models["Plane"].pGeom = make_unique<Plane>(pln);
+    scn.models["Plane"].pGeom = make_shared<Plane>(pln);
     scn.models["Plane"].SetMaterial(scn.materials["Grass"]);
 
     Box box;
@@ -142,7 +148,7 @@ void InitScene(Scene &scn)
     box.Scale(vec3(1.0, 1.0, 1.0));
     box.Translate(vec3(-5.0, 5.0, 1.0));
 
-    scn.models["Box"].pGeom = make_unique<Box>(box);
+    scn.models["Box"].pGeom = make_shared<Box>(box);
     scn.models["Box"].SetMaterial(scn.materials["Dirt"]);
 
     Sphere sph;
@@ -150,7 +156,7 @@ void InitScene(Scene &scn)
     sph.Scale(vec3(5.0, 5.0, 5.0));
     sph.Translate(vec3(0.0, 0.0, 3.0));
 
-    scn.models["Sphere"].pGeom = make_unique<Sphere>(sph);
+    scn.models["Sphere"].pGeom = make_shared<Sphere>(sph);
     scn.models["Sphere"].SetMaterial(scn.materials["Dirt"]);
 
     Cylinder cyl;
@@ -158,8 +164,8 @@ void InitScene(Scene &scn)
     cyl.Scale(vec3(2.0, 2.0, 2.0));
     cyl.Translate(vec3(-5.0, -5.0, 3.0));
 
-    scn.models["Cylinder"].pGeom = make_unique<Cylinder>(cyl);
-    scn.models["Cylinder"].SetMaterial(scn.materials["Dirt"]);
+    scn.models["Cylinder"].pGeom = make_shared<Cylinder>(cyl);
+    scn.models["Cylinder"].SetMaterial(scn.materials["BasicBlue"]);
 }
 
 /**
@@ -175,40 +181,18 @@ void Draw(HDC hDC, Scene &scn)
     // Update camera and get projection/view matrices.
 
     scn.cam.Update();
-    mat4 proj = scn.cam.GetProjection();
-    mat4 view = scn.cam.GetView();
     GLuint program = scn.shaders["NormalShader"].program;
-
-    GLuint viewID = glGetUniformLocation(program, "view");
-    glUniformMatrix4fv(viewID, 1, false, &view[0][0]);
-
-    GLuint projID = glGetUniformLocation(program, "proj");
-    glUniformMatrix4fv(projID, 1, false, &proj[0][0]);
 
     // Lighting parameters.
 
     vec3 lightPos(20.0f * cosf(t), 20.0 * sinf(t), 5.0f);
 
-    GLuint lightPosID = glGetUniformLocation(program, "lightPos");
-    glUniform3fv(lightPosID, 1, &lightPos[0]);
-
-    vec3 camPos = scn.cam.pos;
-
-    GLuint camPosID = glGetUniformLocation(program, "camPos");
-    glUniform3fv(camPosID, 1, &camPos[0]);
-
-    float ia = 0.1f;
-    float id = 0.5f;
-    
-    GLuint iaID = glGetUniformLocation(program, "ia");
-    glUniform1fv(iaID, 1, &ia);
-
-    GLuint idID = glGetUniformLocation(program, "id");
-    glUniform1fv(idID, 1, &id);
-
     map<string, Model>::iterator it;
     for (it = scn.models.begin(); it != scn.models.end(); it++)
     {
+        glUseProgram((*it).second.program);
+        (*it).second.SetCamera(scn.cam);
+        (*it).second.SetLights(lightPos);
         (*it).second.Draw();
     }
 

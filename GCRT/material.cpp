@@ -4,10 +4,28 @@
  * SetShaderParams -
  */
 
+void BasicMaterial::ApplyMaterial()
+{
+    GLuint kdID = glGetUniformLocation(program, "kd");
+    glUniform3fv(kdID, 1, &kd[0]);
+}
+
+/**
+ * SetLights -
+ */
+
+void BasicMaterial::SetLights(vec3 lightPos)
+{
+    GLuint lightPosID = glGetUniformLocation(program, "lightPos");
+    glUniform3fv(lightPosID, 1, &lightPos[0]);
+}
+
+/**
+ * SetShaderParams -
+ */
+
 void BumpMaterial::ApplyMaterial()
 {
-    glUseProgram(program);
-
     // Diffuse texture.
 
     glActiveTexture(GL_TEXTURE0);
@@ -33,4 +51,14 @@ void BumpMaterial::ApplyMaterial()
 
     GLuint normTexID = glGetUniformLocation(program, "normalTex");
     glUniform1i(normTexID, 1);
+}
+
+/**
+ * SetLights -
+ */
+
+void BumpMaterial::SetLights(vec3 lightPos)
+{
+    GLuint lightPosID = glGetUniformLocation(program, "lightPos");
+    glUniform3fv(lightPosID, 1, &lightPos[0]);
 }
