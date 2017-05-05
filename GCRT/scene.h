@@ -14,9 +14,10 @@ struct Scene
     Camera cam;
     bool wireFrame = false;
 
-    vector<Shader> shaders;
-    vector<Model> models;
-    vector<Material> materials;
+    map<string, Shader> shaders;
+    map<string, Model> models;
+    map<string, GLuint> textures;
+    map<string, shared_ptr<Material>> materials;
 
     void HandleInputs(MSG &msg);
 };

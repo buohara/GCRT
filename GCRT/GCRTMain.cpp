@@ -72,15 +72,6 @@ void InitScene(Scene &scn)
     glEnable(GL_CULL_FACE);
     glClearColor(0.1f, 0.1f, 0.1f, 0.5f);
 
-    scn.shaders.resize(1);
-    scn.shaders[0].Create(
-        string("NormalShader"),
-        string("NormalShader.vs"),
-        string("NormalShader.fs")
-    );
-
-    glUseProgram(scn.shaders[0].program);
-
     // Create camera
 
     scn.cam.Init(
@@ -93,23 +84,49 @@ void InitScene(Scene &scn)
         100.f
     );
 
-    uint32_t numModels = 4;
-    scn.models.resize(numModels);
+    // Load Shaders.
 
-    uint32_t numMaterials = 2;
-    scn.materials.resize(numMaterials);
+    scn.shaders["NormalShader"].Create(
+        string("NormalShader"),
+        string("NormalShader.vs"),
+        string("NormalShader.fs")
+    );
 
-    scn.materials[0].name = "Dirt";
-    scn.materials[0].LoadDiffuseTexture(string("E:/drive/GCRT/asset/dirtdiffuse.jpg"));
-    scn.materials[0].LoadNormalTexture(string("E:/drive/GCRT/asset/dirtnormal.jpg"));
-    scn.materials[0].SetDiffuse(vec3(0.5, 0.5, 0.5));
-    scn.materials[0].SetAmbient(vec3(0.5, 0.5, 0.5));
+    scn.shaders["DiffuseShader"].Create(
+        string("DiffuseShader"),
+        string("DiffuseShader.vs"),
+        string("DiffuseShader.fs")
+    );
 
-    scn.materials[1].name = "Grass";
-    scn.materials[1].LoadDiffuseTexture(string("E:/drive/GCRT/asset/grassdiffuse.jpg"));
-    scn.materials[1].LoadNormalTexture(string("E:/drive/GCRT/asset/grassnormal.jpg"));
-    scn.materials[1].SetDiffuse(vec3(0.5, 0.5, 0.5));
-    scn.materials[1].SetAmbient(vec3(0.5, 0.5, 0.5));
+    // Load textures.
+
+    scn.textures["DirtDiffuse"] = 
+        ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/dirtdiffuse.jpg"));
+
+    scn.textures["DirtNormal"] =
+        ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/dirtnormal.jpg"));
+
+    scn.textures["GrassDiffuse"] =
+        ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/grassdiffuse.jpg"));
+
+    scn.textures["GrassNormal"] =
+        ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/grassNormal.jpg"));
+
+    // Create materials.
+
+    BumpMaterial dirtMat;
+    dirtMat.name = "Dirt";
+    dirtMat.diffuseTexID = scn.textures["DirtDiffuse"];
+    dirtMat.normalTexID = scn.textures["DirtNormal"];
+    dirtMat.program = scn.shaders["NormalShader"].program;
+    scn.materials["Dirt"] = make_shared<BumpMaterial>(dirtMat);
+
+    BumpMaterial grassMat;
+    dirtMat.name = "Grass";
+    dirtMat.diffuseTexID = scn.textures["GrassDiffuse"];
+    dirtMat.normalTexID = scn.textures["GrassNormal"];
+    dirtMat.program = scn.shaders["NormalShader"].program;
+    scn.materials["Grass"] = make_shared<BumpMaterial>(dirtMat);
 
     // Plane
 
@@ -117,32 +134,32 @@ void InitScene(Scene &scn)
     pln.Create(10, 10);
     pln.Scale(vec3(20.0, 20.0, 1.0));
 
-    scn.models[0].pGeom = make_unique<Plane>(pln);
-    scn.models[0].SetMaterial(scn.materials[1]);
+    scn.models["Plane"].pGeom = make_unique<Plane>(pln);
+    scn.models["Plane"].SetMaterial(scn.materials["Grass"]);
 
     Box box;
     box.Create();
     box.Scale(vec3(1.0, 1.0, 1.0));
     box.Translate(vec3(-5.0, 5.0, 1.0));
 
-    scn.models[1].pGeom = make_unique<Box>(box);
-    scn.models[1].SetMaterial(scn.materials[0]);
+    scn.models["Box"].pGeom = make_unique<Box>(box);
+    scn.models["Box"].SetMaterial(scn.materials["Dirt"]);
 
     Sphere sph;
     sph.Create(25, 25);
     sph.Scale(vec3(5.0, 5.0, 5.0));
     sph.Translate(vec3(0.0, 0.0, 3.0));
 
-    scn.models[2].pGeom = make_unique<Sphere>(sph);
-    scn.models[2].SetMaterial(scn.materials[0]);
+    scn.models["Sphere"].pGeom = make_unique<Sphere>(sph);
+    scn.models["Sphere"].SetMaterial(scn.materials["Dirt"]);
 
     Cylinder cyl;
     cyl.Create(20);
     cyl.Scale(vec3(2.0, 2.0, 2.0));
     cyl.Translate(vec3(-5.0, -5.0, 3.0));
 
-    scn.models[3].pGeom = make_unique<Cylinder>(cyl);
-    scn.models[3].SetMaterial(scn.materials[0]);
+    scn.models["Cylinder"].pGeom = make_unique<Cylinder>(cyl);
+    scn.models["Cylinder"].SetMaterial(scn.materials["Dirt"]);
 }
 
 /**
@@ -160,7 +177,7 @@ void Draw(HDC hDC, Scene &scn)
     scn.cam.Update();
     mat4 proj = scn.cam.GetProjection();
     mat4 view = scn.cam.GetView();
-    GLuint program = scn.shaders[0].program;
+    GLuint program = scn.shaders["NormalShader"].program;
 
     GLuint viewID = glGetUniformLocation(program, "view");
     glUniformMatrix4fv(viewID, 1, false, &view[0][0]);
@@ -189,14 +206,13 @@ void Draw(HDC hDC, Scene &scn)
     GLuint idID = glGetUniformLocation(program, "id");
     glUniform1fv(idID, 1, &id);
 
-    for (uint32_t i = 0; i < scn.models.size(); i++)
+    map<string, Model>::iterator it;
+    for (it = scn.models.begin(); it != scn.models.end(); it++)
     {
-        scn.models[i].SetShaderParams(program);
-        scn.models[i].Draw();
+        (*it).second.Draw();
     }
 
     SwapBuffers(hDC);
-
     t += 0.01f;
 }
 

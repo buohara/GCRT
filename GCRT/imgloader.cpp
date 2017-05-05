@@ -1,6 +1,10 @@
 #include "imgloader.h"
 
-void ImgLoader::LoadImg(string &fileName, Img &img)
+/**
+ * LoadTexture
+ */
+
+GLuint ImgLoader::LoadTexture(string &fileName)
 {
     ilInit();
 
@@ -10,19 +14,22 @@ void ImgLoader::LoadImg(string &fileName, Img &img)
 
     ilLoadImage(fileName.c_str());
 
-    img.w = ilGetInteger(IL_IMAGE_WIDTH);
-    img.h = ilGetInteger(IL_IMAGE_HEIGHT);
+    uint32_t w = ilGetInteger(IL_IMAGE_WIDTH);
+    uint32_t h = ilGetInteger(IL_IMAGE_HEIGHT);
 
     BYTE* pData = ilGetData();
-    uint32_t imgBytes = 3 * img.w * img.h;
+    uint32_t imgBytes = 3 * w * h;
+    GLuint texID = 0;
 
-    img.pixels.resize(imgBytes);
+    glGenTextures(1, &texID);
+    glBindTexture(GL_TEXTURE_2D, texID);
 
-    for (uint32_t i = 0; i < imgBytes; i++)
-    {
-        img.pixels[i] = pData[i];
-    }
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w,
+        h, 0, GL_RGB, GL_UNSIGNED_BYTE, pData);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     ilBindImage(0);
     ilDeleteImage(imgID);
+
+    return texID;
 }

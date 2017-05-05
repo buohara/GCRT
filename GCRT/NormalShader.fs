@@ -12,9 +12,6 @@ uniform vec3 lightPos;
 uniform vec3 camPos;
 uniform mat4 modelInv;
 
-uniform float ia;
-uniform float id;
-
 uniform sampler2D diffuseTex;
 uniform sampler2D normalTex;
 
@@ -37,5 +34,5 @@ void main()
         spec = pow(max(dot(rflct, camVec), 0), 32);
     }
 
-    color = (ia + theta) * vec4(texture2D(diffuseTex, passUV).rgb, 1);
+    color = theta * vec4(texture2D(diffuseTex, passUV).rgb, 1);
 }

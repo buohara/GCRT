@@ -1,26 +1,12 @@
 #include "model.h"
 
 /**
- * SetShaderParams -
- */
-
-void Model::SetShaderParams(GLuint progID)
-{
-    mat.SetShaderParams(progID);
-    pGeom->SetShaderParams(progID);
-};
-
-/**
  * SetMaterial
  */
 
-void Model::SetMaterial(const Material &matIn)
+void Model::SetMaterial(shared_ptr<Material> pMatIn)
 {
-    mat.ka = matIn.ka;
-    mat.kd = matIn.kd;
-    mat.name = matIn.name;
-    mat.diffuseTexID = matIn.diffuseTexID;
-    mat.normalTexID = matIn.normalTexID;
+    pMat = pMatIn;
 }
 
 /**
@@ -29,5 +15,7 @@ void Model::SetMaterial(const Material &matIn)
 
 void Model::Draw()
 {
+    pMat->ApplyMaterial();
+    pGeom->SetShaderParams(pMat->program);
     pGeom->Draw();
 }

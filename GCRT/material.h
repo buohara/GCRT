@@ -9,17 +9,13 @@ using namespace glm;
 struct Material
 {
     string name;
-    
+    GLuint program;
+    virtual void ApplyMaterial() = 0;
+};
+
+struct BumpMaterial : Material
+{
     GLuint diffuseTexID;
     GLuint normalTexID;
-
-    vec3 kd;
-    vec3 ka;
-
-    void LoadDiffuseTexture(string &fileName);
-    void LoadNormalTexture(string &fileName);
-
-    void SetDiffuse(vec3 kd);
-    void SetAmbient(vec3 ka);
-    void SetShaderParams(GLuint progID);
+    void ApplyMaterial();
 };

@@ -145,12 +145,3 @@ void Geometry::Scale(vec3 dims)
     model = trans * rot * scl;
     modelInv = inverseTranspose(model);
 }
-
-/**
- * Draw -
- */
-
-//void Geometry::Draw()
-//{
-//    return;
-//}

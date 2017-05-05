@@ -6,9 +6,8 @@
 struct Model
 {
     unique_ptr<Geometry> pGeom;
-    Material mat;
+    shared_ptr<Material> pMat;
 
-    void SetShaderParams(GLuint progID);
-    void SetMaterial(const Material &matIn);
+    void SetMaterial(shared_ptr<Material> pMatIn);
     void Draw();
 };
