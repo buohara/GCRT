@@ -188,8 +188,12 @@
   <ItemGroup>
     <None Include="BasicShader.fs" />
     <None Include="BasicShader.vs" />
+    <None Include="BasicShadow.fs" />
+    <None Include="BasicShadow.vs" />
     <None Include="BumpShader.fs" />
     <None Include="BumpShader.vs" />
+    <None Include="DepthPassShader.fs" />
+    <None Include="DepthPassShader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

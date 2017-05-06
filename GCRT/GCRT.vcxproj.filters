@@ -118,5 +118,17 @@
     <None Include="BasicShader.vs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="BasicShadow.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="BasicShadow.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="DepthPassShader.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="DepthPassShader.fs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -34,5 +34,5 @@ void main()
         spec = pow(max(dot(rflct, camVec), 0), 32);
     }
 
-    color = theta * vec4(texture2D(diffuseTex, passUV).rgb, 1);
+    color = vec4(0.2, 0.2, 0.2, 1) + theta * vec4(texture2D(diffuseTex, passUV).rgb, 1);
 }

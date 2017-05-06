@@ -18,6 +18,14 @@ struct Scene
     map<string, Model> models;
     map<string, GLuint> textures;
     map<string, shared_ptr<Material>> materials;
+    GLuint dbID = 0;
 
     void HandleInputs(MSG &msg);
+
+    void Init();
+    void LoadShaders();
+    void LoadTextures();
+    void InitMaterials();
+    void InitModels();
+    void Render(HDC hDC);
 };

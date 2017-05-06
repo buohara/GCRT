@@ -63,144 +63,6 @@ HDC CreateGLContext(HWND hWnd)
 }
 
 /**
- * InitScene -
- */
-
-void InitScene(Scene &scn)
-{
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glClearColor(1.0f, 1.0f, 1.0f, 0.5f);
-
-    // Create camera
-
-    scn.cam.Init(
-        vec3(15.0, 15.0, 15.0),
-        vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 0.0, 1.0),
-        4.0f / 3.0f,
-        45.0f,
-        0.1f,
-        100.f
-    );
-
-    // Load Shaders.
-
-    scn.shaders["BasicShader"].Create(
-        string("BasicShader"),
-        string("BasicShader.vs"),
-        string("BasicShader.fs")
-    );
-
-    scn.shaders["BumpShader"].Create(
-        string("BumpShader"),
-        string("BumpShader.vs"),
-        string("BumpShader.fs")
-    );
-
-    // Load textures.
-
-    scn.textures["DirtDiffuse"] = 
-        ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/dirtdiffuse.jpg"));
-
-    scn.textures["DirtNormal"] =
-        ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/dirtnormal.jpg"));
-
-    scn.textures["GrassDiffuse"] =
-        ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/grassdiffuse.jpg"));
-
-    scn.textures["GrassNormal"] =
-        ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/grassNormal.jpg"));
-
-    // Create materials.
-
-    BumpMaterial dirtMat;
-    dirtMat.name = "Dirt";
-    dirtMat.diffuseTexID = scn.textures["DirtDiffuse"];
-    dirtMat.normalTexID = scn.textures["DirtNormal"];
-    dirtMat.program = scn.shaders["BumpShader"].program;
-    scn.materials["Dirt"] = make_shared<BumpMaterial>(dirtMat);
-
-    BumpMaterial grassMat;
-    dirtMat.name = "Grass";
-    dirtMat.diffuseTexID = scn.textures["GrassDiffuse"];
-    dirtMat.normalTexID = scn.textures["GrassNormal"];
-    dirtMat.program = scn.shaders["BumpShader"].program;
-    scn.materials["Grass"] = make_shared<BumpMaterial>(dirtMat);
-
-    BasicMaterial basicBlueMat;
-    basicBlueMat.name = "BasicBlue";
-    basicBlueMat.program = scn.shaders["BasicShader"].program;
-    basicBlueMat.kd = vec3(0.1, 0.1, 0.7);
-    scn.materials["BasicBlue"] = make_shared<BasicMaterial>(basicBlueMat);
-
-    // Plane
-
-    Plane pln;
-    pln.Create(10, 10);
-    pln.Scale(vec3(20.0, 20.0, 1.0));
-
-    scn.models["Plane"].pGeom = make_shared<Plane>(pln);
-    scn.models["Plane"].SetMaterial(scn.materials["Grass"]);
-
-    Box box;
-    box.Create();
-    box.Scale(vec3(1.0, 1.0, 1.0));
-    box.Translate(vec3(-5.0, 5.0, 1.0));
-
-    scn.models["Box"].pGeom = make_shared<Box>(box);
-    scn.models["Box"].SetMaterial(scn.materials["Dirt"]);
-
-    Sphere sph;
-    sph.Create(25, 25);
-    sph.Scale(vec3(5.0, 5.0, 5.0));
-    sph.Translate(vec3(0.0, 0.0, 3.0));
-
-    scn.models["Sphere"].pGeom = make_shared<Sphere>(sph);
-    scn.models["Sphere"].SetMaterial(scn.materials["Dirt"]);
-
-    Cylinder cyl;
-    cyl.Create(20);
-    cyl.Scale(vec3(2.0, 2.0, 2.0));
-    cyl.Translate(vec3(-5.0, -5.0, 3.0));
-
-    scn.models["Cylinder"].pGeom = make_shared<Cylinder>(cyl);
-    scn.models["Cylinder"].SetMaterial(scn.materials["BasicBlue"]);
-}
-
-/**
- * Draw -
- */
-
-void Draw(HDC hDC, Scene &scn)
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    static float t = 0;
-
-    // Update camera and get projection/view matrices.
-
-    scn.cam.Update();
-    GLuint program = scn.shaders["NormalShader"].program;
-
-    // Lighting parameters.
-
-    vec3 lightPos(20.0f * cosf(t), 20.0 * sinf(t), 5.0f);
-
-    map<string, Model>::iterator it;
-    for (it = scn.models.begin(); it != scn.models.end(); it++)
-    {
-        glUseProgram((*it).second.program);
-        (*it).second.SetCamera(scn.cam);
-        (*it).second.SetLights(lightPos);
-        (*it).second.Draw();
-    }
-
-    SwapBuffers(hDC);
-    t += 0.01f;
-}
-
-/**
  * WinMain - 
  */
 
@@ -245,13 +107,13 @@ int CALLBACK WinMain(
 
     HDC hDC = CreateGLContext(hMainWnd);
     Scene scn;
-    InitScene(scn);
+    scn.Init();
 
     // Main messaging loop.
 
     while (true)
     {
-        Draw(hDC, scn);
+        scn.Render(hDC);
         RECT rect;
         GetWindowRect(hMainWnd, &rect);
         scn.cam.aspect = (float)(rect.right - rect.left) / (float)(rect.bottom - rect.top);
