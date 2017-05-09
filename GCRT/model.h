@@ -3,6 +3,7 @@
 #include "plane.h"
 #include "material.h"
 #include "camera.h"
+#include "light.h"
 
 struct Model
 {
@@ -12,7 +13,7 @@ struct Model
 
     void SetMaterial(shared_ptr<Material> pMatIn);
     void SetCamera(Camera &cam);
-    void SetLights(vec3 light);
+    void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights);
 
     void Draw();
 };

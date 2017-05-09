@@ -23,34 +23,14 @@ void Scene::Init()
         100.f
     );
     
-    // DEVELOPMENT - Shadow mapping/SSS. Generate a depth FBO to draw into and associated
-    // texture to read from.
-
-    glGenFramebuffers(1, &dbFboID);
-
-    GLuint depthTexID = 0;
-    glGenTextures(1, &depthTexID);
-    glBindTexture(GL_TEXTURE_2D, depthTexID);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    textures["DepthTex"] = depthTexID;
-
-    glBindFramebuffer(GL_FRAMEBUFFER, dbFboID);
-    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexID, 0);
-    glDrawBuffer(GL_NONE);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    // DEVELOPMENT
+    depthPass.Init();
+    renderPass.Init();
 
     LoadShaders();
     LoadTextures();
     InitMaterials();
     InitModels();
+    InitLights();
 }
 
 /**
@@ -65,12 +45,6 @@ void Scene::LoadShaders()
         string("BasicShader.fs")
     );
 
-    shaders["DepthPass"].Create(
-        string("DepthPass"),
-        string("DepthPassShader.vs"),
-        string("DepthPassShader.fs")
-    );
-
     shaders["BasicShadow"].Create(
         string("BasicShadow"),
         string("BasicShadow.vs"),
@@ -81,6 +55,12 @@ void Scene::LoadShaders()
         string("Bump"),
         string("BumpShader.vs"),
         string("BumpShader.fs")
+    );
+
+    shaders["BumpShadow"].Create(
+        string("BumpShadow"),
+        string("BumpShadowShader.vs"),
+        string("BumpShadowShader.fs")
     );
 }
 
@@ -101,6 +81,24 @@ void Scene::LoadTextures()
 
     textures["GrassNormal"] =
         ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/grassNormal.jpg"));
+
+    textures["DepthTex"] = depthPass.getDepthTex();
+}
+
+/**
+ * InitLights - Initialize scene lights.
+ */
+
+void Scene::InitLights()
+{
+    DirectionalLight dirLight;
+    dirLight.pos = vec3(15.0, 15.0, 15.0);
+    dirLight.look = vec3(0.0, 0.0, 0.0);
+    dirLights.push_back(dirLight);
+
+    PointLight ptLight;
+    ptLight.pos = vec3(15.0, 15.0, 15.0);
+    ptLights.push_back(ptLight);
 }
 
 /**
@@ -109,12 +107,16 @@ void Scene::LoadTextures()
 
 void Scene::InitMaterials()
 {
+    // Dirt material with normal map.
+
     BumpMaterial dirtMat;
     dirtMat.name = "Dirt";
     dirtMat.diffuseTexID = textures["DirtDiffuse"];
     dirtMat.normalTexID = textures["DirtNormal"];
     dirtMat.program = shaders["Bump"].program;
     materials["Dirt"] = make_shared<BumpMaterial>(dirtMat);
+
+    // Grass material with normal map.
 
     BumpMaterial grassMat;
     dirtMat.name = "Grass";
@@ -123,18 +125,42 @@ void Scene::InitMaterials()
     dirtMat.program = shaders["Bump"].program;
     materials["Grass"] = make_shared<BumpMaterial>(dirtMat);
 
+    // Matte blue material.
+
     BasicMaterial basicBlueMat;
     basicBlueMat.name = "BasicBlue";
     basicBlueMat.program = shaders["Basic"].program;
     basicBlueMat.kd = vec3(0.1, 0.1, 0.7);
     materials["BasicBlue"] = make_shared<BasicMaterial>(basicBlueMat);
 
+    // Matte green material with shadows.
+
     BasicShadowMaterial basicShadowMat;
     basicShadowMat.name = "BasicShadow";
     basicShadowMat.program = shaders["BasicShadow"].program;
-    basicShadowMat.kd = vec3(0.1, 0.1, 0.7);
+    basicShadowMat.kd = vec3(0.1, 0.7, 0.1);
     basicShadowMat.depthTexID = textures["DepthTex"];
     materials["BasicShadow"] = make_shared<BasicShadowMaterial>(basicShadowMat);
+
+    // Dirt material with normal and shadow mapping.
+
+    BumpShadowMaterial bumpShadowDirtMat;
+    bumpShadowDirtMat.name = "BumpShadowDirt";
+    bumpShadowDirtMat.program = shaders["BumpShadow"].program;
+    bumpShadowDirtMat.diffuseTexID = textures["DirtDiffuse"];
+    bumpShadowDirtMat.normalTexID = textures["DirtNormal"];
+    bumpShadowDirtMat.depthTexID = textures["DepthTex"];
+    materials["BumpShadowDirt"] = make_shared<BumpShadowMaterial>(bumpShadowDirtMat);
+
+    // Grass material with normal and shadow mapping.
+
+    BumpShadowMaterial bumpShadowGrassMat;
+    bumpShadowGrassMat.name = "BumpShadowGrass";
+    bumpShadowGrassMat.program = shaders["BumpShadow"].program;
+    bumpShadowGrassMat.diffuseTexID = textures["GrassDiffuse"];
+    bumpShadowGrassMat.normalTexID = textures["GrassNormal"];
+    bumpShadowGrassMat.depthTexID = textures["DepthTex"];
+    materials["BumpShadowGrass"] = make_shared<BumpShadowMaterial>(bumpShadowGrassMat);
 }
 
 /**
@@ -150,31 +176,31 @@ void Scene::InitModels()
     pln.Scale(vec3(20.0, 20.0, 1.0));
 
     models["Plane"].pGeom = make_shared<Plane>(pln);
-    models["Plane"].SetMaterial(materials["BasicShadow"]);
+    models["Plane"].SetMaterial(materials["BumpShadowGrass"]);
 
-    //Box box;
-    //box.Create();
-    //box.Scale(vec3(1.0, 1.0, 1.0));
-    //box.Translate(vec3(-5.0, 5.0, 1.0));
+    Box box;
+    box.Create();
+    box.Scale(vec3(1.0, 1.0, 1.0));
+    box.Translate(vec3(-5.0, 5.0, 1.0));
 
-    //scn.models["Box"].pGeom = make_shared<Box>(box);
-    //scn.models["Box"].SetMaterial(scn.materials["Dirt"]);
+    models["Box"].pGeom = make_shared<Box>(box);
+    models["Box"].SetMaterial(materials["BasicShadow"]);
 
     Sphere sph;
     sph.Create(25, 25);
-    sph.Scale(vec3(5.0, 5.0, 5.0));
+    sph.Scale(vec3(2.0, 2.0, 5.0));
     sph.Translate(vec3(0.0, 0.0, 3.0));
 
     models["Sphere"].pGeom = make_shared<Sphere>(sph);
-    models["Sphere"].SetMaterial(materials["BasicShadow"]);
+    models["Sphere"].SetMaterial(materials["BumpShadowDirt"]);
 
     Cylinder cyl;
     cyl.Create(20);
     cyl.Scale(vec3(2.0, 2.0, 2.0));
     cyl.Translate(vec3(-5.0, -5.0, 3.0));
 
-    //models["Cylinder"].pGeom = make_shared<Cylinder>(cyl);
-    //models["Cylinder"].SetMaterial(materials["BasicBlue"]);
+    models["Cylinder"].pGeom = make_shared<Cylinder>(cyl);
+    models["Cylinder"].SetMaterial(materials["BasicShadow"]);
 }
 
 /**
@@ -185,63 +211,24 @@ void Scene::Render(HDC hDC)
 {
     static float t = 0;
 
-    // Update camera and get projection/view matrices.
+    // Update camera from inputs.
 
     cam.Update();
 
-    // DEVELOPMENT - Depth render pass
+    // Do depth pass.
 
-    map<string, Model>::iterator it;
-    GLuint depthProgram = shaders["DepthPass"].program;
-
-    glUseProgram(depthProgram);
-    
-    vec3 lightPos(15.0, -15.0, 15.0);
-    mat4 depthView = lookAt(lightPos, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0));
-    mat4 depthProj = ortho(-30.0, 30.0, -30.0, 30.0, 0.1, 100.0);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, dbFboID);
-    glClear(GL_DEPTH_BUFFER_BIT);
-    glViewport(0, 0, 1024, 1024);
-
-    for (it = models.begin(); it != models.end(); it++)
-    {
-        mat4 model = (*it).second.pGeom->model;
-
-        GLuint modelID = glGetUniformLocation(depthProgram, "model");
-        glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
-
-        GLuint viewID = glGetUniformLocation(depthProgram, "view");
-        glUniformMatrix4fv(viewID, 1, false, &depthView[0][0]);
-
-        GLuint projID = glGetUniformLocation(depthProgram, "proj");
-        glUniformMatrix4fv(projID, 1, false, &depthProj[0][0]);
-
-        (*it).second.pGeom->Draw();
-    }
+    depthPass.Render(models, dirLights);
 
     // Camera render pass.
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, 1920, 1080);
+    renderPass.Render(
+        models, 
+        dirLights, 
+        ptLights, 
+        cam
+    );
 
-    for (it = models.begin(); it != models.end(); it++)
-    {
-        GLuint modelProgram = (*it).second.program;
-
-        glUseProgram(modelProgram);
-
-        GLuint lightViewID = glGetUniformLocation(modelProgram, "lightView");
-        glUniformMatrix4fv(lightViewID, 1, false, &depthView[0][0]);
-
-        GLuint lightProjID = glGetUniformLocation(modelProgram, "lightProj");
-        glUniformMatrix4fv(lightProjID, 1, false, &depthProj[0][0]);
-
-        (*it).second.SetCamera(cam);
-        (*it).second.SetLights(lightPos);
-        (*it).second.Draw();
-    }
+    // Swap.
 
     SwapBuffers(hDC);
     t += 0.01f;

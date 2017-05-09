@@ -176,6 +176,7 @@
     <ClInclude Include="GCRT.h" />
     <ClInclude Include="geometry.h" />
     <ClInclude Include="imgloader.h" />
+    <ClInclude Include="light.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="plane.h" />
@@ -192,6 +193,8 @@
     <None Include="BasicShadow.vs" />
     <None Include="BumpShader.fs" />
     <None Include="BumpShader.vs" />
+    <None Include="BumpShadowShader.fs" />
+    <None Include="BumpShadowShader.vs" />
     <None Include="DepthPassShader.fs" />
     <None Include="DepthPassShader.vs" />
   </ItemGroup>

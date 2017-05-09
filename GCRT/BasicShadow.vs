@@ -6,6 +6,7 @@ layout(location = 2) in vec2 inUV;
 
 out vec4 passColor;
 out vec4 passPos;
+out float passTheta;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -24,7 +25,9 @@ void main()
     float dist = length(lightVec);
     float theta = max(dot(norm.xyz, lightVec), 0) / (dist * dist);
 
-    passPos =  vec4(inPos, 1);
+    passPos =  model * vec4(inPos, 1);
     passColor = vec4(theta * kd, 1);
+    passTheta = theta;
+
     gl_Position = proj * view * model * vec4(inPos, 1);
 }

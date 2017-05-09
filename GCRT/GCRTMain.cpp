@@ -116,7 +116,12 @@ int CALLBACK WinMain(
         scn.Render(hDC);
         RECT rect;
         GetWindowRect(hMainWnd, &rect);
-        scn.cam.aspect = (float)(rect.right - rect.left) / (float)(rect.bottom - rect.top);
+        uint32_t w = rect.right - rect.left;
+        uint32_t h = rect.bottom - rect.top;
+
+        scn.cam.aspect = (float)w / (float)h;
+        scn.renderPass.fboWidth = w;
+        scn.renderPass.fboHeight = h;
 
         while (PeekMessage(&msg, hMainWnd, 0, 0, PM_REMOVE))
         {

@@ -8,6 +8,8 @@
 #include "sphere.h"
 #include "model.h"
 #include "shader.h"
+#include "light.h"
+#include "renderpass.h"
 
 struct Scene
 {
@@ -18,6 +20,13 @@ struct Scene
     map<string, Model> models;
     map<string, GLuint> textures;
     map<string, shared_ptr<Material>> materials;
+
+    vector<DirectionalLight> dirLights;
+    vector<PointLight> ptLights;
+
+    DepthPass depthPass;
+    RenderPass renderPass;
+
     GLuint dbFboID;
 
     void HandleInputs(MSG &msg);
@@ -27,5 +36,6 @@ struct Scene
     void LoadTextures();
     void InitMaterials();
     void InitModels();
+    void InitLights();
     void Render(HDC hDC);
 };

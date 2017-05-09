@@ -104,6 +104,9 @@
     <ClInclude Include="shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BumpShader.fs">
@@ -128,6 +131,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="DepthPassShader.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="BumpShadowShader.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="BumpShadowShader.fs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

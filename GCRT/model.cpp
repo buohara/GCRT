@@ -34,9 +34,9 @@ void Model::SetCamera(Camera &cam)
  * SetLights -
  */
 
-void Model::SetLights(vec3 light)
+void Model::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights)
 {
-    pMat->SetLights(light);
+    pMat->SetLights(dirLights, ptLights);
 }
 
 /**
