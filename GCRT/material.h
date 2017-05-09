@@ -22,6 +22,14 @@ struct BasicMaterial : Material
     void SetLights(vec3 lightPos);
 };
 
+struct BasicShadowMaterial : Material
+{
+    vec3 kd;
+    GLuint depthTexID;
+    void ApplyMaterial();
+    void SetLights(vec3 lightPos);
+};
+
 struct BumpMaterial : Material
 {
     GLuint diffuseTexID;

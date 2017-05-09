@@ -24,6 +24,32 @@ void BasicMaterial::SetLights(vec3 lightPos)
  * SetShaderParams -
  */
 
+void BasicShadowMaterial::ApplyMaterial()
+{
+    GLuint kdID = glGetUniformLocation(program, "kd");
+    glUniform3fv(kdID, 1, &kd[0]);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, depthTexID);
+
+    GLuint depthID = glGetUniformLocation(program, "depthTex");
+    glUniform1i(depthID, 0);
+}
+
+/**
+ * SetLights -
+ */
+
+void BasicShadowMaterial::SetLights(vec3 lightPos)
+{
+    GLuint lightPosID = glGetUniformLocation(program, "lightPos");
+    glUniform3fv(lightPosID, 1, &lightPos[0]);
+}
+
+/**
+ * SetShaderParams -
+ */
+
 void BumpMaterial::ApplyMaterial()
 {
     // Diffuse texture.

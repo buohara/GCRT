@@ -8,7 +8,10 @@ void Scene::Init()
 {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
     glClearColor(1.0f, 1.0f, 1.0f, 0.5f);
+    glClearDepth(1.0f);
 
     cam.Init(
         vec3(15.0, 15.0, 15.0),
@@ -20,27 +23,26 @@ void Scene::Init()
         100.f
     );
     
-    // DEVELOPMENT - Shadow mapping/SSS
+    // DEVELOPMENT - Shadow mapping/SSS. Generate a depth FBO to draw into and associated
+    // texture to read from.
 
-    glGenFramebuffers(1, &dbID);
+    glGenFramebuffers(1, &dbFboID);
 
     GLuint depthTexID = 0;
     glGenTextures(1, &depthTexID);
     glBindTexture(GL_TEXTURE_2D, depthTexID);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    textures["DepthTexture"] = depthTexID;
+    textures["DepthTex"] = depthTexID;
 
-    glBindFramebuffer(GL_FRAMEBUFFER, dbID);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexID, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, dbFboID);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexID, 0);
     glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // DEVELOPMENT
 
@@ -56,14 +58,26 @@ void Scene::Init()
 
 void Scene::LoadShaders()
 {
-    shaders["BasicShader"].Create(
+    shaders["Basic"].Create(
         string("BasicShader"),
         string("BasicShader.vs"),
         string("BasicShader.fs")
     );
 
-    shaders["BumpShader"].Create(
-        string("BumpShader"),
+    shaders["DepthPass"].Create(
+        string("DepthPass"),
+        string("DepthPassShader.vs"),
+        string("DepthPassShader.fs")
+    );
+
+    shaders["BasicShadow"].Create(
+        string("BasicShadow"),
+        string("BasicShadow.vs"),
+        string("BasicShadow.fs")
+    );
+
+    shaders["Bump"].Create(
+        string("Bump"),
         string("BumpShader.vs"),
         string("BumpShader.fs")
     );
@@ -98,21 +112,28 @@ void Scene::InitMaterials()
     dirtMat.name = "Dirt";
     dirtMat.diffuseTexID = textures["DirtDiffuse"];
     dirtMat.normalTexID = textures["DirtNormal"];
-    dirtMat.program = shaders["BumpShader"].program;
+    dirtMat.program = shaders["Bump"].program;
     materials["Dirt"] = make_shared<BumpMaterial>(dirtMat);
 
     BumpMaterial grassMat;
     dirtMat.name = "Grass";
     dirtMat.diffuseTexID = textures["GrassDiffuse"];
     dirtMat.normalTexID = textures["GrassNormal"];
-    dirtMat.program = shaders["BumpShader"].program;
+    dirtMat.program = shaders["Bump"].program;
     materials["Grass"] = make_shared<BumpMaterial>(dirtMat);
 
     BasicMaterial basicBlueMat;
     basicBlueMat.name = "BasicBlue";
-    basicBlueMat.program = shaders["BasicShader"].program;
+    basicBlueMat.program = shaders["Basic"].program;
     basicBlueMat.kd = vec3(0.1, 0.1, 0.7);
     materials["BasicBlue"] = make_shared<BasicMaterial>(basicBlueMat);
+
+    BasicShadowMaterial basicShadowMat;
+    basicShadowMat.name = "BasicShadow";
+    basicShadowMat.program = shaders["BasicShadow"].program;
+    basicShadowMat.kd = vec3(0.1, 0.1, 0.7);
+    basicShadowMat.depthTexID = textures["DepthTex"];
+    materials["BasicShadow"] = make_shared<BasicShadowMaterial>(basicShadowMat);
 }
 
 /**
@@ -128,7 +149,7 @@ void Scene::InitModels()
     pln.Scale(vec3(20.0, 20.0, 1.0));
 
     models["Plane"].pGeom = make_shared<Plane>(pln);
-    models["Plane"].SetMaterial(materials["Grass"]);
+    models["Plane"].SetMaterial(materials["BasicShadow"]);
 
     //Box box;
     //box.Create();
@@ -144,15 +165,15 @@ void Scene::InitModels()
     sph.Translate(vec3(0.0, 0.0, 3.0));
 
     models["Sphere"].pGeom = make_shared<Sphere>(sph);
-    models["Sphere"].SetMaterial(materials["Dirt"]);
+    models["Sphere"].SetMaterial(materials["BasicShadow"]);
 
-    /*Cylinder cyl;
+    Cylinder cyl;
     cyl.Create(20);
     cyl.Scale(vec3(2.0, 2.0, 2.0));
     cyl.Translate(vec3(-5.0, -5.0, 3.0));
 
-    scn.models["Cylinder"].pGeom = make_shared<Cylinder>(cyl);
-    scn.models["Cylinder"].SetMaterial(scn.materials["BasicBlue"]);*/
+    //models["Cylinder"].pGeom = make_shared<Cylinder>(cyl);
+    //models["Cylinder"].SetMaterial(materials["BasicBlue"]);
 }
 
 /**
@@ -172,14 +193,16 @@ void Scene::Render(HDC hDC)
     // DEVELOPMENT - Depth render pass
 
     map<string, Model>::iterator it;
-    GLuint depthProgram = shaders["DepthPassShader"].program;
+    GLuint depthProgram = shaders["DepthPass"].program;
 
     glUseProgram(depthProgram);
     
-    vec3 lightPos(15.0, 15.0, 15.0);
+    vec3 lightPos(15.0, -15.0, 15.0);
     mat4 depthView = lookAt(lightPos, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0));
+    mat4 depthProj = ortho(-30.0, 30.0, -30.0, 30.0, 0.1, 100.0);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, dbID);
+    glBindFramebuffer(GL_FRAMEBUFFER, dbFboID);
+    glViewport(0, 0, 1024, 1024);
 
     for (it = models.begin(); it != models.end(); it++)
     {
@@ -189,7 +212,10 @@ void Scene::Render(HDC hDC)
         glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
 
         GLuint viewID = glGetUniformLocation(depthProgram, "view");
-        glUniformMatrix4fv(modelID, 1, false, &depthView[0][0]);
+        glUniformMatrix4fv(viewID, 1, false, &depthView[0][0]);
+
+        GLuint projID = glGetUniformLocation(depthProgram, "proj");
+        glUniformMatrix4fv(projID, 1, false, &depthProj[0][0]);
 
         (*it).second.pGeom->Draw();
     }
@@ -197,10 +223,20 @@ void Scene::Render(HDC hDC)
     // Camera render pass.
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, 1920, 1080);
 
     for (it = models.begin(); it != models.end(); it++)
     {
-        glUseProgram((*it).second.program);
+        GLuint modelProgram = (*it).second.program;
+
+        glUseProgram(modelProgram);
+
+        GLuint lightViewID = glGetUniformLocation(modelProgram, "lightView");
+        glUniformMatrix4fv(lightViewID, 1, false, &depthView[0][0]);
+
+        GLuint lightProjID = glGetUniformLocation(modelProgram, "lightProj");
+        glUniformMatrix4fv(lightProjID, 1, false, &depthProj[0][0]);
+
         (*it).second.SetCamera(cam);
         (*it).second.SetLights(lightPos);
         (*it).second.Draw();

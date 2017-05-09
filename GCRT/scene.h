@@ -18,7 +18,7 @@ struct Scene
     map<string, Model> models;
     map<string, GLuint> textures;
     map<string, shared_ptr<Material>> materials;
-    GLuint dbID = 0;
+    GLuint dbFboID;
 
     void HandleInputs(MSG &msg);
 
