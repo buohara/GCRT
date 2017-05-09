@@ -10,7 +10,7 @@ void Scene::Init()
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    glClearColor(1.0f, 1.0f, 1.0f, 0.5f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClearDepth(1.0f);
 
     cam.Init(
@@ -43,6 +43,7 @@ void Scene::Init()
     glBindFramebuffer(GL_FRAMEBUFFER, dbFboID);
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexID, 0);
     glDrawBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // DEVELOPMENT
 
@@ -182,8 +183,6 @@ void Scene::InitModels()
 
 void Scene::Render(HDC hDC)
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     static float t = 0;
 
     // Update camera and get projection/view matrices.
@@ -202,6 +201,7 @@ void Scene::Render(HDC hDC)
     mat4 depthProj = ortho(-30.0, 30.0, -30.0, 30.0, 0.1, 100.0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, dbFboID);
+    glClear(GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, 1024, 1024);
 
     for (it = models.begin(); it != models.end(); it++)
@@ -223,6 +223,7 @@ void Scene::Render(HDC hDC)
     // Camera render pass.
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glViewport(0, 0, 1920, 1080);
 
     for (it = models.begin(); it != models.end(); it++)
