@@ -197,6 +197,8 @@
     <None Include="BumpShadowShader.vs" />
     <None Include="DepthPassShader.fs" />
     <None Include="DepthPassShader.vs" />
+    <None Include="SSSShader.fs" />
+    <None Include="SSSShader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

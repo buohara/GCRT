@@ -24,7 +24,7 @@ struct DepthPass
     GLuint dbFboID;
     GLuint depthProgram;
     GLuint depthTexID;
-    GLuint depthMapSize = 2048;
+    GLuint depthMapSize = 1024;
 
     void Init();
     void Render(map<string, Model> &models, vector<DirectionalLight> &dirLights);

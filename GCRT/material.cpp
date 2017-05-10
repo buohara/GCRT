@@ -47,7 +47,7 @@ void BasicShadowMaterial::SetLights(vector<DirectionalLight> &dirLights, vector<
     vec3 dirLightLook = dirLights[0].look;
 
     mat4 depthView = lookAt(dirLightPos, dirLightLook, vec3(0.0, 1.0, 0.0));
-    mat4 depthProj = ortho(-30.0, 30.0, -30.0, 30.0, 0.1, 100.0);
+    mat4 depthProj = ortho(-30.0, 30.0, -30.0, 30.0, 1.0, 100.0);
 
     GLuint lightPosID = glGetUniformLocation(program, "lightPos");
     glUniform3fv(lightPosID, 1, &dirLightPos[0]);
@@ -134,7 +134,45 @@ void BumpShadowMaterial::SetLights(vector<DirectionalLight> &dirLights, vector<P
     vec3 dirLightLook = dirLights[0].look;
 
     mat4 depthView = lookAt(dirLightPos, dirLightLook, vec3(0.0, 1.0, 0.0));
-    mat4 depthProj = ortho(-30.0, 30.0, -30.0, 30.0, 0.1, 100.0);
+    mat4 depthProj = ortho(-10.0, 10.0, -10.0, 10.0, 1.0, 100.0);
+
+    GLuint lightPosID = glGetUniformLocation(program, "lightPos");
+    glUniform3fv(lightPosID, 1, &dirLightPos[0]);
+
+    GLuint lightViewID = glGetUniformLocation(program, "lightView");
+    glUniformMatrix4fv(lightViewID, 1, false, &depthView[0][0]);
+
+    GLuint lightProjID = glGetUniformLocation(program, "lightProj");
+    glUniformMatrix4fv(lightProjID, 1, false, &depthProj[0][0]);
+}
+
+/**
+ * SetShaderParams -
+ */
+
+void SSSMaterial::ApplyMaterial()
+{
+    GLuint kdID = glGetUniformLocation(program, "kd");
+    glUniform3fv(kdID, 1, &kd[0]);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, depthTexID);
+
+    GLuint depthID = glGetUniformLocation(program, "depthTex");
+    glUniform1i(depthID, 0);
+}
+
+/**
+ * SetLights -
+ */
+
+void SSSMaterial::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights)
+{
+    vec3 dirLightPos = dirLights[0].pos;
+    vec3 dirLightLook = dirLights[0].look;
+
+    mat4 depthView = lookAt(dirLightPos, dirLightLook, vec3(0.0, 1.0, 0.0));
+    mat4 depthProj = ortho(-10.0, 10.0, -10.0, 10.0, 1.0, 100.0);
 
     GLuint lightPosID = glGetUniformLocation(program, "lightPos");
     glUniform3fv(lightPosID, 1, &dirLightPos[0]);

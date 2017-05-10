@@ -57,3 +57,13 @@ struct BumpShadowMaterial : Material
     void ApplyMaterial();
     void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights);
 };
+
+// Translucent material via SSS with matte color.
+
+struct SSSMaterial : Material
+{
+    GLuint depthTexID;
+    vec3 kd;
+    void ApplyMaterial();
+    void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights);
+};

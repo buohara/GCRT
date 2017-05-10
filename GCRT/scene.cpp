@@ -10,7 +10,7 @@ void Scene::Init()
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.1f, 0.2f, 0.2f, 1.0f);
     glClearDepth(1.0f);
 
     cam.Init(
@@ -62,6 +62,12 @@ void Scene::LoadShaders()
         string("BumpShadowShader.vs"),
         string("BumpShadowShader.fs")
     );
+
+    shaders["SSS"].Create(
+        string("SSS"),
+        string("SSSShader.vs"),
+        string("SSSShader.fs")
+    );
 }
 
 /**
@@ -92,12 +98,12 @@ void Scene::LoadTextures()
 void Scene::InitLights()
 {
     DirectionalLight dirLight;
-    dirLight.pos = vec3(15.0, 15.0, 15.0);
+    dirLight.pos = vec3(0.0, 15.0, 15.0);
     dirLight.look = vec3(0.0, 0.0, 0.0);
     dirLights.push_back(dirLight);
 
     PointLight ptLight;
-    ptLight.pos = vec3(15.0, 15.0, 15.0);
+    ptLight.pos = vec3(0.0, 15.0, 15.0);
     ptLights.push_back(ptLight);
 }
 
@@ -142,6 +148,15 @@ void Scene::InitMaterials()
     basicShadowMat.depthTexID = textures["DepthTex"];
     materials["BasicShadow"] = make_shared<BasicShadowMaterial>(basicShadowMat);
 
+    // Matte green material with shadows.
+
+    SSSMaterial sssMat;
+    sssMat.name = "SSS";
+    sssMat.program = shaders["SSS"].program;
+    sssMat.kd = vec3(0.9, 0.9, 0.9);
+    sssMat.depthTexID = textures["DepthTex"];
+    materials["SSS"] = make_shared<SSSMaterial>(sssMat);
+
     // Dirt material with normal and shadow mapping.
 
     BumpShadowMaterial bumpShadowDirtMat;
@@ -173,34 +188,34 @@ void Scene::InitModels()
 
     Plane pln;
     pln.Create(10, 10);
-    pln.Scale(vec3(20.0, 20.0, 1.0));
+    pln.Scale(vec3(10.0, 10.0, 1.0));
 
     models["Plane"].pGeom = make_shared<Plane>(pln);
     models["Plane"].SetMaterial(materials["BumpShadowGrass"]);
 
     Box box;
     box.Create();
-    box.Scale(vec3(1.0, 1.0, 1.0));
-    box.Translate(vec3(-5.0, 5.0, 1.0));
+    box.Scale(vec3(8.0, 1.0, 4.0));
+    box.Translate(vec3(-3.0, 5.0, 1.0));
 
     models["Box"].pGeom = make_shared<Box>(box);
-    models["Box"].SetMaterial(materials["BasicShadow"]);
+    models["Box"].SetMaterial(materials["SSS"]);
 
     Sphere sph;
-    sph.Create(25, 25);
-    sph.Scale(vec3(2.0, 2.0, 5.0));
-    sph.Translate(vec3(0.0, 0.0, 3.0));
+    sph.Create(50, 50);
+    sph.Scale(vec3(2.0, 1.0, 2.0));
+    sph.Translate(vec3(5.0, 5.0, 5.0));
 
     models["Sphere"].pGeom = make_shared<Sphere>(sph);
-    models["Sphere"].SetMaterial(materials["BumpShadowDirt"]);
+    models["Sphere"].SetMaterial(materials["SSS"]);
 
     Cylinder cyl;
-    cyl.Create(20);
-    cyl.Scale(vec3(2.0, 2.0, 2.0));
-    cyl.Translate(vec3(-5.0, -5.0, 3.0));
+    cyl.Create(50);
+    cyl.Scale(vec3(2.0, 2.0, 5.0));
+    cyl.Translate(vec3(7.0, -5.0, 2.0));
 
     models["Cylinder"].pGeom = make_shared<Cylinder>(cyl);
-    models["Cylinder"].SetMaterial(materials["BasicShadow"]);
+    models["Cylinder"].SetMaterial(materials["SSS"]);
 }
 
 /**

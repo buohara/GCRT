@@ -139,5 +139,11 @@
     <None Include="BumpShadowShader.fs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="SSSShader.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="SSSShader.fs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -24,7 +24,7 @@ void DepthPass::Init()
     glGenTextures(1, &depthTexID);
     glBindTexture(GL_TEXTURE_2D, depthTexID);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depthMapSize, depthMapSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, depthMapSize, depthMapSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -53,7 +53,7 @@ void DepthPass::Render(map<string, Model> &models, vector<DirectionalLight> &dir
     vec3 lightLook = dirLights[0].look;
 
     mat4 depthView = lookAt(lightPos, lightLook, vec3(0.0, 1.0, 0.0));
-    mat4 depthProj = ortho(-30.0, 30.0, -30.0, 30.0, 0.1, 100.0);
+    mat4 depthProj = ortho(-10.0, 10.0, -10.0, 10.0, 1.0, 100.0);
 
     GLuint viewID = glGetUniformLocation(depthProgram, "view");
     glUniformMatrix4fv(viewID, 1, false, &depthView[0][0]);
