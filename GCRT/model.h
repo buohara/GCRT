@@ -8,12 +8,22 @@
 struct Model
 {
     shared_ptr<Geometry> pGeom;
-    shared_ptr<Material> pMat;
+    RMaterial mat;
     GLuint program;
 
-    void SetMaterial(shared_ptr<Material> pMatIn);
-    void SetCamera(Camera &cam);
-    void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights);
+    void SetMaterial(RMaterial matIn);
+
+    void SetGeometry(GLuint program);
+    void ApplyMaterial(GLuint program);
+    void SetCamera(Camera &cam, GLuint program);
+    void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights, GLuint program);
+
+    void SetUniforms(
+        Camera &cam,
+        vector<DirectionalLight> &dirLights,
+        vector<PointLight> &ptLights, 
+        GLuint program
+    );
 
     void Draw();
 };

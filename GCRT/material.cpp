@@ -1,172 +1,95 @@
 #include "material.h"
 
 /**
- * SetShaderParams -
+ * RMaterial -
  */
 
-void BasicMaterial::ApplyMaterial()
+RMaterial::RMaterial()
 {
-    GLuint kdID = glGetUniformLocation(program, "kd");
-    glUniform3fv(kdID, 1, &kd[0]);
+    useNormalMap = 0;
+    useDiffuseMap = 0;
+    useSSS = 0;
+    useShadows = 0;
 }
 
 /**
- * SetLights -
+ * SetDepthTex -
  */
 
-void BasicMaterial::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights)
+void RMaterial::SetDepthTex(GLuint depthTex)
 {
-    vec3 lightPos = ptLights[0].pos;
-    GLuint lightPosID = glGetUniformLocation(program, "lightPos");
-    glUniform3fv(lightPosID, 1, &lightPos[0]);
+    depthTexID = depthTex;
 }
 
 /**
- * SetShaderParams -
+ * SetDiffuseTex -
  */
 
-void BasicShadowMaterial::ApplyMaterial()
+void RMaterial::SetDiffuseTex(GLuint diffuseTex)
 {
-    GLuint kdID = glGetUniformLocation(program, "kd");
-    glUniform3fv(kdID, 1, &kd[0]);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, depthTexID);
-
-    GLuint depthID = glGetUniformLocation(program, "depthTex");
-    glUniform1i(depthID, 0);
+    diffuseTexID = diffuseTex;
+    useDiffuseMap = 1;
 }
 
 /**
- * SetLights -
+ * SetNormalTex -
  */
 
-void BasicShadowMaterial::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights)
+void RMaterial::SetNormalTex(GLuint normalTex)
 {
-    vec3 dirLightPos = dirLights[0].pos;
-    vec3 dirLightLook = dirLights[0].look;
-
-    mat4 depthView = lookAt(dirLightPos, dirLightLook, vec3(0.0, 1.0, 0.0));
-    mat4 depthProj = ortho(-30.0, 30.0, -30.0, 30.0, 1.0, 100.0);
-
-    GLuint lightPosID = glGetUniformLocation(program, "lightPos");
-    glUniform3fv(lightPosID, 1, &dirLightPos[0]);
-
-    GLuint lightViewID = glGetUniformLocation(program, "lightView");
-    glUniformMatrix4fv(lightViewID, 1, false, &depthView[0][0]);
-
-    GLuint lightProjID = glGetUniformLocation(program, "lightProj");
-    glUniformMatrix4fv(lightProjID, 1, false, &depthProj[0][0]);
+    normalTexID = normalTex;
+    useNormalMap = 1;
 }
 
 /**
  * SetShaderParams -
  */
 
-void BumpMaterial::ApplyMaterial()
+void RMaterial::ApplyMaterial(GLuint program)
 {
-    // Diffuse texture.
+    GLuint useNormalID = glGetUniformLocation(program, "useNormalMap");
+    glUniform1i(useNormalID, useNormalMap);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, diffuseTexID);
+    GLuint useDiffuseID = glGetUniformLocation(program, "useDiffuseMap");
+    glUniform1i(useDiffuseID, useDiffuseMap);
 
-    GLuint diffTexID = glGetUniformLocation(program, "diffuseTex");
-    glUniform1i(diffTexID, 0);
+    GLuint useSSSID = glGetUniformLocation(program, "useSSS");
+    glUniform1i(useSSSID, useSSS);
 
-    // Normal texture.
+    GLuint useShadowsID = glGetUniformLocation(program, "useShadows");
+    glUniform1i(useShadowsID, useShadows);
 
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, normalTexID);
+    // Texture or diffuse color.
 
-    GLuint normTexID = glGetUniformLocation(program, "normalTex");
-    glUniform1i(normTexID, 1);
+    if (useDiffuseMap == 1)
+    {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, diffuseTexID);
+        GLuint diffTexID = glGetUniformLocation(program, "diffuseTex");
+        glUniform1i(diffTexID, 0);
+    }
+    else
+    {
+        GLuint kdID = glGetUniformLocation(program, "kd");
+        glUniform3fv(kdID, 1, &kd[0]);
+    }
+
+    // Normal map or geometry normals
+
+    if (useNormalMap == 1)
+    {
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, normalTexID);
+        GLuint normTexID = glGetUniformLocation(program, "normalTex");
+        glUniform1i(normTexID, 1);
+    }
 }
 
 /**
  * SetLights -
  */
 
-void BumpMaterial::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights)
-{
-    vec3 lightPos = ptLights[0].pos;
-    GLuint lightPosID = glGetUniformLocation(program, "lightPos");
-    glUniform3fv(lightPosID, 1, &lightPos[0]);
-}
-
-/**
- * SetShaderParams -
- */
-
-void BumpShadowMaterial::ApplyMaterial()
-{
-    // Diffuse texture.
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, diffuseTexID);
-
-    GLuint diffTexID = glGetUniformLocation(program, "diffuseTex");
-    glUniform1i(diffTexID, 0);
-
-    // Normal texture.
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, normalTexID);
-
-    GLuint normTexID = glGetUniformLocation(program, "normalTex");
-    glUniform1i(normTexID, 1);
-
-    // Shadow map texture.
-
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, depthTexID);
-
-    GLuint depthID = glGetUniformLocation(program, "depthTex");
-    glUniform1i(depthID, 2);
-}
-
-/**
- * SetLights -
- */
-
-void BumpShadowMaterial::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights)
-{
-    vec3 dirLightPos = dirLights[0].pos;
-    vec3 dirLightLook = dirLights[0].look;
-
-    mat4 depthView = lookAt(dirLightPos, dirLightLook, vec3(0.0, 1.0, 0.0));
-    mat4 depthProj = ortho(-10.0, 10.0, -10.0, 10.0, 1.0, 100.0);
-
-    GLuint lightPosID = glGetUniformLocation(program, "lightPos");
-    glUniform3fv(lightPosID, 1, &dirLightPos[0]);
-
-    GLuint lightViewID = glGetUniformLocation(program, "lightView");
-    glUniformMatrix4fv(lightViewID, 1, false, &depthView[0][0]);
-
-    GLuint lightProjID = glGetUniformLocation(program, "lightProj");
-    glUniformMatrix4fv(lightProjID, 1, false, &depthProj[0][0]);
-}
-
-/**
- * SetShaderParams -
- */
-
-void SSSMaterial::ApplyMaterial()
-{
-    GLuint kdID = glGetUniformLocation(program, "kd");
-    glUniform3fv(kdID, 1, &kd[0]);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, depthTexID);
-
-    GLuint depthID = glGetUniformLocation(program, "depthTex");
-    glUniform1i(depthID, 0);
-}
-
-/**
- * SetLights -
- */
-
-void SSSMaterial::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights)
+void RMaterial::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights, GLuint program)
 {
     vec3 dirLightPos = dirLights[0].pos;
     vec3 dirLightLook = dirLights[0].look;

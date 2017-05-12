@@ -19,7 +19,7 @@ struct Scene
     map<string, Shader> shaders;
     map<string, Model> models;
     map<string, GLuint> textures;
-    map<string, shared_ptr<Material>> materials;
+    map<string, RMaterial> materials;
 
     vector<DirectionalLight> dirLights;
     vector<PointLight> ptLights;
@@ -32,7 +32,6 @@ struct Scene
     void HandleInputs(MSG &msg);
 
     void Init();
-    void LoadShaders();
     void LoadTextures();
     void InitMaterials();
     void InitModels();

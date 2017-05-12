@@ -187,18 +187,10 @@
     <ClInclude Include="sphere.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BasicShader.fs" />
-    <None Include="BasicShader.vs" />
-    <None Include="BasicShadow.fs" />
-    <None Include="BasicShadow.vs" />
-    <None Include="BumpShader.fs" />
-    <None Include="BumpShader.vs" />
-    <None Include="BumpShadowShader.fs" />
-    <None Include="BumpShadowShader.vs" />
     <None Include="DepthPassShader.fs" />
     <None Include="DepthPassShader.vs" />
-    <None Include="SSSShader.fs" />
-    <None Include="SSSShader.vs" />
+    <None Include="RenderShader.fs" />
+    <None Include="RenderShader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

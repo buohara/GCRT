@@ -109,40 +109,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="BumpShader.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="BumpShader.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="BasicShader.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="BasicShader.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="BasicShadow.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="BasicShadow.fs">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="DepthPassShader.vs">
       <Filter>Shaders</Filter>
     </None>
     <None Include="DepthPassShader.fs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="BumpShadowShader.vs">
+    <None Include="RenderShader.vs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="BumpShadowShader.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="SSSShader.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="SSSShader.fs">
+    <None Include="RenderShader.fs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

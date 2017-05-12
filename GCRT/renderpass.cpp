@@ -78,8 +78,19 @@ void DepthPass::Render(map<string, Model> &models, vector<DirectionalLight> &dir
  * Initialize the render pass.
  */
 
-void RenderPass::Init()
+void RenderPass::Init(GLuint depthTexIn)
 {
+    Shader renderShader;
+    
+    renderShader.Create(
+        string("RenderPass"),
+        string("RenderShader.vs"),
+        string("RenderShader.fs")
+    );
+
+    renderProgram = renderShader.program;
+    depthTex = depthTexIn;
+
     fboWidth = 1920;
     fboHeight = 1080;
 }
@@ -89,24 +100,29 @@ void RenderPass::Init()
  */
 
 void RenderPass::Render(
-    map<string, Model> &models, 
+    map<string, Model> &models,
+    Camera &cam,
     vector<DirectionalLight> &dirLights,
-    vector<PointLight> &ptLights,
-    Camera &cam)
+    vector<PointLight> &ptLights
+)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, fboWidth, fboHeight);
+    glViewport(0, 0, fboWidth, fboHeight);    
+    glUseProgram(renderProgram);
+
+    // Depth map (on texture unit 2).
+
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, depthTex);
+    GLuint depthID = glGetUniformLocation(renderProgram, "depthTex");
+    glUniform1i(depthID, 2);
 
     map<string, Model>::iterator it;
 
     for (it = models.begin(); it != models.end(); it++)
     {
-        GLuint modelProgram = (*it).second.program;
-        glUseProgram(modelProgram);
-
-        (*it).second.SetCamera(cam);
-        (*it).second.SetLights(dirLights, ptLights);
+        (*it).second.SetUniforms(cam, dirLights, ptLights, renderProgram);
         (*it).second.Draw();
     }
 }

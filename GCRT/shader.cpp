@@ -56,6 +56,12 @@ void Shader::Create(string &nameIn, string &vsFileName, string &fsFileName)
     {
         GLint maxLength = 0;
         glGetShaderiv(psID, GL_INFO_LOG_LENGTH, &maxLength);
+
+        if (maxLength > 512)
+        {
+            maxLength = 512;
+        }
+
         glGetShaderInfoLog(psID, maxLength, &maxLength, compileBuf);
         glDeleteShader(psID);
         printf("PS compile error: %s\n", compileBuf);

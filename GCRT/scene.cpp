@@ -22,52 +22,14 @@ void Scene::Init()
         0.1f,
         100.f
     );
-    
-    depthPass.Init();
-    renderPass.Init();
 
-    LoadShaders();
+    depthPass.Init();
+    renderPass.Init(depthPass.getDepthTex());
+
     LoadTextures();
     InitMaterials();
     InitModels();
     InitLights();
-}
-
-/**
- * LoadShaders - Compile shaders and cache their handles for later use.
- */
-
-void Scene::LoadShaders()
-{
-    shaders["Basic"].Create(
-        string("BasicShader"),
-        string("BasicShader.vs"),
-        string("BasicShader.fs")
-    );
-
-    shaders["BasicShadow"].Create(
-        string("BasicShadow"),
-        string("BasicShadow.vs"),
-        string("BasicShadow.fs")
-    );
-
-    shaders["Bump"].Create(
-        string("Bump"),
-        string("BumpShader.vs"),
-        string("BumpShader.fs")
-    );
-
-    shaders["BumpShadow"].Create(
-        string("BumpShadow"),
-        string("BumpShadowShader.vs"),
-        string("BumpShadowShader.fs")
-    );
-
-    shaders["SSS"].Create(
-        string("SSS"),
-        string("SSSShader.vs"),
-        string("SSSShader.fs")
-    );
 }
 
 /**
@@ -87,8 +49,6 @@ void Scene::LoadTextures()
 
     textures["GrassNormal"] =
         ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/grassNormal.jpg"));
-
-    textures["DepthTex"] = depthPass.getDepthTex();
 }
 
 /**
@@ -113,69 +73,26 @@ void Scene::InitLights()
 
 void Scene::InitMaterials()
 {
-    // Dirt material with normal map.
+    // Matte green SSS material with bumps.
 
-    BumpMaterial dirtMat;
+    RMaterial dirtMat;
     dirtMat.name = "Dirt";
-    dirtMat.diffuseTexID = textures["DirtDiffuse"];
-    dirtMat.normalTexID = textures["DirtNormal"];
-    dirtMat.program = shaders["Bump"].program;
-    materials["Dirt"] = make_shared<BumpMaterial>(dirtMat);
+    dirtMat.SetDiffuseTex(textures["DirtDiffuse"]);
+    dirtMat.SetNormalTex(textures["DirtNormal"]);
+    dirtMat.UseShadows(true);
+    materials["Dirt"] = dirtMat;
 
-    // Grass material with normal map.
+    RMaterial redMat;
+    redMat.name = "RedMat";
+    redMat.kd = vec3(0.9, 0.4, 0.4);
+    redMat.UseShadows(true);
+    materials["RedMat"] = redMat;
 
-    BumpMaterial grassMat;
-    dirtMat.name = "Grass";
-    dirtMat.diffuseTexID = textures["GrassDiffuse"];
-    dirtMat.normalTexID = textures["GrassNormal"];
-    dirtMat.program = shaders["Bump"].program;
-    materials["Grass"] = make_shared<BumpMaterial>(dirtMat);
-
-    // Matte blue material.
-
-    BasicMaterial basicBlueMat;
-    basicBlueMat.name = "BasicBlue";
-    basicBlueMat.program = shaders["Basic"].program;
-    basicBlueMat.kd = vec3(0.1, 0.1, 0.7);
-    materials["BasicBlue"] = make_shared<BasicMaterial>(basicBlueMat);
-
-    // Matte green material with shadows.
-
-    BasicShadowMaterial basicShadowMat;
-    basicShadowMat.name = "BasicShadow";
-    basicShadowMat.program = shaders["BasicShadow"].program;
-    basicShadowMat.kd = vec3(0.1, 0.7, 0.1);
-    basicShadowMat.depthTexID = textures["DepthTex"];
-    materials["BasicShadow"] = make_shared<BasicShadowMaterial>(basicShadowMat);
-
-    // Matte green material with shadows.
-
-    SSSMaterial sssMat;
-    sssMat.name = "SSS";
-    sssMat.program = shaders["SSS"].program;
-    sssMat.kd = vec3(0.9, 0.9, 0.9);
-    sssMat.depthTexID = textures["DepthTex"];
-    materials["SSS"] = make_shared<SSSMaterial>(sssMat);
-
-    // Dirt material with normal and shadow mapping.
-
-    BumpShadowMaterial bumpShadowDirtMat;
-    bumpShadowDirtMat.name = "BumpShadowDirt";
-    bumpShadowDirtMat.program = shaders["BumpShadow"].program;
-    bumpShadowDirtMat.diffuseTexID = textures["DirtDiffuse"];
-    bumpShadowDirtMat.normalTexID = textures["DirtNormal"];
-    bumpShadowDirtMat.depthTexID = textures["DepthTex"];
-    materials["BumpShadowDirt"] = make_shared<BumpShadowMaterial>(bumpShadowDirtMat);
-
-    // Grass material with normal and shadow mapping.
-
-    BumpShadowMaterial bumpShadowGrassMat;
-    bumpShadowGrassMat.name = "BumpShadowGrass";
-    bumpShadowGrassMat.program = shaders["BumpShadow"].program;
-    bumpShadowGrassMat.diffuseTexID = textures["GrassDiffuse"];
-    bumpShadowGrassMat.normalTexID = textures["GrassNormal"];
-    bumpShadowGrassMat.depthTexID = textures["DepthTex"];
-    materials["BumpShadowGrass"] = make_shared<BumpShadowMaterial>(bumpShadowGrassMat);
+    RMaterial greenMat;
+    greenMat.name = "GreenMat";
+    greenMat.kd = vec3(0.4, 0.9, 0.4);
+    greenMat.UseShadows(true);
+    materials["GreenMat"] = greenMat;
 }
 
 /**
@@ -191,7 +108,7 @@ void Scene::InitModels()
     pln.Scale(vec3(10.0, 10.0, 1.0));
 
     models["Plane"].pGeom = make_shared<Plane>(pln);
-    models["Plane"].SetMaterial(materials["BumpShadowGrass"]);
+    models["Plane"].SetMaterial(materials["Dirt"]);
 
     Box box;
     box.Create();
@@ -199,23 +116,23 @@ void Scene::InitModels()
     box.Translate(vec3(-3.0, 5.0, 1.0));
 
     models["Box"].pGeom = make_shared<Box>(box);
-    models["Box"].SetMaterial(materials["SSS"]);
+    models["Box"].SetMaterial(materials["GreenMat"]);
 
     Sphere sph;
     sph.Create(50, 50);
-    sph.Scale(vec3(2.0, 1.0, 2.0));
+    sph.Scale(vec3(2.0, 2.0, 2.0));
     sph.Translate(vec3(5.0, 5.0, 5.0));
 
     models["Sphere"].pGeom = make_shared<Sphere>(sph);
-    models["Sphere"].SetMaterial(materials["SSS"]);
+    models["Sphere"].SetMaterial(materials["RedMat"]);
 
-    Cylinder cyl;
+    /*Cylinder cyl;
     cyl.Create(50);
-    cyl.Scale(vec3(2.0, 2.0, 5.0));
+    cyl.Scale(vec3(1.0, 1.0, 3.0));
     cyl.Translate(vec3(7.0, -5.0, 2.0));
 
     models["Cylinder"].pGeom = make_shared<Cylinder>(cyl);
-    models["Cylinder"].SetMaterial(materials["SSS"]);
+    models["Cylinder"].SetMaterial(materials["SSS"]);*/
 }
 
 /**
@@ -230,23 +147,18 @@ void Scene::Render(HDC hDC)
 
     cam.Update();
 
-    // Do depth pass.
-
     depthPass.Render(models, dirLights);
-
-    // Camera render pass.
-
     renderPass.Render(
-        models, 
-        dirLights, 
-        ptLights, 
-        cam
+        models,
+        cam,
+        dirLights,
+        ptLights
     );
 
     // Swap.
 
     SwapBuffers(hDC);
-    t += 0.01f;
+    t += 0.005f;
 }
 
 /**

@@ -4,17 +4,16 @@
  * SetMaterial
  */
 
-void Model::SetMaterial(shared_ptr<Material> pMatIn)
+void Model::SetMaterial(RMaterial matIn)
 {
-    program = pMatIn->program;
-    pMat = pMatIn;
+    mat = matIn;
 }
 
 /**
  * SetCamera -
  */
 
-void Model::SetCamera(Camera &cam)
+void Model::SetCamera(Camera &cam, GLuint program)
 {
     vec3 camPos = cam.pos;
     mat4 proj = cam.GetProjection();
@@ -34,19 +33,17 @@ void Model::SetCamera(Camera &cam)
  * SetLights -
  */
 
-void Model::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights)
+void Model::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights, GLuint program)
 {
-    pMat->SetLights(dirLights, ptLights);
+    mat.SetLights(dirLights, ptLights, program);
 }
 
 /**
- * Draw -
+ * SetGeometry -
  */
 
-void Model::Draw()
+void Model::SetGeometry(GLuint program)
 {
-    pMat->ApplyMaterial();
-
     mat4 model = pGeom->model;
     mat4 modelInv = pGeom->modelInv;
 
@@ -55,6 +52,39 @@ void Model::Draw()
 
     GLuint modelInvID = glGetUniformLocation(program, "modelInv");
     glUniformMatrix4fv(modelInvID, 1, false, &modelInv[0][0]);
+}
 
+/**
+ * ApplyMaterials -
+ */
+
+void Model::ApplyMaterial(GLuint program)
+{
+    mat.ApplyMaterial(program);
+}
+
+/**
+ * SetUniforms -
+ */
+
+void Model::SetUniforms(
+    Camera &cam,
+    vector<DirectionalLight> &dirLights,
+    vector<PointLight> &ptLights,
+    GLuint program
+)
+{
+    SetGeometry(program);
+    SetCamera(cam, program);
+    SetLights(dirLights, ptLights, program);
+    ApplyMaterial(program);
+}
+
+/**
+ * Draw -
+ */
+
+void Model::Draw()
+{
     pGeom->Draw();
 }

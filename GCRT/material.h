@@ -7,63 +7,30 @@
 using namespace std;
 using namespace glm;
 
-// Virtual base material class.
-
-struct Material
+struct RMaterial
 {
     string name;
     GLuint program;
-
-    virtual void ApplyMaterial() = 0;
-    virtual void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights) = 0;
-};
-
-// Simple matte material with diffuse lighting, flat color.
-
-struct BasicMaterial : Material
-{
     vec3 kd;
-    void ApplyMaterial();
-    void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights);
-};
 
-// Simple matte material with diffuse lighting, flat color, and shadow map.
+    GLuint useNormalMap;
+    GLuint useDiffuseMap;
+    GLuint useSSS;
+    GLuint useShadows;
 
-struct BasicShadowMaterial : Material
-{
-    vec3 kd;
     GLuint depthTexID;
-    void ApplyMaterial();
-    void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights);
-};
-
-// Material with diffuse lighting and normal map.
-
-struct BumpMaterial : Material
-{
     GLuint diffuseTexID;
     GLuint normalTexID;
-    void ApplyMaterial();
-    void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights);
-};
 
-// Material with diffuse lighting, normal map, and shadow map.
+    RMaterial();
 
-struct BumpShadowMaterial : Material
-{
-    GLuint diffuseTexID;
-    GLuint normalTexID;
-    GLuint depthTexID;
-    void ApplyMaterial();
-    void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights);
-};
+    void ApplyMaterial(GLuint program);
+    void SetDepthTex(GLuint depthTex);
+    void SetNormalTex(GLuint normalTex);
+    void SetDiffuseTex(GLuint diffuseTex);
 
-// Translucent material via SSS with matte color.
+    void UseSSS(bool bUse) { bUse ? useSSS = 1 : useShadows = 0; }
+    void UseShadows(bool bUse) { bUse ? useShadows = 1 : useShadows = 0; }
 
-struct SSSMaterial : Material
-{
-    GLuint depthTexID;
-    vec3 kd;
-    void ApplyMaterial();
-    void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights);
+    void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights, GLuint program);
 };
