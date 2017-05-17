@@ -161,7 +161,7 @@ void RenderPass::Render(
         GLuint useDOFID = glGetUniformLocation(renderProgram, "useDOF");
         glUniform1i(useDOFID, 1);
 
-        vec4 planes = vec4(4.0, 5.0, 20.0, 40.0);
+        vec4 planes = vec4(0.0, 15.0, 40.0, 120.0);
         GLuint focusPlanesID = glGetUniformLocation(renderProgram, "focusPlanes");
         glUniform4fv(focusPlanesID, 1, &planes[0]);
     }
@@ -231,13 +231,13 @@ void DOFPass::GenerateSamplePoints()
     float r;
     float theta;
 
-    for (uint32_t i = 0; i < 16; i++)
+    for (uint32_t i = 0; i < 32; i++)
     {
         r = (float)rand() / (float)RAND_MAX;
         theta = twoPi * ((float)rand() / (float)RAND_MAX);
 
-        samplePts[2 * i] = r * cosf(theta);
-        samplePts[2 * i + 1] = r * sinf(theta);
+        samplePts[2 * i] = r;
+        samplePts[2 * i + 1] = theta;
     }
 }
 
@@ -245,10 +245,14 @@ void DOFPass::GenerateSamplePoints()
  * Init
  */
 
-void DOFPass::Init(GLuint colorTexIn)
+void DOFPass::Init(
+    GLuint colorTexIn,
+    GLuint noiseTexIn
+)
 {
     colorTexID = colorTexIn;
-    
+    noiseTexID = noiseTexIn;
+
     LoadQuadVerts();
     GenerateSamplePoints();
 
@@ -278,8 +282,13 @@ void DOFPass::Render()
     GLuint colorID = glGetUniformLocation(dofProgram, "colorTex");
     glUniform1i(colorID, 0);
 
-   GLuint sampleID = glGetUniformLocation(dofProgram, "samplePts");
-   glUniform2fv(sampleID, 16, samplePts);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, noiseTexID);
+    GLuint noiseID = glGetUniformLocation(dofProgram, "noiseTex");
+    glUniform1i(noiseID, 1);
+
+    GLuint sampleID = glGetUniformLocation(dofProgram, "samplePts");
+    glUniform2fv(sampleID, 32, samplePts);
 
     glBindVertexArray(vaoID);
     glDrawArrays(GL_TRIANGLES, 0, 6);

@@ -19,7 +19,7 @@ struct Camera
     float nclip;
     float fclip;
 
-    const float txSpeed = 0.1f;
+    const float txSpeed = 0.2f;
     const float fovSpeed = 0.2f;
     const float rotSpeed = 0.01f;
 

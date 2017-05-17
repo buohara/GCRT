@@ -44,14 +44,15 @@ struct DOFPass
 {
     GLuint dofProgram;
     GLuint colorTexID;
+    GLuint noiseTexID;
 
     GLuint vaoID;
     GLuint posVboID;
     GLuint uvVboID;
 
-    float samplePts[32];
+    float samplePts[64];
 
-    void Init(GLuint colorTexIn);
+    void Init(GLuint colorTexIn, GLuint noiseTexIn);
     void Render();
     void LoadQuadVerts();
     void GenerateSamplePoints();

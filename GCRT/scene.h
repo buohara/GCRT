@@ -38,4 +38,6 @@ struct Scene
     void InitModels();
     void InitLights();
     void Render(HDC hDC);
+
+    void CreateNoiseTexture();
 };

@@ -8,10 +8,11 @@ void Scene::Init()
 {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_MULTISAMPLE);
     glCullFace(GL_BACK);
     useDOF = true;
 
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.1f, 0.2f, 0.2f, 1.0f);
     glClearDepth(1.0f);
 
     cam.Init(
@@ -24,12 +25,13 @@ void Scene::Init()
         100.f
     );
 
+    CreateNoiseTexture();
     depthPass.Init();
 
     if (useDOF == true)
     {
         renderPass.Init(depthPass.getDepthTex(), false);
-        dofPass.Init(renderPass.getColorTex());
+        dofPass.Init(renderPass.getColorTex(), textures["NoiseTex"]);
     }
     else
     {
@@ -138,15 +140,15 @@ void Scene::InitModels()
     Sphere sph;
     sph.Create(50, 50);
     sph.Scale(vec3(4.0, 4.0, 4.0));
-    sph.Translate(vec3(0.0, -15.0, 3.0));
+    sph.Translate(vec3(0.0, 12.0, 3.0));
 
     models["Sphere"].pGeom = make_shared<Sphere>(sph);
     models["Sphere"].SetMaterial(materials["RedMat"]);
 
     Cylinder cyl;
     cyl.Create(25);
-    cyl.Scale(vec3(2.0, 2.0, 3.0));
-    cyl.Translate(vec3(0.0, 15.0, 3.0));
+    cyl.Scale(vec3(1.0, 1.0, 2.0));
+    cyl.Translate(vec3(0.0, -30.0, 3.0));
 
     models["Cylinder"].pGeom = make_shared<Cylinder>(cyl);
     models["Cylinder"].SetMaterial(materials["YellowMat"]);
@@ -236,4 +238,34 @@ void Scene::HandleInputs(MSG &msg)
     default:
         break;
     }
+}
+
+/**
+ * CreateNoiseTexture - Create a texture with random gray-scale pixel values.
+ */
+
+void Scene::CreateNoiseTexture()
+{
+    uint32_t w = 1024;
+    uint32_t h = 1024;
+
+    vector<BYTE> pixels;
+    pixels.resize(w * h);
+
+    for (uint32 i = 0; i < w * h; i++)
+    {
+        pixels[i] = (BYTE)(256 * (float)rand() / (float)RAND_MAX);
+    }
+
+    GLuint noiseTexID;
+    glGenTextures(1, &noiseTexID);
+    glBindTexture(GL_TEXTURE_2D, noiseTexID);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_BYTE, &pixels[0]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    textures["NoiseTex"] = noiseTexID;
 }
