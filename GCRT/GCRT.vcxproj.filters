@@ -112,13 +112,19 @@
     <None Include="DepthPassShader.vs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="DepthPassShader.fs">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="RenderShader.vs">
       <Filter>Shaders</Filter>
     </None>
     <None Include="RenderShader.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="DepthPassShader.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="DOFShader.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="DOFShader.fs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

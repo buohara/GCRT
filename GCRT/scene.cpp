@@ -9,8 +9,9 @@ void Scene::Init()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    useDOF = true;
 
-    glClearColor(0.1f, 0.2f, 0.2f, 1.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClearDepth(1.0f);
 
     cam.Init(
@@ -24,7 +25,16 @@ void Scene::Init()
     );
 
     depthPass.Init();
-    renderPass.Init(depthPass.getDepthTex());
+
+    if (useDOF == true)
+    {
+        renderPass.Init(depthPass.getDepthTex(), false);
+        dofPass.Init(renderPass.getColorTex());
+    }
+    else
+    {
+        renderPass.Init(depthPass.getDepthTex(), true);
+    }
 
     LoadTextures();
     InitMaterials();
@@ -58,7 +68,7 @@ void Scene::LoadTextures()
 void Scene::InitLights()
 {
     DirectionalLight dirLight;
-    dirLight.pos = vec3(0.0, 15.0, 15.0);
+    dirLight.pos = vec3(0.0, 25.0, 25.0);
     dirLight.look = vec3(0.0, 0.0, 0.0);
     dirLights.push_back(dirLight);
 
@@ -84,8 +94,9 @@ void Scene::InitMaterials()
 
     RMaterial redMat;
     redMat.name = "RedMat";
-    redMat.kd = vec3(0.9, 0.4, 0.4);
+    redMat.kd = vec3(1.0, 0.4, 0.4);
     redMat.UseShadows(true);
+    redMat.SetNormalTex(textures["DirtNormal"]);
     materials["RedMat"] = redMat;
 
     RMaterial greenMat;
@@ -93,6 +104,12 @@ void Scene::InitMaterials()
     greenMat.kd = vec3(0.4, 0.9, 0.4);
     greenMat.UseShadows(true);
     materials["GreenMat"] = greenMat;
+
+    RMaterial yellowMat;
+    yellowMat.name = "YellowMat";
+    yellowMat.kd = vec3(0.8, 0.8, 0.3);
+    yellowMat.UseShadows(true);
+    materials["YellowMat"] = yellowMat;
 }
 
 /**
@@ -112,27 +129,27 @@ void Scene::InitModels()
 
     Box box;
     box.Create();
-    box.Scale(vec3(8.0, 1.0, 4.0));
-    box.Translate(vec3(-3.0, 5.0, 1.0));
+    box.Scale(vec3(2.0, 2.0, 2.0));
+    box.Translate(vec3(2.0, 0.0, 1.0));
 
     models["Box"].pGeom = make_shared<Box>(box);
     models["Box"].SetMaterial(materials["GreenMat"]);
 
     Sphere sph;
     sph.Create(50, 50);
-    sph.Scale(vec3(2.0, 2.0, 2.0));
-    sph.Translate(vec3(5.0, 5.0, 5.0));
+    sph.Scale(vec3(4.0, 4.0, 4.0));
+    sph.Translate(vec3(0.0, -15.0, 3.0));
 
     models["Sphere"].pGeom = make_shared<Sphere>(sph);
     models["Sphere"].SetMaterial(materials["RedMat"]);
 
-    /*Cylinder cyl;
-    cyl.Create(50);
-    cyl.Scale(vec3(1.0, 1.0, 3.0));
-    cyl.Translate(vec3(7.0, -5.0, 2.0));
+    Cylinder cyl;
+    cyl.Create(25);
+    cyl.Scale(vec3(2.0, 2.0, 3.0));
+    cyl.Translate(vec3(0.0, 15.0, 3.0));
 
     models["Cylinder"].pGeom = make_shared<Cylinder>(cyl);
-    models["Cylinder"].SetMaterial(materials["SSS"]);*/
+    models["Cylinder"].SetMaterial(materials["YellowMat"]);
 }
 
 /**
@@ -148,12 +165,18 @@ void Scene::Render(HDC hDC)
     cam.Update();
 
     depthPass.Render(models, dirLights);
+    
     renderPass.Render(
         models,
         cam,
         dirLights,
         ptLights
     );
+    
+    if (useDOF == true)
+    {
+        dofPass.Render();
+    }
 
     // Swap.
 

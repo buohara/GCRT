@@ -189,6 +189,8 @@
   <ItemGroup>
     <None Include="DepthPassShader.fs" />
     <None Include="DepthPassShader.vs" />
+    <None Include="DOFShader.fs" />
+    <None Include="DOFShader.vs" />
     <None Include="RenderShader.fs" />
     <None Include="RenderShader.vs" />
   </ItemGroup>

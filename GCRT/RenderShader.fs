@@ -18,12 +18,14 @@ uniform mat4 modelInv;
 uniform mat4 view;
 uniform mat4 proj;
 uniform vec3 camPos;
+uniform vec4 focusPlanes;
 
 // Light uniforms
 
 uniform vec3 lightPos;
 uniform mat4 lightView;
 uniform mat4 lightProj;
+uniform vec3 ka;
 
 // Material uniforms
 
@@ -37,6 +39,7 @@ uniform int useNormalMap;
 uniform int useDiffuseMap;
 uniform int useSSS;
 uniform int useShadows;
+uniform int useDOF;
 
 /**
  * Compute diffuse lighting color.
@@ -136,6 +139,31 @@ float getVisibility()
 }
 
 /**
+ * Get blur factor based on depth and focal plane for DOF.
+ */
+
+float getDOFBlur()
+{
+    float posz = -(view * model * passPos).z;
+    float blur = 0.0;
+
+    if (posz < focusPlanes.y)
+    {
+        blur = (focusPlanes.y - posz) / (focusPlanes.y - focusPlanes.x);
+    }
+    else if (posz > focusPlanes.y && posz < focusPlanes.z)
+    {
+        blur = 0.0;
+    }
+    else
+    {
+        blur = (posz - focusPlanes.z) / (focusPlanes.w - focusPlanes.z);
+    }
+
+    return blur;  
+}
+
+/**
  * Main fragment shader routine (main render pass).
  */
 
@@ -145,5 +173,10 @@ void main()
     vec4 specColor    = getSpecular();    
     float visibility  = getVisibility();
 
-    color = visibility * (diffuseColor + specColor);
+    color = visibility * (diffuseColor + specColor) + vec4(ka, 1);
+
+    if (useDOF == 1)
+    {
+        color.a = getDOFBlur();
+    }
 }

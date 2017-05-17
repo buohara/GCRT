@@ -15,6 +15,7 @@ struct Scene
 {
     Camera cam;
     bool wireFrame = false;
+    bool useDOF = false;
 
     map<string, Shader> shaders;
     map<string, Model> models;
@@ -26,11 +27,11 @@ struct Scene
 
     DepthPass depthPass;
     RenderPass renderPass;
+    DOFPass dofPass;
 
     GLuint dbFboID;
 
     void HandleInputs(MSG &msg);
-
     void Init();
     void LoadTextures();
     void InitMaterials();
