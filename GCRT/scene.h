@@ -32,6 +32,13 @@ struct Scene
     DOFPass dofPass;
 
     GLuint dbFboID;
+    GLuint renderFbo;
+    GLuint renderTex;
+
+    uint32_t winW;
+    uint32_t winH;
+
+    static const uint32_t RENDER_TO_SCREEN = 0;
 
     void HandleInputs(MSG &msg);
     void Init();
@@ -42,4 +49,5 @@ struct Scene
     void Render(HDC hDC);
 
     void CreateNoiseTexture();
+    void CreateRenderPassFbo();
 };

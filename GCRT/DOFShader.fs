@@ -16,7 +16,7 @@ void main()
 
     float dtheta = texture2D(noiseTex, passUV).r;
 
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 16; i++)
     {
         vec2 sampleUV = passUV;
 
@@ -26,18 +26,18 @@ void main()
         float dx = r * cos(theta + dtheta);
         float dy = r * sin(theta + dtheta);
 
-        sampleUV.x += 0.1 * blur * dx;
-        sampleUV.y += 0.1 * blur * dy;
+        sampleUV.x += 0.2 * blur * dx;
+        sampleUV.y += 0.2 * blur * dy;
 
         float sampleDepth = texture2D(colorTex, sampleUV).a;
         
         if (sampleDepth < depth)
         {
-            color += texture2D(colorTex, passUV) / 8.0;
+            color += texture2D(colorTex, passUV) / 16.0;
         }
         else
         {
-            color += texture2D(colorTex, sampleUV) / 8.0;
+            color += texture2D(colorTex, sampleUV) / 16.0;
         }
     }
 }

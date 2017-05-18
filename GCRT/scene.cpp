@@ -10,8 +10,12 @@ void Scene::Init()
     glEnable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
     glCullFace(GL_BACK);
-    useDOF = false;
+    
+    useDOF = true;
     useBloom = true;
+
+    winW = 2560;
+    winH = 1440;
 
     glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
     glClearDepth(1.0f);
@@ -27,27 +31,65 @@ void Scene::Init()
     );
 
     CreateNoiseTexture();
-    depthPass.Init();
+    CreateRenderPassFbo();
 
-    if (useDOF == true)
-    {
-        renderPass.Init(depthPass.getDepthTex(), false);
-        dofPass.Init(renderPass.getColorTex(), textures["NoiseTex"]);
-    }
-    else if (useBloom == true)
-    {
-        renderPass.Init(depthPass.getDepthTex(), false);
-        bloomPass.Init(renderPass.getColorTex());
-    }
-    else
-    {
-        renderPass.Init(depthPass.getDepthTex(), true);
-    }
+    depthPass.Init();
+    
+    renderPass.Init(
+        depthPass.getDepthTex(), 
+        renderFbo,
+        winW,
+        winH,
+        true
+    );
+    
+    dofPass.Init(
+        renderTex,
+        textures["NoiseTex"],
+        renderFbo,
+        winW,
+        winH
+    );
+
+    bloomPass.Init(
+        renderTex,
+        RENDER_TO_SCREEN,
+        winW,
+        winH
+    );
 
     LoadTextures();
     InitMaterials();
     InitModels();
     InitLights();
+}
+
+/**
+ * Create in/out FBO/texture to hand between passes.
+ */
+
+void Scene::CreateRenderPassFbo()
+{
+    glGenFramebuffers(1, &renderFbo);
+
+    glGenTextures(1, &renderTex);
+    glBindTexture(GL_TEXTURE_2D, renderTex);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, winW, winH, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    GLuint depthrenderbuffer;
+    glGenRenderbuffers(1, &depthrenderbuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, winW, winH);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, renderFbo);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 /**

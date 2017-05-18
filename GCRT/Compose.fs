@@ -9,8 +9,8 @@ out vec4 color;
 
 void main()
 {
-    vec3 sceneColor = texture2D(blurTex, passUV).rgb;
-    vec3 blurColor = texture2D(colorTex, passUV).rgb;
+    vec3 blurColor = texture2D(blurTex, passUV).rgb;
+    vec3 sceneColor = texture2D(colorTex, passUV).rgb;
 
     sceneColor += blurColor;
 

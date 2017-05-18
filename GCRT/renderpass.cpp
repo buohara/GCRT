@@ -78,7 +78,13 @@ void DepthPass::Render(map<string, Model> &models, vector<DirectionalLight> &dir
  * Initialize the render pass.
  */
 
-void RenderPass::Init(GLuint depthTexIn, bool finalPass)
+void RenderPass::Init(
+    GLuint depthTexIn, 
+    GLuint renderFbo,
+    uint32_t screenW,
+    uint32_t screenH,
+    bool useDOFIn
+)
 {
     Shader renderShader;
     
@@ -91,34 +97,11 @@ void RenderPass::Init(GLuint depthTexIn, bool finalPass)
     renderProgram = renderShader.program;
     depthTex = depthTexIn;
 
-    fboWidth = 1920;
-    fboHeight = 1080;
+    fboWidth = screenW;
+    fboHeight = screenH;
 
-    lastPass = finalPass;
-
-    if (finalPass == false)
-    {
-        glGenFramebuffers(1, &renderFboID);
-        
-        glGenTextures(1, &renderTex);
-        glBindTexture(GL_TEXTURE_2D, renderTex);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 2560, 1440, 0, GL_RGBA, GL_FLOAT, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-        GLuint depthrenderbuffer;
-        glGenRenderbuffers(1, &depthrenderbuffer);
-        glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 2560, 1440);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, renderFboID);
-        glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
+    renderFboID = renderFbo;
+    useDOF = useDOFIn;
 }
 
 /**
@@ -132,20 +115,12 @@ void RenderPass::Render(
     vector<PointLight> &ptLights
 )
 {
-    if (lastPass == true)
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-    else
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, renderFboID);
-    }
-
+    glBindFramebuffer(GL_FRAMEBUFFER, renderFboID);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glViewport(0, 0, fboWidth, fboHeight);    
     glUseProgram(renderProgram);
 
-    // Depth map (on texture unit 2).
+    // Set depth map (on texture unit 2).
 
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, depthTex);
@@ -156,7 +131,9 @@ void RenderPass::Render(
     GLuint kaID = glGetUniformLocation(renderProgram, "ka");
     glUniform3fv(kaID, 1, &ka[0]);
 
-    if (lastPass == false)
+    // Set DOF parameters if enabled.
+
+    if (useDOF == true)
     {
         GLuint useDOFID = glGetUniformLocation(renderProgram, "useDOF");
         glUniform1i(useDOFID, 1);
@@ -165,6 +142,8 @@ void RenderPass::Render(
         GLuint focusPlanesID = glGetUniformLocation(renderProgram, "focusPlanes");
         glUniform4fv(focusPlanesID, 1, &planes[0]);
     }
+
+    // Render models.
 
     map<string, Model>::iterator it;
 
@@ -247,11 +226,17 @@ void DOFPass::GenerateSamplePoints()
 
 void DOFPass::Init(
     GLuint colorTexIn,
-    GLuint noiseTexIn
+    GLuint noiseTexIn,
+    GLuint renderFboIn,
+    uint32_t screenW,
+    uint32_t screenH
 )
 {
     colorTexID = colorTexIn;
     noiseTexID = noiseTexIn;
+    renderFbo = renderFboIn;
+    fboHeight = screenH;
+    fboWidth = screenW;
 
     LoadQuadVerts();
     GenerateSamplePoints();
@@ -272,9 +257,8 @@ void DOFPass::Init(
 
 void DOFPass::Render()
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, 2560, 1440);
+    glBindFramebuffer(GL_FRAMEBUFFER, renderFbo);
+    glViewport(0, 0, fboWidth, fboHeight);
     glUseProgram(dofProgram);
 
     glActiveTexture(GL_TEXTURE0);
@@ -345,14 +329,19 @@ void BloomPass::LoadQuadVerts()
  * Init - Initialize depth FBO and associated textures.
  */
 
-void BloomPass::Init(GLuint colorTexIn)
+void BloomPass::Init(
+    GLuint colorTexIn,
+    GLuint renderFbo,
+    uint32_t screenW,
+    uint32_t screenH
+)
 {
     // Compile bright, blur, and compose shaders.
 
-    uint32_t w = 2560;
-    uint32_t h = 1440;
-
     colorTexID = colorTexIn;
+    renderFboID = renderFbo;
+    fboWidth = screenW;
+    fboHeight = screenH;
 
     Shader brightShader;
     Shader blurShader;
@@ -390,7 +379,7 @@ void BloomPass::Init(GLuint colorTexIn)
     glGenTextures(1, &brightTexID);
     glBindTexture(GL_TEXTURE_2D, brightTexID);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, fboWidth, fboHeight, 0, GL_RGBA, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -407,7 +396,7 @@ void BloomPass::Init(GLuint colorTexIn)
     glGenTextures(1, &hBlurTexID);
     glBindTexture(GL_TEXTURE_2D, hBlurTexID);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, fboWidth, fboHeight, 0, GL_RGBA, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -424,7 +413,7 @@ void BloomPass::Init(GLuint colorTexIn)
     glGenTextures(1, &vBlurTexID);
     glBindTexture(GL_TEXTURE_2D, vBlurTexID);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, fboWidth, fboHeight, 0, GL_RGBA, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -445,7 +434,7 @@ void BloomPass::Render()
 
     glBindFramebuffer(GL_FRAMEBUFFER, brightFboID);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, 2560, 1440);
+    glViewport(0, 0, fboWidth, fboHeight);
     glUseProgram(brightProgram);
 
     glActiveTexture(GL_TEXTURE0);
@@ -455,13 +444,12 @@ void BloomPass::Render()
 
     glBindVertexArray(vaoID);
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
 
     // Do Horizontal and Vertical Blur passes.
 
     glBindFramebuffer(GL_FRAMEBUFFER, hBlurFboID);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, 2560, 1440);
+    glViewport(0, 0, fboWidth, fboHeight);
     glUseProgram(blurProgram);
 
     glActiveTexture(GL_TEXTURE0);
@@ -472,13 +460,11 @@ void BloomPass::Render()
     GLuint horizID = glGetUniformLocation(blurProgram, "horizontal");
     glUniform1i(horizID, 1);
 
-    glBindVertexArray(vaoID);
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, vBlurFboID);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, 2560, 1440);
+    glViewport(0, 0, fboWidth, fboHeight);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, hBlurTexID);
@@ -488,15 +474,13 @@ void BloomPass::Render()
     horizID = glGetUniformLocation(blurProgram, "horizontal");
     glUniform1i(horizID, 0);
 
-    glBindVertexArray(vaoID);
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
 
     // Compose final image
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, renderFboID);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, 2560, 1440);
+    glViewport(0, 0, fboWidth, fboHeight);
     glUseProgram(composeProgram);
 
     glActiveTexture(GL_TEXTURE0);
@@ -509,7 +493,6 @@ void BloomPass::Render()
     GLuint blurTexID = glGetUniformLocation(composeProgram, "blurTex");
     glUniform1i(blurTexID, 1);
 
-    glBindVertexArray(vaoID);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 }
