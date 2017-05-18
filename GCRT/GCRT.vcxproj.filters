@@ -127,5 +127,23 @@
     <None Include="DOFShader.fs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="BrightShader.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="BrightShader.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="GaussBlur.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="GaussBlur.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Compose.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Compose.fs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

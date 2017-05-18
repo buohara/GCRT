@@ -173,7 +173,7 @@ void main()
     vec4 specColor    = getSpecular();    
     float visibility  = getVisibility();
 
-    color = visibility * (diffuseColor + specColor) + vec4(ka, 1);
+    color = visibility * (diffuseColor + specColor);
 
     if (useDOF == 1)
     {

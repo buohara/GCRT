@@ -57,3 +57,29 @@ struct DOFPass
     void LoadQuadVerts();
     void GenerateSamplePoints();
 };
+
+struct BloomPass
+{
+    GLuint brightProgram;
+    GLuint blurProgram;
+    GLuint composeProgram;
+
+    GLuint colorTexID;
+    
+    GLuint brightTexID;
+    GLuint brightFboID;
+
+    GLuint hBlurTexID;
+    GLuint hBlurFboID;
+
+    GLuint vBlurTexID;
+    GLuint vBlurFboID;
+
+    GLuint vaoID;
+    GLuint posVboID;
+    GLuint uvVboID;
+
+    void Init(GLuint colorTexIn);
+    void Render();
+    void LoadQuadVerts();
+};

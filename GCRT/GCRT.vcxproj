@@ -187,10 +187,16 @@
     <ClInclude Include="sphere.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BrightShader.fs" />
+    <None Include="BrightShader.vs" />
+    <None Include="Compose.fs" />
+    <None Include="Compose.vs" />
     <None Include="DepthPassShader.fs" />
     <None Include="DepthPassShader.vs" />
     <None Include="DOFShader.fs" />
     <None Include="DOFShader.vs" />
+    <None Include="GaussBlur.fs" />
+    <None Include="GaussBlur.vs" />
     <None Include="RenderShader.fs" />
     <None Include="RenderShader.vs" />
   </ItemGroup>

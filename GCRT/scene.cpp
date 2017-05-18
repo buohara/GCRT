@@ -10,9 +10,10 @@ void Scene::Init()
     glEnable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
     glCullFace(GL_BACK);
-    useDOF = true;
+    useDOF = false;
+    useBloom = true;
 
-    glClearColor(0.1f, 0.2f, 0.2f, 1.0f);
+    glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
     glClearDepth(1.0f);
 
     cam.Init(
@@ -20,7 +21,7 @@ void Scene::Init()
         vec3(0.0, 0.0, 0.0),
         vec3(0.0, 0.0, 1.0),
         4.0f / 3.0f,
-        45.0f,
+        75.0f,
         0.1f,
         100.f
     );
@@ -32,6 +33,11 @@ void Scene::Init()
     {
         renderPass.Init(depthPass.getDepthTex(), false);
         dofPass.Init(renderPass.getColorTex(), textures["NoiseTex"]);
+    }
+    else if (useBloom == true)
+    {
+        renderPass.Init(depthPass.getDepthTex(), false);
+        bloomPass.Init(renderPass.getColorTex());
     }
     else
     {
@@ -96,20 +102,20 @@ void Scene::InitMaterials()
 
     RMaterial redMat;
     redMat.name = "RedMat";
-    redMat.kd = vec3(1.0, 0.4, 0.4);
+    redMat.kd = vec3(12.0, 0.4, 0.4);
     redMat.UseShadows(true);
     redMat.SetNormalTex(textures["DirtNormal"]);
     materials["RedMat"] = redMat;
 
     RMaterial greenMat;
     greenMat.name = "GreenMat";
-    greenMat.kd = vec3(0.4, 0.9, 0.4);
+    greenMat.kd = vec3(0.4, 3.9, 0.4);
     greenMat.UseShadows(true);
     materials["GreenMat"] = greenMat;
 
     RMaterial yellowMat;
     yellowMat.name = "YellowMat";
-    yellowMat.kd = vec3(0.8, 0.8, 0.3);
+    yellowMat.kd = vec3(2.8, 2.8, 0.3);
     yellowMat.UseShadows(true);
     materials["YellowMat"] = yellowMat;
 }
@@ -178,6 +184,11 @@ void Scene::Render(HDC hDC)
     if (useDOF == true)
     {
         dofPass.Render();
+    }
+
+    if (useBloom == true)
+    {
+        bloomPass.Render();
     }
 
     // Swap.
@@ -262,8 +273,8 @@ void Scene::CreateNoiseTexture()
     glBindTexture(GL_TEXTURE_2D, noiseTexID);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_BYTE, &pixels[0]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 

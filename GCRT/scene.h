@@ -16,6 +16,7 @@ struct Scene
     Camera cam;
     bool wireFrame = false;
     bool useDOF = false;
+    bool useBloom = false;
 
     map<string, Shader> shaders;
     map<string, Model> models;
@@ -27,6 +28,7 @@ struct Scene
 
     DepthPass depthPass;
     RenderPass renderPass;
+    BloomPass bloomPass;
     DOFPass dofPass;
 
     GLuint dbFboID;
