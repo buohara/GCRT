@@ -21,6 +21,7 @@ struct RMaterial
     GLuint depthTexID;
     GLuint diffuseTexID;
     GLuint normalTexID;
+    GLuint selected;
 
     RMaterial();
 

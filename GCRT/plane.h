@@ -12,4 +12,6 @@ struct Plane : Geometry
     void GenNormals(vector<vec3> &norms, uint32_t rows, uint32_t cols);
     void GenUVs(vector<vec2> &uvs, uint32_t rows, uint32_t cols);
     void GenTangents(vector<vec3> &tans, uint32_t rows, uint32_t cols);
+
+    float Intersect(vec3 org, vec3 ray);
 };

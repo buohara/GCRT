@@ -221,3 +221,12 @@ void Cylinder::Draw()
     glDrawArrays(GL_TRIANGLE_FAN, bottomOffset, numCapVerts);
     glBindVertexArray(0);
 }
+
+/**
+ * Intersect.
+ */
+
+float Cylinder::Intersect(vec3 org, vec3 ray)
+{
+    return -1.0;
+}

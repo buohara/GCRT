@@ -318,3 +318,12 @@ void Box::Draw()
     glDrawArrays(GL_TRIANGLES, 0, numVerts);
     glBindVertexArray(0);
 }
+
+/**
+ * Intersect.
+ */
+
+float Box::Intersect(vec3 org, vec3 ray)
+{
+    return -1.0;
+}

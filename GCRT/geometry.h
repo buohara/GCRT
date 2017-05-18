@@ -22,6 +22,7 @@ struct Geometry
     mat4 modelInv;
 
     virtual void Draw() = 0;
+    virtual float Intersect(vec3 org, vec3 ray) = 0;
 
     void InitVertexObjects(
         vector<vec3> &pos,

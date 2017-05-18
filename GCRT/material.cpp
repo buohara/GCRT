@@ -10,6 +10,7 @@ RMaterial::RMaterial()
     useDiffuseMap = 0;
     useSSS = 0;
     useShadows = 0;
+    selected = 0;
 }
 
 /**
@@ -58,6 +59,9 @@ void RMaterial::ApplyMaterial(GLuint program)
 
     GLuint useShadowsID = glGetUniformLocation(program, "useShadows");
     glUniform1i(useShadowsID, useShadows);
+
+    GLuint selectedID = glGetUniformLocation(program, "selected");
+    glUniform1i(selectedID, selected);
 
     // Texture or diffuse color.
 

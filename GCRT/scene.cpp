@@ -26,7 +26,7 @@ void Scene::Init()
         vec3(0.0, 0.0, 1.0),
         4.0f / 3.0f,
         75.0f,
-        0.1f,
+        1.0f,
         100.f
     );
 
@@ -157,7 +157,7 @@ void Scene::InitMaterials()
 
     RMaterial yellowMat;
     yellowMat.name = "YellowMat";
-    yellowMat.kd = vec3(2.8, 2.8, 0.3);
+    yellowMat.kd = vec3(0.8, 0.8, 0.01);
     yellowMat.UseShadows(true);
     materials["YellowMat"] = yellowMat;
 }
@@ -175,7 +175,7 @@ void Scene::InitModels()
     pln.Scale(vec3(10.0, 10.0, 1.0));
 
     models["Plane"].pGeom = make_shared<Plane>(pln);
-    models["Plane"].SetMaterial(materials["Dirt"]);
+    models["Plane"].SetMaterial(materials["GreenMat"]);
 
     Box box;
     box.Create();
@@ -195,7 +195,7 @@ void Scene::InitModels()
 
     Cylinder cyl;
     cyl.Create(25);
-    cyl.Scale(vec3(1.0, 1.0, 2.0));
+    cyl.Scale(vec3(2.0, 2.0, 3.0));
     cyl.Translate(vec3(0.0, -30.0, 3.0));
 
     models["Cylinder"].pGeom = make_shared<Cylinder>(cyl);
@@ -281,6 +281,7 @@ void Scene::HandleInputs(MSG &msg)
     case WM_LBUTTONDOWN:
 
         cam.HandleMouseDown(msg.lParam);
+        DoHitTest(msg.lParam);
         break;
 
     case WM_LBUTTONUP:
@@ -290,6 +291,62 @@ void Scene::HandleInputs(MSG &msg)
 
     default:
         break;
+    }
+}
+
+/**
+ * DoHitTest
+ */
+
+void Scene::DoHitTest(LPARAM mouseCoord)
+{
+    vec4 p;
+    p.x = (float)GET_X_LPARAM(mouseCoord);
+    p.y = (float)GET_Y_LPARAM(mouseCoord);
+
+    float screenW = (float)winW;
+    float screenH = (float)winH;
+
+    p.x = 2.0f * p.x / winW - 1.0;
+    p.y = 1.0f - 2.0f * p.y / winH;
+    p.z = -1.0f;
+    p.w = 1.0f;
+
+    mat4 projInv = inverse(cam.GetProjection());
+    mat4 viewInv = inverse(cam.GetView());
+    vec3 camPos = cam.pos;
+
+    p = projInv * p;
+    p.z = -1.0;
+    p.w = 0.0;
+
+    vec4 ray = normalize(viewInv * p);
+
+    map<string, Model>::iterator it;
+    map<string, Model>::iterator closest;
+
+    float minDist = 1000.0f;
+    bool hit = false;
+
+    for (it = models.begin(); it != models.end(); it++)
+    {
+        float dist = (*it).second.pGeom->Intersect(camPos, ray);
+        
+        if (dist > 0.0 && dist < minDist)
+        {
+            closest = it;
+            minDist = dist;
+            hit = true;
+        }
+        else
+        {
+            (*it).second.mat.selected = 0;
+        }
+    }
+
+    if (hit == true)
+    {
+        (*closest).second.mat.selected = 1;
     }
 }
 

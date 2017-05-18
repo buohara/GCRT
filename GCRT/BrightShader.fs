@@ -9,7 +9,7 @@ void main()
 {
     vec3 inColor = texture2D(colorTex, passUV).rgb;
     
-    if (dot(inColor, vec3(0.21, 0.72, 0.07)) > 0.9)
+    if (dot(inColor, vec3(0.21, 0.72, 0.07)) > 1.0)
     {
         color = vec4(inColor, 1.0);
     }

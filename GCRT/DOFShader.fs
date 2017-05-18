@@ -26,8 +26,8 @@ void main()
         float dx = r * cos(theta + dtheta);
         float dy = r * sin(theta + dtheta);
 
-        sampleUV.x += 0.2 * blur * dx;
-        sampleUV.y += 0.2 * blur * dy;
+        sampleUV.x += 0.1 * blur * dx;
+        sampleUV.y += 0.1 * blur * dy;
 
         float sampleDepth = texture2D(colorTex, sampleUV).a;
         

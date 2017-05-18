@@ -40,6 +40,7 @@ uniform int useDiffuseMap;
 uniform int useSSS;
 uniform int useShadows;
 uniform int useDOF;
+uniform int selected;
 
 /**
  * Compute diffuse lighting color.
@@ -172,6 +173,11 @@ void main()
     vec4 diffuseColor = getDiffuse();
     vec4 specColor    = getSpecular();    
     float visibility  = getVisibility();
+
+    if (selected == 1)
+    {
+        diffuseColor = vec4(2.0, 2.0, 0.0, 1.0);
+    }
 
     color = visibility * (diffuseColor + specColor);
 

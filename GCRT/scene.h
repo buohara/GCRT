@@ -47,6 +47,7 @@ struct Scene
     void InitModels();
     void InitLights();
     void Render(HDC hDC);
+    void DoHitTest(LPARAM mouseCoord);
 
     void CreateNoiseTexture();
     void CreateRenderPassFbo();
