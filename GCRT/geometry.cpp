@@ -132,3 +132,51 @@ void Geometry::Scale(vec3 dims)
     model = trans * rot * scl;
     modelInv = inverseTranspose(model);
 }
+
+/**
+ * Check if a ray intersects a plane.
+ */
+
+float IntersectPlane(
+    vec3 org,
+    vec3 ray,
+    vec3 p,
+    vec3 norm,
+    mat4 modelInv,
+    vec3 checkBounds
+)
+{
+    float d = dot(p - org, norm) / dot(ray, norm);
+
+    if (d < 0.0)
+    {
+        return -1.0;
+    }
+
+    vec4 intsct = modelInv * vec4(org + d * ray, 1);
+    bool intersects = true;
+
+    if (checkBounds.x != 0.0)
+    {
+        intersects &= (intsct.x > -1.0) && (intsct.x < 1.0);
+    }
+
+    if (checkBounds.y != 0.0)
+    {
+        intersects &= (intsct.y > -1.0) && (intsct.y < 1.0);
+    }
+
+    if (checkBounds.z != 0.0)
+    {
+        intersects &= (intsct.z > -1.0) && (intsct.z < 1.0);
+    }
+
+    if (intersects == true)
+    {
+        return d;
+    }
+    else
+    {
+        return -1.0;
+    }
+}

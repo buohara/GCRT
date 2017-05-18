@@ -120,8 +120,8 @@ int CALLBACK WinMain(
         uint32_t h = rect.bottom - rect.top;
 
         scn.cam.aspect = (float)w / (float)h;
-        scn.renderPass.fboWidth = w;
-        scn.renderPass.fboHeight = h;
+        scn.winW = w;
+        scn.winH = h;
 
         while (PeekMessage(&msg, hMainWnd, 0, 0, PM_REMOVE))
         {

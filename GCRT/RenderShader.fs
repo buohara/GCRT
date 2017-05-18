@@ -176,7 +176,7 @@ void main()
 
     if (selected == 1)
     {
-        diffuseColor = vec4(2.0, 2.0, 0.0, 1.0);
+        diffuseColor += vec4(1.0, 1.0, 0.0, 0.0);
     }
 
     color = visibility * (diffuseColor + specColor);

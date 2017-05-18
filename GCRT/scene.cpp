@@ -175,12 +175,12 @@ void Scene::InitModels()
     pln.Scale(vec3(10.0, 10.0, 1.0));
 
     models["Plane"].pGeom = make_shared<Plane>(pln);
-    models["Plane"].SetMaterial(materials["GreenMat"]);
+    models["Plane"].SetMaterial(materials["Dirt"]);
 
     Box box;
     box.Create();
-    box.Scale(vec3(2.0, 2.0, 2.0));
-    box.Translate(vec3(2.0, 0.0, 1.0));
+    box.Scale(vec3(1.0, 1.0, 1.0));
+    box.Translate(vec3(10.0, 0.0, 1.0));
 
     models["Box"].pGeom = make_shared<Box>(box);
     models["Box"].SetMaterial(materials["GreenMat"]);
@@ -320,7 +320,9 @@ void Scene::DoHitTest(LPARAM mouseCoord)
     p.z = -1.0;
     p.w = 0.0;
 
-    vec4 ray = normalize(viewInv * p);
+    p = viewInv * p;
+    vec3 ray3 = normalize(vec3(p.x, p.y, p.z));
+    vec4 ray = vec4(ray3, 1);
 
     map<string, Model>::iterator it;
     map<string, Model>::iterator closest;

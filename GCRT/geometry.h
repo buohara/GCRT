@@ -5,6 +5,15 @@
 using namespace std;
 using namespace glm;
 
+float IntersectPlane(
+    vec3 org,
+    vec3 ray,
+    vec3 p,
+    vec3 norm,
+    mat4 modelInv,
+    vec3 checkBounds
+);
+
 struct Geometry
 {
     GLuint vaoID;

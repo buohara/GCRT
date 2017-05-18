@@ -34,9 +34,9 @@ void Box::Create()
 
 void Box::GenPositions(vector<vec3> &pos)
 {
-    float hx = 0.5;
-    float hy = 0.5;
-    float hz = 0.5;
+    float hx = 1.0;
+    float hy = 1.0;
+    float hz = 1.0;
 
     // Front
 
@@ -325,5 +325,65 @@ void Box::Draw()
 
 float Box::Intersect(vec3 org, vec3 ray)
 {
+    // Intersect the ray with each box plane. Return immediately
+    // if any hit.
+
+    float d = 0.0;
+
+    vec4 p1 = model * vec4(1.0, 0.0, 0.0, 1.0);
+    vec3 p = vec3(p1.x, p1.y, p1.z);
+    vec3 norm = vec3(1.0, 0.0, 0.0);
+    mat4 invModel = inverse(model);
+
+    if (d = IntersectPlane(org, ray, p, norm, invModel, vec3(0.0, 1.0, 1.0)) > 0.0)
+    {
+        return d;
+    }
+
+    p1 = model * vec4(-1.0, 0.0, 0.0, 1.0);
+    p = vec3(p1.x, p1.y, p1.z);
+    norm = vec3(-1.0, 0.0, 0.0);
+
+    if (d = IntersectPlane(org, ray, p, norm, invModel, vec3(0.0, 1.0, 1.0)) > 0.0)
+    {
+        return d;
+    }
+
+    p1 = model * vec4(0.0, 1.0, 0.0, 1.0);
+    p = vec3(p1.x, p1.y, p1.z);
+    norm = vec3(0.0, 1.0, 0.0);
+
+    if (d = IntersectPlane(org, ray, p, norm, invModel, vec3(1.0, 0.0, 1.0)) > 0.0)
+    {
+        return d;
+    }
+
+    p1 = model * vec4(0.0, -1.0, 0.0, 1.0);
+    p = vec3(p1.x, p1.y, p1.z);
+    norm = vec3(0.0, -1.0, 0.0);
+
+    if (d = IntersectPlane(org, ray, p, norm, invModel, vec3(1.0, 0.0, 1.0)) > 0.0)
+    {
+        return d;
+    }
+
+    p1 = model * vec4(0.0, 0.0, 1.0, 1.0);
+    p = vec3(p1.x, p1.y, p1.z);
+    norm = vec3(0.0, 0.0, 1.0);
+
+    if (d = IntersectPlane(org, ray, p, norm, invModel, vec3(1.0, 1.0, 0.0)) > 0.0)
+    {
+        return d;
+    }
+
+    p1 = model * vec4(0.0, 0.0, -1.0, 1.0);
+    p = vec3(p1.x, p1.y, p1.z);
+    norm = vec3(0.0, 0.0, -1.0);
+
+    if (d = IntersectPlane(org, ray, p, norm, invModel, vec3(1.0, 1.0, 0.0)) > 0.0)
+    {
+        return d;
+    }
+
     return -1.0;
 }
