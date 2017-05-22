@@ -22,6 +22,7 @@ struct RMaterial
     GLuint diffuseTexID;
     GLuint normalTexID;
     GLuint selected;
+    vec3 pickerColor;
 
     RMaterial();
 

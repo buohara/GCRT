@@ -16,6 +16,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{bbf6ccbf-d58f-45dc-8248-52a390ea8a79}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls">
+      <UniqueIdentifier>{b34e44a4-e3e8-4195-9199-5ee76b112ada}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GCRTMain.cpp">
@@ -143,6 +146,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Compose.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="PickerShader.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="PickerShader.fs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

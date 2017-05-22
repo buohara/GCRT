@@ -75,7 +75,80 @@ void DepthPass::Render(map<string, Model> &models, vector<DirectionalLight> &dir
 }
 
 /**
- * Initialize the render pass.
+ * Init - Initialize the picker FBO and shader.
+ */
+
+void PickerPass::Init(uint32_t screenW, uint32_t screenH)
+{
+    fboWidth = screenW;
+    fboHeight = screenH;
+
+    Shader pickerShader;
+    pickerShader.Create(
+        string("PickerPass"),
+        string("PickerShader.vs"),
+        string("PickerShader.fs")
+    );
+
+    pickerProgram = pickerShader.program;
+
+    // Create a picker FBO with color and depth.
+
+    glGenFramebuffers(1, &pickerFboID);
+
+    GLuint pickerRenderBuffer;
+    glGenRenderbuffers(1, &pickerRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, pickerRenderBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, screenW, screenH);
+
+    GLuint depthRenderBuffer;
+    glGenRenderbuffers(1, &depthRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, screenW, screenH);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, pickerFboID);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, pickerRenderBuffer);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+/**
+ * Render - Render each objects picker color into a picker FBO for reading.
+ */
+
+void PickerPass::Render(map<string, Model> &models, Camera &cam)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, pickerFboID);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glViewport(0, 0, fboWidth, fboHeight);
+    glUseProgram(pickerProgram);
+
+    mat4 view = cam.GetView();
+    GLuint viewID = glGetUniformLocation(pickerProgram, "view");
+    glUniformMatrix4fv(viewID, 1, false, &view[0][0]);
+
+    mat4 proj = cam.GetProjection();
+    GLuint projID = glGetUniformLocation(pickerProgram, "proj");
+    glUniformMatrix4fv(projID, 1, false, &proj[0][0]);
+
+    map<string, Model>::iterator it;
+
+    for (it = models.begin(); it != models.end(); it++)
+    {
+        mat4 model = (*it).second.pGeom->model;
+        GLuint modelID = glGetUniformLocation(pickerProgram, "model");
+        glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
+
+        vec3 pickerColor = (*it).second.mat.pickerColor;
+        GLuint pickerID = glGetUniformLocation(pickerProgram, "pickerColor");
+        glUniform3fv(pickerID, 1, &pickerColor[0]);
+
+        (*it).second.pGeom->Draw();
+    }
+}
+
+/**
+ * Init - Initialize the render pass.
  */
 
 void RenderPass::Init(
@@ -105,7 +178,7 @@ void RenderPass::Init(
 }
 
 /**
- * Render - Main render pass. Draw every object in the scene using it's particular material.
+ * Render - Main render pass. Draw every object in the scene using its particular material.
  */
 
 void RenderPass::Render(

@@ -26,6 +26,7 @@ struct Scene
     vector<DirectionalLight> dirLights;
     vector<PointLight> ptLights;
 
+    PickerPass pickerPass;
     DepthPass depthPass;
     RenderPass renderPass;
     BloomPass bloomPass;
@@ -47,7 +48,7 @@ struct Scene
     void InitModels();
     void InitLights();
     void Render(HDC hDC);
-    void DoHitTest(LPARAM mouseCoord);
+    void DoPick(LPARAM mouseCoord);
 
     void CreateNoiseTexture();
     void CreateRenderPassFbo();

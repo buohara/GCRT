@@ -33,6 +33,8 @@ void Scene::Init()
     CreateNoiseTexture();
     CreateRenderPassFbo();
 
+    pickerPass.Init(winW, winH);
+
     depthPass.Init();
     
     renderPass.Init(
@@ -72,6 +74,8 @@ void Scene::CreateRenderPassFbo()
 {
     glGenFramebuffers(1, &renderFbo);
 
+    // Output texture.
+
     glGenTextures(1, &renderTex);
     glBindTexture(GL_TEXTURE_2D, renderTex);
 
@@ -81,14 +85,18 @@ void Scene::CreateRenderPassFbo()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    GLuint depthrenderbuffer;
-    glGenRenderbuffers(1, &depthrenderbuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
+    // Depth attachment
+
+    GLuint depthRenderBuffer;
+    glGenRenderbuffers(1, &depthRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, winW, winH);
+
+    // Attach 
 
     glBindFramebuffer(GL_FRAMEBUFFER, renderFbo);
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -133,13 +141,12 @@ void Scene::InitLights()
 
 void Scene::InitMaterials()
 {
-    // Matte green SSS material with bumps.
-
     RMaterial dirtMat;
     dirtMat.name = "Dirt";
     dirtMat.SetDiffuseTex(textures["DirtDiffuse"]);
     dirtMat.SetNormalTex(textures["DirtNormal"]);
     dirtMat.UseShadows(true);
+    dirtMat.pickerColor = vec3(0.1, 0.1, 0.1);
     materials["Dirt"] = dirtMat;
 
     RMaterial redMat;
@@ -147,18 +154,21 @@ void Scene::InitMaterials()
     redMat.kd = vec3(12.0, 0.4, 0.4);
     redMat.UseShadows(true);
     redMat.SetNormalTex(textures["DirtNormal"]);
+    redMat.pickerColor = vec3(0.2, 0.2, 0.2);
     materials["RedMat"] = redMat;
 
     RMaterial greenMat;
     greenMat.name = "GreenMat";
     greenMat.kd = vec3(0.4, 3.9, 0.4);
     greenMat.UseShadows(true);
+    greenMat.pickerColor = vec3(0.3, 0.3, 0.3);
     materials["GreenMat"] = greenMat;
 
     RMaterial yellowMat;
     yellowMat.name = "YellowMat";
     yellowMat.kd = vec3(0.8, 0.8, 0.01);
     yellowMat.UseShadows(true);
+    yellowMat.pickerColor = vec3(0.4, 0.4, 0.4);
     materials["YellowMat"] = yellowMat;
 }
 
@@ -208,14 +218,11 @@ void Scene::InitModels()
 
 void Scene::Render(HDC hDC)
 {
-    static float t = 0;
-
-    // Update camera from inputs.
-
     cam.Update();
-
-    depthPass.Render(models, dirLights);
+    pickerPass.Render(models, cam);
     
+    depthPass.Render(models, dirLights);
+
     renderPass.Render(
         models,
         cam,
@@ -233,10 +240,7 @@ void Scene::Render(HDC hDC)
         bloomPass.Render();
     }
 
-    // Swap.
-
     SwapBuffers(hDC);
-    t += 0.005f;
 }
 
 /**
@@ -281,7 +285,7 @@ void Scene::HandleInputs(MSG &msg)
     case WM_LBUTTONDOWN:
 
         cam.HandleMouseDown(msg.lParam);
-        DoHitTest(msg.lParam);
+        DoPick(msg.lParam);
         break;
 
     case WM_LBUTTONUP:
@@ -298,57 +302,44 @@ void Scene::HandleInputs(MSG &msg)
  * DoHitTest
  */
 
-void Scene::DoHitTest(LPARAM mouseCoord)
+void Scene::DoPick(LPARAM mouseCoord)
 {
-    vec4 p;
-    p.x = (float)GET_X_LPARAM(mouseCoord);
-    p.y = (float)GET_Y_LPARAM(mouseCoord);
+    uint32_t x = GET_X_LPARAM(mouseCoord);
+    uint32_t y = winH - GET_Y_LPARAM(mouseCoord);
+    
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, pickerPass.pickerFboID);
 
-    float screenW = (float)winW;
-    float screenH = (float)winH;
-
-    p.x = 2.0f * p.x / winW - 1.0;
-    p.y = 1.0f - 2.0f * p.y / winH;
-    p.z = -1.0f;
-    p.w = 1.0f;
-
-    mat4 projInv = inverse(cam.GetProjection());
-    mat4 viewInv = inverse(cam.GetView());
-    vec3 camPos = cam.pos;
-
-    p = projInv * p;
-    p.z = -1.0;
-    p.w = 0.0;
-
-    p = viewInv * p;
-    vec3 ray3 = normalize(vec3(p.x, p.y, p.z));
-    vec4 ray = vec4(ray3, 1);
+    float pixel4[4];
+    glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &pixel4[0]);
+    vec3 pixel = vec3(pixel4[0], pixel4[1], pixel4[2]);
 
     map<string, Model>::iterator it;
-    map<string, Model>::iterator closest;
 
-    float minDist = 1000.0f;
-    bool hit = false;
+    static map<string, Model>::iterator lastHit;
+    static bool firstHit = true;
 
     for (it = models.begin(); it != models.end(); it++)
     {
-        float dist = (*it).second.pGeom->Intersect(camPos, ray);
-        
-        if (dist > 0.0 && dist < minDist)
+        vec3 pickerColor = (*it).second.mat.pickerColor;
+        if (abs(pickerColor.x - pixel.x) < 0.05 &&
+            abs(pickerColor.y - pixel.y) < 0.05 &&
+            abs(pickerColor.z - pixel.z) < 0.05)
         {
-            closest = it;
-            minDist = dist;
-            hit = true;
-        }
-        else
-        {
-            (*it).second.mat.selected = 0;
-        }
-    }
+            (*it).second.mat.selected = true;
 
-    if (hit == true)
-    {
-        (*closest).second.mat.selected = 1;
+            if (firstHit == true)
+            {
+                firstHit = false;
+            }
+            else
+            {
+                if (it != lastHit)
+                {
+                    (*lastHit).second.mat.selected = false;
+                }
+            }
+            lastHit = it;
+        }
     }
 }
 

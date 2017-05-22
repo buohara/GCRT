@@ -4,6 +4,9 @@
 #include "model.h"
 #include "shader.h"
 
+// Main render pass. Draw every object in the scene using its particular
+// material properties.
+
 struct RenderPass
 {
     void Render(
@@ -13,11 +16,7 @@ struct RenderPass
         vector<PointLight> &ptLights
     );
 
-    // Render shader.
-
     GLuint renderProgram;
-
-    // Output FBO.
 
     GLuint renderFboID;
 
@@ -35,6 +34,24 @@ struct RenderPass
     );
 };
 
+// Picker pass. Draw every object to a picker FBO using its unique picker color.
+// Use readPixel calls on this FBO and use the returned color to determine what
+// object was picked.
+
+struct PickerPass
+{
+    GLuint pickerFboID;
+    GLuint pickerProgram;
+
+    uint32_t fboWidth;
+    uint32_t fboHeight;
+
+    void Init(uint32_t screenW, uint32_t screenH);
+    void Render(map<string, Model> &models, Camera &cam);
+};
+
+// Depth pass for shadow mapping and SSS.
+
 struct DepthPass
 {
     GLuint dbFboID;
@@ -49,19 +66,15 @@ struct DepthPass
     GLuint getDepthProgram() { return depthProgram; }
 };
 
+// Depth of field pass.
+
 struct DOFPass
 {
-    // DOF shader.
-
     GLuint dofProgram;
-
-    // Input image and per-pixel noise.
 
     GLuint colorTexID;
     GLuint noiseTexID;
     GLuint renderFbo;
-
-    // Screen quad.
 
     GLuint vaoID;
     GLuint posVboID;
@@ -85,25 +98,19 @@ struct DOFPass
     void GenerateSamplePoints();
 };
 
+// A nice bloom and tone mapping pass.
+
 struct BloomPass
 {
-    // Bright pass and blur shaders.
-
     GLuint brightProgram;
     GLuint blurProgram;
     GLuint composeProgram;
 
-    // Input texture.
-
     GLuint colorTexID;
-    
-    // Output Fbo
 
     GLuint renderFboID;
     uint32_t fboWidth;
     uint32_t fboHeight;
-
-    // Bright pass and blur FBOs/textures.
 
     GLuint brightTexID;
     GLuint brightFboID;
@@ -113,8 +120,6 @@ struct BloomPass
 
     GLuint vBlurTexID;
     GLuint vBlurFboID;
-
-    // Render quad.
 
     GLuint vaoID;
     GLuint posVboID;
