@@ -11,3 +11,4 @@ void ImGuiGCRTInit(HWND hwnd, uint32_t w, uint32_t h);
 void ImGuiGCRTNewFrame();
 bool ImGuiGCRTCreateDeviceObjects();
 void ImGuiGCRTSetMouse(double x, double y, bool lDown, bool rDown, bool mDown);
+void ImGuiGCRTResize(uint32_t w, uint32_t h);

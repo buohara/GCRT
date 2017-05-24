@@ -414,3 +414,13 @@ void ImGuiGCRTInit(HWND hwnd, uint32_t w, uint32_t h)
     io.ImeWindowHandle = hwnd;
     io.RenderDrawListsFn = ImGuiGCRTRenderDrawLists;
 }
+
+/**
+ * ImGuiGCRTResize
+ */
+
+void ImGuiGCRTResize(uint32_t w, uint32_t h)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.DisplaySize = ImVec2((float)w, (float)h);
+}

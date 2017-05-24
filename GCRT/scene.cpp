@@ -40,7 +40,6 @@ void Scene::Init()
     CreateRenderPassFbo();
 
     pickerPass.Init(winW, winH);
-
     depthPass.Init();
     
     renderPass.Init(
@@ -70,6 +69,36 @@ void Scene::Init()
     InitMaterials();
     InitModels();
     InitLights();
+}
+
+/**
+ * Create in/out FBO/texture to hand between passes.
+ */
+
+void Scene::UpdateViewPorts(uint32_t w, uint32_t h)
+{
+    cam.aspect = (float)w / (float)h;
+
+    winW = w;
+    winH = h;
+    renderPass.fboWidth = w;
+    renderPass.fboHeight = h;
+    ResizeRenderFbo();
+
+    ImGuiGCRTResize(w, h);
+    pickerPass.Resize(w, h);
+    bloomPass.Resize(w, h);
+}
+
+/**
+ * ResizeRenderFbo
+ */
+
+void Scene::ResizeRenderFbo()
+{
+    glDeleteFramebuffers(1, &renderFbo);
+    glDeleteTextures(1, &renderTex);
+    CreateRenderPassFbo();
 }
 
 /**
@@ -219,34 +248,20 @@ void Scene::InitModels()
 }
 
 /**
- * Render - Loop through each model in the scene and draw it.
+ * UpdateImGui - 
  */
 
-void Scene::Render(HDC hDC)
+void Scene::UpdateImGui()
 {
-    cam.Update();
-    pickerPass.Render(models, cam);
-    
-    depthPass.Render(models, dirLights);
-
-    renderPass.Render(
-        models,
-        cam,
-        dirLights,
-        ptLights
-    );
-    
-    if (useDOF == true)
-    {
-        dofPass.Render();
-    }
-
-    if (useBloom == true)
-    {
-        bloomPass.Render();
-    }
-
     ImGuiGCRTNewFrame();
+
+    ImGuiGCRTSetMouse(
+        mousePos[0],
+        mousePos[1],
+        mouseDown[0],
+        mouseDown[1],
+        mouseDown[2]
+    );
 
     bool show_test_window = true;
     bool show_another_window = false;
@@ -275,6 +290,37 @@ void Scene::Render(HDC hDC)
     }
 
     ImGui::Render();
+}
+
+/**
+ * Render - Loop through each model in the scene and draw it.
+ */
+
+void Scene::Render(HDC hDC)
+{
+    cam.Update();
+    pickerPass.Render(models, cam);
+    
+    depthPass.Render(models, dirLights);
+
+    renderPass.Render(
+        models,
+        cam,
+        dirLights,
+        ptLights
+    );
+    
+    if (useDOF == true)
+    {
+        dofPass.Render();
+    }
+
+    if (useBloom == true)
+    {
+        bloomPass.Render();
+    }
+
+    UpdateImGui();
 
     SwapBuffers(hDC);
 }

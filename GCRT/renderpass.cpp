@@ -75,6 +75,44 @@ void DepthPass::Render(map<string, Model> &models, vector<DirectionalLight> &dir
 }
 
 /**
+ * GenFrameBuffers
+ */
+
+void PickerPass::GenFrameBuffers()
+{
+    // Create a picker FBO with color and depth.
+
+    glGenFramebuffers(1, &pickerFboID);
+
+    GLuint pickerRenderBuffer;
+    glGenRenderbuffers(1, &pickerRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, pickerRenderBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, fboWidth, fboHeight);
+
+    GLuint depthRenderBuffer;
+    glGenRenderbuffers(1, &depthRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, fboWidth, fboHeight);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, pickerFboID);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, pickerRenderBuffer);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+/**
+ * Resize
+ */
+
+void PickerPass::Resize(uint32_t w, uint32_t h)
+{
+    glDeleteFramebuffers(1, &pickerFboID);
+    fboWidth = w;
+    fboHeight = h;
+    GenFrameBuffers();
+}
+
+/**
  * Init - Initialize the picker FBO and shader.
  */
 
@@ -91,25 +129,7 @@ void PickerPass::Init(uint32_t screenW, uint32_t screenH)
     );
 
     pickerProgram = pickerShader.program;
-
-    // Create a picker FBO with color and depth.
-
-    glGenFramebuffers(1, &pickerFboID);
-
-    GLuint pickerRenderBuffer;
-    glGenRenderbuffers(1, &pickerRenderBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, pickerRenderBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, screenW, screenH);
-
-    GLuint depthRenderBuffer;
-    glGenRenderbuffers(1, &depthRenderBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, screenW, screenH);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, pickerFboID);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, pickerRenderBuffer);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    GenFrameBuffers();
 }
 
 /**
@@ -447,6 +467,15 @@ void BloomPass::Init(
 
     // FBOs and textures for bright and blur passes.
 
+    GenFrameBuffers();
+}
+
+/**
+ * GenFrameBuffers - 
+ */
+
+void BloomPass::GenFrameBuffers()
+{
     glGenFramebuffers(1, &brightFboID);
 
     glGenTextures(1, &brightTexID);
@@ -495,6 +524,24 @@ void BloomPass::Init(
     glBindFramebuffer(GL_FRAMEBUFFER, vBlurFboID);
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, vBlurTexID, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+/**
+ * Resize -
+ */
+
+void BloomPass::Resize(uint32_t w, uint32_t h)
+{
+    GLuint framebuffers[3] = { brightFboID, hBlurFboID, vBlurFboID };
+    GLuint fbTextures[3] = { brightTexID, hBlurTexID, vBlurTexID };
+
+    fboWidth = w;
+    fboHeight = h;
+
+    glDeleteFramebuffers(3, framebuffers);
+    glDeleteTextures(3, fbTextures);
+
+    GenFrameBuffers();
 }
 
 /**

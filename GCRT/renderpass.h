@@ -47,6 +47,8 @@ struct PickerPass
     uint32_t fboHeight;
 
     void Init(uint32_t screenW, uint32_t screenH);
+    void GenFrameBuffers();
+    void Resize(uint32_t w, uint32_t h);
     void Render(map<string, Model> &models, Camera &cam);
 };
 
@@ -124,6 +126,9 @@ struct BloomPass
     GLuint vaoID;
     GLuint posVboID;
     GLuint uvVboID;
+
+    void GenFrameBuffers();
+    void Resize(uint32_t w, uint32_t h);
 
     void Init(
         GLuint colorTexIn,

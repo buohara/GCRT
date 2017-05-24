@@ -5,6 +5,9 @@
 // Forward declarations.
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+bool resized = false;
+uint32_t windowWidth = 1920;
+uint32_t windowHeight = 1080;
 
 /**
  * Create GLContext -
@@ -39,6 +42,7 @@ HDC CreateGLContext(HWND hWnd)
     wglMakeCurrent(hDC, hDummyCtx);
 
     GLenum err = glewInit();
+
     if (err != GLEW_OK)
     {
         MessageBoxA(0, "Coult not initialize GLEW.", "Error", 0);
@@ -95,8 +99,8 @@ int CALLBACK WinMain(
         WS_OVERLAPPEDWINDOW | WS_VISIBLE, 
         0, 
         0, 
-        1920, 
-        1080, 
+        windowWidth, 
+        windowHeight, 
         0, 
         0, 
         hInstance, 
@@ -108,7 +112,7 @@ int CALLBACK WinMain(
     HDC hDC = CreateGLContext(hMainWnd);
     Scene scn;
     scn.Init();
-    ImGuiGCRTInit(hMainWnd, 1920, 1080);
+    ImGuiGCRTInit(hMainWnd, windowWidth, windowHeight);
 
     // Main messaging loop.
 
@@ -116,22 +120,17 @@ int CALLBACK WinMain(
     {
         scn.Render(hDC);
 
-        RECT rect;
-        GetWindowRect(hMainWnd, &rect);
-        uint32_t w = rect.right - rect.left;
-        uint32_t h = rect.bottom - rect.top;
+        // Check if WinProc resized the window and handle. 
 
-        scn.cam.aspect = (float)w / (float)h;
-        scn.winW = w;
-        scn.winH = h;
-
-        ImGuiGCRTSetMouse(
-            scn.mousePos[0],
-            scn.mousePos[1],
-            scn.mouseDown[0],
-            scn.mouseDown[1],
-            scn.mouseDown[2]
-        );
+        if (resized)
+        {
+            RECT rect;
+            GetWindowRect(hMainWnd, &rect);
+            windowWidth = rect.right - rect.left;
+            windowHeight = rect.bottom - rect.top;
+            scn.UpdateViewPorts(windowWidth, windowHeight);
+            resized = false;
+        }
 
         while (PeekMessage(&msg, hMainWnd, 0, 0, PM_REMOVE))
         {
@@ -154,12 +153,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_SIZE:
 
-        glViewport(
-            0,
-            0,
-            LOWORD(lParam),
-            HIWORD(lParam)
-        );
+        resized = true;
         break;
 
     case WM_CLOSE:

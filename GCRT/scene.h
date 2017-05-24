@@ -53,7 +53,10 @@ struct Scene
     void InitLights();
     void Render(HDC hDC);
     void DoPick(LPARAM mouseCoord);
+    void UpdateImGui();
+    void UpdateViewPorts(uint32_t w, uint32_t h);
 
     void CreateNoiseTexture();
     void CreateRenderPassFbo();
+    void ResizeRenderFbo();
 };
