@@ -10,6 +10,7 @@
 #include "shader.h"
 #include "light.h"
 #include "renderpass.h"
+#include "imgui_impl_gcrt.h"
 
 struct Scene
 {
@@ -38,6 +39,9 @@ struct Scene
 
     uint32_t winW;
     uint32_t winH;
+
+    bool mouseDown[3];
+    double mousePos[2];
 
     static const uint32_t RENDER_TO_SCREEN = 0;
 

@@ -95,8 +95,8 @@ int CALLBACK WinMain(
         WS_OVERLAPPEDWINDOW | WS_VISIBLE, 
         0, 
         0, 
-        2560, 
-        1440, 
+        1920, 
+        1080, 
         0, 
         0, 
         hInstance, 
@@ -108,12 +108,14 @@ int CALLBACK WinMain(
     HDC hDC = CreateGLContext(hMainWnd);
     Scene scn;
     scn.Init();
+    ImGuiGCRTInit(hMainWnd, 1920, 1080);
 
     // Main messaging loop.
 
     while (true)
     {
         scn.Render(hDC);
+
         RECT rect;
         GetWindowRect(hMainWnd, &rect);
         uint32_t w = rect.right - rect.left;
@@ -122,6 +124,14 @@ int CALLBACK WinMain(
         scn.cam.aspect = (float)w / (float)h;
         scn.winW = w;
         scn.winH = h;
+
+        ImGuiGCRTSetMouse(
+            scn.mousePos[0],
+            scn.mousePos[1],
+            scn.mouseDown[0],
+            scn.mouseDown[1],
+            scn.mouseDown[2]
+        );
 
         while (PeekMessage(&msg, hMainWnd, 0, 0, PM_REMOVE))
         {

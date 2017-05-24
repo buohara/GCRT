@@ -52,7 +52,7 @@ void Camera::HandleMouseDown(LPARAM mouse)
 {
     bMouseDown = true;
     p1.x = (float)GET_X_LPARAM(mouse);
-    p1.y = (float)GET_Y_LPARAM(mouse);
+    p1.y = (float)GET_Y_LPARAM(mouse) + 40.0f;
 }
 
 /**
@@ -82,7 +82,11 @@ void Camera::HandleMouseMove(LPARAM mouse)
         p2.x = p1.x;
         p2.y = p1.y;
         p1.x = (float)GET_X_LPARAM(mouse);
-        p1.y = (float)GET_Y_LPARAM(mouse);
+        p1.y = (float)GET_Y_LPARAM(mouse) + 40.0f;
+
+        float d = 1.0;//1 - expf(logf(0.5) * 10 * 0.016);
+        p1.x = p2.x + (p1.x - p2.x) * d;
+        p1.y = p2.y + (p1.y - p2.y) * d;
     }
 }
 
@@ -256,9 +260,13 @@ void Camera::Update()
             vec3 fwd = lookDir - pos;
             vec3 level = normalize(vec3(fwd.x, fwd.y, 0.0f));
 
+            float d = 1 - expf(logf(0.5) * 50 * 0.016);
+
             float theta = dot(fwd, level);
             float dx = p2.x - p1.x;
             float dy = p2.y - p1.y;
+            
+            
             float dphi = rotSpeed * dx / cosf(theta);
             float dtheta = rotSpeed * dy;
 

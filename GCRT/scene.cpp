@@ -11,11 +11,17 @@ void Scene::Init()
     glEnable(GL_MULTISAMPLE);
     glCullFace(GL_BACK);
     
-    useDOF = true;
+    useDOF = false;
     useBloom = true;
 
-    winW = 2560;
-    winH = 1440;
+    winW = 1920;
+    winH = 1080;
+
+    mousePos[0] = 0.0;
+    mousePos[1] = 0.0;
+    mouseDown[0] = false;
+    mouseDown[1] = false;
+    mouseDown[2] = false;
 
     glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
     glClearDepth(1.0f);
@@ -42,7 +48,7 @@ void Scene::Init()
         renderFbo,
         winW,
         winH,
-        true
+        false
     );
     
     dofPass.Init(
@@ -240,6 +246,36 @@ void Scene::Render(HDC hDC)
         bloomPass.Render();
     }
 
+    ImGuiGCRTNewFrame();
+
+    bool show_test_window = true;
+    bool show_another_window = false;
+    ImVec4 clear_color = ImColor(114, 144, 154);
+
+    static float f = 0.0f;
+    ImGui::Text("Hello, world!");
+    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+    ImGui::ColorEdit3("clear color", (float*)&clear_color);
+    if (ImGui::Button("Test Window")) show_test_window ^= 1;
+    if (ImGui::Button("Another Window")) show_another_window ^= 1;
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+    if (show_another_window)
+    {
+        ImGui::SetNextWindowSize(ImVec2(400, 200), ImGuiSetCond_FirstUseEver);
+        ImGui::Begin("Another Window", &show_another_window);
+        ImGui::Text("Hello");
+        ImGui::End();
+    }
+
+    if (show_test_window)
+    {
+        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+        ImGui::ShowTestWindow(&show_test_window);
+    }
+
+    ImGui::Render();
+
     SwapBuffers(hDC);
 }
 
@@ -280,17 +316,24 @@ void Scene::HandleInputs(MSG &msg)
     case WM_MOUSEMOVE:
 
         cam.HandleMouseMove(msg.lParam);
+        mousePos[0] = (double)GET_X_LPARAM(msg.lParam);
+        mousePos[1] = (double)GET_Y_LPARAM(msg.lParam) + 40.0;
+
         break;
 
     case WM_LBUTTONDOWN:
 
         cam.HandleMouseDown(msg.lParam);
         DoPick(msg.lParam);
+        mouseDown[0] = true;
+        mousePos[0] = (double)GET_X_LPARAM(msg.lParam);
+        mousePos[1] = (double)GET_Y_LPARAM(msg.lParam) + 40.0;
         break;
 
     case WM_LBUTTONUP:
 
         cam.HandleMouseUp();
+        mouseDown[0] = false;
         break;
 
     default:
@@ -305,7 +348,7 @@ void Scene::HandleInputs(MSG &msg)
 void Scene::DoPick(LPARAM mouseCoord)
 {
     uint32_t x = GET_X_LPARAM(mouseCoord);
-    uint32_t y = winH - GET_Y_LPARAM(mouseCoord);
+    uint32_t y = winH - (GET_Y_LPARAM(mouseCoord) + 40.0);
     
     glBindFramebuffer(GL_READ_FRAMEBUFFER, pickerPass.pickerFboID);
 
