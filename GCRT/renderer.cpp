@@ -276,7 +276,17 @@ void Renderer::UpdateImGui()
 
     ImGuiGCRTNewFrame();
 
+    ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiSetCond_FirstUseEver);
+    ImGui::Begin("Scene");
+    ImGui::End();
+
+
     // Model Properties Window
+
+    ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiSetCond_FirstUseEver);
+    ImGui::Begin("Renderer");
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::End();
 
     ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiSetCond_FirstUseEver);
     ImGui::Begin("Model Properties");
@@ -298,10 +308,17 @@ void Renderer::UpdateImGui()
     // Geometry.
 
     ImGui::Text("Geometry");
-    ImGui::InputFloat3("Pos", (float*)&selected.pos);
-    ImGui::InputFloat3("Scale", (float*)&selected.scale);
+    
+    if (ImGui::InputFloat3("Pos", (float*)&selected.pos))
+    {
+        scn.models[selected.name].pGeom->Translate(selected.pos);
+    }
 
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    if (ImGui::InputFloat3("Scale", (float*)&selected.scale))
+    {
+        scn.models[selected.name].pGeom->Scale(selected.scale);
+    }
+
     ImGui::End();
 
     // And draw.

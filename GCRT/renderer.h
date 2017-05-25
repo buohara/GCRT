@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 #include "GCRT.h"
 #include "scene.h"
 #include "renderpass.h"
