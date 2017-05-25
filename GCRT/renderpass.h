@@ -3,20 +3,17 @@
 #include "GCRT.h"
 #include "model.h"
 #include "shader.h"
+#include "scene.h"
 
 // Main render pass. Draw every object in the scene using its particular
 // material properties.
 
 struct RenderPass
 {
-    void Render(
-        map<string, Model> &models,
-        Camera &cam,
-        vector<DirectionalLight> &dirLights,
-        vector<PointLight> &ptLights
-    );
+    void Render(Scene &scn);
 
     GLuint renderProgram;
+    bool wireFrame;
 
     GLuint renderFboID;
 
@@ -49,7 +46,7 @@ struct PickerPass
     void Init(uint32_t screenW, uint32_t screenH);
     void GenFrameBuffers();
     void Resize(uint32_t w, uint32_t h);
-    void Render(map<string, Model> &models, Camera &cam);
+    void Render(Scene &scn);
 };
 
 // Depth pass for shadow mapping and SSS.
@@ -62,7 +59,7 @@ struct DepthPass
     GLuint depthMapSize = 2048;
 
     void Init();
-    void Render(map<string, Model> &models, vector<DirectionalLight> &dirLights);
+    void Render(Scene &scn);
     
     GLuint getDepthTex() { return depthTexID; }
     GLuint getDepthProgram() { return depthProgram; }

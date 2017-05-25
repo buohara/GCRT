@@ -12,6 +12,7 @@ struct RMaterial
     string name;
     GLuint program;
     vec3 kd;
+    float spec;
 
     GLuint useNormalMap;
     GLuint useDiffuseMap;

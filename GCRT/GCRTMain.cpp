@@ -1,6 +1,6 @@
 #define GLEW_STATIC
 
-#include "scene.h"
+#include "renderer.h"
 
 // Forward declarations.
 
@@ -110,15 +110,15 @@ int CALLBACK WinMain(
     // Initialize its rendering context.
 
     HDC hDC = CreateGLContext(hMainWnd);
-    Scene scn;
-    scn.Init();
+    Renderer rndr;
+    rndr.Init();
     ImGuiGCRTInit(hMainWnd, windowWidth, windowHeight);
 
     // Main messaging loop.
 
     while (true)
     {
-        scn.Render(hDC);
+        rndr.Render(hDC);
 
         // Check if WinProc resized the window and handle. 
 
@@ -128,14 +128,14 @@ int CALLBACK WinMain(
             GetWindowRect(hMainWnd, &rect);
             windowWidth = rect.right - rect.left;
             windowHeight = rect.bottom - rect.top;
-            scn.UpdateViewPorts(windowWidth, windowHeight);
+            rndr.UpdateViewPorts(windowWidth, windowHeight);
             resized = false;
         }
 
         while (PeekMessage(&msg, hMainWnd, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
-            scn.HandleInputs(msg);
+            rndr.HandleInputs(msg);
             DispatchMessage(&msg);
         }
     }

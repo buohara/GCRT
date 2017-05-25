@@ -41,8 +41,11 @@ void DepthPass::Init()
  * map.
  */
 
-void DepthPass::Render(map<string, Model> &models, vector<DirectionalLight> &dirLights)
+void DepthPass::Render(Scene &scn)
 {
+    map<string, Model> &models = scn.models;
+    vector<DirectionalLight> &dirLights = scn.dirLights;
+
     glBindFramebuffer(GL_FRAMEBUFFER, dbFboID);
     glClear(GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, depthMapSize, depthMapSize);
@@ -136,8 +139,11 @@ void PickerPass::Init(uint32_t screenW, uint32_t screenH)
  * Render - Render each objects picker color into a picker FBO for reading.
  */
 
-void PickerPass::Render(map<string, Model> &models, Camera &cam)
+void PickerPass::Render(Scene &scn)
 {
+    map<string, Model> models = scn.models; 
+    Camera cam = scn.cam;
+
     glBindFramebuffer(GL_FRAMEBUFFER, pickerFboID);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glViewport(0, 0, fboWidth, fboHeight);
@@ -180,7 +186,8 @@ void RenderPass::Init(
 )
 {
     Shader renderShader;
-    
+    wireFrame = false;
+
     renderShader.Create(
         string("RenderPass"),
         string("RenderShader.vs"),
@@ -201,13 +208,22 @@ void RenderPass::Init(
  * Render - Main render pass. Draw every object in the scene using its particular material.
  */
 
-void RenderPass::Render(
-    map<string, Model> &models,
-    Camera &cam,
-    vector<DirectionalLight> &dirLights,
-    vector<PointLight> &ptLights
-)
+void RenderPass::Render(Scene &scn)
 {
+    map<string, Model> models = scn.models;
+    Camera cam = scn.cam;
+    vector<DirectionalLight> dirLights = scn.dirLights;
+    vector<PointLight> ptLights = scn.ptLights;
+
+    if (wireFrame)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+    else
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
     glBindFramebuffer(GL_FRAMEBUFFER, renderFboID);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glViewport(0, 0, fboWidth, fboHeight);    
@@ -245,6 +261,8 @@ void RenderPass::Render(
         (*it).second.SetUniforms(cam, dirLights, ptLights, renderProgram);
         (*it).second.Draw();
     }
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 /**

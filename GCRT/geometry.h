@@ -23,6 +23,9 @@ struct Geometry
     GLuint uvVboID;
     GLuint tanVboID;
 
+    vec3 pos;
+    vec3 dims;
+
     mat4 scl;
     mat4 trans;
     mat4 rot;
@@ -48,5 +51,5 @@ struct Geometry
 
     void InitModelMatrices();
     void Translate(vec3 tx);
-    void Scale(vec3 dims);
+    void Scale(vec3 dimsIn);
 };

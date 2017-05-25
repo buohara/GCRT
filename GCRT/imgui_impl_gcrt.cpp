@@ -413,6 +413,9 @@ void ImGuiGCRTInit(HWND hwnd, uint32_t w, uint32_t h)
     io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
     io.ImeWindowHandle = hwnd;
     io.RenderDrawListsFn = ImGuiGCRTRenderDrawLists;
+
+    io.KeyMap[ImGuiKey_Enter] = 0xd;    // VK_ENTER
+    io.KeyMap[ImGuiKey_Tab] = 0x9;      // VK_TAB
 }
 
 /**
@@ -440,6 +443,8 @@ void ImGuiGCRTSetKey(int key, int action)
 
     if (action == 0)
     {
-        //io.KeysDown[key] = false;
+        io.KeysDown[key] = false;
     }
+
+    io.KeyShift = io.KeysDown[0x10]; // VK_SHIFT;
 }

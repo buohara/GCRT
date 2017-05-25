@@ -117,6 +117,7 @@ void Geometry::InitModelMatrices()
 
 void Geometry::Translate(vec3 tx)
 {
+    pos = tx;
     trans = translate(tx);
     model = trans * rot * scl;
     modelInv = inverseTranspose(model);
@@ -126,9 +127,10 @@ void Geometry::Translate(vec3 tx)
  * Scale -
  */
 
-void Geometry::Scale(vec3 dims)
+void Geometry::Scale(vec3 dimsIn)
 {
-    scl = scale(mat4(1.0f), dims);
+    dims = dimsIn;
+    scl = scale(mat4(1.0f), dimsIn);
     model = trans * rot * scl;
     modelInv = inverseTranspose(model);
 }

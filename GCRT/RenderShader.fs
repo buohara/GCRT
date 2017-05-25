@@ -34,6 +34,7 @@ uniform sampler2D normalTex;
 uniform sampler2D diffuseTex;
 
 uniform vec3 kd;
+uniform float shininess;
 
 uniform int useNormalMap;
 uniform int useDiffuseMap;
@@ -103,7 +104,7 @@ vec4 getSpecular()
 
     if (dot(lightVec, norm) > 0)
     {
-        spec = pow(max(dot(camVec, rflc), 0), 2.0) * dot(lightVec, norm); 
+        spec = pow(max(dot(camVec, rflc), 0), shininess) * dot(lightVec, norm); 
     }
 
     if (useDiffuseMap == 1)
@@ -176,7 +177,7 @@ void main()
 
     if (selected == 1)
     {
-        diffuseColor += vec4(1.0, 1.0, 0.0, 0.0);
+        diffuseColor += vec4(0.2, 0.2, 0.2, 0.0);
     }
 
     color = visibility * (diffuseColor + specColor);
