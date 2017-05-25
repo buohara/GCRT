@@ -10,6 +10,7 @@ void Scene::Init()
     glEnable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
     glCullFace(GL_BACK);
+    glEnable(GL_MULTISAMPLE);
     
     useDOF = false;
     useBloom = true;
@@ -113,7 +114,6 @@ void Scene::CreateRenderPassFbo()
 
     glGenTextures(1, &renderTex);
     glBindTexture(GL_TEXTURE_2D, renderTex);
-
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, winW, winH, 0, GL_RGBA, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -253,7 +253,7 @@ void Scene::InitModels()
 
 void Scene::UpdateImGui()
 {
-    ImGuiGCRTNewFrame();
+    ImGuiIO& io = ImGui::GetIO();
 
     ImGuiGCRTSetMouse(
         mousePos[0],
@@ -263,25 +263,32 @@ void Scene::UpdateImGui()
         mouseDown[2]
     );
 
-    bool show_test_window = true;
-    bool show_another_window = false;
-    ImVec4 clear_color = ImColor(114, 144, 154);
+    ImGuiGCRTNewFrame();
 
-    static float f = 0.0f;
-    ImGui::Text("Hello, world!");
-    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-    ImGui::ColorEdit3("clear color", (float*)&clear_color);
+    static bool show_test_window;
+    static ImVec4 diffuse_color = ImColor(0, 0, 0);
+    static float specular = 0.0;
+    static ImVec4 pos(0, 0, 0, 1);
+    static ImVec4 scale(0, 0, 0, 1);
+
+    // Model Properties Window
+
+    ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiSetCond_FirstUseEver);
+    ImGui::Begin("Model Properties");
+
+    ImGui::Text("Material");
+    
+    ImGui::InputFloat3("DiffuseColor", (float*)&diffuse_color);
+    
+    ImGui::InputFloat("Specular", (float*)&specular);
+    
+    ImGui::Text("Geometry");
+    ImGui::InputFloat3("Pos", (float*)&pos);
+    ImGui::InputFloat3("Scale", (float*)&scale);
+    
     if (ImGui::Button("Test Window")) show_test_window ^= 1;
-    if (ImGui::Button("Another Window")) show_another_window ^= 1;
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-    if (show_another_window)
-    {
-        ImGui::SetNextWindowSize(ImVec2(400, 200), ImGuiSetCond_FirstUseEver);
-        ImGui::Begin("Another Window", &show_another_window);
-        ImGui::Text("Hello");
-        ImGui::End();
-    }
+    ImGui::End();
 
     if (show_test_window)
     {
@@ -290,6 +297,8 @@ void Scene::UpdateImGui()
     }
 
     ImGui::Render();
+    int i = 0;
+    i++;
 }
 
 /**
@@ -333,8 +342,15 @@ void Scene::Render(HDC hDC)
 
 void Scene::HandleInputs(MSG &msg)
 {
+    ImGuiIO& io = ImGui::GetIO();
+
     switch (msg.message)
     {
+    case WM_CHAR:
+
+        io.AddInputCharacter(msg.wParam);
+        break;
+
     case WM_KEYDOWN:
 
         if (msg.wParam == 0x46)
@@ -361,16 +377,22 @@ void Scene::HandleInputs(MSG &msg)
 
     case WM_MOUSEMOVE:
 
-        cam.HandleMouseMove(msg.lParam);
+        if (io.WantCaptureMouse == false)
+        {
+            cam.HandleMouseMove(msg.lParam);
+        }
         mousePos[0] = (double)GET_X_LPARAM(msg.lParam);
         mousePos[1] = (double)GET_Y_LPARAM(msg.lParam) + 40.0;
-
         break;
 
     case WM_LBUTTONDOWN:
 
-        cam.HandleMouseDown(msg.lParam);
-        DoPick(msg.lParam);
+        if (io.WantCaptureMouse == false)
+        {
+            cam.HandleMouseDown(msg.lParam);
+            DoPick(msg.lParam);
+        }
+
         mouseDown[0] = true;
         mousePos[0] = (double)GET_X_LPARAM(msg.lParam);
         mousePos[1] = (double)GET_Y_LPARAM(msg.lParam) + 40.0;

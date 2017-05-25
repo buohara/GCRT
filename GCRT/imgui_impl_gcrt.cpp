@@ -424,3 +424,22 @@ void ImGuiGCRTResize(uint32_t w, uint32_t h)
     ImGuiIO& io = ImGui::GetIO();
     io.DisplaySize = ImVec2((float)w, (float)h);
 }
+
+/**
+ * ImGuiGCRTSetKey
+ */
+
+void ImGuiGCRTSetKey(int key, int action)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    
+    if (action == 1)
+    {
+        io.KeysDown[key] = true;
+    }
+
+    if (action == 0)
+    {
+        //io.KeysDown[key] = false;
+    }
+}

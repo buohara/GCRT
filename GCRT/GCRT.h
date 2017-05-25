@@ -9,6 +9,7 @@
 #include <memory>
 #include <fstream>
 #include <map>
+#include <chrono>
 
 // GL headers
 

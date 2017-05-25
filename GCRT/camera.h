@@ -29,6 +29,8 @@ struct Camera
     mat4 projection;
     mat4 view;
 
+    double mouseTime;
+
     void Init(
         vec3 posIn, 
         vec3 lookAtIn,

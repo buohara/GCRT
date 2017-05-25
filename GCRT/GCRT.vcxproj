@@ -163,6 +163,7 @@
     <ClCompile Include="GCRTMain.cpp" />
     <ClCompile Include="geometry.cpp" />
     <ClCompile Include="imgloader.cpp" />
+    <ClCompile Include="ImGuiGCRT.cpp" />
     <ClCompile Include="imgui_impl_gcrt.cpp" />
     <ClCompile Include="material.cpp" />
     <ClCompile Include="model.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="GCRT.h" />
     <ClInclude Include="geometry.h" />
     <ClInclude Include="imgloader.h" />
+    <ClInclude Include="ImGuiGCRT.h" />
     <ClInclude Include="imgui_impl_gcrt.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="material.h" />

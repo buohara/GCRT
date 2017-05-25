@@ -16,9 +16,6 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{bbf6ccbf-d58f-45dc-8248-52a390ea8a79}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Controls">
-      <UniqueIdentifier>{b34e44a4-e3e8-4195-9199-5ee76b112ada}</UniqueIdentifier>
-    </Filter>
     <Filter Include="IMGUI">
       <UniqueIdentifier>{dea7016b-15cc-40f4-a8a8-ebebbdd0d3e2}</UniqueIdentifier>
     </Filter>
@@ -77,6 +74,9 @@
     </ClCompile>
     <ClCompile Include="..\imgui\imgui_demo.cpp">
       <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiGCRT.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="..\imgui\imconfig.h">
       <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiGCRT.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

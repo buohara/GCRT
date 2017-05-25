@@ -6,6 +6,16 @@ const uint32_t KEY_S = 0x53;
 const uint32_t KEY_D = 0x44;
 const uint32_t KEY_P = 0x50;
 const uint32_t KEY_L = 0x4C;
+const uint32_t KEY_0 = 0x30;
+const uint32_t KEY_1 = 0x31;
+const uint32_t KEY_2 = 0x32;
+const uint32_t KEY_3 = 0x33;
+const uint32_t KEY_4 = 0x34;
+const uint32_t KEY_5 = 0x35;
+const uint32_t KEY_6 = 0x36;
+const uint32_t KEY_7 = 0x37;
+const uint32_t KEY_8 = 0x38;
+const uint32_t KEY_9 = 0x39;
 
 /**
  * Init - Initialize camera parameters.
@@ -84,7 +94,7 @@ void Camera::HandleMouseMove(LPARAM mouse)
         p1.x = (float)GET_X_LPARAM(mouse);
         p1.y = (float)GET_Y_LPARAM(mouse) + 40.0f;
 
-        float d = 1.0;//1 - expf(logf(0.5) * 10 * 0.016);
+        double d = 1;
         p1.x = p2.x + (p1.x - p2.x) * d;
         p1.y = p2.y + (p1.y - p2.y) * d;
     }
@@ -98,29 +108,7 @@ void Camera::HandleMouseMove(LPARAM mouse)
 
 void Camera::HandleKeyDown(WPARAM key)
 {
-    switch (key)
-    {
-    case KEY_W:
-        downKeys[KEY_W] = true;
-        break;
-    case KEY_A:
-        downKeys[KEY_A] = true;
-        break;
-    case KEY_S:
-        downKeys[KEY_S] = true;
-        break;
-    case KEY_D:
-        downKeys[KEY_D] = true;
-        break;
-    case KEY_P:
-        downKeys[KEY_P] = true;
-        break;
-    case KEY_L:
-        downKeys[KEY_L] = true;
-        break;
-    default:
-        break;
-    }
+    downKeys[key] = true;
 }
 
 /**
@@ -131,29 +119,7 @@ void Camera::HandleKeyDown(WPARAM key)
 
 void Camera::HandleKeyUp(WPARAM key)
 {
-    switch (key)
-    {
-    case KEY_W:
-        downKeys[KEY_W] = false;
-        break;
-    case KEY_A:
-        downKeys[KEY_A] = false;
-        break;
-    case KEY_S:
-        downKeys[KEY_S] = false;
-        break;
-    case KEY_D:
-        downKeys[KEY_D] = false;
-        break;
-    case KEY_P:
-        downKeys[KEY_P] = false;
-        break;
-    case KEY_L:
-        downKeys[KEY_L] = false;
-        break;
-    default:
-        break;
-    }
+    downKeys[key] = false;
 }
 
 /**
