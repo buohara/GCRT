@@ -10,6 +10,7 @@ struct Model
     shared_ptr<Geometry> pGeom;
     RMaterial mat;
     GLuint program;
+    vec3 pickerColor;
 
     void SetMaterial(RMaterial matIn);
 

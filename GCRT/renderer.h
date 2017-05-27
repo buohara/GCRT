@@ -57,6 +57,9 @@ struct Renderer
     void Render(HDC hDC);
     void DoPick(LPARAM mouseCoord);
     void UpdateImGui();
+    void RenderSceneWindow();
+    void RenderModelWindow();
+    void RenderRendererWindow();
     void UpdateViewPorts(uint32_t w, uint32_t h);
 
     void CreateNoiseTexture();

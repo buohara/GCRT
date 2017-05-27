@@ -165,7 +165,7 @@ void PickerPass::Render(Scene &scn)
         GLuint modelID = glGetUniformLocation(pickerProgram, "model");
         glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
 
-        vec3 pickerColor = (*it).second.mat.pickerColor;
+        vec3 pickerColor = (*it).second.pickerColor;
         GLuint pickerID = glGetUniformLocation(pickerProgram, "pickerColor");
         glUniform3fv(pickerID, 1, &pickerColor[0]);
 

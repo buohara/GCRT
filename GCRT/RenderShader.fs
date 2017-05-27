@@ -134,7 +134,7 @@ float getVisibility()
 
     if (posLightSpace.z - bias > shadowDepth)
     {
-        visibility = 0.5;
+        visibility = 0.25;
     }
 
     return visibility;

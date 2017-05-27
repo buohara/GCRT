@@ -181,7 +181,6 @@ void Renderer::InitMaterials()
     dirtMat.SetDiffuseTex(scn.textures["DirtDiffuse"]);
     dirtMat.SetNormalTex(scn.textures["DirtNormal"]);
     dirtMat.UseShadows(true);
-    dirtMat.pickerColor = vec3(0.1, 0.1, 0.1);
     dirtMat.spec = 2.0;
     scn.materials["Dirt"] = dirtMat;
 
@@ -190,7 +189,6 @@ void Renderer::InitMaterials()
     redMat.kd = vec3(12.0, 0.4, 0.4);
     redMat.UseShadows(true);
     redMat.SetNormalTex(scn.textures["DirtNormal"]);
-    redMat.pickerColor = vec3(0.2, 0.2, 0.2);
     redMat.spec = 2.0;
     scn.materials["RedMat"] = redMat;
 
@@ -198,15 +196,23 @@ void Renderer::InitMaterials()
     greenMat.name = "GreenMat";
     greenMat.kd = vec3(0.4, 3.9, 0.4);
     greenMat.UseShadows(true);
-    greenMat.pickerColor = vec3(0.3, 0.3, 0.3);
+    greenMat.SetNormalTex(scn.textures["DirtNormal"]);
     greenMat.spec = 2.0;
     scn.materials["GreenMat"] = greenMat;
+
+    RMaterial blueMat;
+    blueMat.name = "BlueMat";
+    blueMat.kd = vec3(0.1, 0.4, 4.4);
+    blueMat.UseShadows(true);
+    blueMat.SetNormalTex(scn.textures["DirtNormal"]);
+    blueMat.spec = 2.0;
+    scn.materials["BlueMat"] = blueMat;
 
     RMaterial yellowMat;
     yellowMat.name = "YellowMat";
     yellowMat.kd = vec3(0.8, 0.8, 0.01);
     yellowMat.UseShadows(true);
-    yellowMat.pickerColor = vec3(0.4, 0.4, 0.4);
+    yellowMat.SetNormalTex(scn.textures["DirtNormal"]);
     yellowMat.spec = 2.0;
     scn.materials["YellowMat"] = yellowMat;
 }
@@ -225,30 +231,79 @@ void Renderer::InitModels()
 
     scn.models["Plane"].pGeom = make_shared<Plane>(pln);
     scn.models["Plane"].SetMaterial(scn.materials["Dirt"]);
+    scn.models["Plane"].pickerColor = vec3(0.0, 0.0, 0.1);
 
-    Box box;
-    box.Create();
-    box.Scale(vec3(1.0, 1.0, 1.0));
-    box.Translate(vec3(10.0, 0.0, 1.0));
+    Sphere sph1;
+    sph1.Create(50, 50);
+    sph1.Scale(vec3(2.0, 2.0, 2.0));
+    sph1.Translate(vec3(10.0, 0.0, 3.0));
 
-    scn.models["Box"].pGeom = make_shared<Box>(box);
-    scn.models["Box"].SetMaterial(scn.materials["GreenMat"]);
+    scn.models["Sphere1"].pGeom = make_shared<Sphere>(sph1);
+    scn.models["Sphere1"].SetMaterial(scn.materials["RedMat"]);
+    scn.models["Sphere1"].pickerColor = vec3(0.0, 0.1, 0.1);
 
-    Sphere sph;
-    sph.Create(50, 50);
-    sph.Scale(vec3(4.0, 4.0, 4.0));
-    sph.Translate(vec3(0.0, 12.0, 3.0));
+    Sphere sph2;
+    sph2.Create(50, 50);
+    sph2.Scale(vec3(2.0, 2.0, 2.0));
+    sph2.Translate(vec3(7.07, 7.07, 3.0));
 
-    scn.models["Sphere"].pGeom = make_shared<Sphere>(sph);
-    scn.models["Sphere"].SetMaterial(scn.materials["RedMat"]);
+    scn.models["Sphere2"].pGeom = make_shared<Sphere>(sph2);
+    scn.models["Sphere2"].SetMaterial(scn.materials["GreenMat"]);
+    scn.models["Sphere2"].pickerColor = vec3(0.1, 0.1, 0.1);
 
-    Cylinder cyl;
-    cyl.Create(25);
-    cyl.Scale(vec3(2.0, 2.0, 3.0));
-    cyl.Translate(vec3(0.0, -30.0, 3.0));
+    Sphere sph3;
+    sph3.Create(50, 50);
+    sph3.Scale(vec3(2.0, 2.0, 2.0));
+    sph3.Translate(vec3(0.0, 10.0, 3.0));
 
-    scn.models["Cylinder"].pGeom = make_shared<Cylinder>(cyl);
-    scn.models["Cylinder"].SetMaterial(scn.materials["YellowMat"]);
+    scn.models["Sphere3"].pGeom = make_shared<Sphere>(sph3);
+    scn.models["Sphere3"].SetMaterial(scn.materials["YellowMat"]);
+    scn.models["Sphere3"].pickerColor = vec3(0.1, 0.1, 0.2);
+
+    Sphere sph4;
+    sph4.Create(50, 50);
+    sph4.Scale(vec3(2.0, 2.0, 2.0));
+    sph4.Translate(vec3(-7.07, 7.07, 3.0));
+
+    scn.models["Sphere4"].pGeom = make_shared<Sphere>(sph4);
+    scn.models["Sphere4"].SetMaterial(scn.materials["BlueMat"]);
+    scn.models["Sphere4"].pickerColor = vec3(0.1, 0.2, 0.2);
+
+    Sphere sph5;
+    sph5.Create(50, 50);
+    sph5.Scale(vec3(2.0, 2.0, 2.0));
+    sph5.Translate(vec3(-10.0, 0.0, 3.0));
+
+    scn.models["Sphere5"].pGeom = make_shared<Sphere>(sph5);
+    scn.models["Sphere5"].SetMaterial(scn.materials["RedMat"]);
+    scn.models["Sphere5"].pickerColor = vec3(0.2, 0.2, 0.2);
+
+    Sphere sph6;
+    sph6.Create(50, 50);
+    sph6.Scale(vec3(2.0, 2.0, 2.0));
+    sph6.Translate(vec3(-7.07, -7.07, 3.0));
+
+    scn.models["Sphere6"].pGeom = make_shared<Sphere>(sph6);
+    scn.models["Sphere6"].SetMaterial(scn.materials["GreenMat"]);
+    scn.models["Sphere6"].pickerColor = vec3(0.2, 0.2, 0.3);
+
+    Sphere sph7;
+    sph7.Create(50, 50);
+    sph7.Scale(vec3(2.0, 2.0, 2.0));
+    sph7.Translate(vec3(0.0, -10.0, 3.0));
+
+    scn.models["Sphere7"].pGeom = make_shared<Sphere>(sph7);
+    scn.models["Sphere7"].SetMaterial(scn.materials["YellowMat"]);
+    scn.models["Sphere7"].pickerColor = vec3(0.2, 0.3, 0.3);
+
+    Sphere sph8;
+    sph8.Create(50, 50);
+    sph8.Scale(vec3(2.0, 2.0, 2.0));
+    sph8.Translate(vec3(7.07, -7.07, 3.0));
+
+    scn.models["Sphere8"].pGeom = make_shared<Sphere>(sph8);
+    scn.models["Sphere8"].SetMaterial(scn.materials["BlueMat"]);
+    scn.models["Sphere8"].pickerColor = vec3(0.3, 0.3, 0.3);
 }
 
 /**
@@ -275,19 +330,60 @@ void Renderer::UpdateImGui()
     }
 
     ImGuiGCRTNewFrame();
+    RenderSceneWindow();
+    RenderModelWindow();
+    RenderRendererWindow();
+    ImGui::ShowTestWindow();
+    ImGui::Render();
 
+    // Clear out any key inputs
+
+    for (uint32_t i = 0; i < ImGuiKeys.size(); i++)
+    {
+        ImGuiGCRTSetKey(ImGuiKeys[i], 0);
+    }
+    ImGuiKeys.resize(0);
+}
+
+/**
+ * RenderSceneWindow
+ */
+
+void Renderer::RenderSceneWindow()
+{
+    bool open = true;
     ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiSetCond_FirstUseEver);
     ImGui::Begin("Scene");
+
+    if (ImGui::CollapsingHeader("Models"))
+    {
+
+    }
+
+    if (ImGui::CollapsingHeader("Lights"))
+    {
+
+    }
+
+    if (ImGui::CollapsingHeader("Camera"))
+    {
+
+    }
+
+    if (ImGui::CollapsingHeader("Materials"))
+    {
+
+    }
+
     ImGui::End();
+}
 
-
-    // Model Properties Window
-
-    ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiSetCond_FirstUseEver);
-    ImGui::Begin("Renderer");
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    ImGui::End();
-
+/**
+ * RenderModelWindow
+ */
+ 
+void Renderer::RenderModelWindow()
+{
     ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiSetCond_FirstUseEver);
     ImGui::Begin("Model Properties");
 
@@ -308,7 +404,7 @@ void Renderer::UpdateImGui()
     // Geometry.
 
     ImGui::Text("Geometry");
-    
+
     if (ImGui::InputFloat3("Pos", (float*)&selected.pos))
     {
         scn.models[selected.name].pGeom->Translate(selected.pos);
@@ -320,23 +416,29 @@ void Renderer::UpdateImGui()
     }
 
     ImGui::End();
-
-    // And draw.
-
-    ImGui::Render();
-
-    // Clear out any key inputs
-
-    for (uint32_t i = 0; i < ImGuiKeys.size(); i++)
-    {
-        ImGuiGCRTSetKey(ImGuiKeys[i], 0);
-    }
-    ImGuiKeys.resize(0);
 }
 
 /**
-* Render - Loop through each model in the scene and draw it.
-*/
+ * RenderRendererWindow
+ */
+
+void Renderer::RenderRendererWindow()
+{
+    ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiSetCond_FirstUseEver);
+    ImGui::Begin("Renderer");
+    
+    ImGui::Text(
+        "Application average %.3f ms/frame (%.1f FPS)", 
+        1000.0f / ImGui::GetIO().Framerate, 
+        ImGui::GetIO().Framerate
+    );
+
+    ImGui::End();
+}
+
+/**
+ * Render - Loop through each model in the scene and draw it.
+ */
 
 void Renderer::Render(HDC hDC)
 {
@@ -461,7 +563,7 @@ void Renderer::DoPick(LPARAM mouseCoord)
 
     for (it = scn.models.begin(); it != scn.models.end(); it++)
     {
-        vec3 pickerColor = (*it).second.mat.pickerColor;
+        vec3 pickerColor = (*it).second.pickerColor;
         if (abs(pickerColor.x - pixel.x) < 0.05 &&
             abs(pickerColor.y - pixel.y) < 0.05 &&
             abs(pickerColor.z - pixel.z) < 0.05)
