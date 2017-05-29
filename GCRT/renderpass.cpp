@@ -289,7 +289,7 @@ void DOFPass::LoadQuadVerts()
     uvs.push_back(vec2(1.0, 0.0));
     uvs.push_back(vec2(1.0, 1.0));
 
-    uint32_t numVerts = pos.size();
+    uint32_t numVerts = (uint32_t)pos.size();
     size_t posBufSize = 3 * numVerts * sizeof(float);
     size_t uvBufSize = 2 * numVerts * sizeof(float);
 
@@ -317,7 +317,7 @@ void DOFPass::LoadQuadVerts()
 
 void DOFPass::GenerateSamplePoints()
 {
-    float twoPi = 2.0 * glm::pi<float>();
+    float twoPi = 2.0f * glm::pi<float>();
     float r;
     float theta;
 
@@ -414,7 +414,7 @@ void BloomPass::LoadQuadVerts()
     uvs.push_back(vec2(1.0, 0.0));
     uvs.push_back(vec2(1.0, 1.0));
 
-    uint32_t numVerts = pos.size();
+    uint32_t numVerts = (uint32_t)pos.size();
     size_t posBufSize = 3 * numVerts * sizeof(float);
     size_t uvBufSize = 2 * numVerts * sizeof(float);
 

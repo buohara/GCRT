@@ -22,7 +22,7 @@ void Box::Create()
     GenUVs(uvs);
     GenTans(tans);
 
-    numVerts = pos.size();
+    numVerts = (uint32_t)pos.size();
 
     InitVertexObjects(pos, norms, uvs, tans);
     InitModelMatrices();

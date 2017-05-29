@@ -94,7 +94,7 @@ void Camera::HandleMouseMove(LPARAM mouse)
         p1.x = (float)GET_X_LPARAM(mouse);
         p1.y = (float)GET_Y_LPARAM(mouse) + 40.0f;
 
-        double d = 1;
+        float d = 1;
         p1.x = p2.x + (p1.x - p2.x) * d;
         p1.y = p2.y + (p1.y - p2.y) * d;
     }
@@ -226,7 +226,7 @@ void Camera::Update()
             vec3 fwd = lookDir - pos;
             vec3 level = normalize(vec3(fwd.x, fwd.y, 0.0f));
 
-            float d = 1 - expf(logf(0.5) * 50 * 0.016);
+            float d = 1 - expf(logf(0.5f) * 50 * 0.016f);
 
             float theta = dot(fwd, level);
             float dx = p2.x - p1.x;

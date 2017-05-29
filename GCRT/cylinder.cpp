@@ -48,8 +48,8 @@ void Cylinder::GenPositions(vector<vec3> &pos, uint32_t numSectors)
 
     // Verts for top and bottom;
 
-    topOffset = pos.size();
-    numSideVerts = pos.size();
+    topOffset = (uint32_t)pos.size();
+    numSideVerts = (uint32_t)pos.size();
 
     pos.push_back(vec3(0.0, 0.0, hz));
 
@@ -60,8 +60,8 @@ void Cylinder::GenPositions(vector<vec3> &pos, uint32_t numSectors)
         pos.push_back(vec3(x, y, hz));
     }
 
-    bottomOffset = pos.size();
-    numCapVerts = pos.size() - topOffset;
+    bottomOffset = (uint32_t)pos.size();
+    numCapVerts = (uint32_t)(pos.size() - topOffset);
 
     pos.push_back(vec3(0.0, 0.0, -hz));
 
@@ -129,7 +129,7 @@ void Cylinder::GenUVs(vector<vec2> &uvs, uint32_t numSectors)
 {
     // Verts for the sides.
 
-    float du = 1.0 / numSectors;
+    float du = 1.0f / numSectors;
 
     for (uint32_t i = 0; i < numSectors; i++)
     {

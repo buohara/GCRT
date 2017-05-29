@@ -16,7 +16,7 @@ void Geometry::InitVertexObjects(
     vector<vec3> &tans
 )
 {
-    uint32_t numVerts = pos.size();
+    uint32_t numVerts = (uint32_t)pos.size();
 
     size_t posBufSize = 3 * numVerts * sizeof(float);
     size_t normBufSize = 3 * numVerts * sizeof(float);
@@ -67,7 +67,7 @@ void Geometry::InitVertexObjects(
     vector<vec2> &uvs
 )
 {
-    uint32_t numVerts = pos.size();
+    uint32_t numVerts = (uint32_t)pos.size();
 
     size_t posBufSize = 3 * numVerts * sizeof(float);
     size_t normBufSize = 3 * numVerts * sizeof(float);

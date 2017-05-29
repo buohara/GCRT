@@ -26,7 +26,7 @@ void Plane::Create(
     GenUVs(uvs, rows, cols);
     GenTangents(tans, rows, cols);
 
-    numVerts = pos.size();
+    numVerts = (uint32_t)pos.size();
     InitVertexObjects(pos, norms, uvs);
     InitModelMatrices();
 }

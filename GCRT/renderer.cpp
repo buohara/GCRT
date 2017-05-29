@@ -142,16 +142,16 @@ void Renderer::CreateRenderPassFbo()
 void Renderer::LoadTextures()
 {
     scn.textures["DirtDiffuse"] =
-        ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/dirtdiffuse.jpg"));
+        ImgLoader::LoadTexture(string("../asset/dirtdiffuse.jpg"));
 
     scn.textures["DirtNormal"] =
-        ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/dirtnormal.jpg"));
+        ImgLoader::LoadTexture(string("../asset/dirtnormal.jpg"));
 
     scn.textures["GrassDiffuse"] =
-        ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/grassdiffuse.jpg"));
+        ImgLoader::LoadTexture(string("../asset/grassdiffuse.jpg"));
 
     scn.textures["GrassNormal"] =
-        ImgLoader::LoadTexture(string("E:/drive/GCRT/asset/grassNormal.jpg"));
+        ImgLoader::LoadTexture(string("../asset/grassNormal.jpg"));
 }
 
 /**
@@ -476,7 +476,7 @@ void Renderer::HandleInputs(MSG &msg)
     {
     case WM_CHAR:
 
-        io.AddInputCharacter(msg.wParam);
+        io.AddInputCharacter((ImWchar)msg.wParam);
         break;
 
     case WM_KEYDOWN:
@@ -491,11 +491,11 @@ void Renderer::HandleInputs(MSG &msg)
 
         if (msg.wParam == 0x10) // IMGUI 'shift' modifier shouldn't be cleared until released.
         {
-            ImGuiGCRTSetKey(msg.wParam, 1);
+            ImGuiGCRTSetKey((int)msg.wParam, 1);
         }
         else
         {
-            ImGuiKeys.push_back(msg.wParam);
+            ImGuiKeys.push_back((uint32_t)msg.wParam);
         }
         break;
 
@@ -503,7 +503,7 @@ void Renderer::HandleInputs(MSG &msg)
 
         if (msg.wParam == 0x10) // Clear IMGUI 'shift' modifier.
         {
-            ImGuiGCRTSetKey(msg.wParam, 0);
+            ImGuiGCRTSetKey((int)msg.wParam, 0);
         }
 
         scn.cam.HandleKeyUp(msg.wParam);
@@ -550,7 +550,7 @@ void Renderer::HandleInputs(MSG &msg)
 void Renderer::DoPick(LPARAM mouseCoord)
 {
     uint32_t x = GET_X_LPARAM(mouseCoord);
-    uint32_t y = winH - (GET_Y_LPARAM(mouseCoord) + 40.0);
+    uint32_t y = winH - (GET_Y_LPARAM(mouseCoord) + 40);
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, pickerPass.pickerFboID);
 

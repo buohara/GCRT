@@ -144,7 +144,7 @@ void ImGuiGCRTRenderDrawLists(ImDrawData *drawData)
             {
                 glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
                 
-                glScissor(0, 0, fbWidth, fbHeight);
+                glScissor(0, 0, (GLsizei)fbWidth, (GLsizei)fbHeight);
                 
                 glDrawElements(
                     GL_TRIANGLES, 
@@ -233,7 +233,7 @@ void ImGuiGCRTRenderDrawLists(ImDrawData *drawData)
 void ImGuiGCRTSetMouse(double x, double y, bool lDown, bool rDown, bool mDown)
 {
     ImGuiIO& io = ImGui::GetIO();
-    io.MousePos = ImVec2(x, y);
+    io.MousePos = ImVec2((float)x, (float)y);
     io.MouseDown[0] = lDown;
     io.MouseDown[1] = mDown;
     io.MouseDown[2] = mDown;
@@ -256,7 +256,7 @@ void ImGuiGCRTNewFrame()
 
     auto now = system_clock::now();
     auto nowSec = time_point_cast<std::chrono::seconds>(now);
-    double currentTime = nowSec.time_since_epoch().count();
+    double currentTime = (double)nowSec.time_since_epoch().count();
 
     io.DeltaTime = g_Time > 0.0 ? (float)(currentTime - g_Time) : (float)(1.0f / 60.0f);
     g_Time = currentTime;

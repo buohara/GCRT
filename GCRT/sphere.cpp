@@ -66,8 +66,8 @@ void Sphere::GenPositions(vector<vec3> &pos, uint32_t numSectors, uint32_t numRi
 
     // Caps as a pair of triangle fans.
 
-    numSideVerts = pos.size();
-    topOffset = pos.size();
+    numSideVerts = (uint32_t)pos.size();
+    topOffset = (uint32_t)pos.size();
 
     pos.push_back(vec3(0.0, 0.0, 1.0));
 
@@ -80,7 +80,7 @@ void Sphere::GenPositions(vector<vec3> &pos, uint32_t numSectors, uint32_t numRi
         pos.push_back(vec3(x, y, z));
     }
 
-    bottomOffset = pos.size();
+    bottomOffset = (uint32_t)pos.size();
     numCapVerts = bottomOffset - topOffset;
 
     pos.push_back(vec3(0.0, 0.0, -1.0));
@@ -162,8 +162,8 @@ void Sphere::GenNormals(vector<vec3> &norms, uint32_t numSectors, uint32_t numRi
 
 void Sphere::GenUVs(vector<vec2> &uvs, uint32_t numSectors, uint32_t numRings)
 {
-    float du = 1.0 / numSectors;
-    float dv = 1.0 / (numRings + 2);
+    float du = 1.0f / (float)numSectors;
+    float dv = 1.0f / (float)(numRings + 2);
 
     // Geometry for sphere excluding caps as a big triangle strip.
 
@@ -207,7 +207,7 @@ void Sphere::GenUVs(vector<vec2> &uvs, uint32_t numSectors, uint32_t numRings)
     for (uint32_t i = 0; i < numSectors + 1; i++)
     {
         float u = i * du;
-        float v = 1.0 - dv;
+        float v = 1.0f - dv;
 
         uvs.push_back(vec2(u, v));
     }
