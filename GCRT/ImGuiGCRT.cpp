@@ -164,7 +164,11 @@ void Renderer::RenderSceneWindow()
 
             if (ImGui::Button("Add", ImVec2(120, 0)))
             {
-                scn.textures[newTexName] = ImgLoader::LoadTexture(string(newTexPath));
+                GLuint newID = ImgLoader::LoadTexture(string(newTexPath));
+                if (newID != 0)
+                {
+                    scn.textures[newTexName] = newID;
+                }
                 ImGui::CloseCurrentPopup();
             }
 

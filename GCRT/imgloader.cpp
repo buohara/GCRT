@@ -12,7 +12,10 @@ GLuint ImgLoader::LoadTexture(string &fileName)
     ilGenImages(1, &imgID);
     ilBindImage(imgID);
 
-    ilLoadImage(fileName.c_str());
+    if (!ilLoadImage(fileName.c_str()))
+    {
+        return 0;
+    }
 
     uint32_t w = ilGetInteger(IL_IMAGE_WIDTH);
     uint32_t h = ilGetInteger(IL_IMAGE_HEIGHT);
