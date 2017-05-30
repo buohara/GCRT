@@ -188,6 +188,7 @@ void RenderPass::Init(
 {
     Shader renderShader;
     wireFrame = false;
+    useMSAA = false;
 
     if (msaaSamples > 1)
     {

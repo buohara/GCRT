@@ -416,6 +416,7 @@ void ImGuiGCRTInit(HWND hwnd, uint32_t w, uint32_t h)
 
     io.KeyMap[ImGuiKey_Enter] = 0xd;    // VK_ENTER
     io.KeyMap[ImGuiKey_Tab] = 0x9;      // VK_TAB
+    io.KeyMap[ImGuiKey_Backspace] = 0x8;// VK_BACK
 }
 
 /**

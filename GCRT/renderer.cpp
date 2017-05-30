@@ -13,7 +13,7 @@ void Renderer::Init()
 
     settings.useDOF = false;
     settings.useBloom = true;
-    settings.msaaSamples = 8;
+    settings.msaaSamples = 1;
 
     winW = 1920;
     winH = 1080;
