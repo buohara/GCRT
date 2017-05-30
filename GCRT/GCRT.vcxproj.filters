@@ -146,9 +146,6 @@
     <ClInclude Include="..\imgui\imconfig.h">
       <Filter>IMGUI</Filter>
     </ClInclude>
-    <ClInclude Include="ImGuiGCRT.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="DepthPassShader.vs">

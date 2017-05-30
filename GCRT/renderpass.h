@@ -14,8 +14,13 @@ struct RenderPass
 
     GLuint renderProgram;
     bool wireFrame;
+    bool useMSAA;
 
     GLuint renderFboID;
+
+    GLuint multisampleFboID;
+    GLuint multisampleTexID;
+    GLuint multisampleDepthID;
 
     bool useDOF;
     GLuint depthTex;
@@ -27,7 +32,8 @@ struct RenderPass
         GLuint renderFbo,
         uint32_t screenW,
         uint32_t screenH,
-        bool useDOFIn
+        bool useDOFIn,
+        uint32_t msaaSamples
     );
 };
 

@@ -182,11 +182,17 @@ void RenderPass::Init(
     GLuint renderFbo,
     uint32_t screenW,
     uint32_t screenH,
-    bool useDOFIn
+    bool useDOFIn,
+    uint32_t msaaSamples
 )
 {
     Shader renderShader;
     wireFrame = false;
+
+    if (msaaSamples > 1)
+    {
+        useMSAA = true;
+    }
 
     renderShader.Create(
         string("RenderPass"),
@@ -202,6 +208,56 @@ void RenderPass::Init(
 
     renderFboID = renderFbo;
     useDOF = useDOFIn;
+
+    if (useMSAA)
+    {
+        glGenTextures(1, &multisampleTexID);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, multisampleTexID);
+        
+        glTexImage2DMultisample(
+            GL_TEXTURE_2D_MULTISAMPLE,
+            msaaSamples,
+            GL_RGBA,
+            fboWidth,
+            fboHeight,
+            true
+        );
+
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+
+        GLuint depthRenderBuffer;
+
+        glGenRenderbuffers(1, &depthRenderBuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
+        
+        glRenderbufferStorageMultisample(
+            GL_RENDERBUFFER, 
+            msaaSamples, 
+            GL_DEPTH_COMPONENT, 
+            fboWidth, 
+            fboHeight
+        );
+
+        glGenFramebuffers(1, &multisampleFboID);
+        glBindFramebuffer(GL_FRAMEBUFFER, multisampleFboID);
+
+        glFramebufferTexture2D(
+            GL_FRAMEBUFFER,
+            GL_COLOR_ATTACHMENT0,
+            GL_TEXTURE_2D_MULTISAMPLE,
+            multisampleTexID,
+            0
+        );
+
+        glFramebufferRenderbuffer(
+            GL_FRAMEBUFFER, 
+            GL_DEPTH_ATTACHMENT, 
+            GL_RENDERBUFFER, 
+            depthRenderBuffer
+        );
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
 }
 
 /**
@@ -215,6 +271,8 @@ void RenderPass::Render(Scene &scn)
     vector<DirectionalLight> dirLights = scn.dirLights;
     vector<PointLight> ptLights = scn.ptLights;
 
+    // Wireframe mode?
+
     if (wireFrame)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -224,9 +282,19 @@ void RenderPass::Render(Scene &scn)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, renderFboID);
+    // Use MSAA?
+
+    if (useMSAA)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, multisampleFboID);
+    }
+    else
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, renderFboID);
+    }
+
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, fboWidth, fboHeight);    
+    glViewport(0, 0, fboWidth, fboHeight);
     glUseProgram(renderProgram);
 
     // Set depth map (on texture unit 2).
@@ -260,6 +328,27 @@ void RenderPass::Render(Scene &scn)
     {
         (*it).second.SetUniforms(cam, dirLights, ptLights, renderProgram);
         (*it).second.Draw();
+    }
+
+    // Resolve MSAA buffer.
+
+    if (useMSAA)
+    {
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderFboID);
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, multisampleFboID);
+        
+        glBlitFramebuffer(
+            0, 
+            0, 
+            fboWidth, 
+            fboHeight, 
+            0, 
+            0, 
+            fboWidth, 
+            fboHeight, 
+            GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 
+            GL_NEAREST
+        );
     }
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

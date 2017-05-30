@@ -19,6 +19,7 @@ struct RenderSettings
     bool wireFrame;
     bool useDOF;
     bool useBloom;
+    uint32_t msaaSamples;
 };
 
 struct Renderer
