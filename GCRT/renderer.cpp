@@ -1,8 +1,8 @@
 #include "renderer.h"
 
 /**
-* Init - Initialize scene assets.
-*/
+ * Init - Initialize scene assets.
+ */
 
 void Renderer::Init()
 {
@@ -54,7 +54,7 @@ void Renderer::Init()
 
     dofPass.Init(
         renderTex,
-        scn.textures["NoiseTex"],
+        scn.diffTextures["NoiseTex"],
         renderFbo,
         winW,
         winH
@@ -74,8 +74,8 @@ void Renderer::Init()
 }
 
 /**
-* Create in/out FBO/texture to hand between passes.
-*/
+ * Create in/out FBO/texture to hand between passes.
+ */
 
 void Renderer::UpdateViewPorts(uint32_t w, uint32_t h)
 {
@@ -93,8 +93,8 @@ void Renderer::UpdateViewPorts(uint32_t w, uint32_t h)
 }
 
 /**
-* ResizeRenderFbo
-*/
+ * ResizeRenderFbo
+ */
 
 void Renderer::ResizeRenderFbo()
 {
@@ -104,8 +104,8 @@ void Renderer::ResizeRenderFbo()
 }
 
 /**
-* Create in/out FBO/texture to hand between passes.
-*/
+ * Create in/out FBO/texture to hand between passes.
+ */
 
 void Renderer::CreateRenderPassFbo()
 {
@@ -137,27 +137,35 @@ void Renderer::CreateRenderPassFbo()
 }
 
 /**
-* LoadTextures - Read texture images from file and create GL textures.
-*/
+ * LoadTextures - Read texture images from file and create GL textures.
+ */
 
 void Renderer::LoadTextures()
 {
-    scn.textures["DirtDiffuse"] =
-        ImgLoader::LoadTexture(string("../asset/dirtdiffuse.jpg"));
-
-    scn.textures["DirtNormal"] =
-        ImgLoader::LoadTexture(string("../asset/dirtnormal.jpg"));
-
-    scn.textures["GrassDiffuse"] =
-        ImgLoader::LoadTexture(string("../asset/grassdiffuse.jpg"));
-
-    scn.textures["GrassNormal"] =
-        ImgLoader::LoadTexture(string("../asset/grassNormal.jpg"));
+    scn.AddDiffTexture(
+        "DirtDiffuse", 
+        ImgLoader::LoadTexture(string("../asset/dirtdiffuse.jpg"))
+    );
+    
+    scn.AddNormTexture(
+        "DirtNormal", 
+        ImgLoader::LoadTexture(string("../asset/dirtnormal.jpg"))
+    );
+    
+    scn.AddDiffTexture(
+        "GrassDiffuse", 
+        ImgLoader::LoadTexture(string("../asset/grassdiffuse.jpg"))
+    );
+    
+    scn.AddNormTexture(
+        "GrassNormal", 
+        ImgLoader::LoadTexture(string("../asset/grassNormal.jpg"))
+    );
 }
 
 /**
-* InitLights - Initialize scene lights.
-*/
+ * InitLights - Initialize scene lights.
+ */
 
 void Renderer::InitLights()
 {
@@ -172,55 +180,55 @@ void Renderer::InitLights()
 }
 
 /**
-* InitMaterials - Build materials from shaders and textures.
-*/
+ * InitMaterials - Build materials from shaders and textures.
+ */
 
 void Renderer::InitMaterials()
 {
     RMaterial dirtMat;
     dirtMat.name = "Dirt";
-    dirtMat.SetDiffuseTex(scn.textures["DirtDiffuse"]);
-    dirtMat.SetNormalTex(scn.textures["DirtNormal"]);
+    dirtMat.SetDiffuseTex(scn.diffTextures["DirtDiffuse"], "DirtDiffuse");
+    dirtMat.SetNormalTex(scn.normTextures["DirtNormal"], "DirtNormal");
     dirtMat.UseShadows(true);
     dirtMat.spec = 2.0;
-    scn.materials["Dirt"] = dirtMat;
+    scn.AddMaterial("Dirt", dirtMat);
 
     RMaterial redMat;
     redMat.name = "RedMat";
     redMat.kd = vec3(12.0, 0.4, 0.4);
     redMat.UseShadows(true);
-    redMat.SetNormalTex(scn.textures["DirtNormal"]);
+    redMat.SetNormalTex(scn.normTextures["DirtNormal"], "DirtNormal");
     redMat.spec = 2.0;
-    scn.materials["RedMat"] = redMat;
+    scn.AddMaterial("RedMat", redMat);
 
     RMaterial greenMat;
     greenMat.name = "GreenMat";
     greenMat.kd = vec3(0.4, 3.9, 0.4);
     greenMat.UseShadows(true);
-    greenMat.SetNormalTex(scn.textures["DirtNormal"]);
+    greenMat.SetNormalTex(scn.normTextures["DirtNormal"], "DirtNormal");
     greenMat.spec = 2.0;
-    scn.materials["GreenMat"] = greenMat;
+    scn.AddMaterial("GreenMat", greenMat);
 
     RMaterial blueMat;
     blueMat.name = "BlueMat";
     blueMat.kd = vec3(0.1, 0.4, 4.4);
     blueMat.UseShadows(true);
-    blueMat.SetNormalTex(scn.textures["DirtNormal"]);
+    blueMat.SetNormalTex(scn.normTextures["DirtNormal"], "DirtNormal");
     blueMat.spec = 2.0;
-    scn.materials["BlueMat"] = blueMat;
+    scn.AddMaterial("BlueMat", blueMat);
 
     RMaterial yellowMat;
     yellowMat.name = "YellowMat";
     yellowMat.kd = vec3(0.8, 0.8, 0.01);
     yellowMat.UseShadows(true);
-    yellowMat.SetNormalTex(scn.textures["DirtNormal"]);
+    yellowMat.SetNormalTex(scn.normTextures["DirtNormal"], "DirtNormal");
     yellowMat.spec = 2.0;
-    scn.materials["YellowMat"] = yellowMat;
+    scn.AddMaterial("YellowMat", yellowMat);
 }
 
 /**
-* Create models from geometries and materials.
-*/
+ * Create models from geometries and materials.
+ */
 
 void Renderer::InitModels()
 {
@@ -229,80 +237,89 @@ void Renderer::InitModels()
     Plane pln;
     pln.Create(10, 10);
     pln.Scale(vec3(10.0, 10.0, 1.0));
-
-    scn.models["Plane"].pGeom = make_shared<Plane>(pln);
-    scn.models["Plane"].SetMaterial(scn.materials["Dirt"]);
-    scn.models["Plane"].pickerColor = vec3(0.0, 0.0, 0.1);
+    scn.AddGeometry("Plane", make_shared<Plane>(pln));
 
     Sphere sph1;
     sph1.Create(50, 50);
     sph1.Scale(vec3(2.0, 2.0, 2.0));
     sph1.Translate(vec3(10.0, 0.0, 3.0));
-
-    scn.models["Sphere1"].pGeom = make_shared<Sphere>(sph1);
-    scn.models["Sphere1"].SetMaterial(scn.materials["RedMat"]);
-    scn.models["Sphere1"].pickerColor = vec3(0.0, 0.1, 0.1);
+    scn.AddGeometry("Sphere1", make_shared<Sphere>(sph1));
 
     Sphere sph2;
     sph2.Create(50, 50);
     sph2.Scale(vec3(2.0, 2.0, 2.0));
     sph2.Translate(vec3(7.07, 7.07, 3.0));
-
-    scn.models["Sphere2"].pGeom = make_shared<Sphere>(sph2);
-    scn.models["Sphere2"].SetMaterial(scn.materials["GreenMat"]);
-    scn.models["Sphere2"].pickerColor = vec3(0.1, 0.1, 0.1);
+    scn.AddGeometry("Sphere2", make_shared<Sphere>(sph2));
 
     Sphere sph3;
     sph3.Create(50, 50);
     sph3.Scale(vec3(2.0, 2.0, 2.0));
     sph3.Translate(vec3(0.0, 10.0, 3.0));
-
-    scn.models["Sphere3"].pGeom = make_shared<Sphere>(sph3);
-    scn.models["Sphere3"].SetMaterial(scn.materials["YellowMat"]);
-    scn.models["Sphere3"].pickerColor = vec3(0.1, 0.1, 0.2);
+    scn.AddGeometry("Sphere3", make_shared<Sphere>(sph3));
 
     Sphere sph4;
     sph4.Create(50, 50);
     sph4.Scale(vec3(2.0, 2.0, 2.0));
     sph4.Translate(vec3(-7.07, 7.07, 3.0));
-
-    scn.models["Sphere4"].pGeom = make_shared<Sphere>(sph4);
-    scn.models["Sphere4"].SetMaterial(scn.materials["BlueMat"]);
-    scn.models["Sphere4"].pickerColor = vec3(0.1, 0.2, 0.2);
+    scn.AddGeometry("Sphere4", make_shared<Sphere>(sph4));
 
     Sphere sph5;
     sph5.Create(50, 50);
     sph5.Scale(vec3(2.0, 2.0, 2.0));
     sph5.Translate(vec3(-10.0, 0.0, 3.0));
-
-    scn.models["Sphere5"].pGeom = make_shared<Sphere>(sph5);
-    scn.models["Sphere5"].SetMaterial(scn.materials["RedMat"]);
-    scn.models["Sphere5"].pickerColor = vec3(0.2, 0.2, 0.2);
+    scn.AddGeometry("Sphere5", make_shared<Sphere>(sph5));
 
     Sphere sph6;
     sph6.Create(50, 50);
     sph6.Scale(vec3(2.0, 2.0, 2.0));
     sph6.Translate(vec3(-7.07, -7.07, 3.0));
-
-    scn.models["Sphere6"].pGeom = make_shared<Sphere>(sph6);
-    scn.models["Sphere6"].SetMaterial(scn.materials["GreenMat"]);
-    scn.models["Sphere6"].pickerColor = vec3(0.2, 0.2, 0.3);
+    scn.AddGeometry("Sphere6", make_shared<Sphere>(sph6));
 
     Sphere sph7;
     sph7.Create(50, 50);
     sph7.Scale(vec3(2.0, 2.0, 2.0));
     sph7.Translate(vec3(0.0, -10.0, 3.0));
-
-    scn.models["Sphere7"].pGeom = make_shared<Sphere>(sph7);
-    scn.models["Sphere7"].SetMaterial(scn.materials["YellowMat"]);
-    scn.models["Sphere7"].pickerColor = vec3(0.2, 0.3, 0.3);
+    scn.AddGeometry("Sphere7", make_shared<Sphere>(sph7));
 
     Sphere sph8;
     sph8.Create(50, 50);
     sph8.Scale(vec3(2.0, 2.0, 2.0));
     sph8.Translate(vec3(7.07, -7.07, 3.0));
+    scn.AddGeometry("Sphere8", make_shared<Sphere>(sph8));
 
-    scn.models["Sphere8"].pGeom = make_shared<Sphere>(sph8);
+    scn.models["Plane"].pGeom = scn.geometries["Plane"];
+    scn.models["Plane"].SetMaterial(scn.materials["Dirt"]);
+    scn.models["Plane"].pickerColor = vec3(0.0, 0.0, 0.1);
+
+    scn.models["Sphere1"].pGeom = scn.geometries["Sphere1"];
+    scn.models["Sphere1"].SetMaterial(scn.materials["RedMat"]);
+    scn.models["Sphere1"].pickerColor = vec3(0.0, 0.1, 0.1); 
+
+    scn.models["Sphere2"].pGeom = scn.geometries["Sphere2"];
+    scn.models["Sphere2"].SetMaterial(scn.materials["GreenMat"]);
+    scn.models["Sphere2"].pickerColor = vec3(0.1, 0.1, 0.1);
+
+    scn.models["Sphere3"].pGeom = scn.geometries["Sphere3"];
+    scn.models["Sphere3"].SetMaterial(scn.materials["YellowMat"]);
+    scn.models["Sphere3"].pickerColor = vec3(0.1, 0.1, 0.2);
+
+    scn.models["Sphere4"].pGeom = scn.geometries["Sphere4"];
+    scn.models["Sphere4"].SetMaterial(scn.materials["BlueMat"]);
+    scn.models["Sphere4"].pickerColor = vec3(0.1, 0.2, 0.2);
+
+    scn.models["Sphere5"].pGeom = scn.geometries["Sphere5"];
+    scn.models["Sphere5"].SetMaterial(scn.materials["RedMat"]);
+    scn.models["Sphere5"].pickerColor = vec3(0.2, 0.2, 0.2);
+
+    scn.models["Sphere6"].pGeom = scn.geometries["Sphere6"];
+    scn.models["Sphere6"].SetMaterial(scn.materials["GreenMat"]);
+    scn.models["Sphere6"].pickerColor = vec3(0.2, 0.2, 0.3);
+
+    scn.models["Sphere7"].pGeom = scn.geometries["Sphere7"];
+    scn.models["Sphere7"].SetMaterial(scn.materials["YellowMat"]);
+    scn.models["Sphere7"].pickerColor = vec3(0.2, 0.3, 0.3);
+
+    scn.models["Sphere8"].pGeom = scn.geometries["Sphere8"];
     scn.models["Sphere8"].SetMaterial(scn.materials["BlueMat"]);
     scn.models["Sphere8"].pickerColor = vec3(0.3, 0.3, 0.3);
 }
@@ -334,10 +351,10 @@ void Renderer::Render(HDC hDC)
 }
 
 /**
-* HandleInputs - Process any keyboard and mouse inputs.
-*
-* @param msg Windows event message to handle.
-*/
+ * HandleInputs - Process any keyboard and mouse inputs.
+ *
+ * @param msg Windows event message to handle.
+ */
 
 void Renderer::HandleInputs(MSG &msg)
 {
@@ -463,8 +480,8 @@ void Renderer::DoPick(LPARAM mouseCoord)
 }
 
 /**
-* CreateNoiseTexture - Create a texture with random gray-scale pixel values.
-*/
+ * CreateNoiseTexture - Create a texture with random gray-scale pixel values.
+ */
 
 void Renderer::CreateNoiseTexture()
 {
@@ -489,5 +506,5 @@ void Renderer::CreateNoiseTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    scn.textures["NoiseTex"] = noiseTexID;
+    scn.AddDiffTexture("NoiseTex", noiseTexID);
 }

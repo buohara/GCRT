@@ -11,6 +11,9 @@ RMaterial::RMaterial()
     useSSS = 0;
     useShadows = 0;
     selected = 0;
+
+    diffTexName = string("");
+    normalTexName = string("");
 }
 
 /**
@@ -26,8 +29,9 @@ void RMaterial::SetDepthTex(GLuint depthTex)
  * SetDiffuseTex -
  */
 
-void RMaterial::SetDiffuseTex(GLuint diffuseTex)
+void RMaterial::SetDiffuseTex(GLuint diffuseTex, string name)
 {
+    diffTexName = name;
     diffuseTexID = diffuseTex;
     useDiffuseMap = 1;
 }
@@ -36,8 +40,9 @@ void RMaterial::SetDiffuseTex(GLuint diffuseTex)
  * SetNormalTex -
  */
 
-void RMaterial::SetNormalTex(GLuint normalTex)
+void RMaterial::SetNormalTex(GLuint normalTex, string name)
 {
+    normalTexName = name;
     normalTexID = normalTex;
     useNormalMap = 1;
 }

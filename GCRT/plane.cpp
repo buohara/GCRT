@@ -179,17 +179,3 @@ void Plane::Draw()
     glDrawArrays(GL_TRIANGLE_STRIP, 0, numVerts);
     glBindVertexArray(0);
 }
-
-/**
- * Intersect.
- */
-
-float Plane::Intersect(vec3 org, vec3 ray)
-{
-    vec4 p1 = model * vec4(0.0, 0.0, 0.0, 1.0);
-    vec3 p = vec3(p1.x, p1.y, p1.z);
-    vec3 norm = vec3(0.0, 0.0, 1.0);
-    mat4 invModel = inverse(model);
-
-    return IntersectPlane(org, ray, p, norm, invModel, vec3(1.0, 1.0, 0.0));
-}

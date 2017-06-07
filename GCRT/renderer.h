@@ -46,7 +46,7 @@ struct Renderer
     double mousePos[2];
 
     static const uint32_t RENDER_TO_SCREEN = 0;
-
+    
     vector<uint32_t> ImGuiKeys;
 
     void HandleInputs(MSG &msg);

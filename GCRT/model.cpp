@@ -44,9 +44,6 @@ void Model::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &p
 
 void Model::SetGeometry(GLuint program)
 {
-    mat4 model = pGeom->model;
-    mat4 modelInv = pGeom->modelInv;
-
     GLuint modelID = glGetUniformLocation(program, "model");
     glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
 

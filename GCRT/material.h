@@ -20,16 +20,21 @@ struct RMaterial
     GLuint useShadows;
 
     GLuint depthTexID;
+
+    string diffTexName;
     GLuint diffuseTexID;
+
+    string normalTexName;
     GLuint normalTexID;
+
     GLuint selected;
 
     RMaterial();
 
     void ApplyMaterial(GLuint program);
     void SetDepthTex(GLuint depthTex);
-    void SetNormalTex(GLuint normalTex);
-    void SetDiffuseTex(GLuint diffuseTex);
+    void SetNormalTex(GLuint normalTex, string name);
+    void SetDiffuseTex(GLuint diffuseTex, string name);
 
     void UseSSS(bool bUse) { bUse ? useSSS = 1 : useShadows = 0; }
     void UseShadows(bool bUse) { bUse ? useShadows = 1 : useShadows = 0; }

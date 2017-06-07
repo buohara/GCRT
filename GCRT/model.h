@@ -12,12 +12,25 @@ struct Model
     GLuint program;
     vec3 pickerColor;
 
-    void SetMaterial(RMaterial matIn);
+    vec3 pos;
+    vec3 dims;
 
+    mat4 scl;
+    mat4 trans;
+    mat4 rot;
+
+    mat4 model;
+    mat4 modelInv;
+
+    void SetMaterial(RMaterial matIn);
     void SetGeometry(GLuint program);
     void ApplyMaterial(GLuint program);
     void SetCamera(Camera &cam, GLuint program);
     void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights, GLuint program);
+
+    void InitModelMatrices();
+    void Translate();
+    void Scale();
 
     void SetUniforms(
         Camera &cam,

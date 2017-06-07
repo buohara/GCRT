@@ -25,7 +25,7 @@ void Renderer::UpdateImGui()
 
     ImGuiGCRTNewFrame();
     RenderSceneWindow();
-    RenderModelWindow();
+    //RenderModelWindow();
     RenderRendererWindow();
     ImGui::ShowTestWindow();
     ImGui::Render();
@@ -40,8 +40,8 @@ void Renderer::UpdateImGui()
 }
 
 /**
-* RenderSceneWindow
-*/
+ * RenderSceneWindow
+ */
 
 void Renderer::RenderSceneWindow()
 {
@@ -50,35 +50,66 @@ void Renderer::RenderSceneWindow()
     ImGui::Begin("Scene");
 
     map<string, Model>::iterator modelIt;
-    map<string, Model> &models = scn.models;
-
     map<string, RMaterial>::iterator matIt;
-    map<string, RMaterial> &materials = scn.materials;
-
     map<string, GLuint>::iterator texIt;
-    map<string, GLuint> &textures = scn.textures;
 
-    static int curItem;
+    static int curDiffTex;
+    static int curNormTex;
+    static int curMat;
+    static int curMesh;
 
     // Models
 
     if (ImGui::CollapsingHeader("Models"))
     {
-        const char* matNames[256];
-        uint32_t matCnt = 0;
+        static float newPos[3];
 
-        for (matIt = materials.begin(); matIt != materials.end(); matIt++)
-        {
-            matNames[matCnt++] = (*matIt).first.c_str();
-        }
-
-        for (modelIt = models.begin(); modelIt != models.end(); modelIt++)
+        for (modelIt = scn.models.begin(); modelIt != scn.models.end(); modelIt++)
         {
             if (ImGui::TreeNode((*modelIt).first.c_str()))
             {
-                ImGui::Combo("Material", &curItem, matNames, matCnt);
+                ImGui::Text("Material: %s", (*modelIt).second.mat.name.c_str());
+                
+                ImGui::Text(
+                    "Pos - x:%3.2f y:%3.2f z:%3.2f",
+                    (*modelIt).second.pGeom->pos.x,
+                    (*modelIt).second.pGeom->pos.y,
+                    (*modelIt).second.pGeom->pos.z
+                );
+
                 ImGui::TreePop();
             }
+        }
+
+        if (ImGui::Button("New Model..."))
+        {
+            ImGui::OpenPopup("New Model...");
+        }
+
+        if (ImGui::BeginPopupModal("New Model...", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::InputFloat3("Position", newPos, -1);
+
+            ImGui::Combo(
+                "Material",
+                &curMat,
+                &scn.materialNames[0],
+                (int)scn.materialNames.size()
+            );
+
+            ImGui::Combo(
+                "Mesh",
+                &curMesh,
+                &scn.geometryNames[0],
+                (int)scn.geometryNames.size()
+            );
+
+            if (ImGui::Button("Add", ImVec2(120, 0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
         }
     }
 
@@ -100,43 +131,82 @@ void Renderer::RenderSceneWindow()
 
     if (ImGui::CollapsingHeader("Materials"))
     {
-        if (ImGui::Button("New..."))
+        for (matIt = scn.materials.begin(); matIt != scn.materials.end(); matIt++)
         {
-            ImGui::OpenPopup("New...");
+            if (ImGui::TreeNode((*matIt).first.c_str()))
+            {
+                ImGui::Text("Specular: %3.2f", (*matIt).second.spec);
+                
+                ImGui::Text(
+                    "Kd: %3.2f, %3.2f, %3.2f", 
+                    (*matIt).second.kd.x,
+                    (*matIt).second.kd.y,
+                    (*matIt).second.kd.z
+                );
+                
+                ImGui::Text("Diffuse Texture: %s", (*matIt).second.diffTexName.c_str());
+                ImGui::Text("Normal Texture: %s", (*matIt).second.normalTexName.c_str());
+
+                ImGui::TreePop();
+            }
         }
 
-        if (ImGui::BeginPopupModal("New...", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        if (ImGui::Button("New Material..."))
+        {
+            ImGui::OpenPopup("New Material...");
+        }
+
+        if (ImGui::BeginPopupModal("New Material...", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             static float newKd[3];
             static float newSpec;
             static char newName[256];
-
-            const char* texNames[] = { "Dirt", "Grass" };
-            const char* normalTexNames[] = { "DirtNormal", "GrassNormal" };
+            static int useShadows;
 
             ImGui::InputText("Name", newName, 256);
             ImGui::InputFloat3("Diffuse", newKd, -1);
             ImGui::InputFloat("Specular", &newSpec);
+            ImGui::InputInt("Use Shadows", &useShadows);
 
-            ImGui::Combo("Diffuse Texture", &curItem, texNames, 2);
-            ImGui::Combo("Normal Texture", &curItem, normalTexNames, 2);
+            ImGui::Combo(
+                "Diffuse Texture", 
+                &curDiffTex, 
+                &scn.diffTexNames[0],
+                (int)scn.diffTexNames.size()
+            );
+            
+            ImGui::Combo(
+                "Normal Texture", 
+                &curNormTex, 
+                &scn.normTexNames[0],
+                (int)scn.normTexNames.size()
+            );
 
             if (ImGui::Button("Add", ImVec2(120, 0)))
             {
+                RMaterial newMat;
+                newMat.name = newName;
+                newMat.kd = vec3(newKd[0], newKd[1], newKd[2]);
+                newMat.spec = newSpec;
+                newMat.UseShadows(useShadows == 0 ? false : true);
+                
+                newMat.SetNormalTex(
+                    scn.normTextures[scn.normTexNames[curNormTex]], 
+                    scn.normTexNames[curNormTex]
+                );
+                
+                newMat.SetDiffuseTex(
+                    scn.diffTextures[scn.diffTexNames[curDiffTex]], 
+                    scn.diffTexNames[curDiffTex]
+                );
+
+                scn.materials[newName] = newMat;
+
                 ImGui::CloseCurrentPopup();
             }
 
             ImGui::EndPopup();
         }
-
-        for (matIt = materials.begin(); matIt != materials.end(); matIt++)
-        {
-            if (ImGui::TreeNode((*matIt).first.c_str()))
-            {
-                ImGui::TreePop();
-            }
-        }
-
     }
 
     // Textures
@@ -144,30 +214,47 @@ void Renderer::RenderSceneWindow()
     if (ImGui::CollapsingHeader("Textures"))
     {
         ImGui::Indent();
-        for (texIt = textures.begin(); texIt != textures.end(); texIt++)
+        static bool loadFailed = false;
+        static char newTexName[256];
+        static char newTexPath[256];
+
+        for (texIt = scn.diffTextures.begin(); texIt != scn.diffTextures.end(); texIt++)
         {
             ImGui::Text((*texIt).first.c_str());
         }
         
+        for (texIt = scn.normTextures.begin(); texIt != scn.normTextures.end(); texIt++)
+        {
+            ImGui::Text((*texIt).first.c_str());
+        }
+
         if (ImGui::Button("New..."))
         {
             ImGui::OpenPopup("New...");
         }
 
+        if (loadFailed)
+        {
+            ImGui::Text("Failed to load texture:");
+            ImGui::Text(newTexPath);
+        }
+
         if (ImGui::BeginPopupModal("New...", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
-            static char newTexName[256];
-            static char newTexPath[256];
-
             ImGui::InputText("Name", newTexName, 256);
             ImGui::InputText("Path", newTexPath, 256);
+            loadFailed = false;
 
             if (ImGui::Button("Add", ImVec2(120, 0)))
             {
                 GLuint newID = ImgLoader::LoadTexture(string(newTexPath));
                 if (newID != 0)
                 {
-                    scn.textures[newTexName] = newID;
+                    scn.AddDiffTexture(newTexName, newID);
+                }
+                else
+                {
+                    loadFailed = true;
                 }
                 ImGui::CloseCurrentPopup();
             }
