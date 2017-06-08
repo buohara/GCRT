@@ -18,9 +18,9 @@ void Renderer::Init()
     winW = 1920;
     winH = 1080;
 
-    nextPickClr[0] = 0.0;
-    nextPickClr[1] = 0.0;
-    nextPickClr[2] = 0.1;
+    nextPickClr[0] = 0.0f;
+    nextPickClr[1] = 0.0f;
+    nextPickClr[2] = 0.1f;
     nextPickIdx = 2;
 
     mousePos[0] = 0.0;
@@ -94,7 +94,7 @@ vec3 Renderer::nextPickerColor()
         nextPickIdx--;
     }
 
-    nextPickClr[nextPickIdx] += 0.1;
+    nextPickClr[nextPickIdx] += 0.1f;
 
     return retVec;
 }
@@ -229,14 +229,14 @@ void Renderer::InitModels()
 
     Plane pln;
     pln.Create(10, 10);
-    scn.AddGeometry("Plane", make_shared<Plane>(pln));
+    scn.AddMesh("Plane", make_shared<Plane>(pln));
 
     Sphere sph;
     sph.Create(50, 50);
-    scn.AddGeometry("Sphere", make_shared<Sphere>(sph));
+    scn.AddMesh("Sphere", make_shared<Sphere>(sph));
 
     Model plane;
-    plane.pGeom = scn.geometries["Plane"];
+    plane.pMesh = scn.meshes["Plane"];
     plane.SetMaterial(scn.materials["Default"]);
     plane.pickerColor = nextPickerColor();
     plane.InitModelMatrices();

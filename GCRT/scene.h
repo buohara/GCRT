@@ -20,13 +20,13 @@ struct Scene
     map<string, RMaterial> materials;
     vector<DirectionalLight> dirLights;
     vector<PointLight> ptLights;
-    map<string, shared_ptr<Geometry>> geometries;
+    map<string, shared_ptr<Mesh>> meshes;
 
     vector<const char*> diffTexNames;
     vector<const char*> normTexNames;
     vector<const char*> modelNames;
     vector<const char*> materialNames;
-    vector<const char*> geometryNames;
+    vector<const char*> meshNames;
 
     Scene();
 
@@ -38,5 +38,5 @@ struct Scene
 
     void AddModel(string name, Model model);
     void AddMaterial(string name, RMaterial mat);
-    void AddGeometry(string name, shared_ptr<Geometry> pGeom);
+    void AddMesh(string name, shared_ptr<Mesh> pGeom);
 };

@@ -39,10 +39,10 @@ void Model::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &p
 }
 
 /**
- * SetGeometry -
+ * SetMesh -
  */
 
-void Model::SetGeometry(GLuint program)
+void Model::SetMesh(GLuint program)
 {
     GLuint modelID = glGetUniformLocation(program, "model");
     glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
@@ -71,7 +71,7 @@ void Model::SetUniforms(
     GLuint program
 )
 {
-    SetGeometry(program);
+    SetMesh(program);
     SetCamera(cam, program);
     SetLights(dirLights, ptLights, program);
     ApplyMaterial(program);
@@ -83,7 +83,7 @@ void Model::SetUniforms(
 
 void Model::Draw()
 {
-    pGeom->Draw();
+    pMesh->Draw();
 }
 
 /**

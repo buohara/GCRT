@@ -1,8 +1,8 @@
 #pragma once
 
-#include "geometry.h"
+#include "mesh.h"
 
-struct Box : Geometry
+struct Box : Mesh
 {
     uint32_t numVerts;
     void Create();

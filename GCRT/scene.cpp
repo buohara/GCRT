@@ -78,20 +78,20 @@ void Scene::AddMaterial(string name, RMaterial mat)
 }
 
 /**
- * Add Geometry
+ * Add Mesh
  */
 
-void Scene::AddGeometry(string name, shared_ptr<Geometry> pGeom)
+void Scene::AddMesh(string name, shared_ptr<Mesh> pGeom)
 {
-    geometries[name] = pGeom;
+    meshes[name] = pGeom;
 
-    geometryNames.resize(0);
+    meshNames.resize(0);
 
-    map<string, shared_ptr<Geometry>>::iterator it;
+    map<string, shared_ptr<Mesh>>::iterator it;
 
-    for (it = geometries.begin(); it != geometries.end(); it++)
+    for (it = meshes.begin(); it != meshes.end(); it++)
     {
-        geometryNames.push_back((*it).first.c_str());
+        meshNames.push_back((*it).first.c_str());
     }
 }
 
@@ -110,4 +110,13 @@ void Scene::AddModel(string name, Model model)
     {
         modelNames.push_back((*it).first.c_str());
     }
+}
+
+/**
+ * LoadBlendModel
+ */
+
+void Scene::LoadBlendModel(string file)
+{
+    
 }

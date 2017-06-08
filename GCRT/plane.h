@@ -1,8 +1,8 @@
 #pragma once
 
-#include "geometry.h"
+#include "mesh.h"
 
-struct Plane : Geometry
+struct Plane : Mesh
 {
     uint32_t numVerts;
     void Create(uint32_t rows, uint32_t cols);

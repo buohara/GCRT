@@ -73,7 +73,7 @@ void DepthPass::Render(Scene &scn)
         GLuint modelID = glGetUniformLocation(depthProgram, "model");
         glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
 
-        (*it).second.pGeom->Draw();
+        (*it).second.pMesh->Draw();
     }
 }
 
@@ -169,7 +169,7 @@ void PickerPass::Render(Scene &scn)
         GLuint pickerID = glGetUniformLocation(pickerProgram, "pickerColor");
         glUniform3fv(pickerID, 1, &pickerColor[0]);
 
-        (*it).second.pGeom->Draw();
+        (*it).second.pMesh->Draw();
     }
 }
 

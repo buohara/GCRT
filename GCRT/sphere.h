@@ -1,8 +1,8 @@
 #pragma once
 
-#include "geometry.h"
+#include "mesh.h"
 
-struct Sphere : Geometry
+struct Sphere : Mesh
 {
     uint32_t numSideVerts = 0;
     uint32_t numCapVerts = 0;

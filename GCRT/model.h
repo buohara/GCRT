@@ -7,7 +7,7 @@
 
 struct Model
 {
-    shared_ptr<Geometry> pGeom;
+    shared_ptr<Mesh> pMesh;
     RMaterial mat;
     GLuint program;
     vec3 pickerColor;
@@ -23,7 +23,7 @@ struct Model
     mat4 modelInv;
 
     void SetMaterial(RMaterial matIn);
-    void SetGeometry(GLuint program);
+    void SetMesh(GLuint program);
     void ApplyMaterial(GLuint program);
     void SetCamera(Camera &cam, GLuint program);
     void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights, GLuint program);

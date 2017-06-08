@@ -106,14 +106,14 @@ void Renderer::RenderSceneWindow()
             ImGui::Combo(
                 "Mesh",
                 &curMesh,
-                &scn.geometryNames[0],
-                (int)scn.geometryNames.size()
+                &scn.meshNames[0],
+                (int)scn.meshNames.size()
             );
 
             if (ImGui::Button("Add", ImVec2(120, 0)))
             {
                 Model newModel;
-                newModel.pGeom = scn.geometries[scn.geometryNames[curMesh]];
+                newModel.pMesh = scn.meshes[scn.meshNames[curMesh]];
                 newModel.SetMaterial(scn.materials[scn.materialNames[curMat]]);
                 newModel.Translate(vec3(newPos[0], newPos[1], newPos[2]));
                 newModel.Scale(vec3(newScale[0], newScale[1], newScale[2]));
@@ -317,9 +317,9 @@ void Renderer::RenderModelWindow()
         scn.models[selected.name].mat.spec = selected.specular;
     }
 
-    // Geometry.
+    // Transofrmation.
 
-    ImGui::Text("Geometry");
+    ImGui::Text("Transformation Properties");
 
     if (ImGui::InputFloat3("Pos", (float*)&selected.pos))
     {
