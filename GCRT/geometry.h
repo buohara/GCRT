@@ -14,16 +14,6 @@ struct Geometry
     GLuint uvVboID;
     GLuint tanVboID;
 
-    vec3 pos;
-    vec3 dims;
-
-    mat4 scl;
-    mat4 trans;
-    mat4 rot;
-
-    mat4 model;
-    mat4 modelInv;
-
     virtual void Draw() = 0;
 
     void InitVertexObjects(
@@ -38,8 +28,4 @@ struct Geometry
         vector<vec2> &uvs,
         vector<vec3> &tans
     );
-
-    void InitModelMatrices();
-    void Translate(vec3 tx);
-    void Scale(vec3 dimsIn);
 };

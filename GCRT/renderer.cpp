@@ -18,6 +18,11 @@ void Renderer::Init()
     winW = 1920;
     winH = 1080;
 
+    nextPickClr[0] = 0.0;
+    nextPickClr[1] = 0.0;
+    nextPickClr[2] = 0.1;
+    nextPickIdx = 2;
+
     mousePos[0] = 0.0;
     mousePos[1] = 0.0;
     mouseDown[0] = false;
@@ -71,6 +76,27 @@ void Renderer::Init()
     InitMaterials();
     InitModels();
     InitLights();
+}
+
+/**
+ * Create in/out FBO/texture to hand between passes.
+ */
+
+vec3 Renderer::nextPickerColor()
+{
+    vec3 retVec = vec3(nextPickClr[0], nextPickClr[1], nextPickClr[2]);
+    if (nextPickIdx == 0)
+    {
+        nextPickIdx = 2;
+    }
+    else
+    {
+        nextPickIdx--;
+    }
+
+    nextPickClr[nextPickIdx] += 0.1;
+
+    return retVec;
 }
 
 /**
@@ -185,45 +211,12 @@ void Renderer::InitLights()
 
 void Renderer::InitMaterials()
 {
-    RMaterial dirtMat;
-    dirtMat.name = "Dirt";
-    dirtMat.SetDiffuseTex(scn.diffTextures["DirtDiffuse"], "DirtDiffuse");
-    dirtMat.SetNormalTex(scn.normTextures["DirtNormal"], "DirtNormal");
-    dirtMat.UseShadows(true);
-    dirtMat.spec = 2.0;
-    scn.AddMaterial("Dirt", dirtMat);
-
-    RMaterial redMat;
-    redMat.name = "RedMat";
-    redMat.kd = vec3(12.0, 0.4, 0.4);
-    redMat.UseShadows(true);
-    redMat.SetNormalTex(scn.normTextures["DirtNormal"], "DirtNormal");
-    redMat.spec = 2.0;
-    scn.AddMaterial("RedMat", redMat);
-
-    RMaterial greenMat;
-    greenMat.name = "GreenMat";
-    greenMat.kd = vec3(0.4, 3.9, 0.4);
-    greenMat.UseShadows(true);
-    greenMat.SetNormalTex(scn.normTextures["DirtNormal"], "DirtNormal");
-    greenMat.spec = 2.0;
-    scn.AddMaterial("GreenMat", greenMat);
-
-    RMaterial blueMat;
-    blueMat.name = "BlueMat";
-    blueMat.kd = vec3(0.1, 0.4, 4.4);
-    blueMat.UseShadows(true);
-    blueMat.SetNormalTex(scn.normTextures["DirtNormal"], "DirtNormal");
-    blueMat.spec = 2.0;
-    scn.AddMaterial("BlueMat", blueMat);
-
-    RMaterial yellowMat;
-    yellowMat.name = "YellowMat";
-    yellowMat.kd = vec3(0.8, 0.8, 0.01);
-    yellowMat.UseShadows(true);
-    yellowMat.SetNormalTex(scn.normTextures["DirtNormal"], "DirtNormal");
-    yellowMat.spec = 2.0;
-    scn.AddMaterial("YellowMat", yellowMat);
+    RMaterial defaultMat;
+    defaultMat.name = "Default";
+    defaultMat.kd = vec3(0.8, 0.8, 0.8);
+    defaultMat.UseShadows(true);
+    defaultMat.spec = 1.0;
+    scn.AddMaterial("Default", defaultMat);
 }
 
 /**
@@ -236,92 +229,19 @@ void Renderer::InitModels()
 
     Plane pln;
     pln.Create(10, 10);
-    pln.Scale(vec3(10.0, 10.0, 1.0));
     scn.AddGeometry("Plane", make_shared<Plane>(pln));
 
-    Sphere sph1;
-    sph1.Create(50, 50);
-    sph1.Scale(vec3(2.0, 2.0, 2.0));
-    sph1.Translate(vec3(10.0, 0.0, 3.0));
-    scn.AddGeometry("Sphere1", make_shared<Sphere>(sph1));
+    Sphere sph;
+    sph.Create(50, 50);
+    scn.AddGeometry("Sphere", make_shared<Sphere>(sph));
 
-    Sphere sph2;
-    sph2.Create(50, 50);
-    sph2.Scale(vec3(2.0, 2.0, 2.0));
-    sph2.Translate(vec3(7.07, 7.07, 3.0));
-    scn.AddGeometry("Sphere2", make_shared<Sphere>(sph2));
-
-    Sphere sph3;
-    sph3.Create(50, 50);
-    sph3.Scale(vec3(2.0, 2.0, 2.0));
-    sph3.Translate(vec3(0.0, 10.0, 3.0));
-    scn.AddGeometry("Sphere3", make_shared<Sphere>(sph3));
-
-    Sphere sph4;
-    sph4.Create(50, 50);
-    sph4.Scale(vec3(2.0, 2.0, 2.0));
-    sph4.Translate(vec3(-7.07, 7.07, 3.0));
-    scn.AddGeometry("Sphere4", make_shared<Sphere>(sph4));
-
-    Sphere sph5;
-    sph5.Create(50, 50);
-    sph5.Scale(vec3(2.0, 2.0, 2.0));
-    sph5.Translate(vec3(-10.0, 0.0, 3.0));
-    scn.AddGeometry("Sphere5", make_shared<Sphere>(sph5));
-
-    Sphere sph6;
-    sph6.Create(50, 50);
-    sph6.Scale(vec3(2.0, 2.0, 2.0));
-    sph6.Translate(vec3(-7.07, -7.07, 3.0));
-    scn.AddGeometry("Sphere6", make_shared<Sphere>(sph6));
-
-    Sphere sph7;
-    sph7.Create(50, 50);
-    sph7.Scale(vec3(2.0, 2.0, 2.0));
-    sph7.Translate(vec3(0.0, -10.0, 3.0));
-    scn.AddGeometry("Sphere7", make_shared<Sphere>(sph7));
-
-    Sphere sph8;
-    sph8.Create(50, 50);
-    sph8.Scale(vec3(2.0, 2.0, 2.0));
-    sph8.Translate(vec3(7.07, -7.07, 3.0));
-    scn.AddGeometry("Sphere8", make_shared<Sphere>(sph8));
-
-    scn.models["Plane"].pGeom = scn.geometries["Plane"];
-    scn.models["Plane"].SetMaterial(scn.materials["Dirt"]);
-    scn.models["Plane"].pickerColor = vec3(0.0, 0.0, 0.1);
-
-    scn.models["Sphere1"].pGeom = scn.geometries["Sphere1"];
-    scn.models["Sphere1"].SetMaterial(scn.materials["RedMat"]);
-    scn.models["Sphere1"].pickerColor = vec3(0.0, 0.1, 0.1); 
-
-    scn.models["Sphere2"].pGeom = scn.geometries["Sphere2"];
-    scn.models["Sphere2"].SetMaterial(scn.materials["GreenMat"]);
-    scn.models["Sphere2"].pickerColor = vec3(0.1, 0.1, 0.1);
-
-    scn.models["Sphere3"].pGeom = scn.geometries["Sphere3"];
-    scn.models["Sphere3"].SetMaterial(scn.materials["YellowMat"]);
-    scn.models["Sphere3"].pickerColor = vec3(0.1, 0.1, 0.2);
-
-    scn.models["Sphere4"].pGeom = scn.geometries["Sphere4"];
-    scn.models["Sphere4"].SetMaterial(scn.materials["BlueMat"]);
-    scn.models["Sphere4"].pickerColor = vec3(0.1, 0.2, 0.2);
-
-    scn.models["Sphere5"].pGeom = scn.geometries["Sphere5"];
-    scn.models["Sphere5"].SetMaterial(scn.materials["RedMat"]);
-    scn.models["Sphere5"].pickerColor = vec3(0.2, 0.2, 0.2);
-
-    scn.models["Sphere6"].pGeom = scn.geometries["Sphere6"];
-    scn.models["Sphere6"].SetMaterial(scn.materials["GreenMat"]);
-    scn.models["Sphere6"].pickerColor = vec3(0.2, 0.2, 0.3);
-
-    scn.models["Sphere7"].pGeom = scn.geometries["Sphere7"];
-    scn.models["Sphere7"].SetMaterial(scn.materials["YellowMat"]);
-    scn.models["Sphere7"].pickerColor = vec3(0.2, 0.3, 0.3);
-
-    scn.models["Sphere8"].pGeom = scn.geometries["Sphere8"];
-    scn.models["Sphere8"].SetMaterial(scn.materials["BlueMat"]);
-    scn.models["Sphere8"].pickerColor = vec3(0.3, 0.3, 0.3);
+    Model plane;
+    plane.pGeom = scn.geometries["Plane"];
+    plane.SetMaterial(scn.materials["Default"]);
+    plane.pickerColor = nextPickerColor();
+    plane.InitModelMatrices();
+    plane.Scale(vec3(10.0, 10.0, 1.0));
+    scn.AddModel("Plane0", plane);
 }
 
 /**
@@ -472,8 +392,8 @@ void Renderer::DoPick(LPARAM mouseCoord)
 
             selected.name = (*it).first;
             selected.kd = (*it).second.mat.kd;
-            selected.pos = (*it).second.pGeom->pos;
-            selected.scale = (*it).second.pGeom->dims;
+            selected.pos = (*it).second.pos;
+            selected.scale = (*it).second.dims;
             selected.specular = (*it).second.mat.spec;
         }
     }

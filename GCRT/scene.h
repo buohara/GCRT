@@ -36,7 +36,7 @@ struct Scene
     void Save(string file);
     void Load(string file);
 
-    //void AddModel(string name, );
+    void AddModel(string name, Model model);
     void AddMaterial(string name, RMaterial mat);
     void AddGeometry(string name, shared_ptr<Geometry> pGeom);
 };

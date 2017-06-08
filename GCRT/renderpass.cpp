@@ -68,7 +68,7 @@ void DepthPass::Render(Scene &scn)
 
     for (it = models.begin(); it != models.end(); it++)
     {
-        mat4 model = (*it).second.pGeom->model;
+        mat4 model = (*it).second.model;
 
         GLuint modelID = glGetUniformLocation(depthProgram, "model");
         glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
@@ -161,7 +161,7 @@ void PickerPass::Render(Scene &scn)
 
     for (it = models.begin(); it != models.end(); it++)
     {
-        mat4 model = (*it).second.pGeom->model;
+        mat4 model = (*it).second.model;
         GLuint modelID = glGetUniformLocation(pickerProgram, "model");
         glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
 

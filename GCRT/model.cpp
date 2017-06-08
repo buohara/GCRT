@@ -85,3 +85,41 @@ void Model::Draw()
 {
     pGeom->Draw();
 }
+
+/**
+ * InitVertexObjects -
+ */
+
+void Model::InitModelMatrices()
+{
+    scl = mat4(1.0f);
+    rot = mat4(1.0f);
+    trans = mat4(1.0f);
+
+    model = trans * rot * scl;
+    modelInv = inverseTranspose(model);
+}
+
+/**
+ * Translate -
+ */
+
+void Model::Translate(vec3 tx)
+{
+    pos = tx;
+    trans = translate(tx);
+    model = trans * rot * scl;
+    modelInv = inverseTranspose(model);
+}
+
+/**
+ * Scale -
+ */
+
+void Model::Scale(vec3 dimsIn)
+{
+    dims = dimsIn;
+    scl = scale(mat4(1.0f), dimsIn);
+    model = trans * rot * scl;
+    modelInv = inverseTranspose(model);
+}

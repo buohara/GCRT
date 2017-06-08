@@ -20,7 +20,6 @@ void Sphere::Create(
     GenTans(tans, numSectors, numRings);
 
     InitVertexObjects(pos, norms, uvs, tans);
-    InitModelMatrices();
 }
 
 /**

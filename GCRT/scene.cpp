@@ -94,3 +94,20 @@ void Scene::AddGeometry(string name, shared_ptr<Geometry> pGeom)
         geometryNames.push_back((*it).first.c_str());
     }
 }
+
+/**
+ * Add model
+ */
+
+void Scene::AddModel(string name, Model model)
+{
+    models[name] = model;
+    modelNames.resize(0);
+
+    map<string, Model>::iterator it;
+
+    for (it = models.begin(); it != models.end(); it++)
+    {
+        modelNames.push_back((*it).first.c_str());
+    }
+}

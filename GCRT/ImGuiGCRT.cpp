@@ -62,7 +62,11 @@ void Renderer::RenderSceneWindow()
 
     if (ImGui::CollapsingHeader("Models"))
     {
+        ImGui::Indent();
+
         static float newPos[3];
+        static float newScale[3];
+        static char newName[256];
 
         for (modelIt = scn.models.begin(); modelIt != scn.models.end(); modelIt++)
         {
@@ -72,9 +76,9 @@ void Renderer::RenderSceneWindow()
                 
                 ImGui::Text(
                     "Pos - x:%3.2f y:%3.2f z:%3.2f",
-                    (*modelIt).second.pGeom->pos.x,
-                    (*modelIt).second.pGeom->pos.y,
-                    (*modelIt).second.pGeom->pos.z
+                    (*modelIt).second.pos.x,
+                    (*modelIt).second.pos.y,
+                    (*modelIt).second.pos.z
                 );
 
                 ImGui::TreePop();
@@ -88,7 +92,9 @@ void Renderer::RenderSceneWindow()
 
         if (ImGui::BeginPopupModal("New Model...", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
+            ImGui::InputText("Name", newName, 256);
             ImGui::InputFloat3("Position", newPos, -1);
+            ImGui::InputFloat3("Scale", newScale, -1);
 
             ImGui::Combo(
                 "Material",
@@ -106,11 +112,21 @@ void Renderer::RenderSceneWindow()
 
             if (ImGui::Button("Add", ImVec2(120, 0)))
             {
+                Model newModel;
+                newModel.pGeom = scn.geometries[scn.geometryNames[curMesh]];
+                newModel.SetMaterial(scn.materials[scn.materialNames[curMat]]);
+                newModel.Translate(vec3(newPos[0], newPos[1], newPos[2]));
+                newModel.Scale(vec3(newScale[0], newScale[1], newScale[2]));
+                newModel.pickerColor = nextPickerColor();
+                scn.AddModel(string(newName), newModel);
+
                 ImGui::CloseCurrentPopup();
             }
 
             ImGui::EndPopup();
         }
+
+        ImGui::Unindent();
     }
 
     // Lights
@@ -131,6 +147,8 @@ void Renderer::RenderSceneWindow()
 
     if (ImGui::CollapsingHeader("Materials"))
     {
+        ImGui::Indent();
+
         for (matIt = scn.materials.begin(); matIt != scn.materials.end(); matIt++)
         {
             if (ImGui::TreeNode((*matIt).first.c_str()))
@@ -161,12 +179,15 @@ void Renderer::RenderSceneWindow()
             static float newKd[3];
             static float newSpec;
             static char newName[256];
-            static int useShadows;
+            static bool useShadows;
+            static bool useDiffuseTex;
 
             ImGui::InputText("Name", newName, 256);
-            ImGui::InputFloat3("Diffuse", newKd, -1);
+            ImGui::InputFloat3("Diffuse Color", newKd, -1);
             ImGui::InputFloat("Specular", &newSpec);
-            ImGui::InputInt("Use Shadows", &useShadows);
+            ImGui::Checkbox("Use Shadows", &useShadows);
+
+            ImGui::Checkbox("Use Diffuse Texture", &useDiffuseTex);
 
             ImGui::Combo(
                 "Diffuse Texture", 
@@ -195,18 +216,23 @@ void Renderer::RenderSceneWindow()
                     scn.normTexNames[curNormTex]
                 );
                 
-                newMat.SetDiffuseTex(
-                    scn.diffTextures[scn.diffTexNames[curDiffTex]], 
-                    scn.diffTexNames[curDiffTex]
-                );
+                if (useDiffuseTex)
+                {
+                    newMat.SetDiffuseTex(
+                        scn.diffTextures[scn.diffTexNames[curDiffTex]],
+                        scn.diffTexNames[curDiffTex]
+                    );
+                }
 
-                scn.materials[newName] = newMat;
+                scn.AddMaterial(newName, newMat);
 
                 ImGui::CloseCurrentPopup();
             }
 
             ImGui::EndPopup();
         }
+
+        ImGui::Unindent();
     }
 
     // Textures
@@ -297,12 +323,12 @@ void Renderer::RenderModelWindow()
 
     if (ImGui::InputFloat3("Pos", (float*)&selected.pos))
     {
-        scn.models[selected.name].pGeom->Translate(selected.pos);
+        scn.models[selected.name].Translate(selected.pos);
     }
 
     if (ImGui::InputFloat3("Scale", (float*)&selected.scale))
     {
-        scn.models[selected.name].pGeom->Scale(selected.scale);
+        scn.models[selected.name].Scale(selected.scale);
     }
 
     ImGui::End();

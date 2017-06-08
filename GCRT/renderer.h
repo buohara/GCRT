@@ -63,6 +63,10 @@ struct Renderer
     void RenderRendererWindow();
     void UpdateViewPorts(uint32_t w, uint32_t h);
 
+    float nextPickClr[3];
+    uint32_t nextPickIdx;
+    vec3 nextPickerColor();
+
     void CreateNoiseTexture();
     void CreateRenderPassFbo();
     void ResizeRenderFbo();

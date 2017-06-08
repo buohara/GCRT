@@ -29,8 +29,8 @@ struct Model
     void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights, GLuint program);
 
     void InitModelMatrices();
-    void Translate();
-    void Scale();
+    void Translate(vec3 tx);
+    void Scale(vec3 dimsIn);
 
     void SetUniforms(
         Camera &cam,

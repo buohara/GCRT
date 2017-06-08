@@ -19,7 +19,6 @@ void Cylinder::Create(
     GenTans(tans, numSectors);
 
     InitVertexObjects(pos, norms, uvs, tans);
-    InitModelMatrices();
 }
 
 /**

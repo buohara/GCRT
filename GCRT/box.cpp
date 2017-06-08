@@ -25,7 +25,6 @@ void Box::Create()
     numVerts = (uint32_t)pos.size();
 
     InitVertexObjects(pos, norms, uvs, tans);
-    InitModelMatrices();
 }
 
 /**

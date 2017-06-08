@@ -28,7 +28,6 @@ void Plane::Create(
 
     numVerts = (uint32_t)pos.size();
     InitVertexObjects(pos, norms, uvs);
-    InitModelMatrices();
 }
 
 /**
