@@ -7,8 +7,6 @@
 
 struct BlenderMesh : Mesh
 {
-    uint32_t numVerts;
-
     void Create(string file);
     void Draw();
 };

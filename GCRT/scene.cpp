@@ -113,10 +113,29 @@ void Scene::AddModel(string name, Model model)
 }
 
 /**
- * LoadBlendModel
+ * LoadBlenderModel
  */
 
-void Scene::LoadBlendModel(string file)
+void Scene::LoadBlenderModel(
+    string name,
+    string blendFile,
+    string diffuseTexFile,
+    string normalTexFile,
+    vec3 pickerColor
+)
 {
-    
+    BlenderMesh mesh;
+    mesh.Create(blendFile);
+    meshes[name] = make_shared<BlenderMesh>(mesh);
+
+    Model model;
+    model.pMesh = meshes[name];
+    model.SetMaterial(materials["Default"]);
+    model.pickerColor = pickerColor;
+    model.InitModelMatrices();
+    model.Scale(vec3(0.25, 0.25, 0.25));
+    model.Translate(vec3(-2.0, -2.0, 5.0));
+    model.Rotate(pi<float>(), vec3(0.0, 1.0, 0.0));
+
+    AddModel(name, model);
 }

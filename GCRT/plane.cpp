@@ -27,7 +27,8 @@ void Plane::Create(
     GenTangents(tans, rows, cols);
 
     numVerts = (uint32_t)pos.size();
-    InitVertexObjects(pos, norms, uvs);
+    subMeshes.resize(1);
+    InitVertexObjects(0, pos, norms, uvs);
 }
 
 /**
@@ -174,7 +175,7 @@ void Plane::GenTangents(vector<vec3> &tans, uint32_t rows, uint32_t cols)
 
 void Plane::Draw()
 {
-    glBindVertexArray(vaoID);
+    glBindVertexArray(subMeshes[0].vaoID);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, numVerts);
     glBindVertexArray(0);
 }

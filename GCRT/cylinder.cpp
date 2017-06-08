@@ -18,7 +18,8 @@ void Cylinder::Create(
     GenUVs(uvs, numSectors);
     GenTans(tans, numSectors);
 
-    InitVertexObjects(pos, norms, uvs, tans);
+    subMeshes.resize(1);
+    InitVertexObjects(0, pos, norms, uvs, tans);
 }
 
 /**
@@ -214,7 +215,7 @@ void Cylinder::GenTans(vector<vec3> &tans, uint32_t numSectors)
 
 void Cylinder::Draw()
 {
-    glBindVertexArray(vaoID);
+    glBindVertexArray(subMeshes[0].vaoID);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, numSideVerts);
     glDrawArrays(GL_TRIANGLE_FAN, topOffset, numCapVerts);
     glDrawArrays(GL_TRIANGLE_FAN, bottomOffset, numCapVerts);

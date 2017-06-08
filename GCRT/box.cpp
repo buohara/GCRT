@@ -24,7 +24,8 @@ void Box::Create()
 
     numVerts = (uint32_t)pos.size();
 
-    InitVertexObjects(pos, norms, uvs, tans);
+    subMeshes.resize(1);
+    InitVertexObjects(0, pos, norms, uvs, tans);
 }
 
 /**
@@ -313,7 +314,7 @@ void Box::GenTans(vector<vec3> &tans)
 
 void Box::Draw()
 {
-    glBindVertexArray(vaoID);
+    glBindVertexArray(subMeshes[0].vaoID);
     glDrawArrays(GL_TRIANGLES, 0, numVerts);
     glBindVertexArray(0);
 }

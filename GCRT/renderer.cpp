@@ -242,6 +242,14 @@ void Renderer::InitModels()
     plane.InitModelMatrices();
     plane.Scale(vec3(10.0, 10.0, 1.0));
     scn.AddModel("Plane0", plane);
+
+    scn.LoadBlenderModel(
+        "Knight", 
+        "../asset/models/dark_templar_knight/dark_templar_knight.blend", 
+        "", 
+        "", 
+        nextPickerColor()
+    );
 }
 
 /**

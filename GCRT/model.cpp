@@ -96,7 +96,7 @@ void Model::InitModelMatrices()
     rot = mat4(1.0f);
     trans = mat4(1.0f);
 
-    model = trans * rot * scl;
+    model = trans * scl * rot;
     modelInv = inverseTranspose(model);
 }
 
@@ -108,7 +108,7 @@ void Model::Translate(vec3 tx)
 {
     pos = tx;
     trans = translate(tx);
-    model = trans * rot * scl;
+    model = trans * scl * rot;
     modelInv = inverseTranspose(model);
 }
 
@@ -120,6 +120,17 @@ void Model::Scale(vec3 dimsIn)
 {
     dims = dimsIn;
     scl = scale(mat4(1.0f), dimsIn);
-    model = trans * rot * scl;
+    model = trans * scl * rot;
+    modelInv = inverseTranspose(model);
+}
+
+/**
+ * Rotate -
+ */
+
+void Model::Rotate(float theta, vec3 dir)
+{
+    rot = rotate(theta, dir);
+    model = trans * scl * rot;
     modelInv = inverseTranspose(model);
 }

@@ -31,6 +31,7 @@ struct Model
     void InitModelMatrices();
     void Translate(vec3 tx);
     void Scale(vec3 dimsIn);
+    void Rotate(float theta, vec3 dir);
 
     void SetUniforms(
         Camera &cam,
