@@ -12,12 +12,13 @@ Scene::Scene()
  * AddDiffTexture - 
  */
 
-void Scene::AddDiffTexture(string name, GLuint id)
+void Scene::AddDiffTexture(string name, string path, GLuint id)
 {
-    diffTextures[name] = id;
+    diffTextures[name].texID = id;
+    diffTextures[name].imagePath = path;
     diffTexNames.resize(0);
 
-    map<string, GLuint>::iterator it;
+    map<string, Tex>::iterator it;
 
     for (it = diffTextures.begin(); it != diffTextures.end(); it++)
     {
@@ -29,12 +30,13 @@ void Scene::AddDiffTexture(string name, GLuint id)
  * AddNormTexture
  */
 
-void Scene::AddNormTexture(string name, GLuint id)
+void Scene::AddNormTexture(string name, string path, GLuint id)
 {
-    normTextures[name] = id;
+    normTextures[name].texID = id;
+    normTextures[name].imagePath = path;
     normTexNames.resize(0);
 
-    map<string, GLuint>::iterator it;
+    map<string, Tex>::iterator it;
 
     for (it = normTextures.begin(); it != normTextures.end(); it++)
     {
@@ -48,7 +50,77 @@ void Scene::AddNormTexture(string name, GLuint id)
 
 void Scene::Save(string file)
 {
+    ofstream fout;
+    fout.open(file.c_str(), 'w');
 
+    // Textures
+
+    map<string, Tex>::iterator texIt;
+
+    fout << "DIFFUSE TEXTURES" << endl;
+    fout << diffTextures.size() << endl;
+
+    for (texIt = diffTextures.begin(); texIt != diffTextures.end(); texIt++)
+    {
+        if ((*texIt).second.imagePath == "")
+        {
+            continue;
+        }
+
+        fout << (*texIt).first << endl;
+        fout << (*texIt).second.imagePath << endl;
+    }
+
+    fout << "NORMAL TEXTURES" << endl;
+    fout << normTextures.size() << endl;
+
+    for (texIt = normTextures.begin(); texIt != normTextures.end(); texIt++)
+    {
+        fout << (*texIt).first << endl;
+        fout << (*texIt).second.imagePath << endl;
+    }
+
+    map<string, RMaterial>::iterator matIt;
+
+    fout << "MATERIALS" << endl;
+    fout << materials.size() << endl;
+
+    for (matIt = materials.begin(); matIt != materials.end(); matIt++)
+    {
+        fout << (*matIt).first << endl;
+        fout << (*matIt).second.diffTexName << endl;
+        fout << (*matIt).second.normalTexName << endl;
+        fout << (*matIt).second.kd.x << endl;
+    }
+
+    map<string, Model>::iterator modIt;
+
+    fout << "MODELS" << endl;
+    fout << models.size() << endl;
+
+    for (modIt = models.begin(); modIt != models.end(); modIt++)
+    {
+        fout << (*modIt).first << endl;
+        fout << (*modIt).second.mat.name << endl;
+    }
+
+    fout << "CAMERA" << endl;
+
+    fout << "DIRECTIONAL LIGHTS" << endl;
+    fout << dirLights.size() << endl;
+
+    for (texIt = normTextures.begin(); texIt != normTextures.end(); texIt++)
+    {
+    }
+
+    fout << "POINT LIGHTS" << endl;
+    fout << ptLights.size() << endl;
+
+    for (texIt = normTextures.begin(); texIt != normTextures.end(); texIt++)
+    {
+    }
+
+    fout.close();
 }
 
 /**

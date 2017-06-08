@@ -7,6 +7,12 @@
 using namespace std;
 using namespace glm;
 
+struct Tex
+{
+    GLuint texID;
+    string imagePath;
+};
+
 struct RMaterial
 {
     string name;

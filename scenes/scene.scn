@@ -1,0 +1,31 @@
+DIFFUSE TEXTURES
+3
+DirtDiffuse
+../asset/dirtdiffuse.jpg
+GrassDiffuse
+../asset/grassdiffuse.jpg
+NoiseTex
+
+NORMAL TEXTURES
+2
+DirtNormal
+../asset/dirtnormal.jpg
+GrassNormal
+../asset/grassNormal.jpg
+MATERIALS
+1
+Default
+
+
+0.8
+MODELS
+2
+Knight
+Default
+Plane0
+Default
+CAMERA
+DIRECTIONAL LIGHTS
+1
+POINT LIGHTS
+1

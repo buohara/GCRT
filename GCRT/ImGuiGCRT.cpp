@@ -51,7 +51,7 @@ void Renderer::RenderSceneWindow()
 
     map<string, Model>::iterator modelIt;
     map<string, RMaterial>::iterator matIt;
-    map<string, GLuint>::iterator texIt;
+    map<string, Tex>::iterator texIt;
 
     static int curDiffTex;
     static int curNormTex;
@@ -212,14 +212,14 @@ void Renderer::RenderSceneWindow()
                 newMat.UseShadows(useShadows == 0 ? false : true);
                 
                 newMat.SetNormalTex(
-                    scn.normTextures[scn.normTexNames[curNormTex]], 
+                    scn.normTextures[scn.normTexNames[curNormTex]].texID, 
                     scn.normTexNames[curNormTex]
                 );
                 
                 if (useDiffuseTex)
                 {
                     newMat.SetDiffuseTex(
-                        scn.diffTextures[scn.diffTexNames[curDiffTex]],
+                        scn.diffTextures[scn.diffTexNames[curDiffTex]].texID,
                         scn.diffTexNames[curDiffTex]
                     );
                 }
@@ -276,7 +276,7 @@ void Renderer::RenderSceneWindow()
                 GLuint newID = ImgLoader::LoadTexture(string(newTexPath));
                 if (newID != 0)
                 {
-                    scn.AddDiffTexture(newTexName, newID);
+                    scn.AddDiffTexture(newTexName, string(newTexPath), newID);
                 }
                 else
                 {
@@ -291,6 +291,26 @@ void Renderer::RenderSceneWindow()
         ImGui::Unindent();
     }
 
+    // Save Dialog
+
+    if (ImGui::Button("Save scene..."))
+    {
+        ImGui::OpenPopup("Save scene...");
+    }
+
+    if (ImGui::BeginPopupModal("Save scene...", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        static char saveFile[256];
+        ImGui::InputText("Save as...", saveFile, 256);
+
+        if (ImGui::Button("Save", ImVec2(120, 0)))
+        {
+            scn.Save(string(saveFile));
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
     ImGui::End();
 }
 

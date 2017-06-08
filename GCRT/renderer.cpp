@@ -59,7 +59,7 @@ void Renderer::Init()
 
     dofPass.Init(
         renderTex,
-        scn.diffTextures["NoiseTex"],
+        scn.diffTextures["NoiseTex"].texID,
         renderFbo,
         winW,
         winH
@@ -169,22 +169,26 @@ void Renderer::CreateRenderPassFbo()
 void Renderer::LoadTextures()
 {
     scn.AddDiffTexture(
-        "DirtDiffuse", 
+        "DirtDiffuse",
+        string("../asset/dirtdiffuse.jpg"),
         ImgLoader::LoadTexture(string("../asset/dirtdiffuse.jpg"))
     );
     
     scn.AddNormTexture(
         "DirtNormal", 
+        string("../asset/dirtnormal.jpg"),
         ImgLoader::LoadTexture(string("../asset/dirtnormal.jpg"))
     );
     
     scn.AddDiffTexture(
-        "GrassDiffuse", 
+        "GrassDiffuse",
+        string("../asset/grassdiffuse.jpg"),
         ImgLoader::LoadTexture(string("../asset/grassdiffuse.jpg"))
     );
     
     scn.AddNormTexture(
-        "GrassNormal", 
+        "GrassNormal",
+        string("../asset/grassNormal.jpg"),
         ImgLoader::LoadTexture(string("../asset/grassNormal.jpg"))
     );
 }
@@ -216,6 +220,7 @@ void Renderer::InitMaterials()
     defaultMat.kd = vec3(0.8, 0.8, 0.8);
     defaultMat.UseShadows(true);
     defaultMat.spec = 1.0;
+    defaultMat.useSSS = true;
     scn.AddMaterial("Default", defaultMat);
 }
 
@@ -434,5 +439,5 @@ void Renderer::CreateNoiseTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    scn.AddDiffTexture("NoiseTex", noiseTexID);
+    scn.AddDiffTexture("NoiseTex", "", noiseTexID);
 }

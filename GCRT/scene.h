@@ -16,8 +16,8 @@ struct Scene
 
     map<string, Shader> shaders;
     map<string, Model> models;
-    map<string, GLuint> diffTextures;
-    map<string, GLuint> normTextures;
+    map<string, Tex> diffTextures;
+    map<string, Tex> normTextures;
     map<string, RMaterial> materials;
     vector<DirectionalLight> dirLights;
     vector<PointLight> ptLights;
@@ -31,8 +31,8 @@ struct Scene
 
     Scene();
 
-    void AddDiffTexture(string name, GLuint id);
-    void AddNormTexture(string name, GLuint id);
+    void AddDiffTexture(string name, string path, GLuint id);
+    void AddNormTexture(string name, string path, GLuint id);
 
     void Save(string file);
     void Load(string file);
