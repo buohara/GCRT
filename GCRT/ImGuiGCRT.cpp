@@ -113,7 +113,7 @@ void Renderer::RenderSceneWindow()
             if (ImGui::Button("Add", ImVec2(120, 0)))
             {
                 Model newModel;
-                newModel.meshName = string(newName);
+                newModel.meshName = scn.meshNames[curMesh];
                 newModel.matName = scn.materialNames[curMat];
                 newModel.Translate(vec3(newPos[0], newPos[1], newPos[2]));
                 newModel.Scale(vec3(newScale[0], newScale[1], newScale[2]));

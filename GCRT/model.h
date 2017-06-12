@@ -21,6 +21,8 @@ struct Model
     mat4 model;
     mat4 modelInv;
 
+    bool selected;
+
     void SetModelMatrices(GLuint program);
 
     void InitModelMatrices();

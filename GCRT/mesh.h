@@ -21,6 +21,8 @@ struct Mesh
 {
     vector<SubMesh> subMeshes;
     string name;
+    bool blenderModel;
+    string blenderPath;
 
     virtual void Draw() = 0;
 

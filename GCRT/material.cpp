@@ -10,19 +10,9 @@ RMaterial::RMaterial()
     useDiffuseMap = 0;
     useSSS = 0;
     useShadows = 0;
-    selected = 0;
 
-    diffTexName = string("");
-    normalTexName = string("");
-}
-
-/**
- * SetDepthTex -
- */
-
-void RMaterial::SetDepthTex(GLuint depthTex)
-{
-    depthTexID = depthTex;
+    diffTexName = string("NA");
+    normalTexName = string("NA");
 }
 
 /**
@@ -64,9 +54,6 @@ void RMaterial::ApplyMaterial(GLuint program)
 
     GLuint useShadowsID = glGetUniformLocation(program, "useShadows");
     glUniform1i(useShadowsID, useShadows);
-
-    GLuint selectedID = glGetUniformLocation(program, "selected");
-    glUniform1i(selectedID, selected);
 
     GLuint specID = glGetUniformLocation(program, "shininess");
     glUniform1f(specID, spec);

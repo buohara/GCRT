@@ -72,10 +72,7 @@ void Renderer::Init()
         winH
     );
 
-    LoadTextures();
-    InitMaterials();
-    InitModels();
-    InitLights();
+    scn.Load("C:/Users/beno.NVIDIA.COM/Desktop/scene.scn");
 }
 
 /**
@@ -235,11 +232,15 @@ void Renderer::InitModels()
     Plane pln;
     pln.Create(10, 10);
     pln.name = "Plane";
+    pln.blenderModel = false;
+    pln.blenderPath = "NA";
     scn.AddMesh("Plane", make_shared<Plane>(pln));
 
     Sphere sph;
     sph.name = "Sphere";
     sph.Create(50, 50);
+    sph.blenderModel = false;
+    sph.blenderPath = "NA";
     scn.AddMesh("Sphere", make_shared<Sphere>(sph));
 
     Model plane;
@@ -251,11 +252,12 @@ void Renderer::InitModels()
     scn.AddModel("Plane0", plane);
 
     scn.LoadBlenderModel(
-        "Knight", 
-        "../asset/models/dark_templar_knight/dark_templar_knight.blend", 
-        "", 
-        "", 
-        nextPickerColor()
+        "Knight",
+        "../asset/models/dark_templar_knight/dark_templar_knight.blend",
+        "",
+        "",
+        nextPickerColor(),
+        false
     );
 }
 
@@ -396,8 +398,7 @@ void Renderer::DoPick(LPARAM mouseCoord)
             abs(pickerColor.y - pixel.y) < 0.05 &&
             abs(pickerColor.z - pixel.z) < 0.05)
         {
-            RMaterial mat = scn.materials[(*it).second.matName];
-            mat.selected = true;
+            (*it).second.selected = true;
 
             if (firstHit == true)
             {
@@ -407,15 +408,13 @@ void Renderer::DoPick(LPARAM mouseCoord)
             {
                 if ((*it).first != selected.name)
                 {
-                    mat.selected = false;
+                    scn.models[selected.name].selected = false;
                 }
             }
 
             selected.name = (*it).first;
-            selected.kd = mat.kd;
             selected.pos = (*it).second.pos;
             selected.scale = (*it).second.dims;
-            selected.specular = mat.spec;
         }
     }
 }

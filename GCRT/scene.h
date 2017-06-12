@@ -14,7 +14,6 @@ struct Scene
 {
     Camera cam;
 
-    map<string, Shader> shaders;
     map<string, Model> models;
     map<string, Tex> diffTextures;
     map<string, Tex> normTextures;
@@ -46,6 +45,7 @@ struct Scene
         string blendFile,
         string diffuseTexFile,
         string normalTexFile,
-        vec3 pickerColor
+        vec3 pickerColor,
+        bool meshOnly
     );
 };

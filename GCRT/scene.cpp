@@ -52,13 +52,13 @@ void Scene::Save(string file)
 {
     ofstream fout;
     //fout.open(file.c_str(), 'w');
-    fout.open("C:/Users/SLI/Desktop/scene.scn", 'w');
+    fout.open("C:/Users/beno.NVIDIA.COM/Desktop/scene.scn", 'w');
 
     // Textures
 
     map<string, Tex>::iterator texIt;
 
-    fout << "DIFFUSE TEXTURES" << diffTextures.size() << endl;
+    fout << "DIFFUSE_TEXTURES " << diffTextures.size() - 1 << "\n" << endl;
 
     for (texIt = diffTextures.begin(); texIt != diffTextures.end(); texIt++)
     {
@@ -69,9 +69,10 @@ void Scene::Save(string file)
 
         fout << (*texIt).first << endl;
         fout << (*texIt).second.imagePath << endl;
+        fout << endl;
     }
 
-    fout << "NORMAL TEXTURES" << normTextures.size() << endl;
+    fout << "NORMAL_TEXTURES " << normTextures.size() << "\n" << endl;
 
     for (texIt = normTextures.begin(); texIt != normTextures.end(); texIt++)
     {
@@ -82,11 +83,12 @@ void Scene::Save(string file)
 
         fout << (*texIt).first << endl;
         fout << (*texIt).second.imagePath << endl;
+        fout << endl;
     }
 
     map<string, RMaterial>::iterator matIt;
 
-    fout << "MATERIALS" << materials.size() << endl;
+    fout << "MATERIALS " << materials.size() << "\n" << endl;
 
     for (matIt = materials.begin(); matIt != materials.end(); matIt++)
     {
@@ -97,51 +99,102 @@ void Scene::Save(string file)
         fout << (*matIt).second.useShadows << endl;
         fout << (*matIt).second.diffTexName << endl;
         fout << (*matIt).second.normalTexName << endl;
-        fout << (*matIt).second.kd.x << (*matIt).second.kd.y << (*matIt).second.kd.z << endl;
+        
+        fout << 
+            (*matIt).second.kd.x << " " <<
+            (*matIt).second.kd.y << " " <<
+            (*matIt).second.kd.z << endl;
+        
         fout << (*matIt).second.spec << endl;
+        fout << endl;
+    }
+
+    map<string, shared_ptr<Mesh>>::iterator meshIt;
+
+    fout << "MESHES " << meshes.size() << "\n" << endl;
+
+    for (meshIt = meshes.begin(); meshIt != meshes.end(); meshIt++)
+    {
+        fout << (*meshIt).second->name << endl;
+        fout << (*meshIt).second->blenderModel << endl;
+        fout << (*meshIt).second->blenderPath << endl;
+        fout << endl;
     }
 
     map<string, Model>::iterator modIt;
 
-    fout << "MODELS" << models.size() << endl;
+    fout << "MODELS " << models.size() << "\n" << endl;
 
     for (modIt = models.begin(); modIt != models.end(); modIt++)
     {
         fout << (*modIt).first << endl;
-        fout << (*modIt).second.meshName;
+        fout << (*modIt).second.meshName << endl;
         fout << (*modIt).second.matName << endl;
-        fout << (*modIt).second.pos.x << (*modIt).second.pos.y << (*modIt).second.pos.z << endl;
-        fout << (*modIt).second.dims.x << (*modIt).second.dims.y << (*modIt).second.dims.z << endl;
+        
+        fout << 
+            (*modIt).second.pos.x << " " <<
+            (*modIt).second.pos.y << " " <<
+            (*modIt).second.pos.z << endl;
+        
+        fout << 
+            (*modIt).second.dims.x << " " <<
+            (*modIt).second.dims.y << " " <<
+            (*modIt).second.dims.z << endl;
         
         fout 
-            << (*modIt).second.pickerColor.x 
-            << (*modIt).second.pickerColor.y 
-            << (*modIt).second.pickerColor.z 
+            << (*modIt).second.pickerColor.x << " "
+            << (*modIt).second.pickerColor.y << " "
+            << (*modIt).second.pickerColor.z << " "
             << endl;
+
+        fout << endl;
     }
 
-    fout << "CAMERA" << endl;
+    fout << "CAMERA " << "\n" << endl;
 
-    fout << cam.pos.x << cam.pos.y << cam.pos.z << endl;
-    fout << cam.lookDir.x << cam.lookDir.y << cam.lookDir.z << endl;
+    fout << 
+        cam.pos.x << " " <<
+        cam.pos.y << " " <<
+        cam.pos.z << endl;
+    
+    fout << 
+        cam.lookDir.x << " " <<
+        cam.lookDir.y << " " <<
+        cam.lookDir.z << endl;
+    
     fout << cam.aspect << endl;
     fout << cam.fov << endl;
     fout << cam.nclip << endl;
     fout << cam.fclip << endl;
+    fout << endl;
 
-    fout << "DIRECTIONAL LIGHTS" << dirLights.size() << endl;
+    fout << "DIRECTIONAL_LIGHTS " << dirLights.size() << "\n" << endl;
 
     for (int i  = 0; i < dirLights.size(); i++)
     {
-        fout << dirLights[i].pos.x << dirLights[i].pos.y << dirLights[i].pos.z << endl;
-        fout << dirLights[i].look.x << dirLights[i].look.y << dirLights[i].look.z << endl;
+        fout <<
+            dirLights[i].pos.x << " " <<
+            dirLights[i].pos.y << " " <<
+            dirLights[i].pos.z << endl;
+
+        fout << 
+            dirLights[i].look.x << " " << 
+            dirLights[i].look.y << " " <<
+            dirLights[i].look.z << endl;
+
+        fout << endl;
     }
 
-    fout << "POINT LIGHTS" << ptLights.size() << endl;
+    fout << "POINT_LIGHTS " << ptLights.size() << "\n" << endl;
 
     for (int i = 0; i < ptLights.size(); i++)
     {
-        fout << ptLights[i].pos.x << ptLights[i].pos.y << ptLights[i].pos.z << endl;
+        fout << 
+            ptLights[i].pos.x << " " <<
+            ptLights[i].pos.y << " " <<
+            ptLights[i].pos.z << endl;
+
+        fout << endl;
     }
 
     fout.close();
@@ -154,7 +207,426 @@ void Scene::Save(string file)
 void Scene::Load(string file)
 {
     ifstream fin;
-    fin.open("C:/Users/SLI/Desktop/scene.scn");
+    fin.open(file);
+
+    string line;
+    istringstream iss;
+
+    // Diffuse textures.
+
+    uint32_t numTextures;
+    string sectionName;
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> sectionName >> numTextures;
+    iss.clear();
+    getline(fin, line);
+
+    for (uint32_t i = 0; i < numTextures; i++)
+    {
+        string texName;
+        string texPath;
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> texName;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> texPath;
+        iss.clear();
+
+        getline(fin, line);
+
+        AddDiffTexture(texName, texPath, ImgLoader::LoadTexture(texPath));
+    }
+
+    // Normal textures
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> sectionName >> numTextures;
+    iss.clear();
+    getline(fin, line);
+
+    for (uint32_t i = 0; i < numTextures; i++)
+    {
+        string texName;
+        string texPath;
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> texName;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> texPath;
+        iss.clear();
+
+        getline(fin, line);
+
+        AddNormTexture(texName, texPath, ImgLoader::LoadTexture(texPath));
+    }
+
+    // Materials
+
+    uint32_t numMaterials;
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> sectionName >> numMaterials;
+    iss.clear();
+    getline(fin, line);
+
+    for (uint32_t i = 0; i < numMaterials; i++)
+    {
+        string name;
+        bool useNormalMap;
+        bool useDiffuseMap;
+        bool useSSS;
+        bool useShadows;
+        string diffuseTexName;
+        string normalTexName;
+        vec3 kd;
+        float spec;
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> name;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> useNormalMap;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> useDiffuseMap;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> useSSS;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> useShadows;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> diffuseTexName;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> normalTexName;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> kd.x >> kd.y >> kd.z;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> spec;
+        iss.clear();
+
+        getline(fin, line);
+
+        RMaterial newMat;
+        newMat.name = name;
+        newMat.kd = kd;
+        newMat.useShadows = useShadows;
+        newMat.useDiffuseMap = useDiffuseMap;
+        newMat.useNormalMap = useNormalMap;
+        newMat.useSSS = useSSS;
+        newMat.spec = spec;
+        newMat.diffTexName = diffuseTexName;
+        newMat.normalTexName = normalTexName;
+        
+        if (newMat.useDiffuseMap)
+        {
+            newMat.diffuseTexID = diffTextures[diffuseTexName].texID;
+        }
+
+        if (newMat.useNormalMap)
+        {
+            newMat.normalTexID = normTextures[normalTexName].texID;
+        }
+
+        AddMaterial(name, newMat);
+    }
+
+    // Meshes
+
+    uint32_t numMeshes;
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> sectionName >> numMeshes;
+    iss.clear();
+    getline(fin, line);
+
+    for (uint32_t i = 0; i < numMeshes; i++)
+    {
+        string name;
+        bool blenderModel;
+        string blenderPath;
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> name;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> blenderModel;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> blenderPath;
+        iss.clear();
+
+        getline(fin, line);
+
+        if (name == "Sphere")
+        {
+            Sphere sph;
+            sph.name = "Sphere";
+            sph.Create(50, 50);
+            sph.blenderModel = false;
+            sph.blenderPath = "NA";
+            AddMesh("Sphere", make_shared<Sphere>(sph));
+            continue;
+        }
+
+        if (name == "Plane")
+        {
+            Plane pln;
+            pln.Create(10, 10);
+            pln.name = "Plane";
+            pln.blenderModel = false;
+            pln.blenderPath = "NA";
+            AddMesh("Plane", make_shared<Plane>(pln));
+            continue;
+        }
+
+        if (name == "Box")
+        {
+            Box box;
+            box.Create();
+            box.name = "Box";
+            box.blenderModel = false;
+            box.blenderPath = "NA";
+            AddMesh("Box", make_shared<Box>(box));
+            continue;
+        }
+
+        if (name == "Cylinder")
+        {
+            Cylinder cyl;
+            cyl.Create(15);
+            cyl.name = "Box";
+            cyl.blenderModel = false;
+            cyl.blenderPath = "NA";
+            AddMesh("Cylinder", make_shared<Cylinder>(cyl));
+            continue;
+        }
+
+        if (blenderModel == true)
+        {
+            LoadBlenderModel(name, blenderPath, "NA", "NA", vec3(0.0, 0.0, 0.0), true);
+        }
+    }
+
+    // Models
+
+    uint32_t numModels;
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> sectionName >> numModels;
+    iss.clear();
+    getline(fin, line);
+
+    for (uint32_t i = 0; i < numModels; i++)
+    {
+        string name;
+        string meshName;
+        string matName;
+        vec3 pos;
+        vec3 dims;
+        vec3 pickerColor;
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> name;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> meshName;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> matName;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> pos.x >> pos.y >> pos.z;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> dims.x >> dims.y >> dims.z;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> pickerColor.x >> pickerColor.y >> pickerColor.z;
+        iss.clear();
+
+        getline(fin, line);
+
+        Model newModel;
+        newModel.meshName = meshName;
+        newModel.matName = matName;
+        newModel.pickerColor = pickerColor;
+        newModel.InitModelMatrices();
+        newModel.Translate(pos);
+        newModel.Scale(dims);
+        newModel.selected = false;
+
+        AddModel(name, newModel);
+    }
+
+    // Camera
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> sectionName;
+    iss.clear();
+    getline(fin, line);
+
+    {
+        vec3 pos;
+        vec3 look;
+        float fov;
+        float aspect;
+        float nclip;
+        float fclip;
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> pos.x >> pos.y >> pos.z;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> look.x >> look.y >> look.z;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> aspect;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> fov;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> nclip;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> fclip;
+        iss.clear();
+
+        getline(fin, line);
+
+        cam.pos = pos;
+        cam.lookDir = look;
+        cam.fov = fov;
+        cam.aspect = aspect;
+        cam.nclip = nclip;
+        cam.fclip = fclip;
+        cam.up = vec3(0.0, 0.0, 1.0);
+    }
+
+    // Lights
+
+    uint32_t numDirLights;
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> sectionName >> numDirLights;
+    iss.clear();
+    getline(fin, line);
+
+    for (uint32_t i = 0; i < numDirLights; i++)
+    {
+        vec3 pos;
+        vec3 dir;
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> pos.x >> pos.y >> pos.z;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> dir.x >> dir.y >> dir.z;
+        iss.clear();
+
+        getline(fin, line);
+
+        DirectionalLight dirLight;
+        dirLight.pos = pos;
+        dirLight.look = dir;
+
+        dirLights.push_back(dirLight);
+    }
+
+    uint32_t numPtLights;
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> sectionName >> numPtLights;
+    iss.clear();
+    getline(fin, line);
+
+    for (uint32_t i = 0; i < numPtLights; i++)
+    {
+        vec3 pos;
+
+        getline(fin, line);
+        iss.str(line);
+        iss >> pos.x >> pos.y >> pos.z;
+        iss.clear();
+
+        getline(fin, line);
+
+        PointLight ptLight;
+        ptLight.pos = pos;
+
+        ptLights.push_back(ptLight);
+    }
+
+    fin.close();
 }
 
 /**
@@ -218,12 +690,21 @@ void Scene::LoadBlenderModel(
     string blendFile,
     string diffuseTexFile,
     string normalTexFile,
-    vec3 pickerColor
+    vec3 pickerColor,
+    bool meshOnly
 )
 {
     BlenderMesh mesh;
     mesh.Create(blendFile);
-    meshes[name] = make_shared<BlenderMesh>(mesh);
+    mesh.blenderModel = true;
+    mesh.blenderPath = blendFile;
+    mesh.name = name;
+    AddMesh(name, make_shared<BlenderMesh>(mesh));
+
+    if (meshOnly)
+    {
+        return;
+    }
 
     Model model;
     model.meshName = name;

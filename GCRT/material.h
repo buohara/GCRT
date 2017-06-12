@@ -27,16 +27,12 @@ struct RMaterial
     string diffTexName;
     string normalTexName;
 
-    GLuint depthTexID;
     GLuint diffuseTexID;
     GLuint normalTexID;
-
-    GLuint selected;
 
     RMaterial();
 
     void ApplyMaterial(GLuint program);
-    void SetDepthTex(GLuint depthTex);
     void SetNormalTex(GLuint normalTex, string name);
     void SetDiffuseTex(GLuint diffuseTex, string name);
 

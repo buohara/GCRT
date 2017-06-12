@@ -369,6 +369,9 @@ void RenderPass::Render(Scene &scn)
         RMaterial mat = scn.materials[(*it).second.matName];
         mat.ApplyMaterial(renderProgram);
         
+        GLuint selectedID = glGetUniformLocation(renderProgram, "selected");
+        glUniform1i(selectedID, (*it).second.selected);
+
         (*it).second.SetModelMatrices(renderProgram);
 
         shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
