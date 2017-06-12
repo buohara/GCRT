@@ -20,6 +20,7 @@ struct SubMesh
 struct Mesh
 {
     vector<SubMesh> subMeshes;
+    string name;
 
     virtual void Draw() = 0;
 

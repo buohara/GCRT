@@ -72,7 +72,7 @@ void Renderer::RenderSceneWindow()
         {
             if (ImGui::TreeNode((*modelIt).first.c_str()))
             {
-                ImGui::Text("Material: %s", (*modelIt).second.mat.name.c_str());
+                ImGui::Text("Material: %s", (*modelIt).second.matName.c_str());
                 
                 ImGui::Text(
                     "Pos - x:%3.2f y:%3.2f z:%3.2f",
@@ -113,8 +113,8 @@ void Renderer::RenderSceneWindow()
             if (ImGui::Button("Add", ImVec2(120, 0)))
             {
                 Model newModel;
-                newModel.pMesh = scn.meshes[scn.meshNames[curMesh]];
-                newModel.SetMaterial(scn.materials[scn.materialNames[curMat]]);
+                newModel.meshName = string(newName);
+                newModel.matName = scn.materialNames[curMat];
                 newModel.Translate(vec3(newPos[0], newPos[1], newPos[2]));
                 newModel.Scale(vec3(newScale[0], newScale[1], newScale[2]));
                 newModel.pickerColor = nextPickerColor();
@@ -329,12 +329,10 @@ void Renderer::RenderModelWindow()
 
     if (ImGui::InputFloat3("DiffuseColor", (float*)&selected.kd, -1) && selected.name != string(""))
     {
-        scn.models[selected.name].mat.kd = selected.kd;
     }
 
     if (ImGui::InputFloat("Specular", (float*)&selected.specular))
     {
-        scn.models[selected.name].mat.spec = selected.specular;
     }
 
     // Transofrmation.

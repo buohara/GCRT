@@ -16,7 +16,6 @@ struct Tex
 struct RMaterial
 {
     string name;
-    GLuint program;
     vec3 kd;
     float spec;
 
@@ -25,12 +24,11 @@ struct RMaterial
     GLuint useSSS;
     GLuint useShadows;
 
-    GLuint depthTexID;
-
     string diffTexName;
-    GLuint diffuseTexID;
-
     string normalTexName;
+
+    GLuint depthTexID;
+    GLuint diffuseTexID;
     GLuint normalTexID;
 
     GLuint selected;

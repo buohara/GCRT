@@ -4,6 +4,7 @@
 #include "scene.h"
 #include "renderpass.h"
 #include "imgui_impl_gcrt.h"
+#include "raytrace.h"
 
 struct Selection
 {
@@ -40,6 +41,9 @@ struct Renderer
     uint32_t winW;
     uint32_t winH;
 
+    RayTraceIn rtIn;
+    DWORD rtThreadId;
+
     Selection selected;
 
     bool mouseDown[3];
@@ -62,6 +66,8 @@ struct Renderer
     void RenderModelWindow();
     void RenderRendererWindow();
     void UpdateViewPorts(uint32_t w, uint32_t h);
+
+    void KickoffRayTrace();
 
     float nextPickClr[3];
     uint32_t nextPickIdx;

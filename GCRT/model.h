@@ -7,9 +7,8 @@
 
 struct Model
 {
-    shared_ptr<Mesh> pMesh;
-    RMaterial mat;
-    GLuint program;
+    string meshName;
+    string matName;
     vec3 pickerColor;
 
     vec3 pos;
@@ -22,23 +21,10 @@ struct Model
     mat4 model;
     mat4 modelInv;
 
-    void SetMaterial(RMaterial matIn);
-    void SetMesh(GLuint program);
-    void ApplyMaterial(GLuint program);
-    void SetCamera(Camera &cam, GLuint program);
-    void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights, GLuint program);
+    void SetModelMatrices(GLuint program);
 
     void InitModelMatrices();
     void Translate(vec3 tx);
     void Scale(vec3 dimsIn);
     void Rotate(float theta, vec3 dir);
-
-    void SetUniforms(
-        Camera &cam,
-        vector<DirectionalLight> &dirLights,
-        vector<PointLight> &ptLights, 
-        GLuint program
-    );
-
-    void Draw();
 };

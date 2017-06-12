@@ -51,14 +51,14 @@ void Scene::AddNormTexture(string name, string path, GLuint id)
 void Scene::Save(string file)
 {
     ofstream fout;
-    fout.open(file.c_str(), 'w');
+    //fout.open(file.c_str(), 'w');
+    fout.open("C:/Users/SLI/Desktop/scene.scn", 'w');
 
     // Textures
 
     map<string, Tex>::iterator texIt;
 
-    fout << "DIFFUSE TEXTURES" << endl;
-    fout << diffTextures.size() << endl;
+    fout << "DIFFUSE TEXTURES" << diffTextures.size() << endl;
 
     for (texIt = diffTextures.begin(); texIt != diffTextures.end(); texIt++)
     {
@@ -71,53 +71,77 @@ void Scene::Save(string file)
         fout << (*texIt).second.imagePath << endl;
     }
 
-    fout << "NORMAL TEXTURES" << endl;
-    fout << normTextures.size() << endl;
+    fout << "NORMAL TEXTURES" << normTextures.size() << endl;
 
     for (texIt = normTextures.begin(); texIt != normTextures.end(); texIt++)
     {
+        if ((*texIt).second.imagePath == "")
+        {
+            continue;
+        }
+
         fout << (*texIt).first << endl;
         fout << (*texIt).second.imagePath << endl;
     }
 
     map<string, RMaterial>::iterator matIt;
 
-    fout << "MATERIALS" << endl;
-    fout << materials.size() << endl;
+    fout << "MATERIALS" << materials.size() << endl;
 
     for (matIt = materials.begin(); matIt != materials.end(); matIt++)
     {
         fout << (*matIt).first << endl;
+        fout << (*matIt).second.useNormalMap << endl;
+        fout << (*matIt).second.useDiffuseMap << endl;
+        fout << (*matIt).second.useSSS << endl;
+        fout << (*matIt).second.useShadows << endl;
         fout << (*matIt).second.diffTexName << endl;
         fout << (*matIt).second.normalTexName << endl;
-        fout << (*matIt).second.kd.x << endl;
+        fout << (*matIt).second.kd.x << (*matIt).second.kd.y << (*matIt).second.kd.z << endl;
+        fout << (*matIt).second.spec << endl;
     }
 
     map<string, Model>::iterator modIt;
 
-    fout << "MODELS" << endl;
-    fout << models.size() << endl;
+    fout << "MODELS" << models.size() << endl;
 
     for (modIt = models.begin(); modIt != models.end(); modIt++)
     {
         fout << (*modIt).first << endl;
-        fout << (*modIt).second.mat.name << endl;
+        fout << (*modIt).second.meshName;
+        fout << (*modIt).second.matName << endl;
+        fout << (*modIt).second.pos.x << (*modIt).second.pos.y << (*modIt).second.pos.z << endl;
+        fout << (*modIt).second.dims.x << (*modIt).second.dims.y << (*modIt).second.dims.z << endl;
+        
+        fout 
+            << (*modIt).second.pickerColor.x 
+            << (*modIt).second.pickerColor.y 
+            << (*modIt).second.pickerColor.z 
+            << endl;
     }
 
     fout << "CAMERA" << endl;
 
-    fout << "DIRECTIONAL LIGHTS" << endl;
-    fout << dirLights.size() << endl;
+    fout << cam.pos.x << cam.pos.y << cam.pos.z << endl;
+    fout << cam.lookDir.x << cam.lookDir.y << cam.lookDir.z << endl;
+    fout << cam.aspect << endl;
+    fout << cam.fov << endl;
+    fout << cam.nclip << endl;
+    fout << cam.fclip << endl;
 
-    for (texIt = normTextures.begin(); texIt != normTextures.end(); texIt++)
+    fout << "DIRECTIONAL LIGHTS" << dirLights.size() << endl;
+
+    for (int i  = 0; i < dirLights.size(); i++)
     {
+        fout << dirLights[i].pos.x << dirLights[i].pos.y << dirLights[i].pos.z << endl;
+        fout << dirLights[i].look.x << dirLights[i].look.y << dirLights[i].look.z << endl;
     }
 
-    fout << "POINT LIGHTS" << endl;
-    fout << ptLights.size() << endl;
+    fout << "POINT LIGHTS" << ptLights.size() << endl;
 
-    for (texIt = normTextures.begin(); texIt != normTextures.end(); texIt++)
+    for (int i = 0; i < ptLights.size(); i++)
     {
+        fout << ptLights[i].pos.x << ptLights[i].pos.y << ptLights[i].pos.z << endl;
     }
 
     fout.close();
@@ -129,7 +153,8 @@ void Scene::Save(string file)
 
 void Scene::Load(string file)
 {
-
+    ifstream fin;
+    fin.open("C:/Users/SLI/Desktop/scene.scn");
 }
 
 /**
@@ -201,8 +226,8 @@ void Scene::LoadBlenderModel(
     meshes[name] = make_shared<BlenderMesh>(mesh);
 
     Model model;
-    model.pMesh = meshes[name];
-    model.SetMaterial(materials["Default"]);
+    model.meshName = name;
+    model.matName = string("Default");
     model.pickerColor = pickerColor;
     model.InitModelMatrices();
     model.Scale(vec3(0.25, 0.25, 0.25));

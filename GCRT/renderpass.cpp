@@ -69,11 +69,12 @@ void DepthPass::Render(Scene &scn)
     for (it = models.begin(); it != models.end(); it++)
     {
         mat4 model = (*it).second.model;
+        shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
 
         GLuint modelID = glGetUniformLocation(depthProgram, "model");
         glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
 
-        (*it).second.pMesh->Draw();
+        pMesh->Draw();
     }
 }
 
@@ -169,7 +170,8 @@ void PickerPass::Render(Scene &scn)
         GLuint pickerID = glGetUniformLocation(pickerProgram, "pickerColor");
         glUniform3fv(pickerID, 1, &pickerColor[0]);
 
-        (*it).second.pMesh->Draw();
+        shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
+        pMesh->Draw();
     }
 }
 
@@ -272,7 +274,7 @@ void RenderPass::Render(Scene &scn)
     vector<DirectionalLight> dirLights = scn.dirLights;
     vector<PointLight> ptLights = scn.ptLights;
 
-    // Wireframe mode?
+    // Set wireframe.
 
     if (wireFrame)
     {
@@ -283,7 +285,7 @@ void RenderPass::Render(Scene &scn)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    // Use MSAA?
+    // Set MSAA FBO.
 
     if (useMSAA)
     {
@@ -321,14 +323,56 @@ void RenderPass::Render(Scene &scn)
         glUniform4fv(focusPlanesID, 1, &planes[0]);
     }
 
-    // Render models.
+    // Render models. 
+    // 1. Camera uniforms
+
+    {
+        vec3 camPos = cam.pos;
+        mat4 proj = cam.GetProjection();
+        mat4 view = cam.GetView();
+
+        GLuint viewID = glGetUniformLocation(renderProgram, "view");
+        glUniformMatrix4fv(viewID, 1, false, &view[0][0]);
+
+        GLuint projID = glGetUniformLocation(renderProgram, "proj");
+        glUniformMatrix4fv(projID, 1, false, &proj[0][0]);
+
+        GLuint camPosID = glGetUniformLocation(renderProgram, "camPos");
+        glUniform3fv(camPosID, 1, &camPos[0]);
+    }
+
+    // 2. Lighting uniforms
+    
+    {
+        vec3 dirLightPos = dirLights[0].pos;
+        vec3 dirLightLook = dirLights[0].look;
+
+        mat4 depthView = lookAt(dirLightPos, dirLightLook, vec3(0.0, 1.0, 0.0));
+        mat4 depthProj = ortho(-10.0, 10.0, -10.0, 10.0, 1.0, 100.0);
+
+        GLuint lightPosID = glGetUniformLocation(renderProgram, "lightPos");
+        glUniform3fv(lightPosID, 1, &dirLightPos[0]);
+
+        GLuint lightViewID = glGetUniformLocation(renderProgram, "lightView");
+        glUniformMatrix4fv(lightViewID, 1, false, &depthView[0][0]);
+
+        GLuint lightProjID = glGetUniformLocation(renderProgram, "lightProj");
+        glUniformMatrix4fv(lightProjID, 1, false, &depthProj[0][0]);
+    }
+
+    // 3. Material uniforms and draw.
 
     map<string, Model>::iterator it;
 
     for (it = models.begin(); it != models.end(); it++)
     {
-        (*it).second.SetUniforms(cam, dirLights, ptLights, renderProgram);
-        (*it).second.Draw();
+        RMaterial mat = scn.materials[(*it).second.matName];
+        mat.ApplyMaterial(renderProgram);
+        
+        (*it).second.SetModelMatrices(renderProgram);
+
+        shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
+        pMesh->Draw();
     }
 
     // Resolve MSAA buffer.

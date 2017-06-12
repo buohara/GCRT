@@ -234,15 +234,17 @@ void Renderer::InitModels()
 
     Plane pln;
     pln.Create(10, 10);
+    pln.name = "Plane";
     scn.AddMesh("Plane", make_shared<Plane>(pln));
 
     Sphere sph;
+    sph.name = "Sphere";
     sph.Create(50, 50);
     scn.AddMesh("Sphere", make_shared<Sphere>(sph));
 
     Model plane;
-    plane.pMesh = scn.meshes["Plane"];
-    plane.SetMaterial(scn.materials["Default"]);
+    plane.meshName = string("Plane");
+    plane.matName = string("Default");
     plane.pickerColor = nextPickerColor();
     plane.InitModelMatrices();
     plane.Scale(vec3(10.0, 10.0, 1.0));
@@ -306,6 +308,11 @@ void Renderer::HandleInputs(MSG &msg)
         {
             settings.wireFrame = !settings.wireFrame;
             renderPass.wireFrame = settings.wireFrame;
+        }
+
+        if (msg.wParam == 0x54) // 't' key to kick off ray trace.
+        {
+            
         }
 
         scn.cam.HandleKeyDown(msg.wParam);
@@ -389,7 +396,8 @@ void Renderer::DoPick(LPARAM mouseCoord)
             abs(pickerColor.y - pixel.y) < 0.05 &&
             abs(pickerColor.z - pixel.z) < 0.05)
         {
-            (*it).second.mat.selected = true;
+            RMaterial mat = scn.materials[(*it).second.matName];
+            mat.selected = true;
 
             if (firstHit == true)
             {
@@ -399,15 +407,15 @@ void Renderer::DoPick(LPARAM mouseCoord)
             {
                 if ((*it).first != selected.name)
                 {
-                    scn.models[selected.name].mat.selected = false;
+                    mat.selected = false;
                 }
             }
 
             selected.name = (*it).first;
-            selected.kd = (*it).second.mat.kd;
+            selected.kd = mat.kd;
             selected.pos = (*it).second.pos;
             selected.scale = (*it).second.dims;
-            selected.specular = (*it).second.mat.spec;
+            selected.specular = mat.spec;
         }
     }
 }
@@ -440,4 +448,29 @@ void Renderer::CreateNoiseTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     scn.AddDiffTexture("NoiseTex", "", noiseTexID);
+}
+
+/**
+ * Copy current scene state to ray tracer, then kickoff another thread to
+ * do the render.
+ */
+
+void Renderer::KickoffRayTrace()
+{    
+    rtIn.models         = scn.models;
+    rtIn.diffTextures   = scn.diffTextures;
+    rtIn.normTextures   = scn.normTextures;
+    rtIn.materials      = scn.materials;
+    rtIn.dirLights      = scn.dirLights;
+    rtIn.ptLights       = scn.ptLights;
+    rtIn.meshes         = scn.meshes;
+
+    CreateThread(
+        NULL,
+        0,
+        RayTracer::RTThreadFunc,
+        &rtIn,
+        0,
+        &rtThreadId
+    );
 }
