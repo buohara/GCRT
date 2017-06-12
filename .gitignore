@@ -240,3 +240,35 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/assimp-3.3.1/out/CMakeFiles
+/assimp-3.3.1/out/code/assimp.dir/Release/assimp.tlog
+/assimp-3.3.1/out/code/CMakeFiles
+/assimp-3.3.1/out/contrib/zlib
+/assimp-3.3.1/out/test
+/assimp-3.3.1/out/tools/assimp_cmd
+/assimp-3.3.1/out/x64/Release
+/assimp-3.3.1/samples
+/assimp-3.3.1/test/regression
+/assimp-3.3.1/out/ZERO_CHECK.vcxproj.filters
+/assimp-3.3.1/out/ZERO_CHECK.vcxproj
+/assimp-3.3.1/out/UpdateAssimpLibsDebugSymbolsAndDLLs.vcxproj.filters
+/assimp-3.3.1/out/UpdateAssimpLibsDebugSymbolsAndDLLs.vcxproj
+/assimp-3.3.1/out/uninstall.vcxproj.filters
+/assimp-3.3.1/out/uninstall.vcxproj
+/assimp-3.3.1/out/revision.h
+/assimp-3.3.1/out/INSTALL.vcxproj.filters
+/assimp-3.3.1/out/INSTALL.vcxproj
+/assimp-3.3.1/out/cmake_uninstall.cmake
+/assimp-3.3.1/out/cmake_install.cmake
+/assimp-3.3.1/out/CMakeCache.txt
+/assimp-3.3.1/out/Assimp.sln
+/assimp-3.3.1/out/assimp.pc
+/assimp-3.3.1/out/assimp-config.cmake
+/assimp-3.3.1/out/assimp-config-version.cmake
+/assimp-3.3.1/out/ALL_BUILD.vcxproj.filters
+/assimp-3.3.1/out/ALL_BUILD.vcxproj
+/assimp-3.3.1/out/code/INSTALL.vcxproj.filters
+/assimp-3.3.1/out/code/INSTALL.vcxproj
+/assimp-3.3.1/out/code/cmake_install.cmake
+/assimp-3.3.1/out/code/assimp.vcxproj.filters
+/assimp-3.3.1/out/code/assimp.vcxproj
