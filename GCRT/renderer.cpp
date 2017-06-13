@@ -17,6 +17,7 @@ void Renderer::Init()
     nextPickClr[1] = 0.0f;
     nextPickClr[2] = 0.1f;
     nextPickIdx = 2;
+    t = 0.0;
 
     mousePos[0] = 0.0;
     mousePos[1] = 0.0;
@@ -249,6 +250,27 @@ void Renderer::InitModels()
         nextPickerColor(),
         false
     );
+
+    /*Model &knight = scn.models["Knight"];
+
+    KeyFrame kf1(
+        0.0, 
+        mat4(1.0)
+    );
+
+    KeyFrame kf2(
+        10.0,
+        translate(vec3(0.0, 0.0, 10.0))
+    );
+
+    KeyFrame kf3(
+        20.0,
+        mat4(1.0)
+    );
+
+    knight.anim.AddKF(kf1);
+    knight.anim.AddKF(kf2);
+    knight.anim.AddKF(kf3);*/
 }
 
 /**
@@ -275,6 +297,12 @@ void Renderer::Render(HDC hDC)
 
     UpdateImGui();
     SwapBuffers(hDC);
+
+    t += 0.05f;
+    if (t > 30.0)
+    {
+        t = 0.0;
+    }
 }
 
 /**

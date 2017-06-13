@@ -4,12 +4,19 @@
 #include "material.h"
 #include "camera.h"
 #include "light.h"
+#include "animation.h"
 
 struct Model
 {
     string meshName;
     string matName;
     vec3 pickerColor;
+
+    // HACK!!!
+
+    float t;
+
+    Animation anim;
 
     vec3 pos;
     vec3 dims;

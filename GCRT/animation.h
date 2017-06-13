@@ -5,22 +5,21 @@
 #include "GCRT.h"
 
 using namespace std;
-using namespace c3ga;
 using namespace glm;
 
 struct KeyFrame
 {
     float t;
-    TRversor pose;
+    c3ga::TRversor pose;
     KeyFrame(float tIn, mat4 poseIn);
 };
 
 struct Animation
 {
     vector<KeyFrame> kfs;
-    vector<dualLine> poseLogs;
+    vector<c3ga::dualLine> poseLogs;
 
     void AddKF(KeyFrame &kf);
     mat4 GetAnimationMatrix(float t);
-    mat4 GetMatrixFromVersor(TRversor &vers, TRversor &versInv);
+    mat4 GetMatrixFromVersor(c3ga::TRversor &vers, c3ga::TRversor &versInv);
 };

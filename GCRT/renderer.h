@@ -41,6 +41,8 @@ struct Renderer
     bool mouseDown[3];
     double mousePos[2];
 
+    float t;
+
     static const uint32_t RENDER_TO_SCREEN = 0;
     
     vector<uint32_t> ImGuiKeys;

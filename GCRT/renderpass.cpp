@@ -269,7 +269,7 @@ void RenderPass::Init(
 
 void RenderPass::Render(Scene &scn)
 {
-    map<string, Model> models = scn.models;
+    map<string, Model> &models = scn.models;
     Camera cam = scn.cam;
     vector<DirectionalLight> dirLights = scn.dirLights;
     vector<PointLight> ptLights = scn.ptLights;
