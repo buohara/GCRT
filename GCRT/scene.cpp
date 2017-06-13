@@ -508,7 +508,7 @@ void Scene::Load(string file)
 
         if (meshes[meshName]->blenderModel == true)
         {
-            newModel.Rotate(pi<float>(), vec3(0.0, 1.0, 0.0));
+            newModel.Rotate(vec3(0.0, pi<float>(), 0.0));
         }
 
         AddModel(name, newModel);
@@ -717,7 +717,7 @@ void Scene::LoadBlenderModel(
     model.InitModelMatrices();
     model.Scale(vec3(0.25, 0.25, 0.25));
     model.Translate(vec3(-2.0, -2.0, 5.0));
-    model.Rotate(pi<float>(), vec3(0.0, 1.0, 0.0));
+    model.Rotate(vec3(0.0, pi<float>(), 0.0));
 
     AddModel(name, model);
 }

@@ -25,7 +25,7 @@ void Renderer::UpdateImGui()
 
     ImGuiGCRTNewFrame();
     RenderSceneWindow();
-    //RenderModelWindow();
+    RenderSelectionWindow();
     RenderRendererWindow();
     ImGui::ShowTestWindow();
     ImGui::Render();
@@ -324,38 +324,166 @@ void Renderer::RenderSceneWindow()
 }
 
 /**
-* RenderModelWindow
+* RenderSelectionWindow
 */
 
-void Renderer::RenderModelWindow()
+void Renderer::RenderSelectionWindow()
 {
+    if (selected == "")
+    {
+        return;
+    }
+
     ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiSetCond_FirstUseEver);
     ImGui::Begin("Model Properties");
+
+    Model &model = scn.models[selected];
+    RMaterial &mat = scn.materials[model.matName];
+
+    vec3 kd = mat.kd;
+    float spec = mat.spec;
+    vec3 pos = model.pos;
+    vec3 scale = model.dims;
+    vec3 rotate = model.angles;
 
     // Material.
 
     ImGui::Text("Material");
 
-    if (ImGui::InputFloat3("DiffuseColor", (float*)&selected.kd, -1) && selected.name != string(""))
+    // Diffuse color.
+
+    ImGui::Spacing();
+    ImGui::Text("Diffuse");
+    ImGui::Spacing();
+
+    if (ImGui::InputFloat("Diffuse r", &kd.x, 0.01f, 1.0f))
     {
+        mat.kd.x = kd.x;
     }
 
-    if (ImGui::InputFloat("Specular", (float*)&selected.specular))
+    if (ImGui::InputFloat("Diffuse g", &kd.y, 0.01f, 1.0f))
     {
+        mat.kd.y = kd.y;
     }
 
-    // Transofrmation.
-
-    ImGui::Text("Transformation Properties");
-
-    if (ImGui::InputFloat3("Pos", (float*)&selected.pos))
+    if (ImGui::InputFloat("Diffuse b", &kd.z, 0.01f, 1.0f))
     {
-        scn.models[selected.name].Translate(selected.pos);
+        mat.kd.z = kd.z;
     }
 
-    if (ImGui::InputFloat3("Scale", (float*)&selected.scale))
+    ImGui::Spacing();
+
+    if (ImGui::SliderFloat3("Diffuse", &kd[0], 0.0, 5.0))
     {
-        scn.models[selected.name].Scale(selected.scale);
+        mat.kd = kd;
+    }
+
+    // Shininess
+
+    ImGui::Spacing();
+    ImGui::Text("Specular");
+    ImGui::Spacing();
+
+    if (ImGui::InputFloat("Specular", &spec, 0.01f, 1.0f))
+    {
+        mat.spec = spec;
+    }
+
+    ImGui::Spacing();
+
+    if (ImGui::SliderFloat("Specular ", &spec, 0.0f, 32.0f))
+    {
+        mat.spec = spec;
+    }
+
+    // Transofrmations.
+
+    ImGui::Spacing();
+    ImGui::Text("Transformation");
+    ImGui::Spacing();
+
+    // Translate
+
+    ImGui::Spacing();
+    ImGui::Text("Position");
+    ImGui::Spacing();
+
+    if (ImGui::InputFloat("Pos x", &pos.x, 0.01f, 1.0f))
+    {
+        model.Translate(pos);
+    }
+
+    if (ImGui::InputFloat("Pos y", &pos.y, 0.01f, 1.0f))
+    {
+        model.Translate(pos);
+    }
+
+    if (ImGui::InputFloat("Pos z", &pos.z, 0.01f, 1.0f))
+    {
+        model.Translate(pos);
+    }
+
+    ImGui::Spacing();
+
+    if (ImGui::SliderFloat3("Pos", &pos[0], -20.0, 20.0))
+    {
+        model.Translate(pos);
+    }
+
+    // Scale
+
+    ImGui::Spacing();
+    ImGui::Text("Scale");
+    ImGui::Spacing();
+
+    if (ImGui::InputFloat("Scale x", &scale.x, 0.01f, 1.0f))
+    {
+        model.Scale(scale);
+    }
+
+    if (ImGui::InputFloat("Scale y", &scale.y, 0.01f, 1.0f))
+    {
+        model.Scale(scale);
+    }
+
+    if (ImGui::InputFloat("Scale z", &scale.z, 0.01f, 1.0f))
+    {
+        model.Scale(scale);
+    }
+
+    ImGui::Spacing();
+
+    if (ImGui::SliderFloat3("Scale", &scale[0], -20.0, 20.0))
+    {
+        model.Scale(scale);
+    }
+
+    // Rotate
+
+    ImGui::Spacing();
+    ImGui::Text("Rotation");
+    ImGui::Spacing();
+
+    if (ImGui::InputFloat("Rot x", &rotate.x, 0.01f, 1.0f))
+    {
+        model.Rotate(rotate);
+    }
+
+    if (ImGui::InputFloat("Rot y", &rotate.y, 0.01f, 1.0f))
+    {
+        model.Rotate(rotate);
+    }
+
+    if (ImGui::InputFloat("Rot z", &rotate.z, 0.01f, 1.0f))
+    {
+        model.Rotate(rotate);
+    }
+
+    ImGui::Spacing();
+
+    if (ImGui::SliderFloat3("Rotate", &rotate[0], -pi<float>(), pi<float>()))
+    {
+        model.Rotate(rotate);
     }
 
     ImGui::End();

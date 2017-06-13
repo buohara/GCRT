@@ -55,9 +55,14 @@ void Model::Scale(vec3 dimsIn)
  * Rotate -
  */
 
-void Model::Rotate(float theta, vec3 dir)
+void Model::Rotate(vec3 thetas)
 {
-    rot = rotate(theta, dir);
+    angles = thetas;
+    mat4 rotx = rotate(thetas[0], vec3(1.0, 0.0, 0.0));
+    mat4 roty = rotate(thetas[1], vec3(0.0, 1.0, 0.0));
+    mat4 rotz = rotate(thetas[2], vec3(0.0, 0.0, 1.0));
+
+    rot = rotz * roty * rotx;
     model = trans * scl * rot;
     modelInv = inverseTranspose(model);
 }

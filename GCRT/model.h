@@ -13,6 +13,7 @@ struct Model
 
     vec3 pos;
     vec3 dims;
+    vec3 angles;
 
     mat4 scl;
     mat4 trans;
@@ -28,5 +29,5 @@ struct Model
     void InitModelMatrices();
     void Translate(vec3 tx);
     void Scale(vec3 dimsIn);
-    void Rotate(float theta, vec3 dir);
+    void Rotate(vec3 thetas);
 };

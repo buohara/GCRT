@@ -6,15 +6,6 @@
 #include "imgui_impl_gcrt.h"
 #include "raytrace.h"
 
-struct Selection
-{
-    string name;
-    vec3 kd;
-    float specular;
-    vec3 scale;
-    vec3 pos;
-};
-
 struct RenderSettings
 {
     bool wireFrame;
@@ -44,7 +35,7 @@ struct Renderer
     RayTraceIn rtIn;
     DWORD rtThreadId;
 
-    Selection selected;
+    string selected;
 
     bool mouseDown[3];
     double mousePos[2];
@@ -63,7 +54,7 @@ struct Renderer
     void DoPick(LPARAM mouseCoord);
     void UpdateImGui();
     void RenderSceneWindow();
-    void RenderModelWindow();
+    void RenderSelectionWindow();
     void RenderRendererWindow();
     void UpdateViewPorts(uint32_t w, uint32_t h);
 

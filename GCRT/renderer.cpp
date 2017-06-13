@@ -13,7 +13,7 @@ void Renderer::Init()
 
     settings.useDOF = false;
     settings.useBloom = true;
-    settings.msaaSamples = 4;
+    settings.msaaSamples = 1;
 
     winW = 1920;
     winH = 1080;
@@ -72,7 +72,7 @@ void Renderer::Init()
         winH
     );
 
-    scn.Load("../scenes/scene.scn");
+    scn.Load("../scenes/knightscene.scn");
 
     for (uint32_t i = 0; i < scn.models.size(); i++)
     {
@@ -411,15 +411,13 @@ void Renderer::DoPick(LPARAM mouseCoord)
             }
             else
             {
-                if ((*it).first != selected.name)
+                if ((*it).first != selected)
                 {
-                    scn.models[selected.name].selected = false;
+                    scn.models[selected].selected = false;
                 }
             }
 
-            selected.name = (*it).first;
-            selected.pos = (*it).second.pos;
-            selected.scale = (*it).second.dims;
+            selected = (*it).first;
         }
     }
 }
