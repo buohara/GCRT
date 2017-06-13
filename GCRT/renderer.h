@@ -8,10 +8,14 @@
 
 struct RenderSettings
 {
+    uint32_t winW;
+    uint32_t winH;
     bool wireFrame;
     bool useDOF;
     bool useBloom;
     uint32_t msaaSamples;
+    bool loadSceneFromFile;
+    string sceneName;
 };
 
 struct Renderer
@@ -28,9 +32,6 @@ struct Renderer
     GLuint dbFboID;
     GLuint renderFbo;
     GLuint renderTex;
-
-    uint32_t winW;
-    uint32_t winH;
 
     RayTraceIn rtIn;
     DWORD rtThreadId;
@@ -57,6 +58,7 @@ struct Renderer
     void RenderSelectionWindow();
     void RenderRendererWindow();
     void UpdateViewPorts(uint32_t w, uint32_t h);
+    void LoadSettings(string file);
 
     void KickoffRayTrace();
 

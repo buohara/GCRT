@@ -11,12 +11,7 @@ void Renderer::Init()
     glEnable(GL_MULTISAMPLE);
     glCullFace(GL_BACK);
 
-    settings.useDOF = false;
-    settings.useBloom = true;
-    settings.msaaSamples = 1;
-
-    winW = 1920;
-    winH = 1080;
+    LoadSettings("settings.txt");
 
     nextPickClr[0] = 0.0f;
     nextPickClr[1] = 0.0f;
@@ -45,14 +40,14 @@ void Renderer::Init()
     CreateNoiseTexture();
     CreateRenderPassFbo();
 
-    pickerPass.Init(winW, winH);
+    pickerPass.Init(settings.winW, settings.winH);
     depthPass.Init();
 
     renderPass.Init(
         depthPass.getDepthTex(),
         renderFbo,
-        winW,
-        winH,
+        settings.winW,
+        settings.winH,
         false,
         settings.msaaSamples
     );
@@ -61,22 +56,31 @@ void Renderer::Init()
         renderTex,
         scn.diffTextures["NoiseTex"].texID,
         renderFbo,
-        winW,
-        winH
+        settings.winW,
+        settings.winH
     );
 
     bloomPass.Init(
         renderTex,
         RENDER_TO_SCREEN,
-        winW,
-        winH
+        settings.winW,
+        settings.winH
     );
 
-    scn.Load("../scenes/knightscene.scn");
-
-    for (uint32_t i = 0; i < scn.models.size(); i++)
+    if (settings.loadSceneFromFile)
     {
-        nextPickerColor();
+        scn.Load(settings.sceneName);
+        for (uint32_t i = 0; i < scn.models.size(); i++)
+        {
+            nextPickerColor();
+        }
+    }
+    else
+    {
+        LoadTextures();
+        InitMaterials();
+        InitModels();
+        InitLights();
     }
 }
 
@@ -109,8 +113,8 @@ void Renderer::UpdateViewPorts(uint32_t w, uint32_t h)
 {
     scn.cam.aspect = (float)w / (float)h;
 
-    winW = w;
-    winH = h;
+    settings.winW = w;
+    settings.winH = h;
     renderPass.fboWidth = w;
     renderPass.fboHeight = h;
     ResizeRenderFbo();
@@ -143,7 +147,7 @@ void Renderer::CreateRenderPassFbo()
 
     glGenTextures(1, &renderTex);
     glBindTexture(GL_TEXTURE_2D, renderTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, winW, winH, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, settings.winW, settings.winH, 0, GL_RGBA, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -154,7 +158,7 @@ void Renderer::CreateRenderPassFbo()
     GLuint depthRenderBuffer;
     glGenRenderbuffers(1, &depthRenderBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, winW, winH);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, settings.winW, settings.winH);
 
     // Attach 
 
@@ -175,23 +179,11 @@ void Renderer::LoadTextures()
         string("../asset/dirtdiffuse.jpg"),
         ImgLoader::LoadTexture(string("../asset/dirtdiffuse.jpg"))
     );
-    
+
     scn.AddNormTexture(
-        "DirtNormal", 
+        "DirtNormal",
         string("../asset/dirtnormal.jpg"),
         ImgLoader::LoadTexture(string("../asset/dirtnormal.jpg"))
-    );
-    
-    scn.AddDiffTexture(
-        "GrassDiffuse",
-        string("../asset/grassdiffuse.jpg"),
-        ImgLoader::LoadTexture(string("../asset/grassdiffuse.jpg"))
-    );
-    
-    scn.AddNormTexture(
-        "GrassNormal",
-        string("../asset/grassNormal.jpg"),
-        ImgLoader::LoadTexture(string("../asset/grassNormal.jpg"))
     );
 }
 
@@ -240,13 +232,6 @@ void Renderer::InitModels()
     pln.blenderModel = false;
     pln.blenderPath = "NA";
     scn.AddMesh("Plane", make_shared<Plane>(pln));
-
-    Sphere sph;
-    sph.name = "Sphere";
-    sph.Create(50, 50);
-    sph.blenderModel = false;
-    sph.blenderPath = "NA";
-    scn.AddMesh("Sphere", make_shared<Sphere>(sph));
 
     Model plane;
     plane.meshName = string("Plane");
@@ -385,7 +370,7 @@ void Renderer::HandleInputs(MSG &msg)
 void Renderer::DoPick(LPARAM mouseCoord)
 {
     uint32_t x = GET_X_LPARAM(mouseCoord);
-    uint32_t y = winH - (GET_Y_LPARAM(mouseCoord) + 40);
+    uint32_t y = settings.winH - (GET_Y_LPARAM(mouseCoord) + 40);
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, pickerPass.pickerFboID);
 
@@ -475,4 +460,42 @@ void Renderer::KickoffRayTrace()
         0,
         &rtThreadId
     );
+}
+
+/**
+ * LoadSettings -
+ */
+
+void Renderer::LoadSettings(string file)
+{
+    ifstream fin;
+    fin.open(file);
+
+    string line;
+    istringstream iss;
+
+    uint32_t winW;
+    uint32_t winH;
+    bool wireFrame;
+    bool useDOF;
+    bool useBloom;
+    uint32_t msaaSamples;
+    bool loadSceneFromFile;
+    string scene;
+
+    getline(fin, line);
+    getline(fin, line);
+    iss.str(line);
+    iss >> winW >> winH >> wireFrame >> useDOF >> useBloom >> msaaSamples >> loadSceneFromFile >> scene;
+
+    settings.winW = winW;
+    settings.winH = winH;
+    settings.wireFrame = wireFrame;
+    settings.useDOF = useDOF;
+    settings.useBloom = useBloom;
+    settings.msaaSamples = msaaSamples;
+    settings.loadSceneFromFile = loadSceneFromFile;
+    settings.sceneName = scene;
+
+    fin.close();
 }

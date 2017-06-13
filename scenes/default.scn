@@ -1,0 +1,60 @@
+DIFFUSE_TEXTURES 0
+
+NORMAL_TEXTURES 0
+
+MATERIALS 1
+
+Default
+0
+0
+1
+1
+NA
+NA
+0.8 0.8 0.8
+16
+
+MESHES 2
+
+Plane
+0
+NA
+
+Knight
+1
+../asset/models/dark_templar_knight/dark_templar_knight.blend
+
+MODELS 2
+
+Knight
+Knight
+Default
+-2 -2 8
+0.25 0.25 0.25
+0.0 0.0 0.1 
+
+Plane0
+Plane
+Default
+0 0 0
+10 10 1
+0.0 0.1 0.1
+
+CAMERA 
+
+-14.7266 -6.06783 9.17662
+-13.8217 -5.66199 9.04817
+1.77778
+64.3998
+1
+100
+
+DIRECTIONAL_LIGHTS 1
+
+0 25 25
+0 0 0
+
+POINT_LIGHTS 1
+
+0 15 15
+

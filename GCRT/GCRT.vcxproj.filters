@@ -19,6 +19,9 @@
     <Filter Include="IMGUI">
       <UniqueIdentifier>{dea7016b-15cc-40f4-a8a8-ebebbdd0d3e2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GA">
+      <UniqueIdentifier>{2acfc4c7-6bd2-4b9e-9e5f-dd57ed5d5177}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GCRTMain.cpp">
@@ -83,6 +86,21 @@
     </ClCompile>
     <ClCompile Include="raytrace.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libgasandbox\c3ga.cpp">
+      <Filter>GA</Filter>
+    </ClCompile>
+    <ClCompile Include="animation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libgasandbox\c3ga_util.cpp">
+      <Filter>GA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libgasandbox\e3ga.cpp">
+      <Filter>GA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libgasandbox\e3ga_util.cpp">
+      <Filter>GA</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +175,21 @@
     </ClInclude>
     <ClInclude Include="raytrace.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libgasandbox\c3ga.h">
+      <Filter>GA</Filter>
+    </ClInclude>
+    <ClInclude Include="animation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libgasandbox\c3ga_util.h">
+      <Filter>GA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libgasandbox\e3ga.h">
+      <Filter>GA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libgasandbox\e3ga_util.h">
+      <Filter>GA</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
