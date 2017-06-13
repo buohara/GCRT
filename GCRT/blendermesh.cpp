@@ -38,7 +38,7 @@ void BlenderMesh::Create(string file)
             norm[j].z = pMesh->mNormals[j].z;
 
             uv[j].x = pMesh->mTextureCoords[0][j].x;
-            uv[j].y = pMesh->mTextureCoords[0][j].y;
+            uv[j].y = 1.0 - pMesh->mTextureCoords[0][j].y;
         }
 
         for (uint32_t j = 0; j < pMesh->mNumFaces; j++)

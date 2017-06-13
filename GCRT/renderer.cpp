@@ -13,7 +13,7 @@ void Renderer::Init()
 
     settings.useDOF = false;
     settings.useBloom = true;
-    settings.msaaSamples = 1;
+    settings.msaaSamples = 4;
 
     winW = 1920;
     winH = 1080;
@@ -29,7 +29,7 @@ void Renderer::Init()
     mouseDown[1] = false;
     mouseDown[2] = false;
 
-    glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClearDepth(1.0f);
 
     scn.cam.Init(
@@ -72,7 +72,12 @@ void Renderer::Init()
         winH
     );
 
-    scn.Load("C:/Users/beno.NVIDIA.COM/Desktop/scene.scn");
+    scn.Load("../scenes/scene.scn");
+
+    for (uint32_t i = 0; i < scn.models.size(); i++)
+    {
+        nextPickerColor();
+    }
 }
 
 /**

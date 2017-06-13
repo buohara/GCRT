@@ -1,31 +1,187 @@
-DIFFUSE TEXTURES
-3
+DIFFUSE_TEXTURES 5
+
+CrackedClay
+../asset/crackedclay.jpg
+
 DirtDiffuse
 ../asset/dirtdiffuse.jpg
+
 GrassDiffuse
 ../asset/grassdiffuse.jpg
-NoiseTex
 
-NORMAL TEXTURES
-2
+Grate
+../asset/grate.jpg
+
+Knight
+../asset/models/dark_templar_knight/dark_knight_d.png
+
+NORMAL_TEXTURES 5
+
+CrackedClayNormal
+../asset/crackedclaynormal.jpg
+
 DirtNormal
 ../asset/dirtnormal.jpg
+
 GrassNormal
 ../asset/grassNormal.jpg
-MATERIALS
+
+GrateNormal
+../asset/gratenormal.jpg
+
+KnightNormal
+../asset/models/dark_templar_knight/dark_knight_n.png
+
+MATERIALS 6
+
+CrackedClay
 1
+1
+0
+1
+CrackedClay
+CrackedClayNormal
+0 0 0
+8
+
 Default
+0
+0
+1
+1
+NA
+NA
+0.8 0.8 0.8
+16
 
+Grate
+1
+1
+0
+1
+Grate
+GrateNormal
+0 0 0
+8
 
-0.8
-MODELS
+GreenBump
+1
+0
+0
+1
+NA
+GrassNormal
+0.2 5 0.5
+16
+
+Knight
+1
+1
+0
+1
+Knight
+KnightNormal
+0 0 0
 2
+
+RedBump
+1
+0
+0
+1
+NA
+DirtNormal
+5 0.2 0.2
+2
+
+MESHES 5
+
+Box
+0
+NA
+
+Cylinder
+0
+NA
+
+Knight
+1
+../asset/models/dark_templar_knight/dark_templar_knight.blend
+
+Plane
+0
+NA
+
+Sphere
+0
+NA
+
+MODELS 7
+
+CrackedClayCan
+Cylinder
+CrackedClay
+-5 5 1
+1 1 1
+0 0 0 
+
+DefaultSphere
+Sphere
+Default
+0 0 5
+1 1 1
+0.2 0.2 0.3 
+
+GrateBox
+Box
+Grate
+5 5 1
+1 1 1
+0 0 0.1 
+
+GreenSphere
+Sphere
+GreenBump
+-2 -2 2
+1 1 1
+0 0.1 0.1 
+
+Knight
 Knight
 Default
+-2 -2 8
+0.25 0.25 0.25
+0.1 0.1 0.1 
+
+KnightTextured
+Knight
+Knight
+7 7 10
+0.5 0.5 0.5
+0.1 0.1 0.2 
+
 Plane0
-Default
-CAMERA
-DIRECTIONAL LIGHTS
+Plane
+RedBump
+0 0 0
+10 10 1
+0.1 0.2 0.2 
+
+CAMERA 
+
+-14.7266 -6.06783 9.17662
+-13.8217 -5.66199 9.04817
+1.77778
+94.3998
 1
-POINT LIGHTS
-1
+100
+
+DIRECTIONAL_LIGHTS 1
+
+0 25 25
+0 0 0
+
+POINT_LIGHTS 1
+
+0 15 15
+

@@ -51,8 +51,7 @@ void Scene::AddNormTexture(string name, string path, GLuint id)
 void Scene::Save(string file)
 {
     ofstream fout;
-    //fout.open(file.c_str(), 'w');
-    fout.open("C:/Users/beno.NVIDIA.COM/Desktop/scene.scn", 'w');
+    fout.open(file.c_str(), 'w');
 
     // Textures
 
@@ -434,7 +433,7 @@ void Scene::Load(string file)
         {
             Cylinder cyl;
             cyl.Create(15);
-            cyl.name = "Box";
+            cyl.name = "Cylinder";
             cyl.blenderModel = false;
             cyl.blenderPath = "NA";
             AddMesh("Cylinder", make_shared<Cylinder>(cyl));
@@ -506,6 +505,11 @@ void Scene::Load(string file)
         newModel.Translate(pos);
         newModel.Scale(dims);
         newModel.selected = false;
+
+        if (meshes[meshName]->blenderModel == true)
+        {
+            newModel.Rotate(pi<float>(), vec3(0.0, 1.0, 0.0));
+        }
 
         AddModel(name, newModel);
     }

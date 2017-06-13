@@ -243,6 +243,7 @@ void Renderer::RenderSceneWindow()
         static bool loadFailed = false;
         static char newTexName[256];
         static char newTexPath[256];
+        static bool normalTexture;
 
         for (texIt = scn.diffTextures.begin(); texIt != scn.diffTextures.end(); texIt++)
         {
@@ -269,6 +270,7 @@ void Renderer::RenderSceneWindow()
         {
             ImGui::InputText("Name", newTexName, 256);
             ImGui::InputText("Path", newTexPath, 256);
+            ImGui::Checkbox("Normal Texture", &normalTexture);
             loadFailed = false;
 
             if (ImGui::Button("Add", ImVec2(120, 0)))
@@ -276,7 +278,14 @@ void Renderer::RenderSceneWindow()
                 GLuint newID = ImgLoader::LoadTexture(string(newTexPath));
                 if (newID != 0)
                 {
-                    scn.AddDiffTexture(newTexName, string(newTexPath), newID);
+                    if (normalTexture)
+                    {
+                        scn.AddNormTexture(newTexName, string(newTexPath), newID);
+                    }
+                    else
+                    {
+                        scn.AddDiffTexture(newTexName, string(newTexPath), newID);
+                    }
                 }
                 else
                 {
