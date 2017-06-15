@@ -1,7 +1,7 @@
 #include "renderpass.h"
 
 /**
- * Init - Initialize depth FBO and associated textures.
+ * [DepthPass::Init description]
  */
 
 void DepthPass::Init()
@@ -37,8 +37,8 @@ void DepthPass::Init()
 }
 
 /**
- * Render - Render the scene from each directional light's perspective into the depth
- * map.
+ * [DepthPass::Render description]
+ * @param scn [description]
  */
 
 void DepthPass::Render(Scene &scn)
@@ -79,7 +79,7 @@ void DepthPass::Render(Scene &scn)
 }
 
 /**
- * GenFrameBuffers
+ * [PickerPass::GenFrameBuffers description]
  */
 
 void PickerPass::GenFrameBuffers()
@@ -99,13 +99,28 @@ void PickerPass::GenFrameBuffers()
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, fboWidth, fboHeight);
 
     glBindFramebuffer(GL_FRAMEBUFFER, pickerFboID);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, pickerRenderBuffer);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer);
+    
+    glFramebufferRenderbuffer(
+        GL_FRAMEBUFFER,
+        GL_COLOR_ATTACHMENT0,
+        GL_RENDERBUFFER,
+        pickerRenderBuffer
+    );
+    
+    glFramebufferRenderbuffer(
+        GL_FRAMEBUFFER,
+        GL_DEPTH_ATTACHMENT,
+        GL_RENDERBUFFER,
+        depthRenderBuffer
+    );
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 /**
- * Resize
+ * [PickerPass::Resize description]
+ * @param w [description]
+ * @param h [description]
  */
 
 void PickerPass::Resize(uint32_t w, uint32_t h)
@@ -117,7 +132,9 @@ void PickerPass::Resize(uint32_t w, uint32_t h)
 }
 
 /**
- * Init - Initialize the picker FBO and shader.
+ * [PickerPass::Init description]
+ * @param screenW [description]
+ * @param screenH [description]
  */
 
 void PickerPass::Init(uint32_t screenW, uint32_t screenH)
@@ -137,7 +154,8 @@ void PickerPass::Init(uint32_t screenW, uint32_t screenH)
 }
 
 /**
- * Render - Render each objects picker color into a picker FBO for reading.
+ * [PickerPass::Render description]
+ * @param scn [description]
  */
 
 void PickerPass::Render(Scene &scn)
@@ -176,7 +194,13 @@ void PickerPass::Render(Scene &scn)
 }
 
 /**
- * Init - Initialize the render pass.
+ * [RenderPass::Init description]
+ * @param depthTexIn  [description]
+ * @param renderFbo   [description]
+ * @param screenW     [description]
+ * @param screenH     [description]
+ * @param useDOFIn    [description]
+ * @param msaaSamples [description]
  */
 
 void RenderPass::Init(
@@ -264,7 +288,8 @@ void RenderPass::Init(
 }
 
 /**
- * Render - Main render pass. Draw every object in the scene using its particular material.
+ * [RenderPass::Render description]
+ * @param scn [description]
  */
 
 void RenderPass::Render(Scene &scn)
@@ -272,7 +297,6 @@ void RenderPass::Render(Scene &scn)
     map<string, Model> &models = scn.models;
     Camera cam = scn.cam;
     vector<DirectionalLight> dirLights = scn.dirLights;
-    vector<PointLight> ptLights = scn.ptLights;
 
     // Set wireframe.
 
@@ -403,7 +427,7 @@ void RenderPass::Render(Scene &scn)
 }
 
 /**
- * LoadQuadVerts
+ * [DOFPass::LoadQuadVerts description]
  */
 
 void DOFPass::LoadQuadVerts()
@@ -455,13 +479,11 @@ void DOFPass::LoadQuadVerts()
 void DOFPass::GenerateSamplePoints()
 {
     float twoPi = 2.0f * glm::pi<float>();
-    float r;
-    float theta;
 
     for (uint32_t i = 0; i < 32; i++)
     {
-        r = (float)rand() / (float)RAND_MAX;
-        theta = twoPi * ((float)rand() / (float)RAND_MAX);
+        float r = (float)rand() / (float)RAND_MAX;
+        float theta = twoPi * ((float)rand() / (float)RAND_MAX);
 
         samplePts[2 * i] = r;
         samplePts[2 * i + 1] = theta;
@@ -469,7 +491,12 @@ void DOFPass::GenerateSamplePoints()
 }
 
 /**
- * Init
+ * [DOFPass::Init description]
+ * @param colorTexIn  [description]
+ * @param noiseTexIn  [description]
+ * @param renderFboIn [description]
+ * @param screenW     [description]
+ * @param screenH     [description]
  */
 
 void DOFPass::Init(
@@ -500,8 +527,8 @@ void DOFPass::Init(
 }
 
 /**
-* Init
-*/
+ * [DOFPass::Render description]
+ */
 
 void DOFPass::Render()
 {
@@ -528,7 +555,7 @@ void DOFPass::Render()
 }
 
 /**
- * LoadQuadVerts
+ * [BloomPass::LoadQuadVerts description]
  */
 
 void BloomPass::LoadQuadVerts()
@@ -574,7 +601,11 @@ void BloomPass::LoadQuadVerts()
 }
 
 /**
- * Init - Initialize depth FBO and associated textures.
+ * [BloomPass::Init description]
+ * @param colorTexIn [description]
+ * @param renderFbo  [description]
+ * @param screenW    [description]
+ * @param screenH    [description]
  */
 
 void BloomPass::Init(
@@ -626,7 +657,7 @@ void BloomPass::Init(
 }
 
 /**
- * GenFrameBuffers - 
+ * [BloomPass::GenFrameBuffers description]
  */
 
 void BloomPass::GenFrameBuffers()
@@ -643,7 +674,15 @@ void BloomPass::GenFrameBuffers()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glBindFramebuffer(GL_FRAMEBUFFER, brightFboID);
-    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brightTexID, 0);
+    
+    glFramebufferTexture2D(
+        GL_DRAW_FRAMEBUFFER,
+        GL_COLOR_ATTACHMENT0,
+        GL_TEXTURE_2D,
+        brightTexID,
+        0
+    );
+    
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // HBLUR
@@ -682,7 +721,9 @@ void BloomPass::GenFrameBuffers()
 }
 
 /**
- * Resize -
+ * [BloomPass::Resize description]
+ * @param w [description]
+ * @param h [description]
  */
 
 void BloomPass::Resize(uint32_t w, uint32_t h)
@@ -700,7 +741,7 @@ void BloomPass::Resize(uint32_t w, uint32_t h)
 }
 
 /**
- * Render
+ * [BloomPass::Render description]
  */
 
 void BloomPass::Render()

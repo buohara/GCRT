@@ -1,7 +1,8 @@
 #include "model.h"
 
 /**
- * SetModelMatrices -
+ * [Model::SetModelMatrices description]
+ * @param program [description]
  */
 
 void Model::SetModelMatrices(GLuint program)
@@ -14,7 +15,7 @@ void Model::SetModelMatrices(GLuint program)
 }
 
 /**
- * InitVertexObjects -
+ * [Model::InitModelMatrices description]
  */
 
 void Model::InitModelMatrices()
@@ -28,7 +29,8 @@ void Model::InitModelMatrices()
 }
 
 /**
- * Translate -
+ * [Model::Translate description]
+ * @param tx [description]
  */
 
 void Model::Translate(vec3 tx)
@@ -40,7 +42,8 @@ void Model::Translate(vec3 tx)
 }
 
 /**
- * Scale -
+ * [Model::Scale description]
+ * @param dimsIn [description]
  */
 
 void Model::Scale(vec3 dimsIn)
@@ -52,7 +55,8 @@ void Model::Scale(vec3 dimsIn)
 }
 
 /**
- * Rotate -
+ * [Model::Rotate description]
+ * @param thetas [description]
  */
 
 void Model::Rotate(vec3 thetas)

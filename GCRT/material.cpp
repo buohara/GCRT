@@ -1,22 +1,25 @@
 #include "material.h"
 
 /**
- * RMaterial -
+ * [RMaterial::RMaterial description]
  */
 
-RMaterial::RMaterial()
+void RMaterial::RMaterial()
 {
     useNormalMap = 0;
     useDiffuseMap = 0;
     useSSS = 0;
     useShadows = 0;
+    spec = 1.0;
 
     diffTexName = string("NA");
     normalTexName = string("NA");
 }
 
 /**
- * SetDiffuseTex -
+ * [RMaterial::SetDiffuseTex description]
+ * @param diffuseTex [description]
+ * @param name       [description]
  */
 
 void RMaterial::SetDiffuseTex(GLuint diffuseTex, string name)
@@ -27,7 +30,9 @@ void RMaterial::SetDiffuseTex(GLuint diffuseTex, string name)
 }
 
 /**
- * SetNormalTex -
+ * [RMaterial::SetNormalTex description]
+ * @param normalTex [description]
+ * @param name      [description]
  */
 
 void RMaterial::SetNormalTex(GLuint normalTex, string name)
@@ -38,7 +43,8 @@ void RMaterial::SetNormalTex(GLuint normalTex, string name)
 }
 
 /**
- * SetShaderParams -
+ * [RMaterial::ApplyMaterial description]
+ * @param program [description]
  */
 
 void RMaterial::ApplyMaterial(GLuint program)
@@ -85,7 +91,10 @@ void RMaterial::ApplyMaterial(GLuint program)
 }
 
 /**
- * SetLights -
+ * [RMaterial::SetLights description]
+ * @param dirLights [description]
+ * @param ptLights  [description]
+ * @param program   [description]
  */
 
 void RMaterial::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights, GLuint program)

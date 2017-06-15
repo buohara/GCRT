@@ -1,7 +1,7 @@
 #include "renderer.h"
 
 /**
- * Init - Initialize scene assets.
+ * [Renderer::Init description]
  */
 
 void Renderer::Init()
@@ -86,7 +86,8 @@ void Renderer::Init()
 }
 
 /**
- * Create in/out FBO/texture to hand between passes.
+ * [Renderer::nextPickerColor description]
+ * @return [description]
  */
 
 vec3 Renderer::nextPickerColor()
@@ -107,7 +108,9 @@ vec3 Renderer::nextPickerColor()
 }
 
 /**
- * Create in/out FBO/texture to hand between passes.
+ * [Renderer::UpdateViewPorts description]
+ * @param w [description]
+ * @param h [description]
  */
 
 void Renderer::UpdateViewPorts(uint32_t w, uint32_t h)
@@ -126,7 +129,7 @@ void Renderer::UpdateViewPorts(uint32_t w, uint32_t h)
 }
 
 /**
- * ResizeRenderFbo
+ * [Renderer::ResizeRenderFbo description]
  */
 
 void Renderer::ResizeRenderFbo()
@@ -137,7 +140,7 @@ void Renderer::ResizeRenderFbo()
 }
 
 /**
- * Create in/out FBO/texture to hand between passes.
+ * [Renderer::CreateRenderPassFbo description]
  */
 
 void Renderer::CreateRenderPassFbo()
@@ -148,7 +151,18 @@ void Renderer::CreateRenderPassFbo()
 
     glGenTextures(1, &renderTex);
     glBindTexture(GL_TEXTURE_2D, renderTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, settings.winW, settings.winH, 0, GL_RGBA, GL_FLOAT, 0);
+    
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0, GL_RGBA32F,
+        settings.winW,
+        settings.winH,
+        0, 
+        GL_RGBA,
+        GL_FLOAT,
+        0)
+    ;
+    
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -165,12 +179,19 @@ void Renderer::CreateRenderPassFbo()
 
     glBindFramebuffer(GL_FRAMEBUFFER, renderFbo);
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer);
+    
+    glFramebufferRenderbuffer(
+        GL_FRAMEBUFFER,
+        GL_DEPTH_ATTACHMENT,
+        GL_RENDERBUFFER,
+        depthRenderBuffer
+        );
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 /**
- * LoadTextures - Read texture images from file and create GL textures.
+ * [Renderer::LoadTextures description]
  */
 
 void Renderer::LoadTextures()
@@ -189,7 +210,7 @@ void Renderer::LoadTextures()
 }
 
 /**
- * InitLights - Initialize scene lights.
+ * [Renderer::InitLights description]
  */
 
 void Renderer::InitLights()
@@ -205,7 +226,7 @@ void Renderer::InitLights()
 }
 
 /**
- * InitMaterials - Build materials from shaders and textures.
+ * [Renderer::InitMaterials description]
  */
 
 void Renderer::InitMaterials()
@@ -220,7 +241,7 @@ void Renderer::InitMaterials()
 }
 
 /**
- * Create models from geometries and materials.
+ * [Renderer::InitModels description]
  */
 
 void Renderer::InitModels()
@@ -253,7 +274,8 @@ void Renderer::InitModels()
 }
 
 /**
- * Render - Loop through each model in the scene and draw it.
+ * [Renderer::Render description]
+ * @param hDC [description]
  */
 
 void Renderer::Render(HDC hDC)
@@ -285,9 +307,8 @@ void Renderer::Render(HDC hDC)
 }
 
 /**
- * HandleInputs - Process any keyboard and mouse inputs.
- *
- * @param msg Windows event message to handle.
+ * [Renderer::HandleInputs description]
+ * @param msg [description]
  */
 
 void Renderer::HandleInputs(MSG &msg)
@@ -371,7 +392,8 @@ void Renderer::HandleInputs(MSG &msg)
 }
 
 /**
- * DoHitTest
+ * [Renderer::DoPick description]
+ * @param mouseCoord [description]
  */
 
 void Renderer::DoPick(LPARAM mouseCoord)
@@ -415,7 +437,7 @@ void Renderer::DoPick(LPARAM mouseCoord)
 }
 
 /**
- * CreateNoiseTexture - Create a texture with random gray-scale pixel values.
+ * [Renderer::CreateNoiseTexture description]
  */
 
 void Renderer::CreateNoiseTexture()
@@ -445,8 +467,7 @@ void Renderer::CreateNoiseTexture()
 }
 
 /**
- * Copy current scene state to ray tracer, then kickoff another thread to
- * do the render.
+ * [Renderer::KickoffRayTrace description]
  */
 
 void Renderer::KickoffRayTrace()
@@ -470,7 +491,8 @@ void Renderer::KickoffRayTrace()
 }
 
 /**
- * LoadSettings -
+ * [Renderer::LoadSettings description]
+ * @param file [description]
  */
 
 void Renderer::LoadSettings(string file)

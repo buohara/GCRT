@@ -1,12 +1,9 @@
 #include "plane.h"
 
 /**
- * Create
- *
- * @param rows
- * @param cols
- * @param color
- * prodID
+ * [Plane::Create description]
+ * @param rows [description]
+ * @param cols [description]
  */
 
 void Plane::Create(
@@ -34,7 +31,10 @@ void Plane::Create(
 }
 
 /**
- * GenPositions
+ * [Plane::GenPositions description]
+ * @param pos  [description]
+ * @param rows [description]
+ * @param cols [description]
  */
 
 void Plane::GenPositions(vector<vec3> &pos, uint32_t rows, uint32_t cols)
@@ -80,7 +80,10 @@ void Plane::GenPositions(vector<vec3> &pos, uint32_t rows, uint32_t cols)
 }
 
 /**
- * GenNormals
+ * [Plane::GenNormals description]
+ * @param norms [description]
+ * @param rows  [description]
+ * @param cols  [description]
  */
 
 void Plane::GenNormals(vector<vec3> &norms, uint32_t rows, uint32_t cols)
@@ -106,7 +109,10 @@ void Plane::GenNormals(vector<vec3> &norms, uint32_t rows, uint32_t cols)
 }
 
 /**
- * GenUVs
+ * [Plane::GenUVs description]
+ * @param uvs  [description]
+ * @param rows [description]
+ * @param cols [description]
  */
 
 void Plane::GenUVs(vector<vec2> &uvs, uint32_t rows, uint32_t cols)
@@ -148,7 +154,10 @@ void Plane::GenUVs(vector<vec2> &uvs, uint32_t rows, uint32_t cols)
 }
 
 /**
- * GenTangents
+ * [Plane::GenTangents description]
+ * @param tans [description]
+ * @param rows [description]
+ * @param cols [description]
  */
 
 void Plane::GenTangents(vector<vec3> &tans, uint32_t rows, uint32_t cols)
@@ -172,7 +181,7 @@ void Plane::GenTangents(vector<vec3> &tans, uint32_t rows, uint32_t cols)
 }
 
 /**
- * Draw
+ * [Plane::Draw description]
  */
 
 void Plane::Draw()

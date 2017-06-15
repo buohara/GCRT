@@ -1,12 +1,12 @@
 #include "Mesh.h"
 
 /**
- * InitVertexObjects -
- *
- * @param verts
- * @param norms
- * @param norms
- * @param tans
+ * [Mesh::InitVertexObjects description]
+ * @param subMeshIdx [description]
+ * @param pos        [description]
+ * @param norms      [description]
+ * @param uvs        [description]
+ * @param tans       [description]
  */
 
 void Mesh::InitVertexObjects(
@@ -55,12 +55,12 @@ void Mesh::InitVertexObjects(
 }
 
 /**
-* InitVertexObjects -
-*
-* @param verts
-* @param norms
-* @param norms
-*/
+ * [Mesh::InitVertexObjects description]
+ * @param subMeshIdx [description]
+ * @param pos        [description]
+ * @param norms      [description]
+ * @param uvs        [description]
+ */
 
 void Mesh::InitVertexObjects(
     uint32_t subMeshIdx,
@@ -100,12 +100,12 @@ void Mesh::InitVertexObjects(
 }
 
 /**
- * InitVertexObjects -
- *
- * @param verts
- * @param norms
- * @param norms
- * @param idcs
+ * [Mesh::InitVertexObjects description]
+ * @param subMeshIdx [description]
+ * @param pos        [description]
+ * @param norms      [description]
+ * @param uvs        [description]
+ * @param idcs       [description]
  */
 
 void Mesh::InitVertexObjects(
@@ -153,13 +153,15 @@ void Mesh::InitVertexObjects(
 }
 
 /**
-* InitVertexObjects -
-*
-* @param verts
-* @param norms
-* @param norms
-* @param idcs
-*/
+ * [Mesh::InitVertexObjects description]
+ * @param subMeshIdx  [description]
+ * @param pos         [description]
+ * @param norms       [description]
+ * @param uvs         [description]
+ * @param idcs        [description]
+ * @param boneIDs     [description]
+ * @param boneWeights [description]
+ */
 
 void Mesh::InitVertexObjects(
     uint32_t subMeshIdx,

@@ -9,10 +9,11 @@ bool resized = false;
 uint32_t windowWidth = 1920;
 uint32_t windowHeight = 1080;
 
+
 /**
- * Create GLContext -
- *
- * @param
+ * [CreateGLContext description]
+ * @param  hWnd [description]
+ * @return      [description]
  */
 
 HDC CreateGLContext(HWND hWnd)
@@ -67,7 +68,12 @@ HDC CreateGLContext(HWND hWnd)
 }
 
 /**
- * WinMain - 
+ * [WinMain description]
+ * @param  hInstance     [description]
+ * @param  hPrevInstance [description]
+ * @param  lpCmdLine     [description]
+ * @param  nShowCmd      [description]
+ * @return               [description]
  */
 
 int CALLBACK WinMain(
@@ -144,7 +150,12 @@ int CALLBACK WinMain(
 }
 
 /**
- * WinProc -
+ * [WndProc description]
+ * @param  hWnd    [description]
+ * @param  message [description]
+ * @param  wParam  [description]
+ * @param  lParam  [description]
+ * @return         [description]
  */
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

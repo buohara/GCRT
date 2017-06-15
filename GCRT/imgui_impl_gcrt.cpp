@@ -21,8 +21,8 @@ static unsigned int g_VaoHandle = 0;
 static unsigned int g_ElementsHandle = 0;
 
 /**
- * ImGuiGCRTRenderDrawLists - Main rendering callback for IMGUI. Save current GCRT
- * GL state, set IMGUI render state, draw, then restore GCRT GL state.
+ * [ImGuiGCRTRenderDrawLists description]
+ * @param drawData [description]
  */
 
 void ImGuiGCRTRenderDrawLists(ImDrawData *drawData)
@@ -227,7 +227,12 @@ void ImGuiGCRTRenderDrawLists(ImDrawData *drawData)
 }
 
 /**
- * ImGuiGCRTSetMouse -
+ * [ImGuiGCRTSetMouse description]
+ * @param x     [description]
+ * @param y     [description]
+ * @param lDown [description]
+ * @param rDown [description]
+ * @param mDown [description]
  */
 
 void ImGuiGCRTSetMouse(double x, double y, bool lDown, bool rDown, bool mDown)
@@ -240,7 +245,7 @@ void ImGuiGCRTSetMouse(double x, double y, bool lDown, bool rDown, bool mDown)
 }
 
 /**
- * ImGuiGCRTNewFrame - 
+ * [ImGuiGCRTNewFrame description]
  */
 
 void ImGuiGCRTNewFrame()
@@ -265,7 +270,8 @@ void ImGuiGCRTNewFrame()
 }
 
 /**
- * ImGuiGCRTCreateFontsTexture -
+ * [ImGuiGCRTCreateFontsTexture description]
+ * @return [description]
  */
 
 bool ImGuiGCRTCreateFontsTexture()
@@ -292,7 +298,8 @@ bool ImGuiGCRTCreateFontsTexture()
 }
 
 /**
- * ImGuiGCRTCreateDeviceObjects -
+ * [ImGuiGCRTCreateDeviceObjects description]
+ * @return [description]
  */
 
 bool ImGuiGCRTCreateDeviceObjects()
@@ -403,7 +410,10 @@ bool ImGuiGCRTCreateDeviceObjects()
 }
 
 /**
- * ImGuiGCRTInit
+ * [ImGuiGCRTInit description]
+ * @param hwnd [description]
+ * @param w    [description]
+ * @param h    [description]
  */
 
 void ImGuiGCRTInit(HWND hwnd, uint32_t w, uint32_t h)
@@ -420,7 +430,9 @@ void ImGuiGCRTInit(HWND hwnd, uint32_t w, uint32_t h)
 }
 
 /**
- * ImGuiGCRTResize
+ * [ImGuiGCRTResize description]
+ * @param w [description]
+ * @param h [description]
  */
 
 void ImGuiGCRTResize(uint32_t w, uint32_t h)
@@ -430,7 +442,9 @@ void ImGuiGCRTResize(uint32_t w, uint32_t h)
 }
 
 /**
- * ImGuiGCRTSetKey
+ * [ImGuiGCRTSetKey description]
+ * @param key    [description]
+ * @param action [description]
  */
 
 void ImGuiGCRTSetKey(int key, int action)

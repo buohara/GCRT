@@ -1,13 +1,11 @@
 #include "renderer.h"
 
 /**
- * UpdateImGui -
+ * [Renderer::UpdateImGui description]
  */
 
 void Renderer::UpdateImGui()
 {
-    ImGuiIO& io = ImGui::GetIO();
-
     // Send inputs to IMGUI and start a new frame.
 
     ImGuiGCRTSetMouse(
@@ -40,12 +38,11 @@ void Renderer::UpdateImGui()
 }
 
 /**
- * RenderSceneWindow
+ * [Renderer::RenderSceneWindow description]
  */
 
 void Renderer::RenderSceneWindow()
 {
-    bool open = true;
     ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiSetCond_FirstUseEver);
     ImGui::Begin("Scene");
 
@@ -63,10 +60,6 @@ void Renderer::RenderSceneWindow()
     if (ImGui::CollapsingHeader("Models"))
     {
         ImGui::Indent();
-
-        static float newPos[3];
-        static float newScale[3];
-        static char newName[256];
 
         for (modelIt = scn.models.begin(); modelIt != scn.models.end(); modelIt++)
         {
@@ -92,6 +85,10 @@ void Renderer::RenderSceneWindow()
 
         if (ImGui::BeginPopupModal("New Model...", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
+            static float newPos[3];
+            static float newScale[3];
+            static char newName[256];
+
             ImGui::InputText("Name", newName, 256);
             ImGui::InputFloat3("Position", newPos, -1);
             ImGui::InputFloat3("Scale", newScale, -1);
@@ -241,7 +238,6 @@ void Renderer::RenderSceneWindow()
     {
         ImGui::Indent();
         static bool loadFailed = false;
-        static char newTexName[256];
         static char newTexPath[256];
         static bool normalTexture;
 
@@ -268,6 +264,8 @@ void Renderer::RenderSceneWindow()
 
         if (ImGui::BeginPopupModal("New...", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
+            static char newTexName[256];
+
             ImGui::InputText("Name", newTexName, 256);
             ImGui::InputText("Path", newTexPath, 256);
             ImGui::Checkbox("Normal Texture", &normalTexture);
@@ -324,8 +322,8 @@ void Renderer::RenderSceneWindow()
 }
 
 /**
-* RenderSelectionWindow
-*/
+ * [Renderer::RenderSelectionWindow description]
+ */
 
 void Renderer::RenderSelectionWindow()
 {
@@ -490,8 +488,8 @@ void Renderer::RenderSelectionWindow()
 }
 
 /**
-* RenderRendererWindow
-*/
+ * [Renderer::RenderRendererWindow description]
+ */
 
 void Renderer::RenderRendererWindow()
 {

@@ -1,7 +1,10 @@
 #include "shader.h"
 
 /**
- * Create - Create an OpenGL shader from vertex and fragment shader files.
+ * [Shader::Create description]
+ * @param nameIn     [description]
+ * @param vsFileName [description]
+ * @param fsFileName [description]
  */
 
 void Shader::Create(string &nameIn, string &vsFileName, string &fsFileName)

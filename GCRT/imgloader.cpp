@@ -1,7 +1,9 @@
 #include "imgloader.h"
 
 /**
- * LoadTexture
+ * [ImgLoader::LoadTexture description]
+ * @param  fileName [description]
+ * @return          [description]
  */
 
 GLuint ImgLoader::LoadTexture(string &fileName)
@@ -21,7 +23,6 @@ GLuint ImgLoader::LoadTexture(string &fileName)
     uint32_t h = ilGetInteger(IL_IMAGE_HEIGHT);
 
     BYTE* pData = ilGetData();
-    uint32_t imgBytes = 3 * w * h;
     GLuint texID = 0;
 
     glGenTextures(1, &texID);

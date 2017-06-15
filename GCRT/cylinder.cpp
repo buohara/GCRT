@@ -1,7 +1,8 @@
 #include "cylinder.h"
 
 /**
- * Create - Create a cylinder.
+ * [Cylinder::Create description]
+ * @param numSectors [description]
  */
 
 void Cylinder::Create(
@@ -25,7 +26,9 @@ void Cylinder::Create(
 }
 
 /**
- * GenPositions
+ * [Cylinder::GenPositions description]
+ * @param pos        [description]
+ * @param numSectors [description]
  */
 
 void Cylinder::GenPositions(vector<vec3> &pos, uint32_t numSectors)
@@ -77,7 +80,9 @@ void Cylinder::GenPositions(vector<vec3> &pos, uint32_t numSectors)
 }
 
 /**
- * GenNormals
+ * [Cylinder::GenNormals description]
+ * @param norms      [description]
+ * @param numSectors [description]
  */
 
 void Cylinder::GenNormals(vector<vec3> &norms, uint32_t numSectors)
@@ -85,7 +90,6 @@ void Cylinder::GenNormals(vector<vec3> &norms, uint32_t numSectors)
     // Verts for the sides.
 
     float dtheta = 2 * glm::pi<float>() / numSectors;
-    float hz = 0.5;
 
     for (uint32_t i = 0; i < numSectors; i++)
     {
@@ -106,9 +110,6 @@ void Cylinder::GenNormals(vector<vec3> &norms, uint32_t numSectors)
 
     for (uint32_t i = 0; i < numSectors + 1; i++)
     {
-        float x = cosf(i * dtheta);
-        float y = sinf(i * dtheta);
-
         norms.push_back(vec3(0, 0, 1.0));
     }
 
@@ -116,15 +117,14 @@ void Cylinder::GenNormals(vector<vec3> &norms, uint32_t numSectors)
 
     for (uint32_t i = 0; i < numSectors + 1; i++)
     {
-        float x = cosf(i * dtheta);
-        float y = -sinf(i * dtheta);
-
         norms.push_back(vec3(0, 0, -1.0));
     }
 }
 
 /**
- * GenUVs
+ * [Cylinder::GenUVs description]
+ * @param uvs        [description]
+ * @param numSectors [description]
  */
 
 void Cylinder::GenUVs(vector<vec2> &uvs, uint32_t numSectors)
@@ -164,7 +164,9 @@ void Cylinder::GenUVs(vector<vec2> &uvs, uint32_t numSectors)
 }
 
 /**
- * GenTans
+ * [Cylinder::GenTans description]
+ * @param tans       [description]
+ * @param numSectors [description]
  */
 
 void Cylinder::GenTans(vector<vec3> &tans, uint32_t numSectors)
@@ -172,7 +174,6 @@ void Cylinder::GenTans(vector<vec3> &tans, uint32_t numSectors)
     // Verts for the sides.
 
     float dtheta = 2 * glm::pi<float>() / numSectors;
-    float hz = 0.5;
 
     for (uint32_t i = 0; i < numSectors; i++)
     {
@@ -193,8 +194,6 @@ void Cylinder::GenTans(vector<vec3> &tans, uint32_t numSectors)
 
     for (uint32_t i = 0; i < numSectors + 1; i++)
     {
-        float x = -sinf(i * dtheta);
-        float y = cosf(i * dtheta);
 
         tans.push_back(vec3(0, 0, 1.0));
     }
@@ -203,16 +202,12 @@ void Cylinder::GenTans(vector<vec3> &tans, uint32_t numSectors)
 
     for (uint32_t i = 0; i < numSectors + 1; i++)
     {
-        float x = -sinf(i * dtheta);
-        float y = cosf(i * dtheta);
-
         tans.push_back(vec3(0, 0, -1.0));
     }
 }
 
 /**
- * Draw - Draw the cylinder. Set it's model matrices and color in the shader.
- * Cylinder is drawn in three parts: sides, top, and bottom.
+ * [Cylinder::Draw description]
  */
 
 void Cylinder::Draw()
@@ -225,7 +220,10 @@ void Cylinder::Draw()
 }
 
 /**
- * Intersect.
+ * [Cylinder::Intersect description]
+ * @param  org [description]
+ * @param  ray [description]
+ * @return     [description]
  */
 
 float Cylinder::Intersect(vec3 org, vec3 ray)

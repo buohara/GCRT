@@ -1,17 +1,20 @@
 #include "animation.h"
 
 /**
- * KeyFrame -
+ * [KeyFrame::KeyFrame description]
+ * @param tIn    [description]
+ * @param poseIn [description]
  */
 
-KeyFrame::KeyFrame(float tIn, mat4 poseIn)
+void KeyFrame::KeyFrame(float tIn, mat4 poseIn)
 {
     t = tIn;
     pose = c3ga::matrix4x4ToVersor((c3ga::mv::Float*)&poseIn[0], true);
 }
 
 /**
- * AddKF - - Code lifted from GA for Computer Scientists, Ch13 ex4.
+ * [Animation::AddKF description]
+ * @param kf [description]
  */
 
 void Animation::AddKF(KeyFrame &kf)
@@ -27,7 +30,9 @@ void Animation::AddKF(KeyFrame &kf)
 }
 
 /**
- * GetAnimationMatrix - Code lifted from GA for Computer Scientists, Ch13 ex4.
+ * [Animation::GetAnimationMatrix description]
+ * @param  t [description]
+ * @return   [description]
  */
 
 mat4 Animation::GetAnimationMatrix(float t)
@@ -53,7 +58,10 @@ mat4 Animation::GetAnimationMatrix(float t)
 }
 
 /**
- * GetAnimationMatrix - Code lifted from GA for Computer Scientists, Ch13 ex3.
+ * [Animation::GetMatrixFromVersor description]
+ * @param  vers    [description]
+ * @param  versInv [description]
+ * @return         [description]
  */
 
 mat4 Animation::GetMatrixFromVersor(c3ga::TRversor &vers, c3ga::TRversor &versInv)

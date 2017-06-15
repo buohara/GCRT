@@ -1,15 +1,18 @@
 #include "scene.h"
 
 /**
- * Create a scene.
+ * [Scene::Scene description]
  */
 
-Scene::Scene()
+void Scene::Scene()
 {
 }
 
 /**
- * AddDiffTexture - 
+ * [Scene::AddDiffTexture description]
+ * @param name [description]
+ * @param path [description]
+ * @param id   [description]
  */
 
 void Scene::AddDiffTexture(string name, string path, GLuint id)
@@ -27,7 +30,10 @@ void Scene::AddDiffTexture(string name, string path, GLuint id)
 }
 
 /**
- * AddNormTexture
+ * [Scene::AddNormTexture description]
+ * @param name [description]
+ * @param path [description]
+ * @param id   [description]
  */
 
 void Scene::AddNormTexture(string name, string path, GLuint id)
@@ -45,7 +51,8 @@ void Scene::AddNormTexture(string name, string path, GLuint id)
 }
 
 /**
- * Save scene to file.
+ * [Scene::Save description]
+ * @param file [description]
  */
 
 void Scene::Save(string file)
@@ -200,7 +207,8 @@ void Scene::Save(string file)
 }
 
 /**
- * Load scene from file.
+ * [Scene::Load description]
+ * @param file [description]
  */
 
 void Scene::Load(string file)
@@ -634,7 +642,9 @@ void Scene::Load(string file)
 }
 
 /**
- * Add Material
+ * [Scene::AddMaterial description]
+ * @param name [description]
+ * @param mat  [description]
  */
 
 void Scene::AddMaterial(string name, RMaterial mat)
@@ -651,7 +661,9 @@ void Scene::AddMaterial(string name, RMaterial mat)
 }
 
 /**
- * Add Mesh
+ * [Scene::AddMesh description]
+ * @param name  [description]
+ * @param pGeom [description]
  */
 
 void Scene::AddMesh(string name, shared_ptr<Mesh> pGeom)
@@ -669,7 +681,9 @@ void Scene::AddMesh(string name, shared_ptr<Mesh> pGeom)
 }
 
 /**
- * Add model
+ * [Scene::AddModel description]
+ * @param name  [description]
+ * @param model [description]
  */
 
 void Scene::AddModel(string name, Model model)
@@ -686,7 +700,13 @@ void Scene::AddModel(string name, Model model)
 }
 
 /**
- * LoadModelFromFile
+ * [Scene::LoadModelFromFile description]
+ * @param name           [description]
+ * @param blendFile      [description]
+ * @param diffuseTexFile [description]
+ * @param normalTexFile  [description]
+ * @param pickerColor    [description]
+ * @param meshOnly       [description]
  */
 
 void Scene::LoadModelFromFile(

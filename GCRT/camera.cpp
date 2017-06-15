@@ -18,15 +18,14 @@ const uint32_t KEY_8 = 0x38;
 const uint32_t KEY_9 = 0x39;
 
 /**
- * Init - Initialize camera parameters.
- *
- * @param posIn Camera position.
- * @param lookAtIn Point camera is looking at.
- * @param upIn Which direction is up for the camera.
- * @param aspectIn Camera aspect ratio.
- * @param fovIn Field of view angle (degrees).
- * @param nClipIn Near clipping plane.
- * @param fClipIn Far clipping plane.
+ * [Camera::Init description]
+ * @param posIn    [description]
+ * @param lookAtIn [description]
+ * @param upIn     [description]
+ * @param aspectIn [description]
+ * @param fovIn    [description]
+ * @param nclipIn  [description]
+ * @param fclipIn  [description]
  */
 
 void Camera::Init(
@@ -51,11 +50,9 @@ void Camera::Init(
     lookDir = pos + fwdNormal;
 }
 
-
 /**
- * HandleMouseDown - Store mouse coordinates on click button down.
- *
- * @param mouse LPARAM with x and y mouse coordinates of click.
+ * [Camera::HandleMouseDown description]
+ * @param mouse [description]
  */
 
 void Camera::HandleMouseDown(LPARAM mouse)
@@ -66,7 +63,7 @@ void Camera::HandleMouseDown(LPARAM mouse)
 }
 
 /**
- * HandleMouseUp - Clear all mouse coordinates when mouse released.
+ * [Camera::HandleMouseUp description]
  */
 
 void Camera::HandleMouseUp()
@@ -79,10 +76,8 @@ void Camera::HandleMouseUp()
 }
 
 /**
- * HandleMouseMove - Update new mouse coordinates on drag
- * (if mouse button is being held down).
- * 
- * @param mouse LPARAM with mouse coordinates.
+ * [Camera::HandleMouseMove description]
+ * @param mouse [description]
  */
 
 void Camera::HandleMouseMove(LPARAM mouse)
@@ -101,9 +96,8 @@ void Camera::HandleMouseMove(LPARAM mouse)
 }
 
 /**
- * HandleKeyDown - Mark a key as down when it's pressed.
- *
- * @param key VK code for pressed key.
+ * [Camera::HandleKeyDown description]
+ * @param key [description]
  */
 
 void Camera::HandleKeyDown(WPARAM key)
@@ -112,9 +106,8 @@ void Camera::HandleKeyDown(WPARAM key)
 }
 
 /**
- * HandleKeyUp - Mark when a key is released.
- *
- * @param key VK code of released key.
+ * [Camera::HandleKeyUp description]
+ * @param key [description]
  */
 
 void Camera::HandleKeyUp(WPARAM key)
@@ -123,9 +116,8 @@ void Camera::HandleKeyUp(WPARAM key)
 }
 
 /**
- * GetView - Get view matrix from current camera orientation.
- *
- * @return 4x4 view matrix.
+ * [Camera::GetView description]
+ * @return [description]
  */
 
 mat4 Camera::GetView()
@@ -138,11 +130,10 @@ mat4 Camera::GetView()
 }
 
 /**
- * GetProjection - Get projection matrix from current camera settings.
- *
- * @return 4x4 projection matrix.
+ * [Camera::GetProjection description]
+ * @return [description]
  */
- 
+
 mat4 Camera::GetProjection()
 {
     return perspective(
@@ -154,7 +145,7 @@ mat4 Camera::GetProjection()
 }
 
 /**
- * Update - Update camera from mouse/keyboard inputs for this frame.
+ * [Camera::Update description]
  */
 
 void Camera::Update()
@@ -225,8 +216,6 @@ void Camera::Update()
         {
             vec3 fwd = lookDir - pos;
             vec3 level = normalize(vec3(fwd.x, fwd.y, 0.0f));
-
-            float d = 1 - expf(logf(0.5f) * 50 * 0.016f);
 
             float theta = dot(fwd, level);
             float dx = p2.x - p1.x;
