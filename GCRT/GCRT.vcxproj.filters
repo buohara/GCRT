@@ -81,9 +81,6 @@
     <ClCompile Include="mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="blendermesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="raytrace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -101,6 +98,9 @@
     </ClCompile>
     <ClCompile Include="..\libgasandbox\e3ga_util.cpp">
       <Filter>GA</Filter>
+    </ClCompile>
+    <ClCompile Include="skeletalmesh.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -170,9 +170,6 @@
     <ClInclude Include="mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="blendermesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="raytrace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -190,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="..\libgasandbox\e3ga_util.h">
       <Filter>GA</Filter>
+    </ClInclude>
+    <ClInclude Include="skeletalmesh.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -233,6 +233,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="PickerShader.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="RenderShaderAnim.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="RenderShaderAnim.fs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

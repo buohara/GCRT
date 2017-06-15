@@ -17,6 +17,8 @@ void Box::Create()
     vector<vec2> uvs;
     vector<vec3> tans;
 
+    animated = false;
+
     GenPositions(pos);
     GenNormals(norms);
     GenUVs(uvs);

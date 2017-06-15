@@ -230,8 +230,8 @@ void Renderer::InitModels()
     Plane pln;
     pln.Create(10, 10);
     pln.name = "Plane";
-    pln.blenderModel = false;
-    pln.blenderPath = "NA";
+    pln.loadFromFile = false;
+    pln.filePath = "NA";
     scn.AddMesh("Plane", make_shared<Plane>(pln));
 
     Model plane;
@@ -242,35 +242,14 @@ void Renderer::InitModels()
     plane.Scale(vec3(10.0, 10.0, 1.0));
     scn.AddModel("Plane0", plane);
 
-    scn.LoadBlenderModel(
-        "Knight",
-        "../asset/models/dark_templar_knight/dark_templar_knight.blend",
+    scn.LoadModelFromFile(
+        "Bones",
+        "../asset/models/boblampclean/boblampclean.md5mesh",
         "",
         "",
         nextPickerColor(),
         false
     );
-
-    /*Model &knight = scn.models["Knight"];
-
-    KeyFrame kf1(
-        0.0, 
-        mat4(1.0)
-    );
-
-    KeyFrame kf2(
-        10.0,
-        translate(vec3(0.0, 0.0, 10.0))
-    );
-
-    KeyFrame kf3(
-        20.0,
-        mat4(1.0)
-    );
-
-    knight.anim.AddKF(kf1);
-    knight.anim.AddKF(kf2);
-    knight.anim.AddKF(kf3);*/
 }
 
 /**

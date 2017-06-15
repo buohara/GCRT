@@ -12,12 +12,6 @@ struct Model
     string matName;
     vec3 pickerColor;
 
-    // HACK!!!
-
-    float t;
-
-    Animation anim;
-
     vec3 pos;
     vec3 dims;
     vec3 angles;

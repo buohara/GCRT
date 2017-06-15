@@ -21,6 +21,8 @@ void Plane::Create(
     vector<vec2> uvs;
     vector<vec3> tans;
 
+    animated = false;
+
     GenPositions(pos, rows, cols);
     GenNormals(norms, rows, cols);
     GenUVs(uvs, rows, cols);

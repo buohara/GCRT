@@ -6,31 +6,11 @@
 
 void Model::SetModelMatrices(GLuint program)
 {
-    if (anim.kfs.size() == 0)
-    {
-        GLuint modelID = glGetUniformLocation(program, "model");
-        glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
+    GLuint modelID = glGetUniformLocation(program, "model");
+    glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
 
-        GLuint modelInvID = glGetUniformLocation(program, "modelInv");
-        glUniformMatrix4fv(modelInvID, 1, false, &modelInv[0][0]);
-    }
-    else
-    {
-        mat4 animModel = anim.GetAnimationMatrix(t);
-        mat4 animModelInv = inverse(animModel);
-
-        GLuint modelID = glGetUniformLocation(program, "model");
-        glUniformMatrix4fv(modelID, 1, false, &animModel[0][0]);
-
-        GLuint modelInvID = glGetUniformLocation(program, "modelInv");
-        glUniformMatrix4fv(modelInvID, 1, false, &animModelInv[0][0]);
-    }
-
-    t += 0.05f;
-    if (t > 30.0f)
-    {
-        t = 0.0f;
-    }
+    GLuint modelInvID = glGetUniformLocation(program, "modelInv");
+    glUniformMatrix4fv(modelInvID, 1, false, &modelInv[0][0]);
 }
 
 /**
@@ -42,7 +22,6 @@ void Model::InitModelMatrices()
     scl = mat4(1.0f);
     rot = mat4(1.0f);
     trans = mat4(1.0f);
-    t = 0.0;
 
     model = trans * rot * scl;
     modelInv = inverseTranspose(model);

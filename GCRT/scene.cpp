@@ -115,8 +115,8 @@ void Scene::Save(string file)
     for (meshIt = meshes.begin(); meshIt != meshes.end(); meshIt++)
     {
         fout << (*meshIt).second->name << endl;
-        fout << (*meshIt).second->blenderModel << endl;
-        fout << (*meshIt).second->blenderPath << endl;
+        fout << (*meshIt).second->loadFromFile << endl;
+        fout << (*meshIt).second->filePath << endl;
         fout << endl;
     }
 
@@ -376,8 +376,8 @@ void Scene::Load(string file)
     for (uint32_t i = 0; i < numMeshes; i++)
     {
         string name;
-        bool blenderModel;
-        string blenderPath;
+        bool loadFromeFile;
+        string filePath;
 
         getline(fin, line);
         iss.str(line);
@@ -386,12 +386,12 @@ void Scene::Load(string file)
 
         getline(fin, line);
         iss.str(line);
-        iss >> blenderModel;
+        iss >> loadFromeFile;
         iss.clear();
 
         getline(fin, line);
         iss.str(line);
-        iss >> blenderPath;
+        iss >> filePath;
         iss.clear();
 
         getline(fin, line);
@@ -401,8 +401,8 @@ void Scene::Load(string file)
             Sphere sph;
             sph.name = "Sphere";
             sph.Create(50, 50);
-            sph.blenderModel = false;
-            sph.blenderPath = "NA";
+            sph.loadFromFile = false;
+            sph.filePath = "NA";
             AddMesh("Sphere", make_shared<Sphere>(sph));
             continue;
         }
@@ -412,8 +412,8 @@ void Scene::Load(string file)
             Plane pln;
             pln.Create(10, 10);
             pln.name = "Plane";
-            pln.blenderModel = false;
-            pln.blenderPath = "NA";
+            pln.loadFromFile = false;
+            pln.filePath = "NA";
             AddMesh("Plane", make_shared<Plane>(pln));
             continue;
         }
@@ -423,8 +423,8 @@ void Scene::Load(string file)
             Box box;
             box.Create();
             box.name = "Box";
-            box.blenderModel = false;
-            box.blenderPath = "NA";
+            box.loadFromFile = false;
+            box.filePath = "NA";
             AddMesh("Box", make_shared<Box>(box));
             continue;
         }
@@ -434,15 +434,15 @@ void Scene::Load(string file)
             Cylinder cyl;
             cyl.Create(15);
             cyl.name = "Cylinder";
-            cyl.blenderModel = false;
-            cyl.blenderPath = "NA";
+            cyl.loadFromFile = false;
+            cyl.filePath = "NA";
             AddMesh("Cylinder", make_shared<Cylinder>(cyl));
             continue;
         }
 
-        if (blenderModel == true)
+        if (loadFromeFile == true)
         {
-            LoadBlenderModel(name, blenderPath, "NA", "NA", vec3(0.0, 0.0, 0.0), true);
+            LoadModelFromFile(name, filePath, "NA", "NA", vec3(0.0, 0.0, 0.0), true);
         }
     }
 
@@ -506,7 +506,7 @@ void Scene::Load(string file)
         newModel.Scale(dims);
         newModel.selected = false;
 
-        if (meshes[meshName]->blenderModel == true)
+        if (meshes[meshName]->loadFromFile == true)
         {
             newModel.Rotate(vec3(0.0, pi<float>(), 0.0));
         }
@@ -686,10 +686,10 @@ void Scene::AddModel(string name, Model model)
 }
 
 /**
- * LoadBlenderModel
+ * LoadModelFromFile
  */
 
-void Scene::LoadBlenderModel(
+void Scene::LoadModelFromFile(
     string name,
     string blendFile,
     string diffuseTexFile,
@@ -698,12 +698,12 @@ void Scene::LoadBlenderModel(
     bool meshOnly
 )
 {
-    BlenderMesh mesh;
+    SkeletalMesh mesh;
     mesh.Create(blendFile);
-    mesh.blenderModel = true;
-    mesh.blenderPath = blendFile;
+    mesh.loadFromFile = true;
+    mesh.filePath = blendFile;
     mesh.name = name;
-    AddMesh(name, make_shared<BlenderMesh>(mesh));
+    AddMesh(name, make_shared<SkeletalMesh>(mesh));
 
     if (meshOnly)
     {
@@ -715,9 +715,9 @@ void Scene::LoadBlenderModel(
     model.matName = string("Default");
     model.pickerColor = pickerColor;
     model.InitModelMatrices();
-    model.Scale(vec3(0.25, 0.25, 0.25));
+    model.Scale(vec3(0.05, 0.05, 0.05));
     model.Translate(vec3(-2.0, -2.0, 5.0));
-    model.Rotate(vec3(0.0, pi<float>(), 0.0));
+    //model.Rotate(vec3(0.0, pi<float>(), 0.0));
 
     AddModel(name, model);
 }

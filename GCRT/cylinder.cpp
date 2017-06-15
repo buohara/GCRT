@@ -13,6 +13,8 @@ void Cylinder::Create(
     vector<vec2> uvs;
     vector<vec3> tans;
 
+    animated = false;
+
     GenPositions(pos, numSectors);
     GenNormals(norms, numSectors);
     GenUVs(uvs, numSectors);

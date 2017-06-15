@@ -162,7 +162,7 @@
     <ClCompile Include="..\libgasandbox\e3ga.cpp" />
     <ClCompile Include="..\libgasandbox\e3ga_util.cpp" />
     <ClCompile Include="animation.cpp" />
-    <ClCompile Include="blendermesh.cpp" />
+    <ClCompile Include="skeletalmesh.cpp" />
     <ClCompile Include="box.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="cylinder.cpp" />
@@ -193,7 +193,7 @@
     <ClInclude Include="..\libgasandbox\e3ga.h" />
     <ClInclude Include="..\libgasandbox\e3ga_util.h" />
     <ClInclude Include="animation.h" />
-    <ClInclude Include="blendermesh.h" />
+    <ClInclude Include="skeletalmesh.h" />
     <ClInclude Include="box.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="cylinder.h" />
@@ -227,6 +227,8 @@
     <None Include="PickerShader.vs" />
     <None Include="RenderShader.fs" />
     <None Include="RenderShader.vs" />
+    <None Include="RenderShaderAnim.fs" />
+    <None Include="RenderShaderAnim.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

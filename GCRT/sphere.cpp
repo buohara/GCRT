@@ -14,6 +14,8 @@ void Sphere::Create(
     vector<vec2> uvs;
     vector<vec3> tans;
 
+    animated = false;
+
     GenPositions(pos, numSectors, numRings);
     GenNormals(norms, numSectors, numRings);
     GenUVs(uvs, numSectors, numRings);

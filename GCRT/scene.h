@@ -4,7 +4,7 @@
 #include "camera.h"
 #include "plane.h"
 #include "cylinder.h"
-#include "blendermesh.h"
+#include "skeletalmesh.h"
 #include "sphere.h"
 #include "model.h"
 #include "shader.h"
@@ -40,9 +40,9 @@ struct Scene
     void AddMaterial(string name, RMaterial mat);
     void AddMesh(string name, shared_ptr<Mesh> pGeom);
     
-    void LoadBlenderModel(
+    void LoadModelFromFile(
         string name,
-        string blendFile,
+        string file,
         string diffuseTexFile,
         string normalTexFile,
         vec3 pickerColor,
