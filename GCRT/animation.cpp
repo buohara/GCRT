@@ -6,7 +6,7 @@
  * @param poseIn [description]
  */
 
-void KeyFrame::KeyFrame(float tIn, mat4 poseIn)
+KeyFrame::KeyFrame(float tIn, mat4 poseIn)
 {
     t = tIn;
     pose = c3ga::matrix4x4ToVersor((c3ga::mv::Float*)&poseIn[0], true);

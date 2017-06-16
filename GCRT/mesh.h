@@ -30,6 +30,7 @@ struct Mesh
     string filePath;
 
     virtual void Draw() = 0;
+    virtual void SetBoneMatrices(float t, GLuint renderProgram) {};
 
     void InitVertexObjects(
         uint32_t subMeshIdx,

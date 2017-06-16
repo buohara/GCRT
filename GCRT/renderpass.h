@@ -10,7 +10,7 @@
 
 struct RenderPass
 {
-    void Render(Scene &scn);
+    void Render(Scene &scn, float t);
 
     GLuint renderProgram;
     bool wireFrame;

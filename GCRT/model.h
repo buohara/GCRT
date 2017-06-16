@@ -4,7 +4,6 @@
 #include "material.h"
 #include "camera.h"
 #include "light.h"
-#include "animation.h"
 
 struct Model
 {
@@ -25,7 +24,7 @@ struct Model
 
     bool selected;
 
-    void SetModelMatrices(GLuint program);
+    void SetModelMatrices(GLuint program, shared_ptr<Mesh> pMesh, float t);
 
     void InitModelMatrices();
     void Translate(vec3 tx);

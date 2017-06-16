@@ -223,8 +223,8 @@ void RenderPass::Init(
 
     renderShader.Create(
         string("RenderPass"),
-        string("RenderShader.vs"),
-        string("RenderShader.fs")
+        string("RenderShaderAnim.vs"),
+        string("RenderShaderAnim.fs")
     );
 
     renderProgram = renderShader.program;
@@ -292,7 +292,7 @@ void RenderPass::Init(
  * @param scn [description]
  */
 
-void RenderPass::Render(Scene &scn)
+void RenderPass::Render(Scene &scn, float t)
 {
     map<string, Model> &models = scn.models;
     Camera cam = scn.cam;
@@ -396,9 +396,8 @@ void RenderPass::Render(Scene &scn)
         GLuint selectedID = glGetUniformLocation(renderProgram, "selected");
         glUniform1i(selectedID, (*it).second.selected);
 
-        (*it).second.SetModelMatrices(renderProgram);
-
         shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
+        (*it).second.SetModelMatrices(renderProgram, pMesh, t);
         pMesh->Draw();
     }
 

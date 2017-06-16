@@ -4,7 +4,7 @@
  * [Scene::Scene description]
  */
 
-void Scene::Scene()
+Scene::Scene()
 {
 }
 
@@ -702,7 +702,7 @@ void Scene::AddModel(string name, Model model)
 /**
  * [Scene::LoadModelFromFile description]
  * @param name           [description]
- * @param blendFile      [description]
+ * @param modelFile      [description]
  * @param diffuseTexFile [description]
  * @param normalTexFile  [description]
  * @param pickerColor    [description]
@@ -711,7 +711,7 @@ void Scene::AddModel(string name, Model model)
 
 void Scene::LoadModelFromFile(
     string name,
-    string blendFile,
+    string modelFile,
     string diffuseTexFile,
     string normalTexFile,
     vec3 pickerColor,
@@ -719,9 +719,9 @@ void Scene::LoadModelFromFile(
 )
 {
     SkeletalMesh mesh;
-    mesh.Create(blendFile);
+    mesh.Create(modelFile);
     mesh.loadFromFile = true;
-    mesh.filePath = blendFile;
+    mesh.filePath = modelFile;
     mesh.name = name;
     AddMesh(name, make_shared<SkeletalMesh>(mesh));
 

@@ -284,7 +284,7 @@ void Renderer::Render(HDC hDC)
     
     pickerPass.Render(scn);
     depthPass.Render(scn);
-    renderPass.Render(scn);
+    renderPass.Render(scn, t);
 
     if (settings.useDOF == true)
     {
@@ -300,7 +300,7 @@ void Renderer::Render(HDC hDC)
     SwapBuffers(hDC);
 
     t += 0.05f;
-    if (t > 30.0)
+    if (t > 50.0)
     {
         t = 0.0;
     }

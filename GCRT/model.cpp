@@ -5,13 +5,23 @@
  * @param program [description]
  */
 
-void Model::SetModelMatrices(GLuint program)
+void Model::SetModelMatrices(GLuint program, shared_ptr<Mesh> pMesh, float t)
 {
-    GLuint modelID = glGetUniformLocation(program, "model");
-    glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
+    GLuint animatedID = glGetUniformLocation(program, "model");
+    glUniform1ui(animatedID, pMesh->animated);
 
-    GLuint modelInvID = glGetUniformLocation(program, "modelInv");
-    glUniformMatrix4fv(modelInvID, 1, false, &modelInv[0][0]);
+    if (pMesh->animated)
+    {
+        pMesh->SetBoneMatrices(t, program);
+    }
+    else
+    {
+        GLuint modelID = glGetUniformLocation(program, "model");
+        glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
+
+        GLuint modelInvID = glGetUniformLocation(program, "modelInv");
+        glUniformMatrix4fv(modelInvID, 1, false, &modelInv[0][0]);
+    }
 }
 
 /**

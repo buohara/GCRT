@@ -4,7 +4,7 @@
  * [RMaterial::RMaterial description]
  */
 
-void RMaterial::RMaterial()
+RMaterial::RMaterial()
 {
     useNormalMap = 0;
     useDiffuseMap = 0;

@@ -42,7 +42,7 @@ struct Scene
     
     void LoadModelFromFile(
         string name,
-        string file,
+        string modelFile,
         string diffuseTexFile,
         string normalTexFile,
         vec3 pickerColor,
