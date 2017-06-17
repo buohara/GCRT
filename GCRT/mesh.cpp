@@ -207,11 +207,11 @@ void Mesh::InitVertexObjects(
     glGenBuffers(1, &subMeshes[subMeshIdx].boneIDVboID);
     glBindBuffer(GL_ARRAY_BUFFER, subMeshes[subMeshIdx].boneIDVboID);
     glBufferData(GL_ARRAY_BUFFER, boneIDBufSize, &boneIDs[0], GL_STATIC_DRAW);
-    glVertexAttribIPointer((GLuint)4, 4, GL_INT, 0, 0);
+    glVertexAttribIPointer((GLuint)4, 4, GL_UNSIGNED_INT, 0, 0);
     glEnableVertexAttribArray(4);
 
     glGenBuffers(1, &subMeshes[subMeshIdx].boneWtVboID);
-    glBindBuffer(GL_ARRAY_BUFFER, subMeshes[subMeshIdx].uvVboID);
+    glBindBuffer(GL_ARRAY_BUFFER, subMeshes[subMeshIdx].boneWtVboID);
     glBufferData(GL_ARRAY_BUFFER, boneWtBufSize, &boneWeights[0], GL_STATIC_DRAW);
     glVertexAttribPointer((GLuint)5, 4, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(5);

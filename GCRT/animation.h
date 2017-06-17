@@ -11,6 +11,7 @@ struct KeyFrame
 {
     float t;
     c3ga::TRversor pose;
+    mat4 poseMat;
     KeyFrame(float tIn, mat4 poseIn);
 };
 

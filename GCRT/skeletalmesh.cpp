@@ -15,12 +15,13 @@ void SkeletalMesh::Create(string file)
  
     subMeshes.resize(scene.mNumMeshes);
     animated = (scene.mNumAnimations > 0);
+    map<string, mat4> boneOffsets;
 
-    LoadVertexAndBoneData(scene);
+    LoadVertexAndBoneData(scene, boneOffsets);
     
     aiNode &scnRoot = *(scene.mRootNode);
     root.name = scnRoot.mName.C_Str();
-    CreateBoneHierarchy(scnRoot, root);
+    CreateBoneHierarchy(scnRoot, root, boneOffsets);
 
     LoadAnimations(scene);
 }
@@ -57,14 +58,21 @@ bool BoneTreeNode::LoadAnimation(aiNodeAnim &anim)
             mat4 trans = translate(pos);
 
             aiQuatKey rotKey = anim.mRotationKeys[i];
-            tquat<float> quat;
-            quat.x = rotKey.mValue.x;
-            quat.y = rotKey.mValue.y;
-            quat.z = rotKey.mValue.z;
-            quat.y = rotKey.mValue.w;
+            quat q;
+            q.x = rotKey.mValue.x;
+            q.y = rotKey.mValue.y;
+            q.z = rotKey.mValue.z;
+            q.w = -rotKey.mValue.w;
+            mat4 rot = mat4_cast(q);
 
-            mat4 rot = toMat4(quat);
-            KeyFrame kf(t, trans * rot);
+            aiVectorKey scaleKey = anim.mScalingKeys[0];
+            vec3 scalev;
+            scalev.x = scaleKey.mValue.x;
+            scalev.y = scaleKey.mValue.y;
+            scalev.z = scaleKey.mValue.z;
+            mat4 scal = scale(scalev);
+
+            KeyFrame kf(t, trans * rot * scal);
             animation.AddKF(kf);
         }
 
@@ -88,17 +96,33 @@ bool BoneTreeNode::LoadAnimation(aiNodeAnim &anim)
  * CreateBoneHierarchy -
  */
 
-void SkeletalMesh::CreateBoneHierarchy(aiNode &aiNode, BoneTreeNode &btNode)
+void SkeletalMesh::CreateBoneHierarchy(
+    aiNode &aiNode, 
+    BoneTreeNode &btNode,
+    map<string, mat4> boneOffsets
+)
 {
     for (uint32_t i = 0; i < aiNode.mNumChildren; i++)
     {
         BoneTreeNode child;
         child.name = aiNode.mChildren[i]->mName.C_Str();
-        memcpy(&child.boneOffset[0], &aiNode.mChildren[i]->mTransformation, 16 * sizeof(float));
-        child.boneOffset = inverse(child.boneOffset);
+
+        if (boneOffsets.find(child.name) != boneOffsets.end())
+        {
+            child.boneOffset = boneOffsets[child.name];
+        }
+        else
+        {
+            child.boneOffset = mat4(1.0);
+        }
 
         btNode.children.push_back(make_shared<BoneTreeNode>(child));
-        CreateBoneHierarchy(*aiNode.mChildren[i], *btNode.children[i]);
+        
+        CreateBoneHierarchy(
+            *aiNode.mChildren[i],
+            *btNode.children[i],
+            boneOffsets
+        );
     }
 }
 
@@ -106,7 +130,10 @@ void SkeletalMesh::CreateBoneHierarchy(aiNode &aiNode, BoneTreeNode &btNode)
  * LoadVertexAndBoneData - 
  */
 
-void SkeletalMesh::LoadVertexAndBoneData(const aiScene &scene)
+void SkeletalMesh::LoadVertexAndBoneData(
+    const aiScene &scene,
+    map<string, mat4> boneOffsets
+)
 {
     for (uint32 i = 0; i < scene.mNumMeshes; i++)
     {
@@ -132,8 +159,8 @@ void SkeletalMesh::LoadVertexAndBoneData(const aiScene &scene)
 
         vector<uvec4> boneIDs;
         vector<vec4> boneWeights;
-        LoadBoneData(mesh, boneIDs, boneWeights);
 
+        LoadBoneData(mesh, boneIDs, boneWeights, boneOffsets);
         InitVertexObjects(i, pos, norm, uv, idcs, boneIDs, boneWeights);
     }
 }
@@ -188,7 +215,8 @@ void SkeletalMesh::LoadVertexData(
 void SkeletalMesh::LoadBoneData(
     aiMesh &mesh,
     vector<uvec4> &boneIDs,
-    vector<vec4> &boneWts
+    vector<vec4> &boneWts,
+    map<string, mat4> boneOffsets
 )
 {
     vector<uint32_t> boneScratch(mesh.mNumVertices, 0);
@@ -198,8 +226,21 @@ void SkeletalMesh::LoadBoneData(
     for (uint32_t j = 0; j < mesh.mNumBones; j++)
     {
         aiBone &bone = *(mesh.mBones[j]);
-        uint32_t boneID = boneMap.size();
-        boneMap[bone.mName.C_Str()] = boneID;
+        uint32_t boneID;
+
+        if (boneMap.find(bone.mName.C_Str()) == boneMap.end())
+        {
+            boneID = boneMap.size();
+            boneMap[bone.mName.C_Str()] = boneID;
+            
+            mat4 boneOffset;
+            memcpy(&boneOffset[0], &bone.mOffsetMatrix.Transpose(), 16 * sizeof(float));
+            boneOffsets[bone.mName.C_Str()] = boneOffset;
+        }
+        else
+        {
+            boneID = boneMap[bone.mName.C_Str()];
+        }
 
         for (uint32_t k = 0; k < mesh.mBones[j]->mNumWeights; k++)
         {
@@ -242,10 +283,11 @@ void SkeletalMesh::SetBoneMatrices(float t, GLuint renderProgram)
 {
     uint32_t numBones = boneMap.size();
     vector<mat4> boneMats(numBones);
-    root.GetBoneMatrices(t, boneMats, mat4(0.1), boneMap);
+    root.GetBoneMatrices(t, boneMats, scale(vec3(0.1f, 0.1f, 0.1f)), boneMap);
 
     GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
-    glUniformMatrix4fv(bonesID, numBones, false, &boneMats[0][0][0]);
+    glUniformMatrix4fv(bonesID, numBones, false, value_ptr(boneMats[0]));
+
 }
 
 /**
@@ -259,15 +301,25 @@ void BoneTreeNode::GetBoneMatrices(
     map<string, uint32_t> &boneMap
 )
 {
-    uint32_t boneIdx = boneMap[name];
-    mat4 boneMat = animation.GetAnimationMatrix(t);
-    boneMat = parent * boneMat;
-
-    matrices[boneIdx] = mat4(0.1);//boneOffset * boneMat;
-
-    for (uint32_t i = 0; i < children.size(); i++)
+    if (boneMap.find(name) != boneMap.end())
     {
-        children[i]->GetBoneMatrices(t, matrices, mat4(0.1), boneMap);
+        uint32_t boneIdx = boneMap[name];
+        mat4 boneMat = animation.GetAnimationMatrix(t);
+        boneMat = parent * boneMat;
+
+        matrices[boneIdx] = boneMat * boneOffset;
+
+        for (uint32_t i = 0; i < children.size(); i++)
+        {
+            children[i]->GetBoneMatrices(t, matrices, boneMat, boneMap);
+        }
+    }
+    else
+    {
+        for (uint32_t i = 0; i < children.size(); i++)
+        {
+            children[i]->GetBoneMatrices(t, matrices, parent, boneMap);
+        }
     }
 }
 

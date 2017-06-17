@@ -37,6 +37,7 @@
 #include "glm/gtx/rotate_vector.hpp"
 #include "glm/gtc/matrix_inverse.hpp"
 #include "glm/gtx/quaternion.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 // DevIL libraries
 

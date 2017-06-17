@@ -9,9 +9,9 @@
 struct BoneTreeNode
 {
     string name;
-    mat4 boneOffset;
     vector<shared_ptr<BoneTreeNode>> children;
     Animation animation;
+    mat4 boneOffset;
 
     void GetBoneMatrices(
         float t, 
@@ -29,8 +29,17 @@ struct SkeletalMesh : Mesh
     BoneTreeNode root;
 
     void Create(string file);
-    void LoadVertexAndBoneData(const aiScene &scene);
-    void CreateBoneHierarchy(aiNode &aiNode, BoneTreeNode &btNode);
+
+    void LoadVertexAndBoneData(
+        const aiScene &scene,
+        map<string, mat4> boneOffsets
+    );
+    
+    void CreateBoneHierarchy(
+        aiNode &aiNode, 
+        BoneTreeNode &btNode,
+        map<string, mat4> boneOffsets
+    );
     
     void LoadVertexData(
         aiMesh &mesh,
@@ -43,7 +52,8 @@ struct SkeletalMesh : Mesh
     void LoadBoneData(
         aiMesh &mesh,
         vector<uvec4> &boneIDs,
-        vector<vec4> &boneWts
+        vector<vec4> &boneWts,
+        map<string, mat4> boneOffsets
     );
 
     void LoadAnimations(const aiScene &scene);

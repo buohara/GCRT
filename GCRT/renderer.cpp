@@ -299,8 +299,8 @@ void Renderer::Render(HDC hDC)
     UpdateImGui();
     SwapBuffers(hDC);
 
-    t += 0.05f;
-    if (t > 50.0)
+    t += 0.25f;
+    if (t > 150.0)
     {
         t = 0.0;
     }
