@@ -47,7 +47,6 @@ void SkeletalMesh::Create(string file)
     ));
  
     subMeshes.resize(scene.mNumMeshes);
-    boneMats.resize(maxBones);
     animated = (scene.mNumAnimations > 0);
     map<string, mat4> boneOffsets;
 
@@ -87,7 +86,7 @@ bool BoneTreeNode::LoadAnimation(aiNodeAnim &anim)
         for (uint32_t i = 0; i < anim.mNumPositionKeys; i++)
         {
             aiVectorKey posKey = anim.mPositionKeys[i];
-            float t = posKey.mTime;
+            float t = (float)posKey.mTime;
 
             vec3 pos;
             pos.x = posKey.mValue.x;
@@ -292,7 +291,7 @@ void SkeletalMesh::LoadBoneData(
 
         if (boneMap.find(bone.mName.C_Str()) == boneMap.end())
         {
-            boneID = boneMap.size();
+            boneID = (uint32_t)boneMap.size();
             boneMap[bone.mName.C_Str()] = boneID;
             
             mat4 boneOffset;
@@ -342,28 +341,26 @@ void SkeletalMesh::LoadBoneData(
  * @param t             [description]
  */
 
-void SkeletalMesh::UpdateAnimation(float t)
+void SkeletalMesh::GetAnimation(float t, mat4 rootTrans, vector<mat4> &bones)
 {
     if (animated == true)
     {
-        root.GetBoneMatrices(t, boneMats, scale(vec3(0.1f, 0.1f, 0.1f)), boneMap);
+        if (bones.size() != boneMap.size())
+        {
+            bones.resize(boneMap.size());
+        }
+
+        root.GetBoneMatrices(t, bones, rootTrans, boneMap);
     }
     else
     {
-        boneMats.push_back(model);
+        if (bones.size() != 1)
+        {
+            bones.resize(1);
+        }
+
+        bones[0] = rootTrans;
     }
-}
-
-/**
- * [SkeletalMesh::SetBoneMatrices description]
- * @param renderProgram [description]
- */
-
-void SkeletalMesh::SetBoneMatrices(GLuint renderProgram)
-{
-    uint32_t numBones = boneMap.size();
-    GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
-    glUniformMatrix4fv(bonesID, numBones, false, value_ptr(boneMats[0]));
 }
 
 /**

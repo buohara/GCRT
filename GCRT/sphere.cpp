@@ -306,14 +306,3 @@ void Sphere::Draw()
     glDrawArrays(GL_TRIANGLE_FAN, bottomOffset, numCapVerts);
     glBindVertexArray(0);
 }
-
-/**
- * [Sphere::SetBoneMatrices description]
- * @param renderProgram [description]
- */
-
-void Sphere::SetBoneMatrices(GLuint renderProgram)
-{
-    GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
-    glUniformMatrix4fv(bonesID, 1, false, &model[0][0]);
-}

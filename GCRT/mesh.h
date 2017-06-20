@@ -29,20 +29,17 @@ struct Mesh
     bool animated;
     string filePath;
 
-    vec3 pos;
-    vec3 dims;
-    vec3 angles;
-
-    mat4 scl;
-    mat4 trans;
-    mat4 rot;
-
-    mat4 model;
-    mat4 modelInv;
-
     virtual void Draw() = 0;
-    virtual void UpdateAnimation(float t) {};
-    virtual void SetBoneMatrices(GLuint renderProgram) {};
+    
+    virtual void GetAnimation(float t, mat4 rootTrans, vector<mat4> &bones) 
+    {
+        if (bones.size() != 1)
+        {
+            bones.resize(1);
+        }
+
+        bones[0] = rootTrans;
+    };
 
     void InitVertexObjects(
         uint32_t subMeshIdx,
@@ -71,10 +68,5 @@ struct Mesh
         vector<uint32_t> &idcs,
         vector<ivec4> &boneIDs,
         vector<vec4> &boneWeights
-    );
-
-    void InitModelMatrices();
-    void Translate(vec3 tx);
-    void Scale(vec3 dimsIn);
-    void Rotate(vec3 thetas);
+    );    
 };

@@ -88,7 +88,7 @@ void DepthPass::Render(Scene &scn)
     for (it = models.begin(); it != models.end(); it++)
     {
         shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
-        pMesh->SetBoneMatrices(depthProgram);
+        (*it).second.SetAnimMatrices(depthProgram);
         pMesh->Draw();
     }
 }
@@ -200,7 +200,7 @@ void PickerPass::Render(Scene &scn)
         glUniform3fv(pickerID, 1, &pickerColor[0]);
 
         shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
-        pMesh->SetBoneMatrices(pickerProgram);
+        (*it).second.SetAnimMatrices(pickerProgram);
         pMesh->Draw();
     }
 }
@@ -409,7 +409,7 @@ void RenderPass::Render(Scene &scn, float t)
         glUniform1i(selectedID, (*it).second.selected);
 
         shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
-        pMesh->SetBoneMatrices(renderProgram);
+        (*it).second.SetAnimMatrices(renderProgram);
         pMesh->Draw();
     }
 

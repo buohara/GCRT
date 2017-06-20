@@ -195,14 +195,3 @@ void Plane::Draw()
     glDrawArrays(GL_TRIANGLE_STRIP, 0, numVerts);
     glBindVertexArray(0);
 }
-
-/**
- * [Plane::SetBoneMatrices description]
- * @param renderProgram [description]
- */
-
-void Plane::SetBoneMatrices(GLuint renderProgram)
-{
-    GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
-    glUniformMatrix4fv(bonesID, 1, false, &model[0][0]);
-}

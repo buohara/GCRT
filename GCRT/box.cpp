@@ -329,14 +329,3 @@ void Box::Draw()
     glDrawArrays(GL_TRIANGLES, 0, numVerts);
     glBindVertexArray(0);
 }
-
-/**
- * [Box::SetBoneMatrices description]
- * @param renderProgram [description]
- */
-
-void Box::SetBoneMatrices(GLuint renderProgram)
-{
-    GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
-    glUniformMatrix4fv(bonesID, 1, false, &model[0][0]);
-}

@@ -1,2 +1,2 @@
 // winW winH wireframe useDOF useBloom msaaSamples loadscenefromfile scenepath
-1920 1080 0 0 1 4 0 ../scenes/knightscene.scn
+1920 1080 0 0 1 4 1 ../scenes/LampGuys.scn

@@ -20,5 +20,4 @@ struct Sphere : Mesh
     void GenNormals(vector<vec3> &norms, uint32_t numSectors, uint32_t numRings);
     void GenUVs(vector<vec2> &uvs, uint32_t numSectors, uint32_t numRings);
     void GenTans(vector<vec3> &tans, uint32_t numSectors, uint32_t numRings);
-    void SetBoneMatrices(GLuint renderProgram);
 };

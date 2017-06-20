@@ -28,7 +28,6 @@ struct SkeletalMesh : Mesh
 {
     map<string, uint32_t> boneMap;
     BoneTreeNode root;
-    vector<mat4> boneMats;
 
     static const uint32_t maxBones = 64;
 
@@ -61,8 +60,7 @@ struct SkeletalMesh : Mesh
     );
 
     void LoadAnimations(const aiScene &scene);
-    void UpdateAnimation(float t);
-    void SetBoneMatrices(GLuint renderProgram);
+    void GetAnimation(float t, mat4 rootTrans, vector<mat4> &bones);
 
     void Draw();
 };

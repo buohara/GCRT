@@ -12,5 +12,4 @@ struct Box : Mesh
     void GenNormals(vector<vec3> &norms);
     void GenUVs(vector<vec2> &uvs);
     void GenTans(vector<vec3> &uvs);
-    void SetBoneMatrices(GLuint renderProgram);
 };

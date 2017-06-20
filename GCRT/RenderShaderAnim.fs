@@ -164,6 +164,29 @@ float getDOFBlur()
 }
 
 /**
+ * Determine how far light has traveled through material using
+ * depth map.
+ */
+
+vec4 getSSSFactor()
+{
+    vec4 posLightSpace = lightProj * lightView * passModel * passPos;
+    posLightSpace.xyz = posLightSpace.xyz * 0.5 + 0.5;
+
+    float shadowDepth = textureProj(depthTex, posLightSpace).z;
+    float depth = posLightSpace.z - shadowDepth;
+
+    if (posLightSpace.z - 0.001> shadowDepth)
+    {
+        return exp(-depth) * vec4(0.1, 0.1, 0.4, 0.0);
+    }
+    else
+    {
+        return vec4(0);
+    }
+}
+
+/**
  * Main fragment shader routine (main render pass).
  */
 

@@ -25,7 +25,7 @@ void Renderer::Init()
     mouseDown[1] = false;
     mouseDown[2] = false;
 
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClearDepth(1.0f);
 
     scn.cam.Init(
@@ -253,12 +253,12 @@ void Renderer::InitModels()
     pln.name = "Plane";
     pln.loadFromFile = false;
     pln.filePath = "NA";
-    pln.InitModelMatrices();
-    pln.Scale(vec3(10.0, 10.0, 1.0));
 
     scn.AddMesh("Plane", make_shared<Plane>(pln));
 
     Model plane;
+    plane.InitModelMatrices();
+    plane.Scale(vec3(10.0, 10.0, 1.0));
     plane.meshName = string("Plane");
     plane.matName = string("Default");
     plane.pickerColor = nextPickerColor();
@@ -284,9 +284,11 @@ void Renderer::Render(HDC hDC)
     scn.cam.Update();
 
     map<string, Model>::iterator it;
+    
     for (it = scn.models.begin(); it != scn.models.end(); it++)
     {
-        scn.meshes[(*it).second.meshName]->UpdateAnimation(t);
+        shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
+        (*it).second.UpdateAnimation(t, pMesh);
     }
 
     pickerPass.Render(scn);

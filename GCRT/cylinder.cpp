@@ -223,14 +223,3 @@ void Cylinder::Draw()
     glDrawArrays(GL_TRIANGLE_FAN, bottomOffset, numCapVerts);
     glBindVertexArray(0);
 }
-
-/**
- * [Cylinder::SetBoneMatrices description]
- * @param renderProgram [description]
- */
-
-void Cylinder::SetBoneMatrices(GLuint renderProgram)
-{
-    GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
-    glUniformMatrix4fv(bonesID, 1, false, &model[0][0]);
-}

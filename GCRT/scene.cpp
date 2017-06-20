@@ -137,7 +137,7 @@ void Scene::Save(string file)
         fout << (*modIt).second.meshName << endl;
         fout << (*modIt).second.matName << endl;
         
-        /*fout << 
+        fout << 
             (*modIt).second.pos.x << " " <<
             (*modIt).second.pos.y << " " <<
             (*modIt).second.pos.z << endl;
@@ -145,7 +145,12 @@ void Scene::Save(string file)
         fout << 
             (*modIt).second.dims.x << " " <<
             (*modIt).second.dims.y << " " <<
-            (*modIt).second.dims.z << endl;*/
+            (*modIt).second.dims.z << endl;
+
+        fout <<
+            (*modIt).second.angles.x << " " <<
+            (*modIt).second.angles.y << " " <<
+            (*modIt).second.angles.z << endl;
         
         fout 
             << (*modIt).second.pickerColor.x << " "
@@ -471,6 +476,7 @@ void Scene::Load(string file)
         string matName;
         vec3 pos;
         vec3 dims;
+        vec3 thetas;
         vec3 pickerColor;
 
         getline(fin, line);
@@ -500,6 +506,11 @@ void Scene::Load(string file)
 
         getline(fin, line);
         iss.str(line);
+        iss >> thetas.x >> thetas.y >> thetas.z;
+        iss.clear();
+
+        getline(fin, line);
+        iss.str(line);
         iss >> pickerColor.x >> pickerColor.y >> pickerColor.z;
         iss.clear();
 
@@ -510,6 +521,9 @@ void Scene::Load(string file)
         newModel.matName = matName;
         newModel.pickerColor = pickerColor;
         newModel.selected = false;
+        newModel.Scale(dims);
+        newModel.Translate(pos);
+        newModel.Rotate(thetas);
 
         AddModel(name, newModel);
     }
@@ -715,9 +729,6 @@ void Scene::LoadModelFromFile(
     mesh.loadFromFile = true;
     mesh.filePath = modelFile;
     mesh.name = name;
-    mesh.InitModelMatrices();
-    mesh.Scale(vec3(0.05, 0.05, 0.05));
-    mesh.Translate(vec3(-2.0, -2.0, 5.0));
 
     AddMesh(name, make_shared<SkeletalMesh>(mesh));
 
@@ -727,6 +738,9 @@ void Scene::LoadModelFromFile(
     }
 
     Model model;
+    model.InitModelMatrices();
+    model.Scale(vec3(0.05, 0.05, 0.05));
+    model.Translate(vec3(-2.0, -2.0, 5.0));
     model.meshName = name;
     model.matName = string("Default");
     model.pickerColor = pickerColor;
