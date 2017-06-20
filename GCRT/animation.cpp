@@ -38,7 +38,7 @@ void Animation::AddKF(KeyFrame &kf)
 
 mat4 Animation::GetAnimationMatrix(float t)
 {
-    mat4 out(1.0);
+    mat4 out = kfs[0].poseMat;
 
     for (uint32_t i = 0; i < kfs.size(); i++)
     {

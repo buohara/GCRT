@@ -312,7 +312,7 @@ void SkeletalMesh::SetBoneMatrices(float t, GLuint renderProgram)
 {
     uint32_t numBones = boneMap.size();
     vector<mat4> boneMats(numBones);
-    root.GetBoneMatrices(t, boneMats, mat4(1.0f), boneMap);
+    root.GetBoneMatrices(t, boneMats, scale(vec3(0.1f, 0.1f, 0.1f)), boneMap);
 
     GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
     glUniformMatrix4fv(bonesID, numBones, false, value_ptr(boneMats[0]));
