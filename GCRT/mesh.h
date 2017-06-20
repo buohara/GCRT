@@ -61,7 +61,7 @@ struct Mesh
         vector<vec3> &norms,
         vector<vec2> &uvs,
         vector<uint32_t> &idcs,
-        vector<uvec4> &boneIDs,
+        vector<ivec4> &boneIDs,
         vector<vec4> &boneWeights
     );
 };

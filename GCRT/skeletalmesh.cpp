@@ -4,6 +4,24 @@
  * Create
  */
 
+mat4 globalInverse;
+
+inline mat4 aiMatrix4x4ToGlm(aiMatrix4x4& from)
+{
+    glm::mat4 to;
+
+    to[0][0] = (GLfloat)from.a1; to[0][1] = (GLfloat)from.b1;  to[0][2] = (GLfloat)from.c1; to[0][3] = (GLfloat)from.d1;
+    to[1][0] = (GLfloat)from.a2; to[1][1] = (GLfloat)from.b2;  to[1][2] = (GLfloat)from.c2; to[1][3] = (GLfloat)from.d2;
+    to[2][0] = (GLfloat)from.a3; to[2][1] = (GLfloat)from.b3;  to[2][2] = (GLfloat)from.c3; to[2][3] = (GLfloat)from.d3;
+    to[3][0] = (GLfloat)from.a4; to[3][1] = (GLfloat)from.b4;  to[3][2] = (GLfloat)from.c4; to[3][3] = (GLfloat)from.d4;
+
+    return to;
+}
+
+/**
+ * Create
+ */
+
 void SkeletalMesh::Create(string file)
 {
     Assimp::Importer importer;
@@ -18,9 +36,12 @@ void SkeletalMesh::Create(string file)
     map<string, mat4> boneOffsets;
 
     LoadVertexAndBoneData(scene, boneOffsets);
-    
+
     aiNode &scnRoot = *(scene.mRootNode);
     root.name = scnRoot.mName.C_Str();
+
+    globalInverse = aiMatrix4x4ToGlm(scnRoot.mTransformation.Inverse());
+
     CreateBoneHierarchy(scnRoot, root, boneOffsets);
 
     LoadAnimations(scene);
@@ -58,12 +79,18 @@ bool BoneTreeNode::LoadAnimation(aiNodeAnim &anim)
             mat4 trans = translate(pos);
 
             aiQuatKey rotKey = anim.mRotationKeys[i];
-            quat q;
-            q.x = rotKey.mValue.x;
-            q.y = rotKey.mValue.y;
-            q.z = rotKey.mValue.z;
-            q.w = -rotKey.mValue.w;
-            mat4 rot = mat4_cast(q);
+            aiMatrix3x3t<float> aiMat = rotKey.mValue.GetMatrix();
+            mat4 rot = mat4(1.0);
+
+            rot[0][0] = aiMat.a1;
+            rot[0][1] = aiMat.b1;
+            rot[0][2] = aiMat.c1;
+            rot[1][0] = aiMat.a2;
+            rot[1][1] = aiMat.b2;
+            rot[1][2] = aiMat.c2;
+            rot[2][0] = aiMat.a3;
+            rot[2][1] = aiMat.b3;
+            rot[2][2] = aiMat.c3;
 
             aiVectorKey scaleKey = anim.mScalingKeys[0];
             vec3 scalev;
@@ -99,7 +126,7 @@ bool BoneTreeNode::LoadAnimation(aiNodeAnim &anim)
 void SkeletalMesh::CreateBoneHierarchy(
     aiNode &aiNode, 
     BoneTreeNode &btNode,
-    map<string, mat4> boneOffsets
+    map<string, mat4> &boneOffsets
 )
 {
     for (uint32_t i = 0; i < aiNode.mNumChildren; i++)
@@ -115,6 +142,8 @@ void SkeletalMesh::CreateBoneHierarchy(
         {
             child.boneOffset = mat4(1.0);
         }
+
+        child.parentOffset = aiMatrix4x4ToGlm(aiNode.mChildren[i]->mTransformation);
 
         btNode.children.push_back(make_shared<BoneTreeNode>(child));
         
@@ -132,7 +161,7 @@ void SkeletalMesh::CreateBoneHierarchy(
 
 void SkeletalMesh::LoadVertexAndBoneData(
     const aiScene &scene,
-    map<string, mat4> boneOffsets
+    map<string, mat4> &boneOffsets
 )
 {
     for (uint32 i = 0; i < scene.mNumMeshes; i++)
@@ -157,7 +186,7 @@ void SkeletalMesh::LoadVertexAndBoneData(
 
         // Bone IDs and weights.
 
-        vector<uvec4> boneIDs;
+        vector<ivec4> boneIDs;
         vector<vec4> boneWeights;
 
         LoadBoneData(mesh, boneIDs, boneWeights, boneOffsets);
@@ -214,14 +243,14 @@ void SkeletalMesh::LoadVertexData(
 
 void SkeletalMesh::LoadBoneData(
     aiMesh &mesh,
-    vector<uvec4> &boneIDs,
+    vector<ivec4> &boneIDs,
     vector<vec4> &boneWts,
-    map<string, mat4> boneOffsets
+    map<string, mat4> &boneOffsets
 )
 {
     vector<uint32_t> boneScratch(mesh.mNumVertices, 0);
-    boneIDs.resize(mesh.mNumVertices);
-    boneWts.resize(mesh.mNumVertices);
+    boneIDs.resize(mesh.mNumVertices, ivec4(0));
+    boneWts.resize(mesh.mNumVertices, vec4(0.0));
 
     for (uint32_t j = 0; j < mesh.mNumBones; j++)
     {
@@ -234,7 +263,7 @@ void SkeletalMesh::LoadBoneData(
             boneMap[bone.mName.C_Str()] = boneID;
             
             mat4 boneOffset;
-            memcpy(&boneOffset[0], &bone.mOffsetMatrix.Transpose(), 16 * sizeof(float));
+            boneOffset = aiMatrix4x4ToGlm(bone.mOffsetMatrix);          
             boneOffsets[bone.mName.C_Str()] = boneOffset;
         }
         else
@@ -283,7 +312,7 @@ void SkeletalMesh::SetBoneMatrices(float t, GLuint renderProgram)
 {
     uint32_t numBones = boneMap.size();
     vector<mat4> boneMats(numBones);
-    root.GetBoneMatrices(t, boneMats, scale(vec3(0.1f, 0.1f, 0.1f)), boneMap);
+    root.GetBoneMatrices(t, boneMats, mat4(1.0f), boneMap);
 
     GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
     glUniformMatrix4fv(bonesID, numBones, false, value_ptr(boneMats[0]));
@@ -301,24 +330,25 @@ void BoneTreeNode::GetBoneMatrices(
     map<string, uint32_t> &boneMap
 )
 {
+    mat4 boneMat = parentOffset;
+
     if (boneMap.find(name) != boneMap.end())
     {
         uint32_t boneIdx = boneMap[name];
         mat4 boneMat = animation.GetAnimationMatrix(t);
-        boneMat = parent * boneMat;
-
-        matrices[boneIdx] = boneMat * boneOffset;
+        
+        matrices[boneIdx] = parent * boneMat * boneOffset;
 
         for (uint32_t i = 0; i < children.size(); i++)
         {
-            children[i]->GetBoneMatrices(t, matrices, boneMat, boneMap);
+            children[i]->GetBoneMatrices(t, matrices, parent * boneMat, boneMap);
         }
     }
     else
     {
         for (uint32_t i = 0; i < children.size(); i++)
         {
-            children[i]->GetBoneMatrices(t, matrices, parent, boneMap);
+            children[i]->GetBoneMatrices(t, matrices, parent * boneMat, boneMap);
         }
     }
 }

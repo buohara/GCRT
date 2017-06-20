@@ -29,10 +29,10 @@ void main()
     passBitan   = -cross(inTan, inNorm);
     passUV      = inUV;
 
-    mat4 boneTransform = inBoneWeights.x * bones[inBoneIDs.x];
-    boneTransform += inBoneWeights.y * bones[inBoneIDs.y];
-    boneTransform += inBoneWeights.z * bones[inBoneIDs.z];
-    boneTransform += inBoneWeights.w * bones[inBoneIDs.w];
+    mat4 boneTransform = inBoneWeights[0] * bones[inBoneIDs[0]];
+    boneTransform += inBoneWeights[1] * bones[inBoneIDs[1]];
+    boneTransform += inBoneWeights[2] * bones[inBoneIDs[2]];
+    boneTransform += inBoneWeights[3] * bones[inBoneIDs[3]];
 
     gl_Position = proj * view * boneTransform * vec4(inPos, 1);
 }
