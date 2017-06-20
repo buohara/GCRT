@@ -14,9 +14,10 @@ out vec4 passNorm;
 out vec3 passTan;
 out vec3 passBitan;
 out vec2 passUV;
+out mat4 passModel;
+out mat4 passModelInv;
 
 uniform bool animated;
-uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
 uniform mat4 bones[MAX_BONES];
@@ -33,6 +34,9 @@ void main()
     boneTransform += inBoneWeights[1] * bones[inBoneIDs[1]];
     boneTransform += inBoneWeights[2] * bones[inBoneIDs[2]];
     boneTransform += inBoneWeights[3] * bones[inBoneIDs[3]];
+
+    passModel = boneTransform;
+    passModelInv = transpose(inverse(boneTransform));
 
     gl_Position = proj * view * boneTransform * vec4(inPos, 1);
 }

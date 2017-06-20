@@ -11,8 +11,8 @@ void DepthPass::Init()
     Shader depthShader;
     depthShader.Create(
         string("DepthPass"),
-        string("DepthPassShader.vs"),
-        string("DepthPassShader.fs")
+        string("DepthPassShaderAnim.vs"),
+        string("DepthPassShaderAnim.fs")
     );
 
     // Create a depth FBO and associated texture.
@@ -87,12 +87,8 @@ void DepthPass::Render(Scene &scn)
 
     for (it = models.begin(); it != models.end(); it++)
     {
-        mat4 model = (*it).second.model;
         shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
-
-        GLuint modelID = glGetUniformLocation(depthProgram, "model");
-        glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
-
+        pMesh->SetBoneMatrices(depthProgram);
         pMesh->Draw();
     }
 }
@@ -164,8 +160,8 @@ void PickerPass::Init(uint32_t screenW, uint32_t screenH)
     Shader pickerShader;
     pickerShader.Create(
         string("PickerPass"),
-        string("PickerShader.vs"),
-        string("PickerShader.fs")
+        string("PickerShaderAnim.vs"),
+        string("PickerShaderAnim.fs")
     );
 
     pickerProgram = pickerShader.program;
@@ -199,15 +195,12 @@ void PickerPass::Render(Scene &scn)
 
     for (it = models.begin(); it != models.end(); it++)
     {
-        mat4 model = (*it).second.model;
-        GLuint modelID = glGetUniformLocation(pickerProgram, "model");
-        glUniformMatrix4fv(modelID, 1, false, &model[0][0]);
-
         vec3 pickerColor = (*it).second.pickerColor;
         GLuint pickerID = glGetUniformLocation(pickerProgram, "pickerColor");
         glUniform3fv(pickerID, 1, &pickerColor[0]);
 
         shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
+        pMesh->SetBoneMatrices(pickerProgram);
         pMesh->Draw();
     }
 }
@@ -416,7 +409,7 @@ void RenderPass::Render(Scene &scn, float t)
         glUniform1i(selectedID, (*it).second.selected);
 
         shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
-        (*it).second.SetModelMatrices(renderProgram, pMesh, t);
+        pMesh->SetBoneMatrices(renderProgram);
         pMesh->Draw();
     }
 

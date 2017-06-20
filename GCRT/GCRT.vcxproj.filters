@@ -214,9 +214,6 @@
     <None Include="BrightShader.vs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="BrightShader.fs">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="GaussBlur.vs">
       <Filter>Shaders</Filter>
     </None>
@@ -238,7 +235,22 @@
     <None Include="RenderShaderAnim.vs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="BrightShader.fs">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="RenderShaderAnim.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="PickerShaderAnim.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="PickerShaderAnim.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="DepthPassShaderAnim.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="DepthPassShaderAnim.fs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

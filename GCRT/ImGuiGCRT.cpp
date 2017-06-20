@@ -67,12 +67,12 @@ void Renderer::RenderSceneWindow()
             {
                 ImGui::Text("Material: %s", (*modelIt).second.matName.c_str());
                 
-                ImGui::Text(
+                /*ImGui::Text(
                     "Pos - x:%3.2f y:%3.2f z:%3.2f",
                     (*modelIt).second.pos.x,
                     (*modelIt).second.pos.y,
                     (*modelIt).second.pos.z
-                );
+                );*/
 
                 ImGui::TreePop();
             }
@@ -112,8 +112,8 @@ void Renderer::RenderSceneWindow()
                 Model newModel;
                 newModel.meshName = scn.meshNames[curMesh];
                 newModel.matName = scn.materialNames[curMat];
-                newModel.Translate(vec3(newPos[0], newPos[1], newPos[2]));
-                newModel.Scale(vec3(newScale[0], newScale[1], newScale[2]));
+                //newModel.Translate(vec3(newPos[0], newPos[1], newPos[2]));
+                //newModel.Scale(vec3(newScale[0], newScale[1], newScale[2]));
                 newModel.pickerColor = nextPickerColor();
                 scn.AddModel(string(newName), newModel);
 
@@ -337,12 +337,13 @@ void Renderer::RenderSelectionWindow()
 
     Model &model = scn.models[selected];
     RMaterial &mat = scn.materials[model.matName];
+    shared_ptr<Mesh> pMesh = scn.meshes[model.meshName];
 
     vec3 kd = mat.kd;
     float spec = mat.spec;
-    vec3 pos = model.pos;
-    vec3 scale = model.dims;
-    vec3 rotate = model.angles;
+    vec3 pos = pMesh->pos;
+    vec3 scale = pMesh->dims;
+    vec3 rotate = pMesh->angles;
 
     // Material.
 
@@ -408,24 +409,24 @@ void Renderer::RenderSelectionWindow()
 
     if (ImGui::InputFloat("Pos x", &pos.x, 0.01f, 1.0f))
     {
-        model.Translate(pos);
+        pMesh->Translate(pos);
     }
 
     if (ImGui::InputFloat("Pos y", &pos.y, 0.01f, 1.0f))
     {
-        model.Translate(pos);
+        pMesh->Translate(pos);
     }
 
     if (ImGui::InputFloat("Pos z", &pos.z, 0.01f, 1.0f))
     {
-        model.Translate(pos);
+        pMesh->Translate(pos);
     }
 
     ImGui::Spacing();
 
     if (ImGui::SliderFloat3("Pos", &pos[0], -20.0, 20.0))
     {
-        model.Translate(pos);
+        pMesh->Translate(pos);
     }
 
     // Scale
@@ -436,24 +437,24 @@ void Renderer::RenderSelectionWindow()
 
     if (ImGui::InputFloat("Scale x", &scale.x, 0.01f, 1.0f))
     {
-        model.Scale(scale);
+        pMesh->Scale(scale);
     }
 
     if (ImGui::InputFloat("Scale y", &scale.y, 0.01f, 1.0f))
     {
-        model.Scale(scale);
+        pMesh->Scale(scale);
     }
 
     if (ImGui::InputFloat("Scale z", &scale.z, 0.01f, 1.0f))
     {
-        model.Scale(scale);
+        pMesh->Scale(scale);
     }
 
     ImGui::Spacing();
 
     if (ImGui::SliderFloat3("Scale", &scale[0], -20.0, 20.0))
     {
-        model.Scale(scale);
+        pMesh->Scale(scale);
     }
 
     // Rotate
@@ -464,24 +465,24 @@ void Renderer::RenderSelectionWindow()
 
     if (ImGui::InputFloat("Rot x", &rotate.x, 0.01f, 1.0f))
     {
-        model.Rotate(rotate);
+        pMesh->Rotate(rotate);
     }
 
     if (ImGui::InputFloat("Rot y", &rotate.y, 0.01f, 1.0f))
     {
-        model.Rotate(rotate);
+        pMesh->Rotate(rotate);
     }
 
     if (ImGui::InputFloat("Rot z", &rotate.z, 0.01f, 1.0f))
     {
-        model.Rotate(rotate);
+        pMesh->Rotate(rotate);
     }
 
     ImGui::Spacing();
 
     if (ImGui::SliderFloat3("Rotate", &rotate[0], -pi<float>(), pi<float>()))
     {
-        model.Rotate(rotate);
+        pMesh->Rotate(rotate);
     }
 
     ImGui::End();

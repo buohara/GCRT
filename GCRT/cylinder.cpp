@@ -13,6 +13,8 @@ void Cylinder::Create(
     vector<vec3> norms;
     vector<vec2> uvs;
     vector<vec3> tans;
+    vector<ivec4> boneIDs;
+    vector<vec4> boneWts;
 
     animated = false;
 
@@ -21,8 +23,11 @@ void Cylinder::Create(
     GenUVs(uvs, numSectors);
     GenTans(tans, numSectors);
 
+    boneIDs.resize(pos.size(), ivec4(0));
+    boneWts.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
+
     subMeshes.resize(1);
-    InitVertexObjects(0, pos, norms, uvs, tans);
+    InitVertexObjects(0, pos, norms, uvs, tans, boneIDs, boneWts);
 }
 
 /**
@@ -220,13 +225,12 @@ void Cylinder::Draw()
 }
 
 /**
- * [Cylinder::Intersect description]
- * @param  org [description]
- * @param  ray [description]
- * @return     [description]
+ * [Cylinder::SetBoneMatrices description]
+ * @param renderProgram [description]
  */
 
-float Cylinder::Intersect(vec3 org, vec3 ray)
+void Cylinder::SetBoneMatrices(GLuint renderProgram)
 {
-    return -1.0;
+    GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
+    glUniformMatrix4fv(bonesID, 1, false, &model[0][0]);
 }

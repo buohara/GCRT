@@ -216,7 +216,7 @@ void Renderer::LoadTextures()
 void Renderer::InitLights()
 {
     DirectionalLight dirLight;
-    dirLight.pos = vec3(0.0, 25.0, 25.0);
+    dirLight.pos = vec3(0.0, -25.0, 25.0);
     dirLight.look = vec3(0.0, 0.0, 0.0);
     scn.dirLights.push_back(dirLight);
 
@@ -253,18 +253,19 @@ void Renderer::InitModels()
     pln.name = "Plane";
     pln.loadFromFile = false;
     pln.filePath = "NA";
+    pln.InitModelMatrices();
+    pln.Scale(vec3(10.0, 10.0, 1.0));
+
     scn.AddMesh("Plane", make_shared<Plane>(pln));
 
     Model plane;
     plane.meshName = string("Plane");
     plane.matName = string("Default");
     plane.pickerColor = nextPickerColor();
-    plane.InitModelMatrices();
-    plane.Scale(vec3(10.0, 10.0, 1.0));
     scn.AddModel("Plane0", plane);
 
     scn.LoadModelFromFile(
-        "Bones",
+        "LampGuy",
         "../asset/models/boblampclean/boblampclean.md5mesh",
         "",
         "",
@@ -281,7 +282,13 @@ void Renderer::InitModels()
 void Renderer::Render(HDC hDC)
 {
     scn.cam.Update();
-    
+
+    map<string, Model>::iterator it;
+    for (it = scn.models.begin(); it != scn.models.end(); it++)
+    {
+        scn.meshes[(*it).second.meshName]->UpdateAnimation(t);
+    }
+
     pickerPass.Render(scn);
     depthPass.Render(scn);
     renderPass.Render(scn, t);

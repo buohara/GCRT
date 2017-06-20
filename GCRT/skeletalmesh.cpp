@@ -1,25 +1,40 @@
 #include "skeletalmesh.h"
 
-/**
- * Create
- */
-
 mat4 globalInverse;
+
+/**
+ * [aiMatrix4x4ToGlm description]
+ * @param  from [description]
+ * @return      [description]
+ */
 
 inline mat4 aiMatrix4x4ToGlm(aiMatrix4x4& from)
 {
     glm::mat4 to;
 
-    to[0][0] = (GLfloat)from.a1; to[0][1] = (GLfloat)from.b1;  to[0][2] = (GLfloat)from.c1; to[0][3] = (GLfloat)from.d1;
-    to[1][0] = (GLfloat)from.a2; to[1][1] = (GLfloat)from.b2;  to[1][2] = (GLfloat)from.c2; to[1][3] = (GLfloat)from.d2;
-    to[2][0] = (GLfloat)from.a3; to[2][1] = (GLfloat)from.b3;  to[2][2] = (GLfloat)from.c3; to[2][3] = (GLfloat)from.d3;
-    to[3][0] = (GLfloat)from.a4; to[3][1] = (GLfloat)from.b4;  to[3][2] = (GLfloat)from.c4; to[3][3] = (GLfloat)from.d4;
+    to[0][0] = (GLfloat)from.a1;
+    to[0][1] = (GLfloat)from.b1;  
+    to[0][2] = (GLfloat)from.c1; 
+    to[0][3] = (GLfloat)from.d1;
+    to[1][0] = (GLfloat)from.a2; 
+    to[1][1] = (GLfloat)from.b2;
+    to[1][2] = (GLfloat)from.c2;
+    to[1][3] = (GLfloat)from.d2;
+    to[2][0] = (GLfloat)from.a3; 
+    to[2][1] = (GLfloat)from.b3;
+    to[2][2] = (GLfloat)from.c3;
+    to[2][3] = (GLfloat)from.d3;
+    to[3][0] = (GLfloat)from.a4;
+    to[3][1] = (GLfloat)from.b4;
+    to[3][2] = (GLfloat)from.c4;
+    to[3][3] = (GLfloat)from.d4;
 
     return to;
 }
 
 /**
- * Create
+ * [SkeletalMesh::Create description]
+ * @param file [description]
  */
 
 void SkeletalMesh::Create(string file)
@@ -32,6 +47,7 @@ void SkeletalMesh::Create(string file)
     ));
  
     subMeshes.resize(scene.mNumMeshes);
+    boneMats.resize(maxBones);
     animated = (scene.mNumAnimations > 0);
     map<string, mat4> boneOffsets;
 
@@ -41,14 +57,13 @@ void SkeletalMesh::Create(string file)
     root.name = scnRoot.mName.C_Str();
 
     globalInverse = aiMatrix4x4ToGlm(scnRoot.mTransformation.Inverse());
-
     CreateBoneHierarchy(scnRoot, root, boneOffsets);
-
     LoadAnimations(scene);
 }
 
 /**
- * LoadAnimations -
+ * [SkeletalMesh::LoadAnimations description]
+ * @param scene [description]
  */
 
 void SkeletalMesh::LoadAnimations(const aiScene &scene)
@@ -60,7 +75,9 @@ void SkeletalMesh::LoadAnimations(const aiScene &scene)
 }
 
 /**
- * LoadAnimation -
+ * [BoneTreeNode::LoadAnimation description]
+ * @param  anim [description]
+ * @return      [description]
  */
 
 bool BoneTreeNode::LoadAnimation(aiNodeAnim &anim)
@@ -120,7 +137,10 @@ bool BoneTreeNode::LoadAnimation(aiNodeAnim &anim)
 }
 
 /**
- * CreateBoneHierarchy -
+ * [SkeletalMesh::CreateBoneHierarchy description]
+ * @param aiNode      [description]
+ * @param btNode      [description]
+ * @param boneOffsets [description]
  */
 
 void SkeletalMesh::CreateBoneHierarchy(
@@ -156,7 +176,9 @@ void SkeletalMesh::CreateBoneHierarchy(
 }
 
 /**
- * LoadVertexAndBoneData - 
+ * [SkeletalMesh::LoadVertexAndBoneData description]
+ * @param scene       [description]
+ * @param boneOffsets [description]
  */
 
 void SkeletalMesh::LoadVertexAndBoneData(
@@ -172,6 +194,8 @@ void SkeletalMesh::LoadVertexAndBoneData(
         vector<vec3> norm;
         vector<vec2> uv;
         vector<uint32_t> idcs;
+        vector<ivec4> boneIDs;
+        vector<vec4> boneWeights;
 
         subMeshes[i].numVerts = mesh.mNumVertices;
         subMeshes[i].numIdcs = 3 * mesh.mNumFaces;
@@ -180,14 +204,14 @@ void SkeletalMesh::LoadVertexAndBoneData(
 
         if (animated == false)
         {
-            InitVertexObjects(i, pos, norm, uv, idcs);
+            boneIDs.push_back(ivec4(0));
+            boneIDs.push_back(vec4(1.0f, 0.0f, 0.0f, 0.0f));
+
+            InitVertexObjects(i, pos, norm, uv, idcs, boneIDs, boneWeights);
             continue;
         }
 
         // Bone IDs and weights.
-
-        vector<ivec4> boneIDs;
-        vector<vec4> boneWeights;
 
         LoadBoneData(mesh, boneIDs, boneWeights, boneOffsets);
         InitVertexObjects(i, pos, norm, uv, idcs, boneIDs, boneWeights);
@@ -195,7 +219,12 @@ void SkeletalMesh::LoadVertexAndBoneData(
 }
 
 /**
- * LoadVertexData - 
+ * [SkeletalMesh::LoadVertexData description]
+ * @param mesh [description]
+ * @param pos  [description]
+ * @param norm [description]
+ * @param UV   [description]
+ * @param idcs [description]
  */
 
 void SkeletalMesh::LoadVertexData(
@@ -238,7 +267,11 @@ void SkeletalMesh::LoadVertexData(
 }
 
 /**
- * LoadBoneData -
+ * [SkeletalMesh::LoadBoneData description]
+ * @param mesh        [description]
+ * @param boneIDs     [description]
+ * @param boneWts     [description]
+ * @param boneOffsets [description]
  */
 
 void SkeletalMesh::LoadBoneData(
@@ -305,22 +338,40 @@ void SkeletalMesh::LoadBoneData(
 }
 
 /**
- * SetAnimationMatrices
+ * [SkeletalMesh::UpdateAnimation description]
+ * @param t             [description]
  */
 
-void SkeletalMesh::SetBoneMatrices(float t, GLuint renderProgram)
+void SkeletalMesh::UpdateAnimation(float t)
 {
-    uint32_t numBones = boneMap.size();
-    vector<mat4> boneMats(numBones);
-    root.GetBoneMatrices(t, boneMats, scale(vec3(0.1f, 0.1f, 0.1f)), boneMap);
-
-    GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
-    glUniformMatrix4fv(bonesID, numBones, false, value_ptr(boneMats[0]));
-
+    if (animated == true)
+    {
+        root.GetBoneMatrices(t, boneMats, scale(vec3(0.1f, 0.1f, 0.1f)), boneMap);
+    }
+    else
+    {
+        boneMats.push_back(model);
+    }
 }
 
 /**
- * SetAnimationMatrices
+ * [SkeletalMesh::SetBoneMatrices description]
+ * @param renderProgram [description]
+ */
+
+void SkeletalMesh::SetBoneMatrices(GLuint renderProgram)
+{
+    uint32_t numBones = boneMap.size();
+    GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
+    glUniformMatrix4fv(bonesID, numBones, false, value_ptr(boneMats[0]));
+}
+
+/**
+ * [BoneTreeNode::GetBoneMatrices description]
+ * @param t        [description]
+ * @param matrices [description]
+ * @param parent   [description]
+ * @param boneMap  [description]
  */
 
 void BoneTreeNode::GetBoneMatrices(
@@ -354,7 +405,7 @@ void BoneTreeNode::GetBoneMatrices(
 }
 
 /**
- * Draw
+ * [SkeletalMesh::Draw description]
  */
 
 void SkeletalMesh::Draw()

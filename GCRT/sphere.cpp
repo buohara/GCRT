@@ -1,7 +1,9 @@
 #include "sphere.h"
 
 /**
- * Create - Create a sphere.
+ * [Sphere::Create description]
+ * @param numSectors [description]
+ * @param numRings   [description]
  */
 
 void Sphere::Create(
@@ -13,6 +15,8 @@ void Sphere::Create(
     vector<vec3> norms;
     vector<vec2> uvs;
     vector<vec3> tans;
+    vector<ivec4> boneIDs;
+    vector<vec4> boneWts;
 
     animated = false;
 
@@ -21,12 +25,18 @@ void Sphere::Create(
     GenUVs(uvs, numSectors, numRings);
     GenTans(tans, numSectors, numRings);
 
+    boneIDs.resize(pos.size(), ivec4(0));
+    boneWts.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
+
     subMeshes.resize(1);
-    InitVertexObjects(0, pos, norms, uvs, tans);
+    InitVertexObjects(0, pos, norms, uvs, tans, boneIDs, boneWts);
 }
 
 /**
- * GenPositions
+ * [Sphere::GenPositions description]
+ * @param pos        [description]
+ * @param numSectors [description]
+ * @param numRings   [description]
  */
 
 void Sphere::GenPositions(vector<vec3> &pos, uint32_t numSectors, uint32_t numRings)
@@ -98,7 +108,10 @@ void Sphere::GenPositions(vector<vec3> &pos, uint32_t numSectors, uint32_t numRi
 }
 
 /**
- * GenNormals
+ * [Sphere::GenNormals description]
+ * @param norms      [description]
+ * @param numSectors [description]
+ * @param numRings   [description]
  */
 
 void Sphere::GenNormals(vector<vec3> &norms, uint32_t numSectors, uint32_t numRings)
@@ -159,7 +172,10 @@ void Sphere::GenNormals(vector<vec3> &norms, uint32_t numSectors, uint32_t numRi
 }
 
 /**
- * GenUVs
+ * [Sphere::GenUVs description]
+ * @param uvs        [description]
+ * @param numSectors [description]
+ * @param numRings   [description]
  */
 
 void Sphere::GenUVs(vector<vec2> &uvs, uint32_t numSectors, uint32_t numRings)
@@ -216,7 +232,10 @@ void Sphere::GenUVs(vector<vec2> &uvs, uint32_t numSectors, uint32_t numRings)
 }
 
 /**
- * GenTans
+ * [Sphere::GenTans description]
+ * @param tans       [description]
+ * @param numSectors [description]
+ * @param numRings   [description]
  */
 
 void Sphere::GenTans(vector<vec3> &tans, uint32_t numSectors, uint32_t numRings)
@@ -276,8 +295,7 @@ void Sphere::GenTans(vector<vec3> &tans, uint32_t numSectors, uint32_t numRings)
 }
 
 /**
- * Draw - Draw the sphere. Set it's model matrices and color in the shader.
- * Sphere is drawn in three parts: sides, top cap, and bottom cap.
+ * [Sphere::Draw description]
  */
 
 void Sphere::Draw()
@@ -290,10 +308,12 @@ void Sphere::Draw()
 }
 
 /**
- * Intersect.
+ * [Sphere::SetBoneMatrices description]
+ * @param renderProgram [description]
  */
 
-float Sphere::Intersect(vec3 org, vec3 ray)
+void Sphere::SetBoneMatrices(GLuint renderProgram)
 {
-    return -1.0;
+    GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
+    glUniformMatrix4fv(bonesID, 1, false, &model[0][0]);
 }

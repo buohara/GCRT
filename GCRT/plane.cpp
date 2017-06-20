@@ -17,6 +17,8 @@ void Plane::Create(
     vector<vec3> norms;
     vector<vec2> uvs;
     vector<vec3> tans;
+    vector<ivec4> boneIDs;
+    vector<vec4> boneWts;
 
     animated = false;
 
@@ -24,10 +26,13 @@ void Plane::Create(
     GenNormals(norms, rows, cols);
     GenUVs(uvs, rows, cols);
     GenTangents(tans, rows, cols);
+    
+    boneIDs.resize(pos.size(), ivec4(0));
+    boneWts.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
 
     numVerts = (uint32_t)pos.size();
     subMeshes.resize(1);
-    InitVertexObjects(0, pos, norms, uvs);
+    InitVertexObjects(0, pos, norms, uvs, boneIDs, boneWts);
 }
 
 /**
@@ -189,4 +194,15 @@ void Plane::Draw()
     glBindVertexArray(subMeshes[0].vaoID);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, numVerts);
     glBindVertexArray(0);
+}
+
+/**
+ * [Plane::SetBoneMatrices description]
+ * @param renderProgram [description]
+ */
+
+void Plane::SetBoneMatrices(GLuint renderProgram)
+{
+    GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
+    glUniformMatrix4fv(bonesID, 1, false, &model[0][0]);
 }

@@ -137,7 +137,7 @@ void Scene::Save(string file)
         fout << (*modIt).second.meshName << endl;
         fout << (*modIt).second.matName << endl;
         
-        fout << 
+        /*fout << 
             (*modIt).second.pos.x << " " <<
             (*modIt).second.pos.y << " " <<
             (*modIt).second.pos.z << endl;
@@ -145,7 +145,7 @@ void Scene::Save(string file)
         fout << 
             (*modIt).second.dims.x << " " <<
             (*modIt).second.dims.y << " " <<
-            (*modIt).second.dims.z << endl;
+            (*modIt).second.dims.z << endl;*/
         
         fout 
             << (*modIt).second.pickerColor.x << " "
@@ -509,15 +509,7 @@ void Scene::Load(string file)
         newModel.meshName = meshName;
         newModel.matName = matName;
         newModel.pickerColor = pickerColor;
-        newModel.InitModelMatrices();
-        newModel.Translate(pos);
-        newModel.Scale(dims);
         newModel.selected = false;
-
-        if (meshes[meshName]->loadFromFile == true)
-        {
-            newModel.Rotate(vec3(0.0, pi<float>(), 0.0));
-        }
 
         AddModel(name, newModel);
     }
@@ -723,6 +715,10 @@ void Scene::LoadModelFromFile(
     mesh.loadFromFile = true;
     mesh.filePath = modelFile;
     mesh.name = name;
+    mesh.InitModelMatrices();
+    mesh.Scale(vec3(0.05, 0.05, 0.05));
+    mesh.Translate(vec3(-2.0, -2.0, 5.0));
+
     AddMesh(name, make_shared<SkeletalMesh>(mesh));
 
     if (meshOnly)
@@ -734,9 +730,7 @@ void Scene::LoadModelFromFile(
     model.meshName = name;
     model.matName = string("Default");
     model.pickerColor = pickerColor;
-    model.InitModelMatrices();
-    model.Scale(vec3(0.05, 0.05, 0.05));
-    model.Translate(vec3(-2.0, -2.0, 5.0));
+
     //model.Rotate(vec3(0.0, pi<float>(), 0.0));
 
     AddModel(name, model);

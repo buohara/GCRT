@@ -6,12 +6,10 @@ in vec3 passTan;
 in vec3 passBitan;
 in vec2 passUV;
 
+in mat4 passModel;
+in mat4 passModelInv;
+
 out vec4 color;
-
-// Geometry uniforms
-
-uniform mat4 model;
-uniform mat4 modelInv;
 
 // Camera uniforms
 
@@ -49,7 +47,7 @@ uniform int selected;
 
 vec4 getDiffuse()
 {
-    vec4 pos        = model * passPos;
+    vec4 pos        = passModel * passPos;
     vec3 lightVec   = normalize(lightPos - pos.xyz);
     float dist      = length(lightVec);
     vec3 norm;
@@ -58,11 +56,11 @@ vec4 getDiffuse()
     {
         mat3 tbn    = mat3(passTan.xyz, passBitan.xyz, passNorm.xyz);
         vec3 nmNorm = tbn * (2 * texture2D(normalTex, passUV).rgb - 1);
-        norm        = normalize(modelInv * vec4(nmNorm, 1)).xyz;
+        norm        = normalize(passModelInv * vec4(nmNorm, 1)).xyz;
     }
     else
     {
-        norm = normalize((modelInv * passNorm).xyz);
+        norm = normalize((passModelInv * passNorm).xyz);
     }
 
     float theta = max(dot(norm, lightVec), 0) / (dist * dist);
@@ -83,7 +81,7 @@ vec4 getDiffuse()
 
 vec4 getSpecular()
 {
-    vec4 pos        = model * passPos;
+    vec4 pos        = passModel * passPos;
     vec3 lightVec   = normalize(lightPos - pos.xyz);
     vec3 norm;
 
@@ -91,11 +89,11 @@ vec4 getSpecular()
     {
         mat3 tbn    = mat3(passTan.xyz, passBitan.xyz, passNorm.xyz);
         vec3 nmNorm = tbn * (2 * texture2D(normalTex, passUV).rgb - 1);
-        norm        = normalize(modelInv * vec4(nmNorm, 1)).xyz;
+        norm        = normalize(passModelInv * vec4(nmNorm, 1)).xyz;
     }
     else
     {
-        norm = normalize((modelInv * passNorm).xyz);
+        norm = normalize((passModelInv * passNorm).xyz);
     }
 
     vec3 camVec = normalize(camPos - pos.xyz);
@@ -123,7 +121,7 @@ vec4 getSpecular()
 
 float getVisibility()
 {
-    vec4 posLightSpace = lightProj * lightView * model * passPos;
+    vec4 posLightSpace = lightProj * lightView * passModel * passPos;
     posLightSpace.xyz = posLightSpace.xyz * 0.5 + 0.5;
 
     float shadowDepth = textureProj(depthTex, posLightSpace).z;
@@ -146,7 +144,7 @@ float getVisibility()
 
 float getDOFBlur()
 {
-    float posz = -(view * model * passPos).z;
+    float posz = -(view * passModel * passPos).z;
     float blur = 0.0;
 
     if (posz < focusPlanes.y)

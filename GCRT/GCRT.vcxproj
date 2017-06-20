@@ -219,12 +219,16 @@
     <None Include="Compose.vs" />
     <None Include="DepthPassShader.fs" />
     <None Include="DepthPassShader.vs" />
+    <None Include="DepthPassShaderAnim.fs" />
+    <None Include="DepthPassShaderAnim.vs" />
     <None Include="DOFShader.fs" />
     <None Include="DOFShader.vs" />
     <None Include="GaussBlur.fs" />
     <None Include="GaussBlur.vs" />
     <None Include="PickerShader.fs" />
     <None Include="PickerShader.vs" />
+    <None Include="PickerShaderAnim.fs" />
+    <None Include="PickerShaderAnim.vs" />
     <None Include="RenderShader.fs" />
     <None Include="RenderShader.vs" />
     <None Include="RenderShaderAnim.fs" />

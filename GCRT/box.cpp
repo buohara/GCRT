@@ -16,6 +16,8 @@ void Box::Create()
     vector<vec3> norms;
     vector<vec2> uvs;
     vector<vec3> tans;
+    vector<ivec4> boneIDs;
+    vector<vec4> boneWts;
 
     animated = false;
 
@@ -24,14 +26,18 @@ void Box::Create()
     GenUVs(uvs);
     GenTans(tans);
 
+    boneIDs.resize(pos.size(), ivec4(0));
+    boneWts.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
+
     numVerts = (uint32_t)pos.size();
 
     subMeshes.resize(1);
-    InitVertexObjects(0, pos, norms, uvs, tans);
+    InitVertexObjects(0, pos, norms, uvs, tans, boneIDs, boneWts);
 }
 
 /**
- * GenPositions
+ * [Box::GenPositions description]
+ * @param pos [description]
  */
 
 void Box::GenPositions(vector<vec3> &pos)
@@ -102,7 +108,8 @@ void Box::GenPositions(vector<vec3> &pos)
 }
 
 /**
- * GenNormals
+ * [Box::GenNormals description]
+ * @param norms [description]
  */
 
 void Box::GenNormals(vector<vec3> &norms)
@@ -173,7 +180,8 @@ void Box::GenNormals(vector<vec3> &norms)
 }
 
 /**
- * GenUVs
+ * [Box::GenUVs description]
+ * @param uvs [description]
  */
 
 void Box::GenUVs(vector<vec2> &uvs)
@@ -244,7 +252,8 @@ void Box::GenUVs(vector<vec2> &uvs)
 }
 
 /**
- * GenTans
+ * [Box::GenTans description]
+ * @param tans [description]
  */
 
 void Box::GenTans(vector<vec3> &tans)
@@ -311,7 +320,7 @@ void Box::GenTans(vector<vec3> &tans)
 }
 
 /**
- * Draw - Draw the box. Set it's model matrices and color in the shader.
+ * [Box::Draw description]
  */
 
 void Box::Draw()
@@ -319,4 +328,15 @@ void Box::Draw()
     glBindVertexArray(subMeshes[0].vaoID);
     glDrawArrays(GL_TRIANGLES, 0, numVerts);
     glBindVertexArray(0);
+}
+
+/**
+ * [Box::SetBoneMatrices description]
+ * @param renderProgram [description]
+ */
+
+void Box::SetBoneMatrices(GLuint renderProgram)
+{
+    GLuint bonesID = glGetUniformLocation(renderProgram, "bones");
+    glUniformMatrix4fv(bonesID, 1, false, &model[0][0]);
 }
