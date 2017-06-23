@@ -2,6 +2,22 @@
 
 #include "scene.h"
 
+void RTMain();
+
+struct Ray
+{
+    vec3 org;
+    vec3 dir;
+};
+
+struct Intersection
+{
+    double t;
+    vec3 normal;
+    vec3 ka;
+    vec3 kd;
+};
+
 struct RayTraceIn
 {
     map<string, Model> models;

@@ -22,6 +22,9 @@
     <Filter Include="GA">
       <UniqueIdentifier>{2acfc4c7-6bd2-4b9e-9e5f-dd57ed5d5177}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RT">
+      <UniqueIdentifier>{ae247cb2-ad44-47a5-bf21-0246ece0ff67}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GCRTMain.cpp">
@@ -81,9 +84,6 @@
     <ClCompile Include="mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="raytrace.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\libgasandbox\c3ga.cpp">
       <Filter>GA</Filter>
     </ClCompile>
@@ -101,6 +101,21 @@
     </ClCompile>
     <ClCompile Include="skeletalmesh.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="raytrace.cpp">
+      <Filter>RT</Filter>
+    </ClCompile>
+    <ClCompile Include="rtcamera.cpp">
+      <Filter>RT</Filter>
+    </ClCompile>
+    <ClCompile Include="sampler.cpp">
+      <Filter>RT</Filter>
+    </ClCompile>
+    <ClCompile Include="rtrenderer.cpp">
+      <Filter>RT</Filter>
+    </ClCompile>
+    <ClCompile Include="rtscene.cpp">
+      <Filter>RT</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -170,9 +185,6 @@
     <ClInclude Include="mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="raytrace.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\libgasandbox\c3ga.h">
       <Filter>GA</Filter>
     </ClInclude>
@@ -190,6 +202,21 @@
     </ClInclude>
     <ClInclude Include="skeletalmesh.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="raytrace.h">
+      <Filter>RT</Filter>
+    </ClInclude>
+    <ClInclude Include="rtcamera.h">
+      <Filter>RT</Filter>
+    </ClInclude>
+    <ClInclude Include="sampler.h">
+      <Filter>RT</Filter>
+    </ClInclude>
+    <ClInclude Include="rtrenderer.h">
+      <Filter>RT</Filter>
+    </ClInclude>
+    <ClInclude Include="rtscene.h">
+      <Filter>RT</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

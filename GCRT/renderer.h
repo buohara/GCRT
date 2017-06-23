@@ -16,6 +16,7 @@ struct RenderSettings
     uint32_t msaaSamples;
     bool loadSceneFromFile;
     string sceneName;
+    bool rtDebug;
 };
 
 struct Renderer

@@ -13,6 +13,12 @@ void Renderer::Init()
 
     LoadSettings("settings.txt");
 
+    if (settings.rtDebug == true)
+    {
+        RTMain();
+        exit(0);
+    }
+
     nextPickClr[0] = 0.0f;
     nextPickClr[1] = 0.0f;
     nextPickClr[2] = 0.1f;
@@ -517,6 +523,7 @@ void Renderer::LoadSettings(string file)
     bool wireFrame;
     bool useDOF;
     bool useBloom;
+    bool rtDebug;
     uint32_t msaaSamples;
     bool loadSceneFromFile;
     string scene;
@@ -524,7 +531,17 @@ void Renderer::LoadSettings(string file)
     getline(fin, line);
     getline(fin, line);
     iss.str(line);
-    iss >> winW >> winH >> wireFrame >> useDOF >> useBloom >> msaaSamples >> loadSceneFromFile >> scene;
+    
+    iss 
+        >> winW 
+        >> winH 
+        >> wireFrame 
+        >> useDOF 
+        >> useBloom 
+        >> msaaSamples 
+        >> loadSceneFromFile 
+        >> scene
+        >> rtDebug;
 
     settings.winW = winW;
     settings.winH = winH;
@@ -534,6 +551,7 @@ void Renderer::LoadSettings(string file)
     settings.msaaSamples = msaaSamples;
     settings.loadSceneFromFile = loadSceneFromFile;
     settings.sceneName = scene;
+    settings.rtDebug = rtDebug;
 
     fin.close();
 }

@@ -168,7 +168,7 @@ float getDOFBlur()
  * depth map.
  */
 
-vec4 getSSSFactor()
+float getSSSFactor()
 {
     vec4 posLightSpace = lightProj * lightView * passModel * passPos;
     posLightSpace.xyz = posLightSpace.xyz * 0.5 + 0.5;
@@ -178,11 +178,11 @@ vec4 getSSSFactor()
 
     if (posLightSpace.z - 0.001> shadowDepth)
     {
-        return exp(-depth) * vec4(0.1, 0.1, 0.4, 0.0);
+        return 0.2 * exp(-30 * depth);
     }
     else
     {
-        return vec4(0);
+        return 0.2;
     }
 }
 
@@ -201,7 +201,12 @@ void main()
         diffuseColor += vec4(0.2, 0.2, 0.2, 0.0);
     }
 
-    color = visibility * (diffuseColor + specColor);
+    if (useSSS == 1)
+    {
+        diffuseColor += getSSSFactor();
+    }
+
+    color = (diffuseColor + specColor);
 
     if (useDOF == 1)
     {

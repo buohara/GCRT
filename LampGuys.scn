@@ -8,7 +8,17 @@ NORMAL_TEXTURES 1
 DirtNormal
 ../asset/dirtnormal.jpg
 
-MATERIALS 1
+MATERIALS 2
+
+BlueBump
+1
+0
+0
+1
+NA
+DirtNormal
+0 1.818 3.861
+0.478
 
 Default
 0
@@ -17,10 +27,18 @@ Default
 1
 NA
 NA
-0.051 0.707 2.772
+0.5 0.5 0.5
 26.842
 
 MESHES 5
+
+Box
+0
+NA
+
+Cylinder
+0
+NA
 
 LampGuy
 1
@@ -34,15 +52,15 @@ Sphere
 0
 NA
 
+MODELS 5
+
 Cylinder
-0
-NA
-
-Box
-0
-NA
-
-MODELS 3
+Cylinder
+BlueBump
+-5 5 2.97
+2.222 2.222 6.931
+0 0 0
+0.1 0.2 0.2 
 
 LampGuy
 LampGuy
@@ -56,7 +74,7 @@ NewLampGuy
 LampGuy
 Default
 -2 -2 0
-0.2 0.2 0.2
+0.08 0.08 0.08
 0 0 -0.5
 0 0.1 0.1 
 
@@ -68,12 +86,20 @@ Default
 0 0 0
 0.1 0.1 0.1 
 
+Sphere
+Sphere
+Default
+5 5 5
+0.5 0.5 2
+0 0 0
+0.1 0.1 0.2 
+
 CAMERA 
 
-13.8035 -19.8278 9.6499
-13.2931 -18.98 9.5058
+20.8695 -10.9505 10.9635
+20.211 -10.2231 10.7704
 1.77778
-72.6
+71.4
 1
 100
 
