@@ -16,7 +16,7 @@ DWORD WINAPI RayTracer::RTThreadFunc(LPVOID lpParam)
 void RTMain()
 {
     RTRenderer rndr;
-    rndr.Init(1920, 1080);
+    rndr.Init(512, 512);
     rndr.Render();
-    rndr.SaveImage("C:/Users/SLI/Desktop/test.jpg");
+    rndr.SaveImage("C:/Users/beno.NVIDIA.COM/Desktop/test.jpg");
 }

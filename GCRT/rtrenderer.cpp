@@ -1,32 +1,87 @@
 #include "rtrenderer.h"
 
+/**
+ * [RTRenderer::Init description]
+ * @param w [description]
+ * @param h [description]
+ */
+
 void RTRenderer::Init(uint32_t w, uint32_t h)
 {
+    // Initialize camera and output image.
+
     imageW = w;
     imageH = h;
+
     image.resize(imageW * imageH);
 
-    vec3 camPos = vec3(10.0, 10.0, 10.0);
-    vec3 camLook = vec3(0.0, 0.0, 0.0);
+    dvec3 camPos = dvec3(5.0, 5.0, 5.0);
+    dvec3 camLook = dvec3(0.0, 0.0, 0.0);
+    
+    scn.cam.Init(imageW, imageH, camPos, camLook, 75.0);
+   
+    // Scene and materials.
+
+    RTMaterial mirrorMat;
+    mirrorMat.name = "Mirror";
+    mirrorMat.type = "Mirror";
+
+    RTMaterial glassMat;
+    glassMat.name = "Glass";
+    glassMat.type = "Glass";
+
+    RTMaterial greenMat;
+    greenMat.name = "GreenMatte";
+    greenMat.kd = dvec3(0.1, 0.7, 0.2);
+    greenMat.type = "Matte";
+    greenMat.maxAlpha = 1.0;
+
+    RTMaterial redMat;
+    redMat.name = "RedMatte";
+    redMat.kd = dvec3(0.7, 0.1, 0.2);
+    redMat.type = "Matte";
+    greenMat.maxAlpha = 1.0;
+
+    RTMaterial lightMat;
+    lightMat.name = "Light";
+    lightMat.type = "Light";
+    lightMat.lightColor = dvec3(100.0, 100.0, 100.0);
 
     scn.plane.normal = vec4(0.0, 0.0, 1.0, 0.0);
-    scn.plane.ka = vec3(0.0, 0.0, 0.0);
-    scn.plane.kd = vec3(0.1, 0.3, 0.7);
+    scn.plane.mat = greenMat;
 
-    RTSphere sph;
-    sph.orgn = vec3(2.0, -2.0, 2.0);
-    sph.r = 1.5;
-    sph.ka = vec3(0.2, 0.02, 0.01);
-    sph.kd = vec3(0.7, 0.1, 0.1);
+    RTSphere redSph;
+    redSph.orgn = dvec3(2.0, -2.0, 2.0);
+    redSph.r = 1.0;
+    redSph.mat = redMat;
+    scn.spheres.push_back(redSph);
 
-    RTLight light;
-    light.pos = vec3(0.0, 5.0, 10.0);
-    light.color = vec3(1.0, 1.0, 1.0);
-    scn.lights.push_back(light);
+    RTSphere mirrSph;
+    mirrSph.orgn = dvec3(0.0, 0.0, 0.0);
+    mirrSph.r = 1.0;
+    mirrSph.mat = mirrorMat;
+    scn.spheres.push_back(mirrSph);
 
-    scn.spheres.push_back(sph);
-    scn.cam.Init(imageW, imageH, camPos, camLook, 75.0);
+    RTSphere glassSph;
+    glassSph.orgn = dvec3(-2.0, -2.0, 2.0);
+    glassSph.r = 1.5;
+    glassSph.mat = glassMat;
+    //scn.spheres.push_back(glassSph);
+
+    RTSphere lightSph;
+    lightSph.orgn = dvec3(0.0, 5.0, 2.0);
+    lightSph.r = 1.0;
+    lightSph.mat = lightMat;
+    scn.spheres.push_back(lightSph);
+
+    // Integrator params
+
+    integrator.numRays = 16;
 }
+
+/**
+ * [RTRenderer::Render description]
+ */
 
 void RTRenderer::Render()
 {
@@ -34,63 +89,35 @@ void RTRenderer::Render()
     {
         for (uint32_t x = 0; x < imageW; x++)
         {
-            vector<vec2> samples;
+            vector<dvec2> samples;
             samples.resize(1);
             sampler.GenerateSamples(1, x, y, samples);
             Ray ray = scn.cam.GenerateRay(samples[0]);
-
-            vec3 curColor = vec3(0.1, 0.1, 0.1);
-            double minDist = DBL_MAX;
-            
-            Intersection intsc = scn.plane.Intersect(ray);
+         
+            Intersection intsc = scn.Intersect(ray);
+            dvec3 color = dvec3(0.0, 0.0, 0.0);
 
             if (intsc.t > 0.0)
             {
-                minDist = intsc.t;
-                curColor = scn.plane.ka;
-
-                Ray newRay;
-                newRay.org = ray.org + ray.dir * (float)intsc.t;
-                newRay.dir = normalize(scn.lights[0].pos - newRay.org);
-                double theta = dot(newRay.dir, intsc.normal);
-
-                if (theta > 0.0)
-                {
-                    Intersection intsc2 = scn.spheres[0].Intersect(newRay);
-                    if (intsc2.t < 0.0)
-                    {
-                        float d = length(scn.lights[0].pos - newRay.org);
-                        curColor += intsc.kd * (float)theta;
-                    }
-                }
+                color = integrator.SampleSurface(
+                    ray,
+                    scn,
+                    intsc,
+                    1,
+                    2
+                );
             }
 
-            for (uint32_t i = 0; i < scn.spheres.size(); i++)
-            {
-                intsc = scn.spheres[i].Intersect(ray);
-
-                if ((intsc.t > 0.0) && (intsc.t < minDist))
-                {
-                    minDist = intsc.t;
-                    curColor = scn.spheres[i].ka;
-
-                    Ray newRay;
-                    newRay.org = ray.org + ray.dir * (float)intsc.t;
-                    newRay.dir = normalize(scn.lights[0].pos - newRay.org);
-                    double theta = dot(newRay.dir, intsc.normal);
-
-                    if (theta > 0.0)
-                    {
-                        float d = length(scn.lights[0].pos - newRay.org);
-                        curColor += intsc.kd * (float)theta;
-                    }
-                }
-            }
-
-            image[y * imageW + x] = curColor;
+            color = dvec3(1.0) - glm::exp(-color);
+            image[y * imageW + x] = color;
         }
     }
 }
+
+/**
+ * [RTRenderer::SaveImage description]
+ * @param fileName [description]
+ */
 
 void RTRenderer::SaveImage(string fileName)
 {
@@ -104,7 +131,7 @@ void RTRenderer::SaveImage(string fileName)
         1,
         3,
         IL_RGB,
-        IL_FLOAT,
+        IL_DOUBLE,
         &image[0]
     );
 

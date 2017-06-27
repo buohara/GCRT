@@ -1,6 +1,5 @@
 #pragma once
 
-#include "sampler.h"
 #include "GCRT.h"
 #include "raytrace.h"
 
@@ -19,15 +18,15 @@ struct RTCamera
     double imageH;
 
     mat4 viewInv;
-    vec3 pos;
+    dvec3 pos;
 
     void Init(
         uint32_t w,
         uint32_t h,
-        vec3 posIn,
-        vec3 look,
+        dvec3 posIn,
+        dvec3 look,
         double fov
     );
     
-    Ray GenerateRay(vec2 pixel);
+    Ray GenerateRay(dvec2 pixel);
 };

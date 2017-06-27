@@ -184,6 +184,7 @@
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="sphere.cpp" />
+    <ClCompile Include="surfaceintegrator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\imgui\imconfig.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="..\libgasandbox\e3ga_util.h" />
     <ClInclude Include="animation.h" />
     <ClInclude Include="rtcamera.h" />
+    <ClInclude Include="rtmaterial.h" />
     <ClInclude Include="rtrenderer.h" />
     <ClInclude Include="rtscene.h" />
     <ClInclude Include="sampler.h" />
@@ -219,6 +221,7 @@
     <ClInclude Include="scene.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="sphere.h" />
+    <ClInclude Include="surfaceintegrator.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BrightShader.fs" />

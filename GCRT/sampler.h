@@ -14,6 +14,6 @@ struct Sampler
         uint32_t numSamples,
         uint32_t x,
         uint32_t y,
-        vector<vec2> &samples
+        vector<dvec2> &samples
     );
 };

@@ -1,10 +1,19 @@
 #include "rtcamera.h"
 
+/**
+ * [RTCamera::Init description]
+ * @param w     [description]
+ * @param h     [description]
+ * @param posIn [description]
+ * @param look  [description]
+ * @param fov   [description]
+ */
+
 void RTCamera::Init(
     uint32_t w,
     uint32_t h,
-    vec3 posIn,
-    vec3 look,
+    dvec3 posIn,
+    dvec3 look,
     double fov
 )
 {
@@ -15,15 +24,21 @@ void RTCamera::Init(
 
     pos = posIn;
 
-    viewInv = lookAt(pos, look, vec3(0.0, 0.0, 1.0));
+    viewInv = lookAt(pos, look, dvec3(0.0, 0.0, 1.0));
     viewInv = inverse(viewInv);
 }
 
-Ray RTCamera::GenerateRay(vec2 pixel)
+/**
+ * [RTCamera::GenerateRay description]
+ * @param  pixel [description]
+ * @return       [description]
+ */
+
+Ray RTCamera::GenerateRay(dvec2 pixel)
 {
     Ray ray;
 
-    vec3 dir;
+    dvec3 dir;
     dir.x = (2.0 * pixel.x / imageW - 1.0) * tanfov * aspect;
     dir.y = (2.0 * pixel.y / imageH - 1.0) * tanfov;
     dir.z = -1.0;

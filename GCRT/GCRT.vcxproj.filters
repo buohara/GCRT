@@ -117,6 +117,9 @@
     <ClCompile Include="rtscene.cpp">
       <Filter>RT</Filter>
     </ClCompile>
+    <ClCompile Include="surfaceintegrator.cpp">
+      <Filter>RT</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GCRT.h">
@@ -216,6 +219,12 @@
       <Filter>RT</Filter>
     </ClInclude>
     <ClInclude Include="rtscene.h">
+      <Filter>RT</Filter>
+    </ClInclude>
+    <ClInclude Include="surfaceintegrator.h">
+      <Filter>RT</Filter>
+    </ClInclude>
+    <ClInclude Include="rtmaterial.h">
       <Filter>RT</Filter>
     </ClInclude>
   </ItemGroup>
