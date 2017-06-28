@@ -105,9 +105,6 @@
     <ClCompile Include="raytrace.cpp">
       <Filter>RT</Filter>
     </ClCompile>
-    <ClCompile Include="rtcamera.cpp">
-      <Filter>RT</Filter>
-    </ClCompile>
     <ClCompile Include="sampler.cpp">
       <Filter>RT</Filter>
     </ClCompile>
@@ -209,9 +206,6 @@
     <ClInclude Include="raytrace.h">
       <Filter>RT</Filter>
     </ClInclude>
-    <ClInclude Include="rtcamera.h">
-      <Filter>RT</Filter>
-    </ClInclude>
     <ClInclude Include="sampler.h">
       <Filter>RT</Filter>
     </ClInclude>
@@ -222,9 +216,6 @@
       <Filter>RT</Filter>
     </ClInclude>
     <ClInclude Include="surfaceintegrator.h">
-      <Filter>RT</Filter>
-    </ClInclude>
-    <ClInclude Include="rtmaterial.h">
       <Filter>RT</Filter>
     </ClInclude>
   </ItemGroup>

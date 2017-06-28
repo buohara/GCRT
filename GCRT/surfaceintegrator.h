@@ -1,15 +1,20 @@
 #pragma once
 
 #include "GCRT.h"
-#include "raytrace.h"
 #include "rtscene.h"
 
 using namespace glm;
+using namespace std;
 
 struct SurfaceIntegrator
-{
-    uint32_t numRays;
+{   
+    vector<dvec4> sphereSamples;
+    vector<dmat4> randomRotations;
     
+    dmat4 NextRotation();
+
+    void GenerateSamplePoints(uint32_t numSamples);
+
     dvec3 SampleSurface(
         Ray ray,
         RTScene &scn,

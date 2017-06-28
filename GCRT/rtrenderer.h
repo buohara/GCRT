@@ -18,5 +18,6 @@ struct RTRenderer
 
     void Render();
     void Init(uint32_t w, uint32_t h);
+    void InitScene();
     void SaveImage(string fileName);
 };

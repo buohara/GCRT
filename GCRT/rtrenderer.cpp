@@ -8,20 +8,26 @@
 
 void RTRenderer::Init(uint32_t w, uint32_t h)
 {
-    // Initialize camera and output image.
-
     imageW = w;
     imageH = h;
 
     image.resize(imageW * imageH);
 
-    dvec3 camPos = dvec3(5.0, 5.0, 5.0);
-    dvec3 camLook = dvec3(0.0, 0.0, 0.0);
-    
+    dvec3 camPos = dvec3(10.0, 10.0, 10.0);
+    dvec3 camLook = dvec3(0.0, 0.0, 3.0);
     scn.cam.Init(imageW, imageH, camPos, camLook, 75.0);
-   
-    // Scene and materials.
+    
+    integrator.GenerateSamplePoints(32);
 
+    InitScene();
+}
+
+/**
+ * [RTRenderer::InitScene description]
+ */
+
+void RTRenderer::InitScene()
+{
     RTMaterial mirrorMat;
     mirrorMat.name = "Mirror";
     mirrorMat.type = "Mirror";
@@ -42,41 +48,48 @@ void RTRenderer::Init(uint32_t w, uint32_t h)
     redMat.type = "Matte";
     greenMat.maxAlpha = 1.0;
 
-    RTMaterial lightMat;
-    lightMat.name = "Light";
-    lightMat.type = "Light";
-    lightMat.lightColor = dvec3(100.0, 100.0, 100.0);
+    RTMaterial lightMatBlue;
+    lightMatBlue.name = "LightBlue";
+    lightMatBlue.type = "Light";
+    lightMatBlue.lightColor = dvec3(100.0, 200.0, 1000.0);
+
+    RTMaterial lightMatRed;
+    lightMatRed.name = "Light";
+    lightMatRed.type = "Light";
+    lightMatRed.lightColor = dvec3(1000.0, 200.0, 100.0);
 
     scn.plane.normal = vec4(0.0, 0.0, 1.0, 0.0);
     scn.plane.mat = greenMat;
 
     RTSphere redSph;
-    redSph.orgn = dvec3(2.0, -2.0, 2.0);
+    redSph.orgn = dvec3(-7.0, 0.0, 2.0);
     redSph.r = 1.0;
     redSph.mat = redMat;
     scn.spheres.push_back(redSph);
 
     RTSphere mirrSph;
-    mirrSph.orgn = dvec3(0.0, 0.0, 0.0);
+    mirrSph.orgn = dvec3(0.0, 0.0, 2.0);
     mirrSph.r = 1.0;
     mirrSph.mat = mirrorMat;
     scn.spheres.push_back(mirrSph);
 
     RTSphere glassSph;
-    glassSph.orgn = dvec3(-2.0, -2.0, 2.0);
-    glassSph.r = 1.5;
+    glassSph.orgn = dvec3(-2.0, 2.0, 3.0);
+    glassSph.r = 1.0;
     glassSph.mat = glassMat;
-    //scn.spheres.push_back(glassSph);
+    scn.spheres.push_back(glassSph);
 
-    RTSphere lightSph;
-    lightSph.orgn = dvec3(0.0, 5.0, 2.0);
-    lightSph.r = 1.0;
-    lightSph.mat = lightMat;
-    scn.spheres.push_back(lightSph);
+    RTSphere lightSphBlue;
+    lightSphBlue.orgn = dvec3(0.0, 2.0, 15.0);
+    lightSphBlue.r = 1.0;
+    lightSphBlue.mat = lightMatBlue;
+    scn.spheres.push_back(lightSphBlue);
 
-    // Integrator params
-
-    integrator.numRays = 16;
+    RTSphere lightSphRed;
+    lightSphRed.orgn = dvec3(-2.0, -2.0, 15.0);
+    lightSphRed.r = 1.0;
+    lightSphRed.mat = lightMatRed;
+    //scn.spheres.push_back(lightSphRed);
 }
 
 /**
@@ -94,7 +107,8 @@ void RTRenderer::Render()
             sampler.GenerateSamples(1, x, y, samples);
             Ray ray = scn.cam.GenerateRay(samples[0]);
          
-            Intersection intsc = scn.Intersect(ray);
+            Intersection intsc;
+            scn.Intersect(ray, intsc);
             dvec3 color = dvec3(0.0, 0.0, 0.0);
 
             if (intsc.t > 0.0)
@@ -104,7 +118,7 @@ void RTRenderer::Render()
                     scn,
                     intsc,
                     1,
-                    2
+                    4
                 );
             }
 

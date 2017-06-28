@@ -162,7 +162,6 @@
     <ClCompile Include="..\libgasandbox\e3ga.cpp" />
     <ClCompile Include="..\libgasandbox\e3ga_util.cpp" />
     <ClCompile Include="animation.cpp" />
-    <ClCompile Include="rtcamera.cpp" />
     <ClCompile Include="rtrenderer.cpp" />
     <ClCompile Include="rtscene.cpp" />
     <ClCompile Include="sampler.cpp" />
@@ -198,8 +197,6 @@
     <ClInclude Include="..\libgasandbox\e3ga.h" />
     <ClInclude Include="..\libgasandbox\e3ga_util.h" />
     <ClInclude Include="animation.h" />
-    <ClInclude Include="rtcamera.h" />
-    <ClInclude Include="rtmaterial.h" />
     <ClInclude Include="rtrenderer.h" />
     <ClInclude Include="rtscene.h" />
     <ClInclude Include="sampler.h" />
