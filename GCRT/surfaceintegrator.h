@@ -8,15 +8,42 @@ using namespace std;
 
 struct SurfaceIntegrator
 {   
+    const double bias = 0.0001;
     vector<dvec4> sphereSamples;
     vector<dmat4> randomRotations;
     
+    uint32_t idx;
+
     dmat4 NextRotation();
 
-    void GenerateSamplePoints(uint32_t numSamples);
+    void GenerateSphereSamples(uint32_t numSamples);
 
     dvec3 SampleSurface(
-        Ray ray,
+        Ray rayIn,
+        RTScene &scn,
+        Intersection intsc,
+        uint32_t bounce,
+        uint32_t maxBounces
+    );
+
+    dvec3 CalcReflectance(
+        Ray rayIn,
+        RTScene &scn,
+        Intersection intsc,
+        uint32_t bounce,
+        uint32_t maxBounces
+    );
+
+    dvec3 CalcTransmittance(
+        Ray rayIn,
+        RTScene &scn,
+        Intersection intsc,
+        uint32_t bounce,
+        uint32_t maxBounces
+    );
+    
+    dvec3 CalcDiffuse(
+        Ray rayIn,
         RTScene &scn,
         Intersection intsc,
         uint32_t bounce,

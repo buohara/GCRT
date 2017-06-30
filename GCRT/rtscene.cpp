@@ -95,6 +95,17 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
             minDist = intsc2.t;
         }
     }
+
+    for (uint32_t i = 0; i < meshes.size(); i++)
+    {
+        meshes[i].Intersect(ray, intsc2);
+
+        if ((intsc2.t < minDist) && (intsc2.t > 0.0))
+        {
+            intsc = intsc2;
+            minDist = intsc2.t;
+        }
+    }
 }
 
 /**
@@ -160,10 +171,12 @@ Ray RTCamera::GenerateRay(dvec2 pixel)
  * @param intc [description]
  */
 
-void RTMesh::Intersect(Ray ray, Intersection &intc)
+void RTMesh::Intersect(Ray ray, Intersection &intsc)
 {
     // Triangle intersection method using barycentric coordinates.
-    // Adapter from the PBRT book.
+    // Adapted from the PBRT book.
+
+    intsc.t = DBL_MAX;
 
     for (uint32_t i = 0; i < tris.size(); i++)
     {
@@ -183,5 +196,141 @@ void RTMesh::Intersect(Ray ray, Intersection &intc)
         double t = a * dot(s2, e2);
         double b1 = a * dot(s1, s);
         double b2 = a * dot(s2, ray.dir);
+
+        if (b1 < 0.0 || b2 < 0.0 || (b1 + b2 > 1.0))
+        {
+            continue;
+        }
+
+        if (t > 0.0 && t < intsc.t)
+        {
+            intsc.t = t;
+            intsc.mat = mat;
+            intsc.normal = (norm[tris[i].x] + norm[tris[i].y] + norm[tris[i].z]) / 3.0;    
+        }
     }
+}
+
+/**
+ * [RTScene::Init description]
+ */
+
+void RTScene::Init()
+{
+    InitMaterials();
+    InitModels();
+}
+
+/**
+ * [RTScene::InitMaterials description]
+ */
+
+void RTScene::InitMaterials()
+{
+    RTMaterial mirrorMat;
+    mirrorMat.name = "Mirror";
+    mirrorMat.emissive = false;
+    mirrorMat.kdiff = 0.0;
+    mirrorMat.krefl = 1.0;
+    mirrorMat.ktrans = 0.0;
+
+    RTMaterial glassMat;
+    glassMat.name = "Glass";
+    glassMat.emissive = false;
+    glassMat.kdiff = 0.0;
+    glassMat.krefl = 0.5;
+    glassMat.ktrans = 0.5;
+
+    RTMaterial greenMat;
+    greenMat.name = "GreenMatte";
+    greenMat.kd = dvec3(0.1, 0.7, 0.2);
+    greenMat.emissive = false;
+    greenMat.kdiff = 1.0;
+    greenMat.krefl = 0.0;
+    greenMat.ktrans = 0.0;
+
+    RTMaterial redMat;
+    redMat.name = "RedMatte";
+    redMat.emissive = false;
+    redMat.kd = dvec3(0.7, 0.1, 0.2);
+    redMat.kdiff = 1.0;
+    redMat.krefl = 0.0;
+    redMat.ktrans = 0.0;
+
+    RTMaterial lightMatBlue;
+    lightMatBlue.name = "LightBlue";
+    lightMatBlue.emissive = true;
+    lightMatBlue.ke = dvec3(100.0, 200.0, 2000.0);
+    lightMatBlue.kdiff = 0.0;
+    lightMatBlue.krefl = 0.0;
+    lightMatBlue.ktrans = 0.0;
+
+    RTMaterial lightMatRed;
+    lightMatRed.name = "LightRed";
+    lightMatRed.emissive = true;
+    lightMatRed.ke = dvec3(2000.0, 200.0, 100.0);
+    lightMatRed.kdiff = 0.0;
+    lightMatRed.krefl = 0.0;
+    lightMatRed.ktrans = 0.0;
+
+    mats["Mirror"] = make_shared<RTMaterial>(mirrorMat);
+    mats["Glass"] = make_shared<RTMaterial>(glassMat);
+    mats["GreenMatte"] = make_shared<RTMaterial>(greenMat);
+    mats["RedMatte"] = make_shared<RTMaterial>(redMat);
+    mats["LightBlue"] = make_shared<RTMaterial>(lightMatBlue);
+    mats["LightRed"] = make_shared<RTMaterial>(lightMatRed);
+}
+
+/**
+ * [RTScene::InitModels description]
+ */
+
+void RTScene::InitModels()
+{
+    plane.normal = vec4(0.0, 0.0, 1.0, 0.0);
+    plane.mat = mats["GreenMatte"];
+
+    RTSphere redSph;
+    redSph.orgn = dvec3(-7.0, 0.0, 2.0);
+    redSph.r = 1.0;
+    redSph.mat = mats["RedMatte"];
+    spheres.push_back(redSph);
+
+    RTSphere mirrSph;
+    mirrSph.orgn = dvec3(0.0, -2.0, 2.0);
+    mirrSph.r = 1.0;
+    mirrSph.mat = mats["Mirror"];
+    spheres.push_back(mirrSph);
+
+    RTSphere glassSph;
+    glassSph.orgn = dvec3(-2.0, 2.0, 3.0);
+    glassSph.r = 1.0;
+    glassSph.mat = mats["Glass"];
+    spheres.push_back(glassSph);
+
+    RTSphere lightSphBlue;
+    lightSphBlue.orgn = dvec3(0.0, -5.0, 15.0);
+    lightSphBlue.r = 1.0;
+    lightSphBlue.mat = mats["LightBlue"];;
+    spheres.push_back(lightSphBlue);
+
+    RTSphere lightSphRed;
+    lightSphRed.orgn = dvec3(-2.0, 0.0, 15.0);
+    lightSphRed.r = 1.0;
+    lightSphRed.mat = mats["LightRed"];;
+    spheres.push_back(lightSphRed);
+
+    RTMesh mesh;
+    mesh.pos.push_back(dvec3(1.0, 0.0, 0.0));
+    mesh.pos.push_back(dvec3(0.0, 0.0, 1.0));
+    mesh.pos.push_back(dvec3(-1.0, 0.0, 0.0));
+
+    mesh.norm.push_back(dvec3(0.0, 1.0, 0.0));
+    mesh.norm.push_back(dvec3(0.0, 1.0, 0.0));
+    mesh.norm.push_back(dvec3(0.0, 1.0, 0.0));
+
+    mesh.tris.push_back(uvec3(0, 1, 2));
+    mesh.mat = mats["RedMatte"];
+
+    //meshes.push_back(mesh);
 }

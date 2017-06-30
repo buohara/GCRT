@@ -5,28 +5,32 @@
 using namespace glm;
 using namespace std;
 
-struct RTMaterial
-{
-    string name;
-    string type;
-
-    double maxAlpha;
-
-    dvec3 kd;
-    dvec3 lightColor;
-};
-
 struct Ray
 {
     dvec3 org;
     dvec3 dir;
 };
 
+struct RTMaterial
+{
+    string name;
+
+    double krefl;
+    double ktrans;
+    double kdiff;
+    bool emissive;
+
+    dvec3 kd;
+    dvec3 ke;
+
+    //dvec3 EvaluateBDSF(Ray ray, RTScene &scn) { return dvec3(0.0, 0.0, 0.0); }
+};
+
 struct Intersection
 {
     double t;
     dvec3 normal;
-    RTMaterial mat;
+    shared_ptr<RTMaterial> mat;
 };
 
 struct RTCamera
@@ -65,31 +69,39 @@ struct RTSphere
 {
     double r;
     dvec3 orgn;
-    RTMaterial mat;
+    shared_ptr<RTMaterial> mat;
     void Intersect(Ray ray, Intersection &intsc);
 };
 
 struct RTMesh
 {
-    RTMaterial mat;
     vector<dvec3> pos;
+    vector<dvec3> norm;
     vector<uvec3> tris;
-    RTMaterial mat;
+    shared_ptr<RTMaterial> mat;
     void Intersect(Ray ray, Intersection &intsc);
 };
 
 struct RTPlane
 {
     dvec4 normal;
-    RTMaterial mat;
+    shared_ptr<RTMaterial> mat;
     void Intersect(Ray ray, Intersection &intsc);
 };
 
 struct RTScene
 {
     RTCamera cam;
-    vector <RTSphere> spheres;
+    
+    vector<RTSphere> spheres;
+    vector<RTMesh> meshes;
+    map<string, shared_ptr<RTMaterial>> mats;
+    
     RTPlane plane;
     dvec3 bgColor;
+
     void Intersect(Ray ray, Intersection &intsc);
+    void Init();
+    void InitMaterials();
+    void InitModels();
 };

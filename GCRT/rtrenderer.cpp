@@ -15,81 +15,131 @@ void RTRenderer::Init(uint32_t w, uint32_t h)
 
     dvec3 camPos = dvec3(10.0, 10.0, 10.0);
     dvec3 camLook = dvec3(0.0, 0.0, 3.0);
-    scn.cam.Init(imageW, imageH, camPos, camLook, 75.0);
     
-    integrator.GenerateSamplePoints(32);
+    scn.cam.Init(imageW, imageH, camPos, camLook, 75.0);
+    scn.Init();
 
-    InitScene();
+    InitThreads();
 }
 
 /**
- * [RTRenderer::InitScene description]
+ * [RTRenderer::InitThreads description]
  */
 
-void RTRenderer::InitScene()
+void RTRenderer::InitThreads()
 {
-    RTMaterial mirrorMat;
-    mirrorMat.name = "Mirror";
-    mirrorMat.type = "Mirror";
+    uint32_t xBlocks;
+    uint32_t yBlocks;
 
-    RTMaterial glassMat;
-    glassMat.name = "Glass";
-    glassMat.type = "Glass";
+    if (imageW > imageH)
+    {
+        xBlocks = 8;
+        yBlocks = 2;
+    }
+    else
+    {
+        xBlocks = 2;
+        yBlocks = 8;
+    }
 
-    RTMaterial greenMat;
-    greenMat.name = "GreenMatte";
-    greenMat.kd = dvec3(0.1, 0.7, 0.2);
-    greenMat.type = "Matte";
-    greenMat.maxAlpha = 1.0;
+    numThreads = xBlocks * yBlocks;
+    uint32_t blockSizeX = imageW / xBlocks;
+    uint32_t blockSizeY = imageH / yBlocks;
+    uint32_t threadID = 0;
 
-    RTMaterial redMat;
-    redMat.name = "RedMatte";
-    redMat.kd = dvec3(0.7, 0.1, 0.2);
-    redMat.type = "Matte";
-    greenMat.maxAlpha = 1.0;
+    for (uint32_t i = 0; i < xBlocks; i++)
+    {
+        for (uint32_t j = 0; j < yBlocks; j++)
+        {
+            threadData[threadID].rect.xmin = i * blockSizeX;
+            threadData[threadID].rect.ymin = j * blockSizeY;
 
-    RTMaterial lightMatBlue;
-    lightMatBlue.name = "LightBlue";
-    lightMatBlue.type = "Light";
-    lightMatBlue.lightColor = dvec3(100.0, 200.0, 1000.0);
+            if (i == xBlocks - 1)
+            {
+                threadData[threadID].rect.xmax = imageW - 1;
+            }
+            else
+            {
+                threadData[threadID].rect.xmax = (i + 1) * blockSizeX - 1;
+            }
 
-    RTMaterial lightMatRed;
-    lightMatRed.name = "Light";
-    lightMatRed.type = "Light";
-    lightMatRed.lightColor = dvec3(1000.0, 200.0, 100.0);
+            if (j == yBlocks - 1)
+            {
+                threadData[threadID].rect.ymax = imageH - 1;
+            }
+            else
+            {
+                threadData[threadID].rect.ymax = (j + 1) * blockSizeY - 1;
+            }
 
-    scn.plane.normal = vec4(0.0, 0.0, 1.0, 0.0);
-    scn.plane.mat = greenMat;
+            threadID++;
+        }
+    }
 
-    RTSphere redSph;
-    redSph.orgn = dvec3(-7.0, 0.0, 2.0);
-    redSph.r = 1.0;
-    redSph.mat = redMat;
-    scn.spheres.push_back(redSph);
+    for (uint32_t i = 0; i < numThreads; i++)
+    {
+        threadData[i].pScn = &scn;
+        threadData[i].pImg = &image;
+        threadData[i].imageW = imageW;
+        threadData[i].imageH = imageH;
+    }
+}
 
-    RTSphere mirrSph;
-    mirrSph.orgn = dvec3(0.0, 0.0, 2.0);
-    mirrSph.r = 1.0;
-    mirrSph.mat = mirrorMat;
-    scn.spheres.push_back(mirrSph);
+/**
+ * [RenderThreadFunc description]
+ * @param  lpParam [description]
+ * @return         [description]
+ */
 
-    RTSphere glassSph;
-    glassSph.orgn = dvec3(-2.0, 2.0, 3.0);
-    glassSph.r = 1.0;
-    glassSph.mat = glassMat;
-    scn.spheres.push_back(glassSph);
+DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
+{
+    ThreadData &data = *((ThreadData*)(lpParam));
+    
+    uint32_t xmin = data.rect.xmin;
+    uint32_t xmax = data.rect.xmax;
+    uint32_t ymin = data.rect.ymin;
+    uint32_t ymax = data.rect.ymax;
+    uint32_t imageW = data.imageW;
+    uint32_t imageH = data.imageH;
 
-    RTSphere lightSphBlue;
-    lightSphBlue.orgn = dvec3(0.0, 2.0, 15.0);
-    lightSphBlue.r = 1.0;
-    lightSphBlue.mat = lightMatBlue;
-    scn.spheres.push_back(lightSphBlue);
+    RTScene &scn = *(data.pScn);
+    vector<dvec3> &image = *(data.pImg);
 
-    RTSphere lightSphRed;
-    lightSphRed.orgn = dvec3(-2.0, -2.0, 15.0);
-    lightSphRed.r = 1.0;
-    lightSphRed.mat = lightMatRed;
-    //scn.spheres.push_back(lightSphRed);
+    Sampler sampler;
+
+    SurfaceIntegrator integrator;
+    integrator.GenerateSphereSamples(8);
+
+    for (uint32_t y = ymin; y <= ymax; y++)
+    {
+        for (uint32_t x = xmin; x <= xmax; x++)
+        {
+            vector<dvec2> samples;
+            samples.resize(1);
+            sampler.GenerateSamples(1, x, y, samples);
+            Ray ray = scn.cam.GenerateRay(samples[0]);
+
+            Intersection intsc;
+            scn.Intersect(ray, intsc);
+            dvec3 color = dvec3(0.0, 0.0, 0.0);
+
+            if (intsc.t > 0.0)
+            {
+                color = integrator.SampleSurface(
+                    ray,
+                    scn,
+                    intsc,
+                    1,
+                    4
+                );
+            }
+
+            color = dvec3(1.0) - glm::exp(-color);
+            image[y * imageW + x] = color;
+        }
+    }
+
+    return 0;
 }
 
 /**
@@ -98,7 +148,21 @@ void RTRenderer::InitScene()
 
 void RTRenderer::Render()
 {
-    for (uint32_t y = 0; y < imageH; y++)
+    for (uint32_t i = 0; i < numThreads; i++)
+    {
+        hThreadArray[i] = CreateThread(
+            NULL,
+            0,
+            RenderThreadFunc,
+            &threadData[i],
+            0,
+            NULL
+        );
+    }
+
+    WaitForMultipleObjects(numThreads, hThreadArray, TRUE, INFINITE);
+
+    /*for (uint32_t y = 0; y < imageH; y++)
     {
         for (uint32_t x = 0; x < imageW; x++)
         {
@@ -125,7 +189,7 @@ void RTRenderer::Render()
             color = dvec3(1.0) - glm::exp(-color);
             image[y * imageW + x] = color;
         }
-    }
+    }*/
 }
 
 /**
