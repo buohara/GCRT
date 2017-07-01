@@ -162,6 +162,9 @@
     <ClCompile Include="..\libgasandbox\e3ga.cpp" />
     <ClCompile Include="..\libgasandbox\e3ga_util.cpp" />
     <ClCompile Include="animation.cpp" />
+    <ClCompile Include="Octree.cpp" />
+    <ClCompile Include="rtmaterial.cpp" />
+    <ClCompile Include="rtmesh.cpp" />
     <ClCompile Include="rtrenderer.cpp" />
     <ClCompile Include="rtscene.cpp" />
     <ClCompile Include="sampler.cpp" />
@@ -197,6 +200,10 @@
     <ClInclude Include="..\libgasandbox\e3ga.h" />
     <ClInclude Include="..\libgasandbox\e3ga_util.h" />
     <ClInclude Include="animation.h" />
+    <ClInclude Include="Octree.h" />
+    <ClInclude Include="ray.h" />
+    <ClInclude Include="rtmaterial.h" />
+    <ClInclude Include="rtmesh.h" />
     <ClInclude Include="rtrenderer.h" />
     <ClInclude Include="rtscene.h" />
     <ClInclude Include="sampler.h" />
@@ -221,6 +228,7 @@
     <ClInclude Include="surfaceintegrator.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\scenes\LampGuys.scn" />
     <None Include="BrightShader.fs" />
     <None Include="BrightShader.vs" />
     <None Include="Compose.fs" />
@@ -241,6 +249,9 @@
     <None Include="RenderShader.vs" />
     <None Include="RenderShaderAnim.fs" />
     <None Include="RenderShaderAnim.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="settings.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

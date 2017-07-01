@@ -117,6 +117,15 @@
     <ClCompile Include="surfaceintegrator.cpp">
       <Filter>RT</Filter>
     </ClCompile>
+    <ClCompile Include="rtmesh.cpp">
+      <Filter>RT</Filter>
+    </ClCompile>
+    <ClCompile Include="rtmaterial.cpp">
+      <Filter>RT</Filter>
+    </ClCompile>
+    <ClCompile Include="Octree.cpp">
+      <Filter>RT</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GCRT.h">
@@ -218,6 +227,18 @@
     <ClInclude Include="surfaceintegrator.h">
       <Filter>RT</Filter>
     </ClInclude>
+    <ClInclude Include="ray.h">
+      <Filter>RT</Filter>
+    </ClInclude>
+    <ClInclude Include="rtmesh.h">
+      <Filter>RT</Filter>
+    </ClInclude>
+    <ClInclude Include="rtmaterial.h">
+      <Filter>RT</Filter>
+    </ClInclude>
+    <ClInclude Include="Octree.h">
+      <Filter>RT</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="DepthPassShader.vs">
@@ -280,5 +301,13 @@
     <None Include="DepthPassShaderAnim.fs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\scenes\LampGuys.scn">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="settings.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

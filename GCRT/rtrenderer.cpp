@@ -161,35 +161,6 @@ void RTRenderer::Render()
     }
 
     WaitForMultipleObjects(numThreads, hThreadArray, TRUE, INFINITE);
-
-    /*for (uint32_t y = 0; y < imageH; y++)
-    {
-        for (uint32_t x = 0; x < imageW; x++)
-        {
-            vector<dvec2> samples;
-            samples.resize(1);
-            sampler.GenerateSamples(1, x, y, samples);
-            Ray ray = scn.cam.GenerateRay(samples[0]);
-         
-            Intersection intsc;
-            scn.Intersect(ray, intsc);
-            dvec3 color = dvec3(0.0, 0.0, 0.0);
-
-            if (intsc.t > 0.0)
-            {
-                color = integrator.SampleSurface(
-                    ray,
-                    scn,
-                    intsc,
-                    1,
-                    4
-                );
-            }
-
-            color = dvec3(1.0) - glm::exp(-color);
-            image[y * imageW + x] = color;
-        }
-    }*/
 }
 
 /**

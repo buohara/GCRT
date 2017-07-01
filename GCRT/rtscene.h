@@ -1,37 +1,11 @@
 #pragma once
 
 #include "GCRT.h"
+#include "rtmesh.h"
+#include "ray.h"
 
 using namespace glm;
 using namespace std;
-
-struct Ray
-{
-    dvec3 org;
-    dvec3 dir;
-};
-
-struct RTMaterial
-{
-    string name;
-
-    double krefl;
-    double ktrans;
-    double kdiff;
-    bool emissive;
-
-    dvec3 kd;
-    dvec3 ke;
-
-    //dvec3 EvaluateBDSF(Ray ray, RTScene &scn) { return dvec3(0.0, 0.0, 0.0); }
-};
-
-struct Intersection
-{
-    double t;
-    dvec3 normal;
-    shared_ptr<RTMaterial> mat;
-};
 
 struct RTCamera
 {
@@ -58,42 +32,12 @@ struct RTCamera
     Ray GenerateRay(dvec2 pixel);
 };
 
-struct BBox
-{
-    dvec3 flb;
-    dvec3 brt;
-    void Intersect(Ray ray, Intersection &intsc);
-};
-
-struct RTSphere
-{
-    double r;
-    dvec3 orgn;
-    shared_ptr<RTMaterial> mat;
-    void Intersect(Ray ray, Intersection &intsc);
-};
-
-struct RTMesh
-{
-    vector<dvec3> pos;
-    vector<dvec3> norm;
-    vector<uvec3> tris;
-    shared_ptr<RTMaterial> mat;
-    void Intersect(Ray ray, Intersection &intsc);
-};
-
-struct RTPlane
-{
-    dvec4 normal;
-    shared_ptr<RTMaterial> mat;
-    void Intersect(Ray ray, Intersection &intsc);
-};
-
 struct RTScene
 {
     RTCamera cam;
     
     vector<RTSphere> spheres;
+    vector<RTBox> boxes;
     vector<RTMesh> meshes;
     map<string, shared_ptr<RTMaterial>> mats;
     

@@ -1,72 +1,6 @@
 #include "rtscene.h"
 
 /**
- * [RTSphere::Intersect description]
- * @param  ray [description]
- */
-
-void RTSphere::Intersect(Ray ray, Intersection &intsc)
-{
-    intsc.t = -1.0;
-
-    dvec3 d = ray.dir;
-    dvec3 o = ray.org;
-    dvec3 cnt = orgn;
-
-    double a = dot(d, d);
-    double b = 2.0 * dot(d, o - cnt);
-    double c = dot(o - cnt, o - cnt) - r * r;
-
-    double det = b * b - 4.0 * a * c;
-
-    if (det < 0.0)
-    {
-        return;
-    }
-
-    double t1 = (-b + sqrt(det)) / (2.0 * a);
-    double t2 = (-b - sqrt(det)) / (2.0 * a);
-
-    if (t1 <= t2 && t1 > 0.0)
-    {
-        intsc.t = t1;
-        intsc.normal = normalize(o + t1 * d - orgn);
-        intsc.mat = mat;
-        return;
-    }
-
-    if (t2 > 0.0)
-    {
-        intsc.t = t2;
-        intsc.normal = normalize(o + t2 * d - orgn);
-        intsc.mat = mat;
-        return;
-    }
-}
-
-/**
- * [RTPlane::Intersect description]
- * @param  ray [description]
- */
-
-void RTPlane::Intersect(Ray ray, Intersection &intsc)
-{
-    intsc.t = -1.0;
-    intsc.normal = dvec3(normal.x, normal.y, normal.z);
-
-    dvec3 n = dvec3(normal.x, normal.y, normal.z);
-
-    if (dot(n, ray.dir) == 0.0)
-    {
-        return;
-    }
-
-    double d = normal.w;
-    intsc.t = (d - dot(n, ray.org)) / (dot(n, ray.dir));
-    intsc.mat = mat;
-}
-
-/**
  * [RTScene::Intersect description]
  * @param  ray [description]
  */
@@ -88,6 +22,17 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
     for (uint32_t i = 0; i < spheres.size(); i++)
     {
         spheres[i].Intersect(ray, intsc2);
+
+        if ((intsc2.t < minDist) && (intsc2.t > 0.0))
+        {
+            intsc = intsc2;
+            minDist = intsc2.t;
+        }
+    }
+
+    for (uint32_t i = 0; i < boxes.size(); i++)
+    {
+        boxes[i].Intersect(ray, intsc2);
 
         if ((intsc2.t < minDist) && (intsc2.t > 0.0))
         {
@@ -163,52 +108,6 @@ Ray RTCamera::GenerateRay(dvec2 pixel)
     ray.org = pos;
 
     return ray;
-}
-
-/**
- * [RTMesh::Intersect description]
- * @param ray  [description]
- * @param intc [description]
- */
-
-void RTMesh::Intersect(Ray ray, Intersection &intsc)
-{
-    // Triangle intersection method using barycentric coordinates.
-    // Adapted from the PBRT book.
-
-    intsc.t = DBL_MAX;
-
-    for (uint32_t i = 0; i < tris.size(); i++)
-    {
-        dvec3 p0 = pos[tris[i].x];
-        dvec3 p1 = pos[tris[i].y];
-        dvec3 p2 = pos[tris[i].z];
-
-        dvec3 e1 = p1 - p0;
-        dvec3 e2 = p2 - p0;
-        dvec3 s = ray.org - p0;
-
-        dvec3 s1 = cross(ray.dir, e2);
-        dvec3 s2 = cross(s, e1);
-
-        double a = 1.0 / dot(s1, e1);
-
-        double t = a * dot(s2, e2);
-        double b1 = a * dot(s1, s);
-        double b2 = a * dot(s2, ray.dir);
-
-        if (b1 < 0.0 || b2 < 0.0 || (b1 + b2 > 1.0))
-        {
-            continue;
-        }
-
-        if (t > 0.0 && t < intsc.t)
-        {
-            intsc.t = t;
-            intsc.mat = mat;
-            intsc.normal = (norm[tris[i].x] + norm[tris[i].y] + norm[tris[i].z]) / 3.0;    
-        }
-    }
 }
 
 /**
@@ -320,17 +219,14 @@ void RTScene::InitModels()
     lightSphRed.mat = mats["LightRed"];;
     spheres.push_back(lightSphRed);
 
+    RTBox mirrorBox;
+    mirrorBox.min = dvec3(2.0, -2.0, 0.0);
+    mirrorBox.max = dvec3(3.0, -1.0, 1.5);
+    mirrorBox.mat = mats["Mirror"];
+    boxes.push_back(mirrorBox);
+
     RTMesh mesh;
-    mesh.pos.push_back(dvec3(1.0, 0.0, 0.0));
-    mesh.pos.push_back(dvec3(0.0, 0.0, 1.0));
-    mesh.pos.push_back(dvec3(-1.0, 0.0, 0.0));
-
-    mesh.norm.push_back(dvec3(0.0, 1.0, 0.0));
-    mesh.norm.push_back(dvec3(0.0, 1.0, 0.0));
-    mesh.norm.push_back(dvec3(0.0, 1.0, 0.0));
-
-    mesh.tris.push_back(uvec3(0, 1, 2));
-    mesh.mat = mats["RedMatte"];
-
+    mesh.LoadModel("../asset/models/boblampclean/boblampclean.md5mesh");
+    mesh.mat = mats["Glass"];
     //meshes.push_back(mesh);
 }

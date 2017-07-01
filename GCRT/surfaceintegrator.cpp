@@ -266,14 +266,14 @@ dvec3 SurfaceIntegrator::CalcDiffuse(
 
     if (intsc.mat->kdiff > 0.0)
     {
-        uint32_t numSamples = sphereSamples.size();
+        uint32_t numSamples = (uint32_t) sphereSamples.size();
 
         for (uint32_t i = 0; i < scn.spheres.size(); i++)
         {
             if (scn.spheres[i].mat->emissive)
             {
                 dmat4 trans = translate(scn.spheres[i].orgn);
-                dmat4 scl = scale(vec3(scn.spheres[i].r));
+                dmat4 scl = scale(dvec3(scn.spheres[i].r));
 
                 for (uint32_t j = 0; j < sphereSamples.size(); j++)
                 {
