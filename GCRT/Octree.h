@@ -17,6 +17,11 @@ struct BBox
 struct Octree
 {
     BBox box;
-    unique_ptr<Octree> children[8];
-    Insert()
+    shared_ptr<Octree> children[8];
+    vector<uint32_t> faces;
+    uint32_t depth;
+    uint32_t maxDepth;
+
+    void Insert(dvec3 p0, dvec3 p1, dvec3 p2, uint32_t face);
+    void Intersect(Ray ray, vector<uint32_t> &faceIdcs);
 };

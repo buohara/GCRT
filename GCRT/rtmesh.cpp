@@ -79,11 +79,17 @@ void RTMesh::Intersect(Ray ray, Intersection &intsc)
 
     intsc.t = DBL_MAX;
 
-    for (uint32_t i = 0; i < idcs.size(); i++)
+    vector<uint32_t> faceIdcs;
+
+    root->Intersect(ray, faceIdcs);
+
+    for (uint32_t i = 0; i < faceIdcs.size(); i++)
     {
-        dvec3 p0 = pos[idcs[i].x];
-        dvec3 p1 = pos[idcs[i].y];
-        dvec3 p2 = pos[idcs[i].z];
+        uvec3 curFace = faces[faceIdcs[i]];
+
+        dvec3 p0 = pos[curFace.x];
+        dvec3 p1 = pos[curFace.y];
+        dvec3 p2 = pos[curFace.z];
 
         dvec3 e1 = p1 - p0;
         dvec3 e2 = p2 - p0;
@@ -107,7 +113,10 @@ void RTMesh::Intersect(Ray ray, Intersection &intsc)
         {
             intsc.t = t;
             intsc.mat = mat;
-            intsc.normal = (norm[idcs[i].x] + norm[idcs[i].y] + norm[idcs[i].z]) / 3.0;
+            intsc.normal = 
+                (1.0 - b1 - b2) * norm[curFace.x] + 
+                b1 * norm[curFace.y] + 
+                b2 * norm[curFace.z];
         }
     }
 }
@@ -119,6 +128,8 @@ void RTMesh::Intersect(Ray ray, Intersection &intsc)
 
 void RTMesh::LoadModel(string file)
 {
+    root = make_shared<Octree>();
+
     Assimp::Importer importer;
 
     const aiScene &scene = *(importer.ReadFile(
@@ -138,10 +149,13 @@ void RTMesh::LoadModel(string file)
 
     pos.resize(numVerts);
     norm.resize(numVerts);
-    idcs.resize(numFaces);
+    faces.resize(numFaces);
 
     uint32_t vOffset = 0;
     uint32_t fOffset = 0;
+
+    dvec3 min = dvec3(DBL_MAX, DBL_MAX, DBL_MAX);
+    dvec3 max = dvec3(DBL_MIN, DBL_MIN, DBL_MIN);
 
     for (uint32 i = 0; i < scene.mNumMeshes; i++)
     {
@@ -153,18 +167,48 @@ void RTMesh::LoadModel(string file)
             pos[j + vOffset].y = mesh.mVertices[j].y;
             pos[j + vOffset].z = mesh.mVertices[j].z;
 
+            max.x = glm::max<double>(pos[j + vOffset].x, max.x);
+            max.y = glm::max<double>(pos[j + vOffset].y, max.y);
+            max.z = glm::max<double>(pos[j + vOffset].z, max.z);
+
+            min.x = glm::min<double>(pos[j + vOffset].x, min.x);
+            min.y = glm::min<double>(pos[j + vOffset].y, min.y);
+            min.z = glm::min<double>(pos[j + vOffset].z, min.z);
+
             norm[j + vOffset].x = mesh.mNormals[j].x;
             norm[j + vOffset].y = mesh.mNormals[j].y;
             norm[j + vOffset].z = mesh.mNormals[j].z;
         }
 
-        // Triangle indices.
+        vOffset += mesh.mNumVertices;
+        fOffset += mesh.mNumFaces;
+    }
+
+    root->box.min = min;
+    root->box.max = max;
+    root->depth = 1;
+    root->maxDepth = 10;
+    
+    vOffset = 0;
+    fOffset = 0;
+
+    // triangle indices
+
+    for (uint32 i = 0; i < scene.mNumMeshes; i++)
+    {
+        aiMesh &mesh = *(scene.mMeshes[i]);
 
         for (uint32_t j = 0; j < mesh.mNumFaces; j++)
         {
-            idcs[j + fOffset].x = mesh.mFaces[j].mIndices[0];
-            idcs[j + fOffset].y = mesh.mFaces[j].mIndices[1];
-            idcs[j + fOffset].z = mesh.mFaces[j].mIndices[2];
+            faces[j + fOffset].x = mesh.mFaces[j].mIndices[0] + vOffset;
+            faces[j + fOffset].y = mesh.mFaces[j].mIndices[1] + vOffset;
+            faces[j + fOffset].z = mesh.mFaces[j].mIndices[2] + vOffset;
+
+            dvec3 p0 = pos[faces[j + fOffset].x];
+            dvec3 p1 = pos[faces[j + fOffset].y];
+            dvec3 p2 = pos[faces[j + fOffset].z];
+
+            root->Insert(p0, p1, p2, j + fOffset);
         }
 
         vOffset += mesh.mNumVertices;

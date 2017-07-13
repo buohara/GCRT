@@ -13,8 +13,8 @@ void RTRenderer::Init(uint32_t w, uint32_t h)
 
     image.resize(imageW * imageH);
 
-    dvec3 camPos = dvec3(10.0, 10.0, 10.0);
-    dvec3 camLook = dvec3(0.0, 0.0, 3.0);
+    dvec3 camPos = dvec3(50.0, -50.0, 50.0);
+    dvec3 camLook = dvec3(0.0, 0.0, 15.0);
     
     scn.cam.Init(imageW, imageH, camPos, camLook, 75.0);
     scn.Init();
@@ -130,8 +130,10 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
                     scn,
                     intsc,
                     1,
-                    4
+                    5
                 );
+
+                color;
             }
 
             color = dvec3(1.0) - glm::exp(-color);

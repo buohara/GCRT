@@ -22,8 +22,8 @@ void RTMain()
     w = 256;
     h = 256;
 #else
-    w = 2160;
-    h = 3840;
+    w = 3840;
+    h = 2160;
 #endif
 
     RTRenderer rndr;

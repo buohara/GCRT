@@ -38,7 +38,7 @@ struct RTScene
     
     vector<RTSphere> spheres;
     vector<RTBox> boxes;
-    vector<RTMesh> meshes;
+    vector<shared_ptr<RTMesh>> meshes;
     map<string, shared_ptr<RTMaterial>> mats;
     
     RTPlane plane;
