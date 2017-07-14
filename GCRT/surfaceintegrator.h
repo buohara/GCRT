@@ -26,22 +26,6 @@ struct SurfaceIntegrator
         uint32_t maxBounces
     );
 
-    dvec3 CalcReflectance(
-        Ray rayIn,
-        RTScene &scn,
-        Intersection intsc,
-        uint32_t bounce,
-        uint32_t maxBounces
-    );
-
-    dvec3 CalcTransmittance(
-        Ray rayIn,
-        RTScene &scn,
-        Intersection intsc,
-        uint32_t bounce,
-        uint32_t maxBounces
-    );
-    
     dvec3 CalcDiffuse(
         Ray rayIn,
         RTScene &scn,

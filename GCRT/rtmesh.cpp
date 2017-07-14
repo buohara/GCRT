@@ -31,7 +31,7 @@ void RTSphere::Intersect(Ray ray, Intersection &intsc)
     {
         intsc.t = t1;
         intsc.normal = normalize(o + t1 * d - orgn);
-        intsc.mat = mat;
+        intsc.mat = mat->name;
         return;
     }
 
@@ -39,7 +39,7 @@ void RTSphere::Intersect(Ray ray, Intersection &intsc)
     {
         intsc.t = t2;
         intsc.normal = normalize(o + t2 * d - orgn);
-        intsc.mat = mat;
+        intsc.mat = mat->name;
         return;
     }
 }
@@ -63,7 +63,7 @@ void RTPlane::Intersect(Ray ray, Intersection &intsc)
 
     double d = normal.w;
     intsc.t = (d - dot(n, ray.org)) / (dot(n, ray.dir));
-    intsc.mat = mat;
+    intsc.mat = mat->name;
 }
 
 /**
@@ -112,7 +112,7 @@ void RTMesh::Intersect(Ray ray, Intersection &intsc)
         if (t > 0.0 && t < intsc.t)
         {
             intsc.t = t;
-            intsc.mat = mat;
+            intsc.mat = mat->name;
             intsc.normal = 
                 (1.0 - b1 - b2) * norm[curFace.x] + 
                 b1 * norm[curFace.y] + 
@@ -314,5 +314,5 @@ void RTBox::Intersect(Ray ray, Intersection &intsc)
     }
 
     intsc.t = t0;
-    intsc.mat = mat;
+    intsc.mat = mat->name;
 }

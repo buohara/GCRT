@@ -71,174 +71,95 @@ dvec3 SurfaceIntegrator::SampleSurface(
 )
 {
     dvec3 outColor = dvec3(0.0, 0.0, 0.0);
+    shared_ptr<RTMaterial> pMat = scn.mats[intsc.mat];
 
-    if (intsc.mat->krefl > 0.0)
+    // Emissive
+
+    outColor += pMat->GetEmission(rayIn, intsc);
+
+    if (bounce == maxBounces)
     {
-        outColor += CalcReflectance(
+        return outColor;
+    }
+
+    double refl = pMat->GetReflectance(rayIn, intsc);
+    double trans = pMat->GetTransmittance(rayIn, intsc);
+    double diff = pMat->GetDiffuse(rayIn, intsc);
+
+    // Reflection
+
+    if (refl > 0.001)
+    {
+        Ray newRay;
+        Intersection nextIntsc;
+
+        pMat->GetReflectedRay(rayIn, intsc, newRay);
+        newRay.org += bias * newRay.dir;
+        scn.Intersect(newRay, nextIntsc);
+        newRay.org -= bias * newRay.dir;
+
+        double t = nextIntsc.t;
+
+        if (t > 0.0)
+        {
+            dvec3 reflClr = dvec3(0.0, 0.0, 0.0);
+
+            reflClr += SampleSurface(
+                newRay,
+                scn,
+                nextIntsc,
+                bounce + 1,
+                maxBounces
+            );
+
+            outColor += refl * reflClr / (t * t);
+        }
+    }
+
+    // Transmission
+
+    if (trans > 0.001)
+    {
+        Ray newRay;
+        Intersection nextIntsc;
+
+        pMat->GetTransmittedRay(rayIn, intsc, newRay);
+        newRay.org += bias * newRay.dir;
+        scn.Intersect(newRay, nextIntsc);
+        newRay.org -= bias * newRay.dir;
+
+        double t = nextIntsc.t;
+
+        if (t > 0.0)
+        {
+            dvec3 transClr = dvec3(0.0, 0.0, 0.0);
+
+            transClr += SampleSurface(
+                newRay,
+                scn,
+                nextIntsc,
+                bounce + 1,
+                maxBounces
+            );
+
+            outColor += trans * transClr / (t * t);
+        }
+    }
+
+    // Diffuse
+
+    if (diff > 0.001)
+    {
+        outColor += diff * CalcDiffuse(
             rayIn,
             scn,
             intsc,
             bounce,
             maxBounces
         );
-    }
-
-    if (intsc.mat->ktrans > 0.0)
-    {
-        outColor += CalcTransmittance(
-            rayIn,
-            scn,
-            intsc,
-            bounce,
-            maxBounces
-        );
-    }
-
-    if (intsc.mat->kdiff > 0.0)
-    {
-        outColor += CalcDiffuse(
-            rayIn,
-            scn,
-            intsc,
-            bounce,
-            maxBounces
-        );
-    }
-
-    if (intsc.mat->emissive == true)
-    {
-        outColor += intsc.mat->ke;
     }
 
     return outColor;
-}
-
-/**
- * [SurfaceIntegrator::CalcReflectance description]
- * @param  rayIn      [description]
- * @param  scn        [description]
- * @param  intsc      [description]
- * @param  bounce     [description]
- * @param  maxBounces [description]
- * @return            [description]
- */
-
-dvec3 SurfaceIntegrator::CalcReflectance(
-    Ray rayIn,
-    RTScene &scn,
-    Intersection intsc,
-    uint32_t bounce,
-    uint32_t maxBounces
-)
-{
-    Ray rayOut;
-    rayOut.org = rayIn.org + (intsc.t * rayIn.dir);
-    Intersection nextIntsc;
-    dvec3 refColor = dvec3(0.0, 0.0, 0.0);
-
-    if (intsc.mat->krefl > 0.0)
-    {
-        rayOut.dir = normalize(reflect(rayIn.dir, intsc.normal));
-        rayOut.org += bias * rayOut.dir;
-        scn.Intersect(rayOut, nextIntsc);
-        rayOut.org -= bias * rayOut.dir;
-
-        if (nextIntsc.t > 0.0)
-        {
-            if (bounce == maxBounces)
-            {
-                if (nextIntsc.mat->emissive)
-                {
-                    double theta = dot(rayOut.dir, intsc.normal);
-                    refColor = (theta * nextIntsc.mat->ke) /
-                        (nextIntsc.t * nextIntsc.t);
-                }
-            }
-
-            else
-            {
-                refColor = SampleSurface(
-                    rayOut,
-                    scn,
-                    nextIntsc,
-                    bounce + 1,
-                    maxBounces
-                );
-            }
-        }
-    }
-
-    return refColor;
-}
-
-/**
- * [CalcTransmittance description]
- * @param  rayIn      [description]
- * @param  scn        [description]
- * @param  intsc      [description]
- * @param  bounce     [description]
- * @param  maxBounces [description]
- * @return            [description]
- */
-
-dvec3 SurfaceIntegrator::CalcTransmittance(
-    Ray rayIn,
-    RTScene &scn,
-    Intersection intsc,
-    uint32_t bounce,
-    uint32_t maxBounces
-)
-{
-    Ray rayOut;
-    rayOut.org = rayIn.org + (intsc.t * rayIn.dir);
-    Intersection nextIntsc;
-    dvec3 transColor = dvec3(0.0, 0.0, 0.0);
-
-    if (intsc.mat->ktrans > 0.0)
-    {
-        double eta;
-
-        if (dot(rayIn.dir, intsc.normal) < 0.0)
-        {
-            eta = 1.1 / 1.0;
-            rayOut.dir = normalize(refract(rayIn.dir, intsc.normal, eta));
-            rayOut.org += bias * rayOut.dir;;
-        }
-        else
-        {
-            eta = 1.0 / 1.1;
-            rayOut.dir = normalize(refract(rayIn.dir, -intsc.normal, eta));
-            rayOut.org += bias * rayOut.dir;
-        }
-
-        scn.Intersect(rayOut, nextIntsc);
-        rayOut.org -= bias * rayOut.dir;
-
-        if (nextIntsc.t > 0.0)
-        {
-            if (bounce == maxBounces)
-            {
-                if (nextIntsc.mat->emissive)
-                {
-                    double theta = dot(rayOut.dir, intsc.normal);
-                    double t = nextIntsc.t;
-                    transColor = (theta * nextIntsc.mat->ke) / (t * t);
-                }
-            }
-            else
-            {
-                transColor = SampleSurface(
-                    rayOut,
-                    scn,
-                    nextIntsc,
-                    bounce + 1,
-                    maxBounces
-                );
-            }
-        }
-    }
-
-    return transColor;
 }
 
 /**
@@ -259,65 +180,50 @@ dvec3 SurfaceIntegrator::CalcDiffuse(
     uint32_t maxBounces
 )
 {
-    Ray rayOut;
-    rayOut.org = rayIn.org + (intsc.t * rayIn.dir);
+    Ray newRay;
+    newRay.org = rayIn.org + (intsc.t * rayIn.dir);
     Intersection nextIntsc;
     dvec3 diffColor = dvec3(0.0, 0.0, 0.0);
 
-    if (intsc.mat->kdiff > 0.0)
+    uint32_t numSamples = (uint32_t) sphereSamples.size();
+
+    for (uint32_t i = 0; i < scn.spheres.size(); i++)
     {
-        uint32_t numSamples = (uint32_t) sphereSamples.size();
+        dvec3 emis = scn.spheres[i].mat->GetEmission(rayIn, intsc);
 
-        for (uint32_t i = 0; i < scn.spheres.size(); i++)
+        if (emis.x > 0.0 || emis.y > 0.0 || emis.z > 0.0)
         {
-            if (scn.spheres[i].mat->emissive)
+            dmat4 trans = translate(scn.spheres[i].orgn);
+            dmat4 scl = scale(dvec3(scn.spheres[i].r));
+
+            for (uint32_t j = 0; j < sphereSamples.size(); j++)
             {
-                dmat4 trans = translate(scn.spheres[i].orgn);
-                dmat4 scl = scale(dvec3(scn.spheres[i].r));
+                dmat4 rot = NextRotation();
+                dvec3 sample = trans * rot * scl * sphereSamples[j];
 
-                for (uint32_t j = 0; j < sphereSamples.size(); j++)
+                newRay.dir = normalize(sample - newRay.org);
+                newRay.org += bias * newRay.dir;
+                scn.Intersect(newRay, nextIntsc);
+                newRay.org -= bias * newRay.dir;
+                
+                double t = nextIntsc.t;
+
+                if (nextIntsc.t > 0.0)
                 {
-                    dmat4 rot = NextRotation();
-                    dvec3 sample = trans * rot * scl * sphereSamples[j];
+                    double theta = dot(newRay.dir, intsc.normal);
 
-                    rayOut.dir = normalize(sample - rayOut.org);
-                    rayOut.org += bias * rayOut.dir;
-                    scn.Intersect(rayOut, nextIntsc);
-                    rayOut.org -= bias * rayOut.dir;
-                    double t = nextIntsc.t;
-
-                    if (nextIntsc.t > 0.0 &&
-                        nextIntsc.mat->name == scn.spheres[i].mat->name)
-                    {
-                        double theta1 = dot(rayOut.dir, intsc.normal);
-                        double theta2 = dot(-rayOut.dir, nextIntsc.normal);
-
-                        diffColor += (theta1 * nextIntsc.mat->ke * intsc.mat->kd) /
-                            (t * t);
-                    }
-
-                    else if (
-                        bounce < maxBounces &&
-                        (nextIntsc.mat->ktrans > 0.0)
-                    )
-                    {
-                        diffColor += SampleSurface(
-                            rayOut,
-                            scn,
-                            nextIntsc,
-                            bounce + 1,
-                            maxBounces
-                        );
-                    }
+                    diffColor += theta * SampleSurface(
+                        newRay,
+                        scn,
+                        nextIntsc,
+                        bounce + 1,
+                        maxBounces
+                    ) / (t * t);
                 }
             }
         }
-
-        if (numSamples > 1)
-        {
-            diffColor /= (double)(numSamples);
-        }
     }
 
+    diffColor /= (double)(numSamples);
     return diffColor;
 }
