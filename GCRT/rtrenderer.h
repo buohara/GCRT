@@ -15,6 +15,7 @@ struct Rect
 
 struct ThreadData
 {
+    uint32_t threadID;
     uint32_t imageW;
     uint32_t imageH;
 
@@ -24,6 +25,7 @@ struct ThreadData
 };
 
 DWORD WINAPI RenderThreadFunc(LPVOID lpParam);
+long long GetMilliseconds();
 
 struct RTRenderer
 {

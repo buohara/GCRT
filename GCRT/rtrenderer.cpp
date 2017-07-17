@@ -3,6 +3,28 @@
 CRITICAL_SECTION imageBlockCS;
 
 /**
+ * [GetMilliseconds description]
+ * @return [description]
+ */
+
+long long GetMilliseconds()
+{
+    static LARGE_INTEGER frequency;
+    static BOOL useQpc = QueryPerformanceFrequency(&frequency);
+    
+    if (useQpc) 
+    {
+        LARGE_INTEGER now;
+        QueryPerformanceCounter(&now);
+        return (1000LL * now.QuadPart) / frequency.QuadPart;
+    }
+    else 
+    {
+        return GetTickCount();
+    }
+}
+
+/**
  * [RTRenderer::Init description]
  * @param w [description]
  * @param h [description]
@@ -84,6 +106,7 @@ void RTRenderer::InitThreads()
 
     for (uint32_t i = 0; i < numThreads; i++)
     {
+        threadData[i].threadID = i;
         threadData[i].pScn = &scn;
         threadData[i].pImg = &image;
         threadData[i].imageW = imageW;
@@ -113,6 +136,8 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
     SurfaceIntegrator integrator;
     integrator.GenerateSphereSamples(32);
 
+    long long start = GetMilliseconds();
+
     while (1)
     {
         EnterCriticalSection(&imageBlockCS);
@@ -120,6 +145,18 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
         if (imageBlocks.size() == 0)
         {
             LeaveCriticalSection(&imageBlockCS);
+
+            long long stop = GetMilliseconds();
+            char str[512];
+            
+            sprintf_s(
+                str, 
+                "Thread %u render time: %3.2fs\n", 
+                data.threadID, 
+                ((double)(stop - start) / 1000.0)
+            );
+            
+            OutputDebugString(str);
             return 0;
         }
 
@@ -168,6 +205,8 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
 
 void RTRenderer::Render()
 {
+    long long start = GetMilliseconds();
+
     for (uint32_t i = 0; i < numThreads; i++)
     {
         hThreadArray[i] = CreateThread(
@@ -181,6 +220,12 @@ void RTRenderer::Render()
     }
 
     WaitForMultipleObjects(numThreads, hThreadArray, TRUE, INFINITE);
+
+    long long stop = GetMilliseconds();
+
+    char str[512];
+    sprintf_s(str, "Total render time: %3.2fs\n", ((double)(stop - start) / 1000.0));
+    OutputDebugString(str);
 }
 
 /**
