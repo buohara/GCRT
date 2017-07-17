@@ -13,8 +13,8 @@ void RTRenderer::Init(uint32_t w, uint32_t h)
 
     image.resize(imageW * imageH);
 
-    dvec3 camPos = dvec3(5.0, 5.0, 5.0);
-    dvec3 camLook = dvec3(0.0, 0.0, 1.0);
+    dvec3 camPos = dvec3(8.0, 8.0, 5.0);
+    dvec3 camLook = dvec3(0.0, 0.0, 2.0);
     
     scn.cam.Init(imageW, imageH, camPos, camLook, 75.0);
     scn.Init();
@@ -108,7 +108,7 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
     Sampler sampler;
 
     SurfaceIntegrator integrator;
-    integrator.GenerateSphereSamples(8);
+    integrator.GenerateSphereSamples(128);
 
     for (uint32_t y = ymin; y <= ymax; y++)
     {

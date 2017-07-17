@@ -8,7 +8,7 @@ using namespace std;
 
 struct SurfaceIntegrator
 {   
-    const double bias = 0.0001;
+    const double bias = 0.001;
     vector<dvec4> sphereSamples;
     vector<dmat4> randomRotations;
     

@@ -24,10 +24,10 @@ void RTSphere::Intersect(Ray ray, Intersection &intsc)
         return;
     }
 
-    double t1 = (-b + sqrt(det)) / (2.0 * a);
-    double t2 = (-b - sqrt(det)) / (2.0 * a);
+    double t1 = (-b - sqrt(det)) / (2.0 * a);
+    double t2 = (-b + sqrt(det)) / (2.0 * a);
 
-    if (t1 <= t2 && t1 > 0.0)
+    if (t1 > 0.0)
     {
         intsc.t = t1;
         intsc.normal = normalize(o + t1 * d - orgn);

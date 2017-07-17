@@ -29,5 +29,5 @@ void RTMain()
     RTRenderer rndr;
     rndr.Init(w, h);
     rndr.Render();
-    rndr.SaveImage("C:/Users/beno.NVIDIA.COM/Desktop/test.jpg");
+    rndr.SaveImage("C:/Users/SLI/Desktop/test.jpg");
 }

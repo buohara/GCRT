@@ -177,12 +177,13 @@ double GlassMaterial::GetReflectance(Ray ray, Intersection intsc)
     double cosi = dot(inc, norm);
     double sini = sqrt(1.0 - cosi * cosi);
     double sint = etaIn * sini / etaTr;
-    double cost = sqrt(1.0 - sint * sint);
-
+    
     if (sint > 1.0)
     {
         return 1.0;
     }
+    
+    double cost = sqrt(1.0 - sint * sint);
 
     double rpar = (etaTr * cosi - etaIn * cost) /
         (etaTr * cosi + etaIn * cost);
@@ -227,7 +228,15 @@ double GlassMaterial::GetDiffuse(Ray ray, Intersection intsc)
 void GlassMaterial::GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut)
 {
     rayOut.org = rayIn.org + (intsc.t * rayIn.dir);
-    rayOut.dir = normalize(reflect(rayIn.dir, intsc.normal));
+    
+    if (dot(rayIn.dir, intsc.normal) < 0.0)
+    {
+        rayOut.dir = normalize(reflect(rayIn.dir, intsc.normal));
+    }
+    else
+    {
+        rayOut.dir = normalize(reflect(rayIn.dir, -intsc.normal));
+    }
 }
 
 /**
@@ -243,11 +252,11 @@ void GlassMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &rayOut)
 
     if (dot(ray.dir, intsc.normal) < 0.0)
     {
-        rayOut.dir = normalize(refract(ray.dir, intsc.normal, etat / etai));
+        rayOut.dir = normalize(refract(ray.dir, intsc.normal, etai / etat));
     }
     else
     {
-        rayOut.dir = normalize(refract(ray.dir, -intsc.normal, etai / etat));
+        rayOut.dir = normalize(refract(ray.dir, -intsc.normal, etat / etai));
     }
 }
 

@@ -88,7 +88,7 @@ dvec3 SurfaceIntegrator::SampleSurface(
 
     // Reflection
 
-    if (refl > 0.001)
+    if (refl > bias)
     {
         Ray newRay;
         Intersection nextIntsc;
@@ -100,7 +100,7 @@ dvec3 SurfaceIntegrator::SampleSurface(
 
         double t = nextIntsc.t;
 
-        if (t > 0.0)
+        if (t > bias)
         {
             dvec3 reflClr = dvec3(0.0, 0.0, 0.0);
 
@@ -112,25 +112,25 @@ dvec3 SurfaceIntegrator::SampleSurface(
                 maxBounces
             );
 
-            outColor += refl * reflClr / (t * t);
+            outColor += refl * reflClr;
         }
     }
 
     // Transmission
 
-    if (trans > 0.001)
+    if (trans > bias)
     {
         Ray newRay;
         Intersection nextIntsc;
 
         pMat->GetTransmittedRay(rayIn, intsc, newRay);
-        newRay.org += bias * newRay.dir;
+        newRay.org += bias * rayIn.dir;
         scn.Intersect(newRay, nextIntsc);
-        newRay.org -= bias * newRay.dir;
+        newRay.org -= bias * rayIn.dir;
 
         double t = nextIntsc.t;
 
-        if (t > 0.0)
+        if (t > bias)
         {
             dvec3 transClr = dvec3(0.0, 0.0, 0.0);
 
@@ -142,21 +142,26 @@ dvec3 SurfaceIntegrator::SampleSurface(
                 maxBounces
             );
 
-            outColor += trans * transClr / (t * t);
+            outColor += trans * transClr;
         }
     }
 
     // Diffuse
 
-    if (diff > 0.001)
+    if (diff > bias)
     {
-        outColor += diff * CalcDiffuse(
+        dvec3 diffColor = pMat->GetDiffuseColor();
+        dvec3 diffColorIn;
+
+        diffColorIn = CalcDiffuse(
             rayIn,
             scn,
             intsc,
             bounce,
             maxBounces
         );
+
+        outColor += diff * diffColor * diffColorIn;
     }
 
     return outColor;
@@ -185,7 +190,7 @@ dvec3 SurfaceIntegrator::CalcDiffuse(
     Intersection nextIntsc;
     dvec3 diffColor = dvec3(0.0, 0.0, 0.0);
 
-    uint32_t numSamples = (uint32_t) sphereSamples.size();
+    uint32_t numSamples = sphereSamples.size();
 
     for (uint32_t i = 0; i < scn.spheres.size(); i++)
     {
@@ -202,28 +207,31 @@ dvec3 SurfaceIntegrator::CalcDiffuse(
                 dvec3 sample = trans * rot * scl * sphereSamples[j];
 
                 newRay.dir = normalize(sample - newRay.org);
-                newRay.org += bias * newRay.dir;
-                scn.Intersect(newRay, nextIntsc);
-                newRay.org -= bias * newRay.dir;
-                
-                double t = nextIntsc.t;
 
-                if (nextIntsc.t > 0.0)
+                if (dot(newRay.dir, intsc.normal) > 0.0)
                 {
-                    double theta = dot(newRay.dir, intsc.normal);
+                    newRay.org += bias * newRay.dir;
+                    scn.Intersect(newRay, nextIntsc);
+                    newRay.org -= bias * newRay.dir;
 
-                    diffColor += theta * SampleSurface(
-                        newRay,
-                        scn,
-                        nextIntsc,
-                        bounce + 1,
-                        maxBounces
-                    ) / (t * t);
+                    double t = nextIntsc.t;
+                    double dist = length(sample - newRay.org);
+
+                    if (nextIntsc.t > 0.0 && abs(dist - t) < 2 * bias)
+                    {
+                        double theta = dot(newRay.dir, intsc.normal);
+                        diffColor += 
+                            theta * scn.mats[nextIntsc.mat]->GetEmission(newRay, nextIntsc) / (t * t);
+                    }
                 }
             }
         }
     }
 
-    diffColor /= (double)(numSamples);
+    if (numSamples > 0)
+    {
+        diffColor /= (double)(numSamples);
+    }
+
     return diffColor;
 }

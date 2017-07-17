@@ -13,7 +13,7 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
     Intersection intsc2;
     plane.Intersect(ray, intsc2);
 
-    if ((intsc2.t < minDist) && (intsc2.t > 0.0))
+    if ((intsc2.t < minDist) && (intsc2.t > 0.001))
     {
         intsc = intsc2;
         minDist = intsc2.t;
@@ -23,7 +23,7 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
     {
         spheres[i].Intersect(ray, intsc2);
 
-        if ((intsc2.t < minDist) && (intsc2.t > 0.0))
+        if ((intsc2.t < minDist) && (intsc2.t > 0.001))
         {
             intsc = intsc2;
             minDist = intsc2.t;
@@ -34,7 +34,7 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
     {
         boxes[i].Intersect(ray, intsc2);
 
-        if ((intsc2.t < minDist) && (intsc2.t > 0.0))
+        if ((intsc2.t < minDist) && (intsc2.t > 0.001))
         {
             intsc = intsc2;
             minDist = intsc2.t;
@@ -45,7 +45,7 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
     {
         meshes[i]->Intersect(ray, intsc2);
 
-        if ((intsc2.t < minDist) && (intsc2.t > 0.0))
+        if ((intsc2.t < minDist) && (intsc2.t > 0.001))
         {
             intsc = intsc2;
             minDist = intsc2.t;
@@ -144,11 +144,11 @@ void RTScene::InitMaterials()
 
     LightMaterial lightMatBlue;
     lightMatBlue.name = "LightBlue";
-    lightMatBlue.lightColor = dvec3(100.0, 200.0, 500.0);
+    lightMatBlue.lightColor = dvec3(100.0, 200.0, 2000.0);
 
     LightMaterial lightMatRed;
     lightMatRed.name = "LightRed";
-    lightMatRed.lightColor = dvec3(500.0, 200.0, 100.0);
+    lightMatRed.lightColor = dvec3(1000.0, 200.0, 100.0);
 
     mats["Mirror"] = make_shared<MirrorMaterial>(mirrorMat);
     mats["Glass"] = make_shared<GlassMaterial>(glassMat);
@@ -168,26 +168,26 @@ void RTScene::InitModels()
     plane.mat = mats["GreenMatte"];
 
     RTSphere redSph;
-    redSph.orgn = dvec3(-7.0, 0.0, 2.0);
+    redSph.orgn = dvec3(-7.0, 0.0, 1.0);
     redSph.r = 1.0;
     redSph.mat = mats["RedMatte"];
     spheres.push_back(redSph);
 
     RTSphere mirrSph;
-    mirrSph.orgn = dvec3(0.0, -2.0, 2.0);
+    mirrSph.orgn = dvec3(-1.0, 0.0, 1.0);
     mirrSph.r = 1.0;
     mirrSph.mat = mats["Mirror"];
     spheres.push_back(mirrSph);
 
     RTSphere glassSph;
-    glassSph.orgn = dvec3(-2.0, 2.0, 3.0);
+    glassSph.orgn = dvec3(-1.0, 3.0, 2.0);
     glassSph.r = 1.0;
     glassSph.mat = mats["Glass"];
     spheres.push_back(glassSph);
 
     RTSphere lightSphBlue;
-    lightSphBlue.orgn = dvec3(0.0, -2.0, 15.0);
-    lightSphBlue.r = 1.0;
+    lightSphBlue.orgn = dvec3(0.0, -2.0, 20.0);
+    lightSphBlue.r = 3.0;
     lightSphBlue.mat = mats["LightBlue"];;
     spheres.push_back(lightSphBlue);
 
@@ -195,13 +195,13 @@ void RTScene::InitModels()
     lightSphRed.orgn = dvec3(-2.0, 2.0, 15.0);
     lightSphRed.r = 1.0;
     lightSphRed.mat = mats["LightRed"];;
-    //spheres.push_back(lightSphRed);
+    spheres.push_back(lightSphRed);
 
     RTBox mirrorBox;
-    mirrorBox.min = dvec3(2.0, -2.0, 0.0);
-    mirrorBox.max = dvec3(3.0, -1.0, 1.5);
+    mirrorBox.min = dvec3(-3.0, -2.0, 1.0);
+    mirrorBox.max = dvec3(-2.0, -1.0, 2.5);
     mirrorBox.mat = mats["Mirror"];
-    boxes.push_back(mirrorBox);
+    //boxes.push_back(mirrorBox);
 
     shared_ptr<RTMesh> pMesh = make_shared<RTMesh>();
     pMesh->LoadModel("../asset/models/boblampclean/boblampclean.md5mesh");
