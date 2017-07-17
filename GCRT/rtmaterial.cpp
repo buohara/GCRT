@@ -45,6 +45,8 @@ double MatteMaterial::GetDiffuse(Ray ray, Intersection intsc)
 
 void MatteMaterial::GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut)
 {
+    rayOut.org = rayIn.org + (intsc.t * rayIn.dir);
+    rayOut.dir = normalize(reflect(rayIn.dir, intsc.normal));
     return;
 }
 

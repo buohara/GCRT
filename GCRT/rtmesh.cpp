@@ -157,23 +157,25 @@ void RTMesh::LoadModel(string file)
     dvec3 min = dvec3(DBL_MAX, DBL_MAX, DBL_MAX);
     dvec3 max = dvec3(DBL_MIN, DBL_MIN, DBL_MIN);
 
+    double scale = 1.0 / 15.0;
+
     for (uint32 i = 0; i < scene.mNumMeshes; i++)
     {
         aiMesh &mesh = *(scene.mMeshes[i]);
 
         for (uint32_t j = 0; j < mesh.mNumVertices; j++)
         {
-            pos[j + vOffset].x = mesh.mVertices[j].x;
-            pos[j + vOffset].y = mesh.mVertices[j].y;
-            pos[j + vOffset].z = mesh.mVertices[j].z;
+            pos[j + vOffset].x = mesh.mVertices[j].x * scale;
+            pos[j + vOffset].y = mesh.mVertices[j].y * scale;
+            pos[j + vOffset].z = mesh.mVertices[j].z * scale;
 
-            max.x = glm::max<double>(pos[j + vOffset].x, max.x);
-            max.y = glm::max<double>(pos[j + vOffset].y, max.y);
-            max.z = glm::max<double>(pos[j + vOffset].z, max.z);
+            max.x = glm::max<double>(pos[j + vOffset].x, max.x) * scale;
+            max.y = glm::max<double>(pos[j + vOffset].y, max.y) * scale;
+            max.z = glm::max<double>(pos[j + vOffset].z, max.z) * scale;
 
-            min.x = glm::min<double>(pos[j + vOffset].x, min.x);
-            min.y = glm::min<double>(pos[j + vOffset].y, min.y);
-            min.z = glm::min<double>(pos[j + vOffset].z, min.z);
+            min.x = glm::min<double>(pos[j + vOffset].x, min.x) * scale;
+            min.y = glm::min<double>(pos[j + vOffset].y, min.y) * scale;
+            min.z = glm::min<double>(pos[j + vOffset].z, min.z) * scale;
 
             norm[j + vOffset].x = mesh.mNormals[j].x;
             norm[j + vOffset].y = mesh.mNormals[j].y;

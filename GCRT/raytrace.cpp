@@ -22,12 +22,12 @@ void RTMain()
     w = 256;
     h = 256;
 #else
-    w = 3840;
-    h = 2160;
+    w = 2160;
+    h = 3840;
 #endif
 
     RTRenderer rndr;
     rndr.Init(w, h);
     rndr.Render();
-    rndr.SaveImage("C:/Users/SLI/Desktop/test.jpg");
+    rndr.SaveImage("C:/Users/beno.NVIDIA.COM/Desktop/test.jpg");
 }

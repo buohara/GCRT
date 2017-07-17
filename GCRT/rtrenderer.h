@@ -15,12 +15,12 @@ struct Rect
 
 struct ThreadData
 {
-    Rect rect;
     uint32_t imageW;
     uint32_t imageH;
 
     RTScene *pScn;
     vector<dvec3> *pImg;
+    vector<Rect> *pImageBlocks;
 };
 
 DWORD WINAPI RenderThreadFunc(LPVOID lpParam);
@@ -33,6 +33,7 @@ struct RTRenderer
 
     RTScene scn;
     vector<dvec3> image;
+    vector<Rect> imageBlocks;
 
     uint32_t imageW;
     uint32_t imageH;

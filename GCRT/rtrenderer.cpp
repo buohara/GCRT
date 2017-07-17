@@ -1,5 +1,7 @@
 #include "rtrenderer.h"
 
+CRITICAL_SECTION imageBlockCS;
+
 /**
  * [RTRenderer::Init description]
  * @param w [description]
@@ -13,7 +15,7 @@ void RTRenderer::Init(uint32_t w, uint32_t h)
 
     image.resize(imageW * imageH);
 
-    dvec3 camPos = dvec3(8.0, 8.0, 5.0);
+    dvec3 camPos = dvec3(5.0, -5.0, 3.0);
     dvec3 camLook = dvec3(0.0, 0.0, 2.0);
     
     scn.cam.Init(imageW, imageH, camPos, camLook, 75.0);
@@ -33,48 +35,52 @@ void RTRenderer::InitThreads()
 
     if (imageW > imageH)
     {
-        xBlocks = 8;
-        yBlocks = 2;
+        xBlocks = 32;
+        yBlocks = 24;
     }
     else
     {
-        xBlocks = 2;
-        yBlocks = 8;
+        xBlocks = 24;
+        yBlocks = 32;
     }
 
-    numThreads = xBlocks * yBlocks;
     uint32_t blockSizeX = imageW / xBlocks;
     uint32_t blockSizeY = imageH / yBlocks;
-    uint32_t threadID = 0;
 
     for (uint32_t i = 0; i < xBlocks; i++)
     {
         for (uint32_t j = 0; j < yBlocks; j++)
         {
-            threadData[threadID].rect.xmin = i * blockSizeX;
-            threadData[threadID].rect.ymin = j * blockSizeY;
+            Rect rect;
+
+            rect.xmin = i * blockSizeX;
+            rect.ymin = j * blockSizeY;
 
             if (i == xBlocks - 1)
             {
-                threadData[threadID].rect.xmax = imageW - 1;
+                rect.xmax = imageW - 1;
             }
             else
             {
-                threadData[threadID].rect.xmax = (i + 1) * blockSizeX - 1;
+                rect.xmax = (i + 1) * blockSizeX - 1;
             }
 
             if (j == yBlocks - 1)
             {
-                threadData[threadID].rect.ymax = imageH - 1;
+                rect.ymax = imageH - 1;
             }
             else
             {
-                threadData[threadID].rect.ymax = (j + 1) * blockSizeY - 1;
+                rect.ymax = (j + 1) * blockSizeY - 1;
             }
-
-            threadID++;
+            
+            imageBlocks.push_back(rect);
         }
     }
+
+    InitializeCriticalSection(&imageBlockCS);
+
+    numThreads = 16;
 
     for (uint32_t i = 0; i < numThreads; i++)
     {
@@ -82,6 +88,7 @@ void RTRenderer::InitThreads()
         threadData[i].pImg = &image;
         threadData[i].imageW = imageW;
         threadData[i].imageH = imageH;
+        threadData[i].pImageBlocks = &imageBlocks;
     }
 }
 
@@ -95,49 +102,60 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
 {
     ThreadData &data = *((ThreadData*)(lpParam));
     
-    uint32_t xmin = data.rect.xmin;
-    uint32_t xmax = data.rect.xmax;
-    uint32_t ymin = data.rect.ymin;
-    uint32_t ymax = data.rect.ymax;
     uint32_t imageW = data.imageW;
     uint32_t imageH = data.imageH;
-
     RTScene &scn = *(data.pScn);
     vector<dvec3> &image = *(data.pImg);
+    vector<Rect> &imageBlocks = *(data.pImageBlocks);
 
     Sampler sampler;
 
     SurfaceIntegrator integrator;
-    integrator.GenerateSphereSamples(128);
+    integrator.GenerateSphereSamples(32);
 
-    for (uint32_t y = ymin; y <= ymax; y++)
+    while (1)
     {
-        for (uint32_t x = xmin; x <= xmax; x++)
+        EnterCriticalSection(&imageBlockCS);
+
+        if (imageBlocks.size() == 0)
         {
-            vector<dvec2> samples;
-            samples.resize(1);
-            sampler.GenerateSamples(1, x, y, samples);
-            Ray ray = scn.cam.GenerateRay(samples[0]);
+            LeaveCriticalSection(&imageBlockCS);
+            return 0;
+        }
 
-            Intersection intsc;
-            scn.Intersect(ray, intsc);
-            dvec3 color = dvec3(0.0, 0.0, 0.0);
+        Rect rect = imageBlocks.back();
+        imageBlocks.pop_back();
+        LeaveCriticalSection(&imageBlockCS);
 
-            if (intsc.t > 0.0)
+        for (uint32_t y = rect.ymin; y <= rect.ymax; y++)
+        {
+            for (uint32_t x = rect.xmin; x <= rect.xmax; x++)
             {
-                color = integrator.SampleSurface(
-                    ray,
-                    scn,
-                    intsc,
-                    1,
-                    5
-                );
+                vector<dvec2> samples;
+                samples.resize(1);
+                sampler.GenerateSamples(1, x, y, samples);
+                Ray ray = scn.cam.GenerateRay(samples[0]);
 
-                color;
+                Intersection intsc;
+                scn.Intersect(ray, intsc);
+                dvec3 color = dvec3(0.0, 0.0, 0.0);
+
+                if (intsc.t > 0.0)
+                {
+                    color = integrator.SampleSurface(
+                        ray,
+                        scn,
+                        intsc,
+                        1,
+                        5
+                    );
+
+                    color;
+                }
+
+                color = 1.0 - glm::exp(-color);
+                image[y * imageW + x] = color;
             }
-
-            color = 1.0 - glm::exp(-color);
-            image[y * imageW + x] = color;
         }
     }
 
