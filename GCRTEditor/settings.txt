@@ -1,0 +1,2 @@
+// winW winH wireframe useDOF useBloom msaaSamples loadscenefromfile scenepath RTDebug
+1920 1080 0 0 1 4 1 ../scenes/LampGuys.scn 1

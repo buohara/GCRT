@@ -40,12 +40,21 @@ void RTRenderer::Init(uint32_t w, uint32_t h)
     dvec3 camPos = dvec3(8.0, -8.0, 3.0);
     dvec3 camLook = dvec3(0.0, 0.0, 2.0);
     
-    scn.cam.Init(imageW, imageH, camPos, camLook, 60.0);
-    scn.cam.focalDist = 11.7;
-    scn.cam.numDOFRays = 8;
-    scn.cam.aperture = 0.5;
-    scn.Init();
+    scn.cam.Init(
+        imageW,
+        imageH,
+        camPos,
+        camLook,
+        60.0,
+        0.5,
+        11.7,
+        8
+    );
 
+    integrator.GenerateSphereSamples(32);
+    sampler.numSamples = 1;
+
+    scn.Init();
     InitThreads();
 }
 
@@ -109,12 +118,14 @@ void RTRenderer::InitThreads()
 
     for (uint32_t i = 0; i < numThreads; i++)
     {
-        threadData[i].threadID = i;
-        threadData[i].pScn = &scn;
-        threadData[i].pImg = &image;
-        threadData[i].imageW = imageW;
-        threadData[i].imageH = imageH;
-        threadData[i].pImageBlocks = &imageBlocks;
+        threadData[i].threadID      = i;
+        threadData[i].pScn          = &scn;
+        threadData[i].pImg          = &image;
+        threadData[i].pSampler      = &sampler;
+        threadData[i].imageW        = imageW;
+        threadData[i].imageH        = imageH;
+        threadData[i].pImageBlocks  = &imageBlocks;
+        threadData[i].pIntegrator   = &integrator;
     }
 }
 
@@ -126,23 +137,23 @@ void RTRenderer::InitThreads()
 
 DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
 {
-    ThreadData &data = *((ThreadData*)(lpParam));
-    
-    uint32_t imageW = data.imageW;
-    uint32_t imageH = data.imageH;
-    RTScene &scn = *(data.pScn);
-    vector<dvec3> &image = *(data.pImg);
-    vector<Rect> &imageBlocks = *(data.pImageBlocks);
+    // Unpack thread params.
 
-    Sampler sampler;
-
-    SurfaceIntegrator integrator;
-    integrator.GenerateSphereSamples(32);
+    ThreadData &data = *((ThreadData*)(lpParam)); 
+    uint32_t imageW                 = data.imageW;
+    uint32_t imageH                 = data.imageH;
+    RTScene &scn                    = *(data.pScn);
+    vector<dvec3> &image            = *(data.pImg);
+    vector<Rect> &imageBlocks       = *(data.pImageBlocks);
+    Sampler &sampler                = *(data.pSampler);
+    SurfaceIntegrator integrator    = *(data.pIntegrator);
 
     long long start = GetMilliseconds();
 
     while (1)
     {
+        // Grab work, exit if no more work left.
+
         EnterCriticalSection(&imageBlockCS);
 
         if (imageBlocks.size() == 0)
@@ -167,24 +178,24 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
         imageBlocks.pop_back();
         LeaveCriticalSection(&imageBlockCS);
 
+        // Render current tile.
+
         for (uint32_t y = rect.ymin; y <= rect.ymax; y++)
         {
             for (uint32_t x = rect.xmin; x <= rect.xmax; x++)
             {
                 vector<dvec2> samples;
-                samples.resize(4);
-                sampler.GenerateSamples(4, x, y, samples);
-                
+                sampler.GenerateSamples(x, y, samples);         
                 dvec3 color = dvec3(0.0, 0.0, 0.0);
 
-                for (uint32_t i = 0; i < 4; i++)
+                for (uint32_t i = 0; i < sampler.numSamples; i++)
                 {
                     Ray primRay = scn.cam.GeneratePrimaryRay(samples[i]);
 
-                    double dofSamplesInv = 1.0 / (double)scn.cam.numDOFRays;
-                    double sampleInv = 0.25;
+                    double dofSamplesInv = 1.0 / (double)scn.cam.dofSamples;
+                    double sampleInv     = 1.0 / (double)sampler.numSamples;
 
-                    for (uint32_t j = 0; j < scn.cam.numDOFRays; j++)
+                    for (uint32_t j = 0; j < scn.cam.dofSamples; j++)
                     {
                         Ray ray = scn.cam.GenerateSecondaryRay(primRay, samples[i]);
 

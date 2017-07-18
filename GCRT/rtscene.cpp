@@ -67,13 +67,19 @@ void RTCamera::Init(
     uint32_t h,
     dvec3 posIn,
     dvec3 look,
-    double fov
+    double fov,
+    double apertureIn,
+    double focalDistIn,
+    uint32_t dofSamplesIn
 )
 {
     imageW = (double)w;
     imageH = (double)h;
     aspect = (double)w / (double)h;
     tanfov = tan(fov * pi<double>() / (360.0));
+    aperture = apertureIn;
+    focalDist = focalDistIn;
+    dofSamples = dofSamplesIn;
 
     pos = posIn;
     lookDir = look - posIn;

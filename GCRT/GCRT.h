@@ -13,14 +13,6 @@
 #include <map>
 #include <chrono>
 
-// GL headers
-
-#define GLEW_STATIC
-
-#include <glew.h>
-#include <wglew.h>
-#include <gl/GL.h>
-
 // Windows headers
 
 #include <Windows.h>

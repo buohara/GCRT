@@ -20,6 +20,10 @@ struct ThreadData
     uint32_t imageH;
 
     RTScene *pScn;
+    Sampler *pSampler;
+    SurfaceIntegrator *pIntegrator;
+    //Filter *pFilter;
+
     vector<dvec3> *pImg;
     vector<Rect> *pImageBlocks;
 };
@@ -36,6 +40,8 @@ struct RTRenderer
     RTScene scn;
     vector<dvec3> image;
     vector<Rect> imageBlocks;
+    Sampler sampler;
+    SurfaceIntegrator integrator;
 
     uint32_t imageW;
     uint32_t imageH;

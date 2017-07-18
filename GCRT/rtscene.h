@@ -19,7 +19,7 @@ struct RTCamera
     double imageW;
     double imageH;
 
-    uint32_t numDOFRays;
+    uint32_t dofSamples;
 
     mat4 viewInv;
     
@@ -31,7 +31,10 @@ struct RTCamera
         uint32_t h,
         dvec3 posIn,
         dvec3 look,
-        double fov
+        double fov,
+        double apertureIn,
+        double focalDistIn,
+        uint32_t dofSamplesIn
     );
 
     Ray GeneratePrimaryRay(dvec2 pixel);
