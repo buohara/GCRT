@@ -37,10 +37,13 @@ void RTRenderer::Init(uint32_t w, uint32_t h)
 
     image.resize(imageW * imageH);
 
-    dvec3 camPos = dvec3(5.0, -5.0, 3.0);
+    dvec3 camPos = dvec3(8.0, -8.0, 3.0);
     dvec3 camLook = dvec3(0.0, 0.0, 2.0);
     
-    scn.cam.Init(imageW, imageH, camPos, camLook, 75.0);
+    scn.cam.Init(imageW, imageH, camPos, camLook, 60.0);
+    scn.cam.focalDist = 11.7;
+    scn.cam.numDOFRays = 8;
+    scn.cam.aperture = 0.5;
     scn.Init();
 
     InitThreads();
@@ -169,25 +172,36 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
             for (uint32_t x = rect.xmin; x <= rect.xmax; x++)
             {
                 vector<dvec2> samples;
-                samples.resize(1);
-                sampler.GenerateSamples(1, x, y, samples);
-                Ray ray = scn.cam.GenerateRay(samples[0]);
-
-                Intersection intsc;
-                scn.Intersect(ray, intsc);
+                samples.resize(4);
+                sampler.GenerateSamples(4, x, y, samples);
+                
                 dvec3 color = dvec3(0.0, 0.0, 0.0);
 
-                if (intsc.t > 0.0)
+                for (uint32_t i = 0; i < 4; i++)
                 {
-                    color = integrator.SampleSurface(
-                        ray,
-                        scn,
-                        intsc,
-                        1,
-                        5
-                    );
+                    Ray primRay = scn.cam.GeneratePrimaryRay(samples[i]);
 
-                    color;
+                    double dofSamplesInv = 1.0 / (double)scn.cam.numDOFRays;
+                    double sampleInv = 0.25;
+
+                    for (uint32_t j = 0; j < scn.cam.numDOFRays; j++)
+                    {
+                        Ray ray = scn.cam.GenerateSecondaryRay(primRay, samples[i]);
+
+                        Intersection intsc;
+                        scn.Intersect(ray, intsc);
+
+                        if (intsc.t > 0.0)
+                        {
+                            color += integrator.SampleSurface(
+                                ray,
+                                scn,
+                                intsc,
+                                1,
+                                6
+                            ) * dofSamplesInv * sampleInv;
+                        }
+                    }
                 }
 
                 color = 1.0 - glm::exp(-color);

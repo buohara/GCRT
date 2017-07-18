@@ -19,8 +19,32 @@ void Sampler::GenerateSamples(
     double py = (double)y;
 
     dvec2 sample;
-    sample.x = px + 0.5;
-    sample.y = py + 0.5;
 
+    double r1 = (double)rand() / (double)RAND_MAX;
+    double r2 = (double)rand() / (double)RAND_MAX;
+
+    sample.x = px + r1;
+    sample.y = py + r2;
     samples[0] = sample;
+
+    r1 = (double)rand() / (double)RAND_MAX;
+    r2 = (double)rand() / (double)RAND_MAX;
+
+    sample.x = px + r1;
+    sample.y = py + r2;
+    samples[1] = sample;
+
+    r1 = (double)rand() / (double)RAND_MAX;
+    r2 = (double)rand() / (double)RAND_MAX;
+
+    sample.x = px + r1;
+    sample.y = py + r2;
+    samples[2] = sample;
+
+    r1 = (double)rand() / (double)RAND_MAX;
+    r2 = (double)rand() / (double)RAND_MAX;
+
+    sample.x = px + r1;
+    sample.y = py + r2;
+    samples[3] = sample;
 }

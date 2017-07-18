@@ -76,6 +76,7 @@ void RTCamera::Init(
     tanfov = tan(fov * pi<double>() / (360.0));
 
     pos = posIn;
+    lookDir = look - posIn;
 
     viewInv = lookAt(pos, look, dvec3(0.0, 0.0, 1.0));
     viewInv = inverse(viewInv);
@@ -87,7 +88,7 @@ void RTCamera::Init(
 * @return       [description]
 */
 
-Ray RTCamera::GenerateRay(dvec2 pixel)
+Ray RTCamera::GeneratePrimaryRay(dvec2 pixel)
 {
     Ray ray;
 
@@ -108,6 +109,34 @@ Ray RTCamera::GenerateRay(dvec2 pixel)
     ray.org = pos;
 
     return ray;
+}
+
+Ray RTCamera::GenerateSecondaryRay(Ray primRay, dvec2 pixel)
+{
+    Ray newRay;
+
+    dvec3 dir;
+    dir.x = (2.0 * pixel.x / imageW - 1.0) * tanfov * aspect;
+    dir.y = (2.0 * pixel.y / imageH - 1.0) * tanfov;
+    dir.z = -1.0;
+    dir = normalize(dir);
+
+    double t = -focalDist / dir.z;
+
+    dvec3 intsc = primRay.org + t * primRay.dir;
+
+    dvec3 e1 = normalize(dvec3(lookDir.z, 0.0, -lookDir.x));
+    dvec3 e2 = normalize(cross(lookDir, e1));
+
+    double theta = 2.0 * pi<double>() * (double)rand() / (double)RAND_MAX;
+    double r = aperture * (double)rand() / (double)RAND_MAX;
+    
+    newRay.org = primRay.org;
+    newRay.org += r * cos(theta) * e1;
+    newRay.org += r * sin(theta) * e2;
+    newRay.dir = normalize(intsc - newRay.org);
+
+    return newRay;
 }
 
 /**
@@ -168,20 +197,20 @@ void RTScene::InitModels()
     plane.mat = mats["GreenMatte"];
 
     RTSphere redSph;
-    redSph.orgn = dvec3(-7.0, 0.0, 1.0);
+    redSph.orgn = dvec3(-10.0, 1.0, 1.0);
     redSph.r = 1.0;
     redSph.mat = mats["RedMatte"];
     spheres.push_back(redSph);
 
     RTSphere mirrSph;
-    mirrSph.orgn = dvec3(-1.0, 0.0, 1.0);
+    mirrSph.orgn = dvec3(3.0, 0.0, 2.0);
     mirrSph.r = 1.0;
     mirrSph.mat = mats["Mirror"];
     spheres.push_back(mirrSph);
 
     RTSphere glassSph;
-    glassSph.orgn = dvec3(-1.0, 3.0, 2.0);
-    glassSph.r = 1.0;
+    glassSph.orgn = dvec3(-2.0, 0.0, 2.5);
+    glassSph.r = 2.0;
     glassSph.mat = mats["Glass"];
     spheres.push_back(glassSph);
 
