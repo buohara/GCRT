@@ -190,7 +190,7 @@ dvec3 SurfaceIntegrator::CalcDiffuse(
     Intersection nextIntsc;
     dvec3 diffColor = dvec3(0.0, 0.0, 0.0);
 
-    uint32_t numSamples = sphereSamples.size();
+    uint32_t numSamples = (uint32_t)sphereSamples.size();
 
     for (uint32_t i = 0; i < scn.spheres.size(); i++)
     {

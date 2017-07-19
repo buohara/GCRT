@@ -157,7 +157,7 @@ void RTMesh::LoadModel(string file)
     dvec3 min = dvec3(DBL_MAX, DBL_MAX, DBL_MAX);
     dvec3 max = dvec3(DBL_MIN, DBL_MIN, DBL_MIN);
 
-    double scale = 1.0 / 15.0;
+    double scale = 1.0 / 20.0;
 
     for (uint32 i = 0; i < scene.mNumMeshes; i++)
     {

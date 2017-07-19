@@ -7,19 +7,8 @@ int CALLBACK WinMain(
     __in int nShowCmd
 )
 {
-    uint32_t w;
-    uint32_t h;
-
-#ifdef _DEBUG
-    w = 256;
-    h = 256;
-#else
-    w = 3840;
-    h = 2160;
-#endif
-
     RTRenderer rndr;
-    rndr.Init(w, h);
+    rndr.Init();
     rndr.Render();
     rndr.SaveImage("C:/Users/beno.NVIDIA.COM/Desktop/test.jpg");
 }

@@ -4,6 +4,7 @@
 #include "rtscene.h"
 #include "sampler.h"
 #include "surfaceintegrator.h"
+#include "filter.h"
 
 struct Rect
 {
@@ -22,14 +23,26 @@ struct ThreadData
     RTScene *pScn;
     Sampler *pSampler;
     SurfaceIntegrator *pIntegrator;
-    //Filter *pFilter;
 
-    vector<dvec3> *pImg;
+    vector<vector<Sample>> *pImgSamples;
     vector<Rect> *pImageBlocks;
 };
 
 DWORD WINAPI RenderThreadFunc(LPVOID lpParam);
 long long GetMilliseconds();
+
+struct RTRenderSettings
+{
+    uint32_t imageW;
+    uint32_t imageH;
+    uint32_t sphereSamples;
+    uint32_t pixelSamples;
+    uint32_t filterSize;
+    uint32_t dofSamples;
+    uint32_t numThreads;
+    uint32_t xBlocks;
+    uint32_t yBlocks;
+};
 
 struct RTRenderer
 {
@@ -38,17 +51,26 @@ struct RTRenderer
     HANDLE hThreadArray[16];
 
     RTScene scn;
-    vector<dvec3> image;
+    vector<vector<Sample>> imageSamples;
+    vector<dvec3> outImage;
+
     vector<Rect> imageBlocks;
+
     Sampler sampler;
     SurfaceIntegrator integrator;
+    Filter filter;
 
     uint32_t imageW;
     uint32_t imageH;
 
-    void Render();
+    RTRenderSettings settings;
 
-    void Init(uint32_t w, uint32_t h);
+    void Render();
+    void FilterSamples();
+    void GetFilterBox(int x, int y, int w, vector<uvec2> &filterBox);
+
+    void Init();
     void InitThreads();
     void SaveImage(string fileName);
+    void LoadSettings(string file);
 };

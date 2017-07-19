@@ -5,6 +5,12 @@
 using namespace std;
 using namespace glm;
 
+struct Sample
+{
+    dvec2 pos;
+    dvec3 color;
+};
+
 struct Sampler
 {
     uint32_t imageW;

@@ -218,7 +218,7 @@ void RTScene::InitModels()
     glassSph.orgn = dvec3(-2.0, 0.0, 2.5);
     glassSph.r = 2.0;
     glassSph.mat = mats["Glass"];
-    spheres.push_back(glassSph);
+    //spheres.push_back(glassSph);
 
     RTSphere lightSphBlue;
     lightSphBlue.orgn = dvec3(0.0, -2.0, 20.0);
@@ -241,5 +241,5 @@ void RTScene::InitModels()
     shared_ptr<RTMesh> pMesh = make_shared<RTMesh>();
     pMesh->LoadModel("../asset/models/boblampclean/boblampclean.md5mesh");
     pMesh->mat = mats["Glass"];
-    //meshes.push_back(pMesh);
+    meshes.push_back(pMesh);
 }
