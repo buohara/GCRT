@@ -31,7 +31,7 @@ void RTSphere::Intersect(Ray ray, Intersection &intsc)
     {
         intsc.t = t1;
         intsc.normal = normalize(o + t1 * d - orgn);
-        intsc.mat = mat->name;
+        intsc.mat = mat;
         return;
     }
 
@@ -39,7 +39,7 @@ void RTSphere::Intersect(Ray ray, Intersection &intsc)
     {
         intsc.t = t2;
         intsc.normal = normalize(o + t2 * d - orgn);
-        intsc.mat = mat->name;
+        intsc.mat = mat;
         return;
     }
 }
@@ -63,7 +63,61 @@ void RTPlane::Intersect(Ray ray, Intersection &intsc)
 
     double d = normal.w;
     intsc.t = (d - dot(n, ray.org)) / (dot(n, ray.dir));
-    intsc.mat = mat->name;
+    intsc.mat = mat;
+}
+
+/**
+ * [Submesh::Intersect description]
+ * @param ray  [description]
+ * @param intc [description]
+ */
+
+void Submesh::Intersect(Ray ray, Intersection &intsc)
+{
+    // Triangle intersection method using barycentric coordinates.
+    // Adapted from the PBRT book.
+
+    intsc.t = DBL_MAX;
+    vector<uint32_t> faceIdcs;
+    faceIdcs.reserve(1024);
+    root.Intersect(ray, faceIdcs);
+
+    for (uint32_t i = 0; i < faceIdcs.size(); i++)
+    {
+        uvec3 curFace = faces[faceIdcs[i]];
+
+        dvec3 p0 = pos[curFace.x];
+        dvec3 p1 = pos[curFace.y];
+        dvec3 p2 = pos[curFace.z];
+
+        dvec3 e1 = p1 - p0;
+        dvec3 e2 = p2 - p0;
+        dvec3 s = ray.org - p0;
+
+        dvec3 s1 = cross(ray.dir, e2);
+        dvec3 s2 = cross(s, e1);
+
+        double a = 1.0 / dot(s1, e1);
+
+        double t = a * dot(s2, e2);
+        double b1 = a * dot(s1, s);
+        double b2 = a * dot(s2, ray.dir);
+
+        if (b1 < 0.0 || b2 < 0.0 || (b1 + b2 > 1.0))
+        {
+            continue;
+        }
+
+        if (t > 0.0 && t < intsc.t)
+        {
+            intsc.t = t;
+            intsc.mat = mat;
+            intsc.normal =
+                (1.0 - b1 - b2) * norm[curFace.x] +
+                b1 * norm[curFace.y] +
+                b2 * norm[curFace.z];
+        }
+    }
 }
 
 /**
@@ -74,55 +128,21 @@ void RTPlane::Intersect(Ray ray, Intersection &intsc)
 
 void RTMesh::Intersect(Ray ray, Intersection &intsc)
 {
-    // Triangle intersection method using barycentric coordinates.
-    // Adapted from the PBRT book.
+    double minDist = DBL_MAX;
+    intsc.t = -1.0;
 
-    Intersection boxIntsc;
-    boxIntsc.t = -1.0;
-
-    root->box.Intersect(ray, boxIntsc);
-
-    if (boxIntsc.t > 0.0)
+    for (uint32_t i = 0; i < submeshes.size(); i++)
     {
-        intsc.t = DBL_MAX;
-        vector<uint32_t> faceIdcs;
-        faceIdcs.reserve(1024);
-        root->Intersect(ray, faceIdcs);
+        Intersection subMeshIntsc;
+        submeshes[i].root.box.Intersect(ray, subMeshIntsc);
 
-        for (uint32_t i = 0; i < faceIdcs.size(); i++)
+        if (subMeshIntsc.t > 0.0)
         {
-            uvec3 curFace = faces[faceIdcs[i]];
-
-            dvec3 p0 = pos[curFace.x];
-            dvec3 p1 = pos[curFace.y];
-            dvec3 p2 = pos[curFace.z];
-
-            dvec3 e1 = p1 - p0;
-            dvec3 e2 = p2 - p0;
-            dvec3 s = ray.org - p0;
-
-            dvec3 s1 = cross(ray.dir, e2);
-            dvec3 s2 = cross(s, e1);
-
-            double a = 1.0 / dot(s1, e1);
-
-            double t = a * dot(s2, e2);
-            double b1 = a * dot(s1, s);
-            double b2 = a * dot(s2, ray.dir);
-
-            if (b1 < 0.0 || b2 < 0.0 || (b1 + b2 > 1.0))
+            submeshes[i].Intersect(ray, subMeshIntsc);
+            if (subMeshIntsc.t > 0.0 && subMeshIntsc.t < minDist)
             {
-                continue;
-            }
-
-            if (t > 0.0 && t < intsc.t)
-            {
-                intsc.t = t;
-                intsc.mat = mat->name;
-                intsc.normal =
-                    (1.0 - b1 - b2) * norm[curFace.x] +
-                    b1 * norm[curFace.y] +
-                    b2 * norm[curFace.z];
+                minDist = subMeshIntsc.t;
+                intsc = subMeshIntsc;
             }
         }
     }
@@ -135,8 +155,6 @@ void RTMesh::Intersect(Ray ray, Intersection &intsc)
 
 void RTMesh::LoadModel(string file)
 {
-    root = make_shared<Octree>();
-
     Assimp::Importer importer;
 
     const aiScene &scene = *(importer.ReadFile(
@@ -144,85 +162,71 @@ void RTMesh::LoadModel(string file)
         aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs
     ));
 
-    uint32_t numVerts = 0;
-    uint32_t numFaces = 0;
-
-    for (uint32 i = 0; i < scene.mNumMeshes; i++)
-    {
-        aiMesh &mesh = *(scene.mMeshes[i]);
-        numVerts += mesh.mNumVertices;
-        numFaces += mesh.mNumFaces;
-    }
-
-    pos.resize(numVerts);
-    norm.resize(numVerts);
-    faces.resize(numFaces);
-
-    uint32_t vOffset = 0;
-    uint32_t fOffset = 0;
-
-    dvec3 min = dvec3(DBL_MAX, DBL_MAX, DBL_MAX);
-    dvec3 max = dvec3(DBL_MIN, DBL_MIN, DBL_MIN);
+    dvec3 meshmin = dvec3(DBL_MAX, DBL_MAX, DBL_MAX);
+    dvec3 meshmax = dvec3(DBL_MIN, DBL_MIN, DBL_MIN);
 
     double scale = 1.0 / 20.0;
+    submeshes.resize(scene.mNumMeshes);
 
     for (uint32 i = 0; i < scene.mNumMeshes; i++)
     {
         aiMesh &mesh = *(scene.mMeshes[i]);
+        submeshes[i].pos.resize(mesh.mNumVertices);
+        submeshes[i].norm.resize(mesh.mNumVertices);
+        submeshes[i].faces.resize(mesh.mNumFaces);
+
+        dvec3 submin = dvec3(DBL_MAX, DBL_MAX, DBL_MAX);
+        dvec3 submax = dvec3(DBL_MIN, DBL_MIN, DBL_MIN);
 
         for (uint32_t j = 0; j < mesh.mNumVertices; j++)
         {
-            pos[j + vOffset].x = mesh.mVertices[j].x * scale;
-            pos[j + vOffset].y = mesh.mVertices[j].y * scale;
-            pos[j + vOffset].z = mesh.mVertices[j].z * scale;
+            submeshes[i].pos[j].x = mesh.mVertices[j].x * scale;
+            submeshes[i].pos[j].y = mesh.mVertices[j].y * scale;
+            submeshes[i].pos[j].z = mesh.mVertices[j].z * scale;
 
-            max.x = glm::max<double>(pos[j + vOffset].x, max.x);
-            max.y = glm::max<double>(pos[j + vOffset].y, max.y);
-            max.z = glm::max<double>(pos[j + vOffset].z, max.z);
+            submeshes[i].norm[j].x = mesh.mNormals[j].x;
+            submeshes[i].norm[j].y = mesh.mNormals[j].y;
+            submeshes[i].norm[j].z = mesh.mNormals[j].z;
 
-            min.x = glm::min<double>(pos[j + vOffset].x, min.x);
-            min.y = glm::min<double>(pos[j + vOffset].y, min.y);
-            min.z = glm::min<double>(pos[j + vOffset].z, min.z);
+            meshmax.x = glm::max<double>(submeshes[i].pos[j].x, meshmax.x);
+            meshmax.y = glm::max<double>(submeshes[i].pos[j].y, meshmax.y);
+            meshmax.z = glm::max<double>(submeshes[i].pos[j].z, meshmax.z);
 
-            norm[j + vOffset].x = mesh.mNormals[j].x;
-            norm[j + vOffset].y = mesh.mNormals[j].y;
-            norm[j + vOffset].z = mesh.mNormals[j].z;
+            meshmin.x = glm::min<double>(submeshes[i].pos[j].x, meshmin.x);
+            meshmin.y = glm::min<double>(submeshes[i].pos[j].y, meshmin.y);
+            meshmin.z = glm::min<double>(submeshes[i].pos[j].z, meshmin.z);
+
+            submax.x = glm::max<double>(submeshes[i].pos[j].x, submax.x);
+            submax.y = glm::max<double>(submeshes[i].pos[j].y, submax.y);
+            submax.z = glm::max<double>(submeshes[i].pos[j].z, submax.z);
+
+            submin.x = glm::min<double>(submeshes[i].pos[j].x, submin.x);
+            submin.y = glm::min<double>(submeshes[i].pos[j].y, submin.y);
+            submin.z = glm::min<double>(submeshes[i].pos[j].z, submin.z);
         }
 
-        vOffset += mesh.mNumVertices;
-        fOffset += mesh.mNumFaces;
-    }
-
-    root->box.min = min;
-    root->box.max = max;
-    root->depth = 1;
-    root->maxDepth = 10;
-    
-    vOffset = 0;
-    fOffset = 0;
-
-    // triangle indices
-
-    for (uint32 i = 0; i < scene.mNumMeshes; i++)
-    {
-        aiMesh &mesh = *(scene.mMeshes[i]);
+        submeshes[i].root.box.min = submin;
+        submeshes[i].root.box.max = submax;
+        submeshes[i].root.depth    = 1;
+        submeshes[i].root.maxDepth = 10;
+        submeshes[i].mat = "Glass";
 
         for (uint32_t j = 0; j < mesh.mNumFaces; j++)
         {
-            faces[j + fOffset].x = mesh.mFaces[j].mIndices[0] + vOffset;
-            faces[j + fOffset].y = mesh.mFaces[j].mIndices[1] + vOffset;
-            faces[j + fOffset].z = mesh.mFaces[j].mIndices[2] + vOffset;
+            submeshes[i].faces[j].x = mesh.mFaces[j].mIndices[0];
+            submeshes[i].faces[j].y = mesh.mFaces[j].mIndices[1];
+            submeshes[i].faces[j].z = mesh.mFaces[j].mIndices[2];
 
-            dvec3 p0 = pos[faces[j + fOffset].x];
-            dvec3 p1 = pos[faces[j + fOffset].y];
-            dvec3 p2 = pos[faces[j + fOffset].z];
+            dvec3 p0 = submeshes[i].pos[submeshes[i].faces[j].x];
+            dvec3 p1 = submeshes[i].pos[submeshes[i].faces[j].y];
+            dvec3 p2 = submeshes[i].pos[submeshes[i].faces[j].z];
 
-            root->Insert(p0, p1, p2, j + fOffset);
+            submeshes[i].root.Insert(p0, p1, p2, j);
         }
-
-        vOffset += mesh.mNumVertices;
-        fOffset += mesh.mNumFaces;
     }
+
+    bbox.min = meshmin;
+    bbox.max = meshmax;
 }
 
 /**
@@ -323,5 +327,5 @@ void RTBox::Intersect(Ray ray, Intersection &intsc)
     }
 
     intsc.t = t0;
-    intsc.mat = mat->name;
+    intsc.mat = mat;
 }

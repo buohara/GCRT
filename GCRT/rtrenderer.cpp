@@ -48,9 +48,9 @@ void RTRenderer::Init()
         imageH,
         camPos,
         camLook,
-        50.0,
+        35.0,
         0.5,
-        11.7,
+        12.7,
         settings.dofSamples
     );
 
@@ -158,7 +158,7 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
     vector<Rect> &imageBlocks       = *(data.pImageBlocks);
     Sampler &sampler                = *(data.pSampler);
     SurfaceIntegrator integrator    = *(data.pIntegrator);
-    double dofSamplesInv            = 1.0 / (double)scn.cam.dofSamples;
+    double dofSamplesInv            = 1.0 / (double)(scn.cam.dofSamples + 1.0);
 
     long long start = GetMilliseconds();
 
@@ -204,9 +204,10 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
                     Ray primRay = scn.cam.GeneratePrimaryRay(samples[i]);
                     dvec3 color = dvec3(0.0, 0.0, 0.0);
 
-                    for (uint32_t j = 0; j < scn.cam.dofSamples; j++)
+                    for (uint32_t j = 0; j <= scn.cam.dofSamples; j++)
                     {
-                        Ray ray = scn.cam.GenerateSecondaryRay(primRay, samples[i]);
+                        Ray ray = (j == 0) ? primRay :
+                            scn.cam.GenerateSecondaryRay(primRay, samples[i]);
 
                         Intersection intsc;
                         scn.Intersect(ray, intsc);
@@ -218,7 +219,7 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
                                 scn,
                                 intsc,
                                 1,
-                                6
+                                5
                             ) * dofSamplesInv;
                         }
                     }

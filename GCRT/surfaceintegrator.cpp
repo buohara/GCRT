@@ -194,7 +194,8 @@ dvec3 SurfaceIntegrator::CalcDiffuse(
 
     for (uint32_t i = 0; i < scn.spheres.size(); i++)
     {
-        dvec3 emis = scn.spheres[i].mat->GetEmission(rayIn, intsc);
+        shared_ptr<RTMaterial> pMat = scn.mats[scn.spheres[i].mat];
+        dvec3 emis = pMat->GetEmission(rayIn, intsc);
 
         if (emis.x > 0.0 || emis.y > 0.0 || emis.z > 0.0)
         {

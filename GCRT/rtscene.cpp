@@ -200,46 +200,39 @@ void RTScene::InitMaterials()
 void RTScene::InitModels()
 {
     plane.normal = vec4(0.0, 0.0, 1.0, 0.0);
-    plane.mat = mats["GreenMatte"];
+    plane.mat = "GreenMatte";
 
     RTSphere redSph;
-    redSph.orgn = dvec3(-10.0, 1.0, 1.0);
+    redSph.orgn = dvec3(-10.0, 8.0, 2.0);
     redSph.r = 1.0;
-    redSph.mat = mats["RedMatte"];
+    redSph.mat = "RedMatte";
     spheres.push_back(redSph);
 
     RTSphere mirrSph;
     mirrSph.orgn = dvec3(3.0, 0.0, 2.0);
     mirrSph.r = 1.0;
-    mirrSph.mat = mats["Mirror"];
+    mirrSph.mat = "Mirror";
     spheres.push_back(mirrSph);
 
     RTSphere glassSph;
     glassSph.orgn = dvec3(-2.0, 0.0, 2.5);
     glassSph.r = 2.0;
-    glassSph.mat = mats["Glass"];
+    glassSph.mat = "Glass";
     //spheres.push_back(glassSph);
 
     RTSphere lightSphBlue;
     lightSphBlue.orgn = dvec3(0.0, -2.0, 20.0);
     lightSphBlue.r = 3.0;
-    lightSphBlue.mat = mats["LightBlue"];;
+    lightSphBlue.mat = "LightBlue";
     spheres.push_back(lightSphBlue);
 
     RTSphere lightSphRed;
     lightSphRed.orgn = dvec3(-2.0, 2.0, 15.0);
     lightSphRed.r = 1.0;
-    lightSphRed.mat = mats["LightRed"];;
+    lightSphRed.mat = "LightRed";
     spheres.push_back(lightSphRed);
-
-    RTBox mirrorBox;
-    mirrorBox.min = dvec3(-3.0, -2.0, 1.0);
-    mirrorBox.max = dvec3(-2.0, -1.0, 2.5);
-    mirrorBox.mat = mats["Mirror"];
-    //boxes.push_back(mirrorBox);
 
     shared_ptr<RTMesh> pMesh = make_shared<RTMesh>();
     pMesh->LoadModel("../asset/models/boblampclean/boblampclean.md5mesh");
-    pMesh->mat = mats["Glass"];
     meshes.push_back(pMesh);
 }

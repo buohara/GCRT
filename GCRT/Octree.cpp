@@ -225,11 +225,11 @@ void Octree::Intersect(Ray ray, vector<uint32_t> &faceIdcs)
         faceIdcs.push_back(faces[i]);
     }
 
-    for (uint32_t x = 0; x < 1; x++)
+    for (uint32_t x = 0; x < 2; x++)
     {
-        for (uint32_t y = 0; y < 1; y++)
+        for (uint32_t y = 0; y < 2; y++)
         {
-            for (uint32_t z = 0; z < 1; z++)
+            for (uint32_t z = 0; z < 2; z++)
             {
                 uint32_t child = 4 * x + 2 * y + z;
 

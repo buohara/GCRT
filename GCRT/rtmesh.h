@@ -15,14 +15,14 @@ struct RTSphere
 {
     double r;
     dvec3 orgn;
-    shared_ptr<RTMaterial> mat;
+    string mat;
     void Intersect(Ray ray, Intersection &intsc);
 };
 
 struct RTPlane
 {
     dvec4 normal;
-    shared_ptr<RTMaterial> mat;
+    string mat;
     void Intersect(Ray ray, Intersection &intsc);
 };
 
@@ -30,19 +30,28 @@ struct RTBox
 {
     dvec3 min;
     dvec3 max;
-    shared_ptr<RTMaterial> mat;
+    string mat;
+    void Intersect(Ray ray, Intersection &intsc);
+};
+
+struct Submesh
+{
+    Octree root;
+
+    vector<dvec3> pos;
+    vector<dvec3> norm;
+    vector<uvec3> faces;
+
+    string mat;
     void Intersect(Ray ray, Intersection &intsc);
 };
 
 struct RTMesh
 {
-    shared_ptr<Octree> root;
+    BBox bbox;
+    vector<Submesh> submeshes;
 
-    vector<dvec3> pos;
-    vector<dvec3> norm;
-    vector<uvec3> faces;
-    
-    shared_ptr<RTMaterial> mat;
+    void CreateCornellBox();
     void LoadModel(string file);
     void Intersect(Ray ray, Intersection &intsc);
 };
