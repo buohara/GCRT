@@ -37,9 +37,11 @@ struct RTBox
 struct RTMesh
 {
     shared_ptr<Octree> root;
+
     vector<dvec3> pos;
     vector<dvec3> norm;
     vector<uvec3> faces;
+    
     shared_ptr<RTMaterial> mat;
     void LoadModel(string file);
     void Intersect(Ray ray, Intersection &intsc);

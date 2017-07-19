@@ -77,46 +77,53 @@ void RTMesh::Intersect(Ray ray, Intersection &intsc)
     // Triangle intersection method using barycentric coordinates.
     // Adapted from the PBRT book.
 
-    intsc.t = DBL_MAX;
+    Intersection boxIntsc;
+    boxIntsc.t = -1.0;
 
-    vector<uint32_t> faceIdcs;
+    root->box.Intersect(ray, boxIntsc);
 
-    root->Intersect(ray, faceIdcs);
-
-    for (uint32_t i = 0; i < faceIdcs.size(); i++)
+    if (boxIntsc.t > 0.0)
     {
-        uvec3 curFace = faces[faceIdcs[i]];
+        intsc.t = DBL_MAX;
+        vector<uint32_t> faceIdcs;
+        faceIdcs.reserve(1024);
+        root->Intersect(ray, faceIdcs);
 
-        dvec3 p0 = pos[curFace.x];
-        dvec3 p1 = pos[curFace.y];
-        dvec3 p2 = pos[curFace.z];
-
-        dvec3 e1 = p1 - p0;
-        dvec3 e2 = p2 - p0;
-        dvec3 s = ray.org - p0;
-
-        dvec3 s1 = cross(ray.dir, e2);
-        dvec3 s2 = cross(s, e1);
-
-        double a = 1.0 / dot(s1, e1);
-
-        double t = a * dot(s2, e2);
-        double b1 = a * dot(s1, s);
-        double b2 = a * dot(s2, ray.dir);
-
-        if (b1 < 0.0 || b2 < 0.0 || (b1 + b2 > 1.0))
+        for (uint32_t i = 0; i < faceIdcs.size(); i++)
         {
-            continue;
-        }
+            uvec3 curFace = faces[faceIdcs[i]];
 
-        if (t > 0.0 && t < intsc.t)
-        {
-            intsc.t = t;
-            intsc.mat = mat->name;
-            intsc.normal = 
-                (1.0 - b1 - b2) * norm[curFace.x] + 
-                b1 * norm[curFace.y] + 
-                b2 * norm[curFace.z];
+            dvec3 p0 = pos[curFace.x];
+            dvec3 p1 = pos[curFace.y];
+            dvec3 p2 = pos[curFace.z];
+
+            dvec3 e1 = p1 - p0;
+            dvec3 e2 = p2 - p0;
+            dvec3 s = ray.org - p0;
+
+            dvec3 s1 = cross(ray.dir, e2);
+            dvec3 s2 = cross(s, e1);
+
+            double a = 1.0 / dot(s1, e1);
+
+            double t = a * dot(s2, e2);
+            double b1 = a * dot(s1, s);
+            double b2 = a * dot(s2, ray.dir);
+
+            if (b1 < 0.0 || b2 < 0.0 || (b1 + b2 > 1.0))
+            {
+                continue;
+            }
+
+            if (t > 0.0 && t < intsc.t)
+            {
+                intsc.t = t;
+                intsc.mat = mat->name;
+                intsc.normal =
+                    (1.0 - b1 - b2) * norm[curFace.x] +
+                    b1 * norm[curFace.y] +
+                    b2 * norm[curFace.z];
+            }
         }
     }
 }
@@ -169,13 +176,13 @@ void RTMesh::LoadModel(string file)
             pos[j + vOffset].y = mesh.mVertices[j].y * scale;
             pos[j + vOffset].z = mesh.mVertices[j].z * scale;
 
-            max.x = glm::max<double>(pos[j + vOffset].x, max.x) * scale;
-            max.y = glm::max<double>(pos[j + vOffset].y, max.y) * scale;
-            max.z = glm::max<double>(pos[j + vOffset].z, max.z) * scale;
+            max.x = glm::max<double>(pos[j + vOffset].x, max.x);
+            max.y = glm::max<double>(pos[j + vOffset].y, max.y);
+            max.z = glm::max<double>(pos[j + vOffset].z, max.z);
 
-            min.x = glm::min<double>(pos[j + vOffset].x, min.x) * scale;
-            min.y = glm::min<double>(pos[j + vOffset].y, min.y) * scale;
-            min.z = glm::min<double>(pos[j + vOffset].z, min.z) * scale;
+            min.x = glm::min<double>(pos[j + vOffset].x, min.x);
+            min.y = glm::min<double>(pos[j + vOffset].y, min.y);
+            min.z = glm::min<double>(pos[j + vOffset].z, min.z);
 
             norm[j + vOffset].x = mesh.mNormals[j].x;
             norm[j + vOffset].y = mesh.mNormals[j].y;

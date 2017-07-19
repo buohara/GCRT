@@ -48,7 +48,7 @@ void RTRenderer::Init()
         imageH,
         camPos,
         camLook,
-        60.0,
+        50.0,
         0.5,
         11.7,
         settings.dofSamples
