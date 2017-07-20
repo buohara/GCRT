@@ -40,7 +40,7 @@ void RTRenderer::Init()
     imageSamples.resize(imageW * imageH);
     outImage.resize(imageW * imageH);
 
-    dvec3 camPos = dvec3(8.0, -8.0, 3.0);
+    dvec3 camPos = dvec3(8.0, -2.0, 3.0);
     dvec3 camLook = dvec3(0.0, 0.0, 2.0);
     
     scn.cam.Init(
@@ -48,7 +48,7 @@ void RTRenderer::Init()
         imageH,
         camPos,
         camLook,
-        35.0,
+        45.0,
         0.5,
         12.7,
         settings.dofSamples

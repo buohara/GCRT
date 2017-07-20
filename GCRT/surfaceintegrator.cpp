@@ -221,8 +221,9 @@ dvec3 SurfaceIntegrator::CalcDiffuse(
                     if (nextIntsc.t > 0.0 && abs(dist - t) < 2 * bias)
                     {
                         double theta = dot(newRay.dir, intsc.normal);
+                        double theta2 = dot(-newRay.dir, nextIntsc.normal);
                         diffColor += 
-                            theta * scn.mats[nextIntsc.mat]->GetEmission(newRay, nextIntsc) / (t * t);
+                            theta * theta2 * scn.mats[nextIntsc.mat]->GetEmission(newRay, nextIntsc) / (t * t);
                     }
                 }
             }

@@ -13,7 +13,7 @@ void BBox::Intersect(Ray ray, Intersection &intsc)
     double tmin = 0.0;
     double tmax = 0.0;
     double tmp;
-    double flip = 1.0;
+    intsc.t = -1.0;
 
     // x planes
 
@@ -26,78 +26,54 @@ void BBox::Intersect(Ray ray, Intersection &intsc)
         tmp = tmin;
         tmin = tmax;
         tmax = tmp;
-        flip = -1.0;
     }
 
     t1 = tmax;
     t0 = tmin;
-    intsc.normal = flip * dvec3(1.0, 0.0, 0.0);
 
     // y planes
 
     inv = 1.0 / ray.dir.y;
     tmin = (min.y - ray.org.y) * inv;
     tmax = (max.y - ray.org.y) * inv;
-    flip = 1.0;
 
     if (tmin > tmax)
     {
         tmp = tmin;
         tmin = tmax;
         tmax = tmp;
-        flip = -1.0;
     }
 
     if (tmax < t0 || tmin > t1)
     {
-        intsc.t = -1.0;
         return;
     }
 
-    if (tmin > t0)
-    {
-        intsc.normal = flip * dvec3(0.0, 1.0, 0.0);
-        t0 = tmin;
-    }
-
-    if (tmax < t1)
-    {
-        t1 = tmax;
-    }
+    t0 = tmin > t0 ? tmin : t0;
+    t1 = tmax < t1 ? tmax : t1;
 
     // z planes
 
     inv = 1.0 / ray.dir.z;
     tmin = (min.z - ray.org.z) * inv;
     tmax = (max.z - ray.org.z) * inv;
-    flip = 1.0;
 
     if (tmin > tmax)
     {
         tmp = tmin;
         tmin = tmax;
         tmax = tmp;
-        flip = -1.0;
     }
 
     if (tmax < t0 || tmin > t1)
     {
-        intsc.t = -1.0;
         return;
     }
 
-    if (tmin > t0)
-    {
-        t0 = tmin;
-        intsc.normal = flip * dvec3(0.0, 0.0, 1.0);
-    }
+    t0 = tmin > t0 ? tmin : t0;
+    t1 = tmax < t1 ? tmax : t1;
 
-    if (tmax < t1)
-    {
-        t1 = tmax;
-    }
-
-    intsc.t = t0;
+    intsc.t = (t0 < 0.0) ? t1 : t0;
 }
 
 /**

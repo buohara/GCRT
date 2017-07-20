@@ -46,11 +46,9 @@ struct RTScene
     RTCamera cam;
     
     vector<RTSphere> spheres;
-    vector<RTBox> boxes;
     vector<shared_ptr<RTMesh>> meshes;
     map<string, shared_ptr<RTMaterial>> mats;
     
-    RTPlane plane;
     dvec3 bgColor;
 
     void Intersect(Ray ray, Intersection &intsc);

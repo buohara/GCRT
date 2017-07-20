@@ -130,10 +130,16 @@ void RTMesh::Intersect(Ray ray, Intersection &intsc)
 {
     double minDist = DBL_MAX;
     intsc.t = -1.0;
+    Intersection subMeshIntsc;
+
+    bbox.Intersect(ray, subMeshIntsc);
+    if (subMeshIntsc.t <= 0.0)
+    {
+        return;
+    }
 
     for (uint32_t i = 0; i < submeshes.size(); i++)
     {
-        Intersection subMeshIntsc;
         submeshes[i].root.box.Intersect(ray, subMeshIntsc);
 
         if (subMeshIntsc.t > 0.0)
@@ -146,6 +152,191 @@ void RTMesh::Intersect(Ray ray, Intersection &intsc)
             }
         }
     }
+}
+
+/**
+ * [RTMesh::CreateCornellBox description]
+ */
+
+void RTMesh::CreateCornellBox()
+{
+    submeshes.resize(5);
+    
+    dvec3 min = dvec3(-9.0, -5.0, 0.0);
+    dvec3 max = dvec3(5.0, 5.0, 5.0);
+
+    bbox.min = min - 0.1;
+    bbox.max = max + 0.1;
+
+    // ceiling
+
+    submeshes[0].pos.push_back(dvec3(max.x, max.y, max.z));
+    submeshes[0].pos.push_back(dvec3(min.x, max.y, max.z));
+    submeshes[0].pos.push_back(dvec3(min.x, min.y, max.z));
+    submeshes[0].pos.push_back(dvec3(max.x, min.y, max.z));
+
+    submeshes[0].norm.push_back(dvec3(0.0, 0.0, -1.0));
+    submeshes[0].norm.push_back(dvec3(0.0, 0.0, -1.0));
+    submeshes[0].norm.push_back(dvec3(0.0, 0.0, -1.0));
+    submeshes[0].norm.push_back(dvec3(0.0, 0.0, -1.0));
+
+    submeshes[0].root.box.min = dvec3(min.x, min.y, max.z - 0.001);
+    submeshes[0].root.box.max = dvec3(max.x, max.y, max.z + 0.001);
+
+    submeshes[0].faces.push_back(dvec3(0, 2, 1));
+    submeshes[0].faces.push_back(dvec3(0, 3, 2));
+
+    submeshes[0].root.Insert(
+        submeshes[0].pos[0], 
+        submeshes[0].pos[2], 
+        submeshes[0].pos[1],
+        0
+    );
+
+    submeshes[0].root.Insert(
+        submeshes[0].pos[0],
+        submeshes[0].pos[3],
+        submeshes[0].pos[2],
+        1
+    );
+
+    submeshes[0].mat = "WhiteMatte";
+
+    // floor
+
+    submeshes[1].pos.push_back(dvec3(max.x, max.y, min.z));
+    submeshes[1].pos.push_back(dvec3(min.x, max.y, min.z));
+    submeshes[1].pos.push_back(dvec3(min.x, min.y, min.z));
+    submeshes[1].pos.push_back(dvec3(max.x, min.y, min.z));
+
+    submeshes[1].norm.push_back(dvec3(0.0, 0.0, 1.0));
+    submeshes[1].norm.push_back(dvec3(0.0, 0.0, 1.0));
+    submeshes[1].norm.push_back(dvec3(0.0, 0.0, 1.0));
+    submeshes[1].norm.push_back(dvec3(0.0, 0.0, 1.0));
+
+    submeshes[1].root.box.min = dvec3(min.x, min.y, min.z - 0.001);
+    submeshes[1].root.box.max = dvec3(max.x, max.y, min.z + 0.001);
+
+    submeshes[1].faces.push_back(dvec3(0, 1, 2));
+    submeshes[1].faces.push_back(dvec3(0, 2, 3));
+
+    submeshes[1].root.Insert(
+        submeshes[1].pos[0],
+        submeshes[1].pos[1],
+        submeshes[1].pos[2],
+        0
+    );
+
+    submeshes[1].root.Insert(
+        submeshes[1].pos[0],
+        submeshes[1].pos[2],
+        submeshes[1].pos[3],
+        1
+    );
+
+    submeshes[1].mat = "WhiteMatte";
+
+    // left wall
+
+    submeshes[2].pos.push_back(dvec3(max.x, min.y, max.z));
+    submeshes[2].pos.push_back(dvec3(min.x, min.y, max.z));
+    submeshes[2].pos.push_back(dvec3(min.x, min.y, min.z));
+    submeshes[2].pos.push_back(dvec3(max.x, min.y, min.z));
+
+    submeshes[2].norm.push_back(dvec3(0.0, 1.0, 0.0));
+    submeshes[2].norm.push_back(dvec3(0.0, 1.0, 0.0));
+    submeshes[2].norm.push_back(dvec3(0.0, 1.0, 0.0));
+    submeshes[2].norm.push_back(dvec3(0.0, 1.0, 0.0));
+
+    submeshes[2].root.box.min = dvec3(min.x, min.y - 0.001, min.z);
+    submeshes[2].root.box.max = dvec3(max.x, min.y + 0.001, max.z);
+
+    submeshes[2].faces.push_back(dvec3(0, 1, 2));
+    submeshes[2].faces.push_back(dvec3(0, 2, 3));
+
+    submeshes[2].root.Insert(
+        submeshes[2].pos[0],
+        submeshes[2].pos[1],
+        submeshes[2].pos[2],
+        0
+    );
+
+    submeshes[2].root.Insert(
+        submeshes[2].pos[0],
+        submeshes[2].pos[2],
+        submeshes[2].pos[3],
+        1
+    );
+
+    submeshes[2].mat = "RedMatte";
+
+    // right wall
+
+    submeshes[3].pos.push_back(dvec3(max.x, max.y, max.z));
+    submeshes[3].pos.push_back(dvec3(min.x, max.y, max.z));
+    submeshes[3].pos.push_back(dvec3(min.x, max.y, min.z));
+    submeshes[3].pos.push_back(dvec3(max.x, max.y, min.z));
+
+    submeshes[3].norm.push_back(dvec3(0.0, -1.0, 0.0));
+    submeshes[3].norm.push_back(dvec3(0.0, -1.0, 0.0));
+    submeshes[3].norm.push_back(dvec3(0.0, -1.0, 0.0));
+    submeshes[3].norm.push_back(dvec3(0.0, -1.0, 0.0));
+
+    submeshes[3].root.box.min = dvec3(min.x, max.y - 0.001, min.z);
+    submeshes[3].root.box.max = dvec3(max.x, max.y + 0.001, max.z);
+
+    submeshes[3].faces.push_back(dvec3(0, 1, 2));
+    submeshes[3].faces.push_back(dvec3(0, 2, 3));
+
+    submeshes[3].root.Insert(
+        submeshes[3].pos[0],
+        submeshes[3].pos[1],
+        submeshes[3].pos[2],
+        0
+    );
+
+    submeshes[3].root.Insert(
+        submeshes[3].pos[0],
+        submeshes[3].pos[2],
+        submeshes[3].pos[3],
+        1
+    );
+
+    submeshes[3].mat = "GreenMatte";
+
+    // back wall
+
+    submeshes[4].pos.push_back(dvec3(min.x, max.y, max.z));
+    submeshes[4].pos.push_back(dvec3(min.x, min.y, max.z));
+    submeshes[4].pos.push_back(dvec3(min.x, min.y, min.z));
+    submeshes[4].pos.push_back(dvec3(min.x, max.y, min.z));
+
+    submeshes[4].norm.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[4].norm.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[4].norm.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[4].norm.push_back(dvec3(1.0, 0.0, 0.0));
+
+    submeshes[4].root.box.min = dvec3(min.x - 0.1, min.y, min.z);
+    submeshes[4].root.box.max = dvec3(min.x + 0.1, max.y, max.z);
+
+    submeshes[4].faces.push_back(dvec3(0, 1, 2));
+    submeshes[4].faces.push_back(dvec3(0, 2, 3));
+
+    submeshes[4].root.Insert(
+        submeshes[4].pos[0],
+        submeshes[4].pos[1],
+        submeshes[4].pos[2],
+        0
+    );
+
+    submeshes[4].root.Insert(
+        submeshes[4].pos[0],
+        submeshes[4].pos[2],
+        submeshes[4].pos[3],
+        1
+    );
+
+    submeshes[4].mat = "WhiteMatte";
 }
 
 /**
