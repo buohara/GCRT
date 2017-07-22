@@ -71,6 +71,8 @@ struct RTRenderer
 
     void Init();
     void InitThreads();
+    void Preprocess();
+    void GenerateVirtualLights();
     void SaveImage(string fileName);
     void LoadSettings(string file);
 };

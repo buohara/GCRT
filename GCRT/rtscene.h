@@ -7,6 +7,13 @@
 using namespace glm;
 using namespace std;
 
+struct VirtualLight
+{
+    dvec3 pos;
+    dvec3 color;
+    dvec3 normal;
+};
+
 struct RTCamera
 {
     double aperture;
@@ -46,10 +53,11 @@ struct RTScene
     RTCamera cam;
     
     vector<RTSphere> spheres;
+    vector<RTSphere> lights;
+    vector<VirtualLight> vLights;
+
     vector<shared_ptr<RTMesh>> meshes;
     map<string, shared_ptr<RTMaterial>> mats;
-    
-    dvec3 bgColor;
 
     void Intersect(Ray ray, Intersection &intsc);
     void Init();

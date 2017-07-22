@@ -63,6 +63,7 @@ void RTRenderer::Init()
     filter.yw = 2.0;
 
     scn.Init();
+    Preprocess();
     InitThreads();
 }
 
@@ -134,6 +135,62 @@ void RTRenderer::InitThreads()
         threadData[i].imageH        = imageH;
         threadData[i].pImageBlocks  = &imageBlocks;
         threadData[i].pIntegrator   = &integrator;
+    }
+}
+
+/**
+ * [RTRenderer::Preprocess description]
+ */
+
+void RTRenderer::Preprocess()
+{
+    GenerateVirtualLights();
+}
+
+/**
+ * [RTRenderer::GenerateVirtualLights description]
+ */
+
+void RTRenderer::GenerateVirtualLights()
+{
+    double bias = integrator.bias;
+
+    for (uint32_t i = 0; i < scn.lights.size(); i++)
+    {
+        Ray ray;
+        Intersection intsc;
+        
+        dmat4 scl = scale(dvec3(scn.lights[i].r));
+        dvec3 emis = scn.mats[scn.lights[i].mat]->GetEmission(ray, intsc);
+
+        for (uint32_t j = 0; j < integrator.sphereSamples.size(); j++)
+        {
+            dmat4 rot = integrator.NextRotation();
+            dvec3 sample = rot * scl * integrator.sphereSamples[j];
+
+            ray.org = scn.lights[i].orgn + sample;
+            ray.dir = normalize(sample);
+
+            ray.org += bias * ray.dir;
+            scn.Intersect(ray, intsc);
+            ray.org -= bias * ray.dir;
+
+            shared_ptr<RTMaterial> pMat = scn.mats[intsc.mat];
+            double diff = pMat->GetDiffuse(ray, intsc);
+
+            if (diff > 0.0)
+            {
+                double theta = dot(-ray.dir, intsc.normal);
+                dvec3 diffColor = pMat->GetDiffuseColor();
+
+                VirtualLight vLight;
+                vLight.color = diff * diffColor * emis;
+                vLight.normal = intsc.normal;
+                vLight.pos = ray.org + intsc.t * ray.dir;
+
+                scn.vLights.push_back(vLight);
+            }
+        }
     }
 }
 

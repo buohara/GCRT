@@ -192,39 +192,35 @@ dvec3 SurfaceIntegrator::CalcDiffuse(
 
     uint32_t numSamples = (uint32_t)sphereSamples.size();
 
-    for (uint32_t i = 0; i < scn.spheres.size(); i++)
+    for (uint32_t i = 0; i < scn.lights.size(); i++)
     {
-        shared_ptr<RTMaterial> pMat = scn.mats[scn.spheres[i].mat];
+        shared_ptr<RTMaterial> pMat = scn.mats[scn.lights[i].mat];
+        
         dvec3 emis = pMat->GetEmission(rayIn, intsc);
+        dmat4 trans = translate(scn.lights[i].orgn);
+        dmat4 scl = scale(dvec3(scn.lights[i].r));
 
-        if (emis.x > 0.0 || emis.y > 0.0 || emis.z > 0.0)
+        for (uint32_t j = 0; j < sphereSamples.size(); j++)
         {
-            dmat4 trans = translate(scn.spheres[i].orgn);
-            dmat4 scl = scale(dvec3(scn.spheres[i].r));
+            dmat4 rot = NextRotation();
+            dvec3 sample = trans * rot * scl * sphereSamples[j];
 
-            for (uint32_t j = 0; j < sphereSamples.size(); j++)
+            newRay.dir = normalize(sample - newRay.org);
+
+            if (dot(newRay.dir, intsc.normal) > 0.0)
             {
-                dmat4 rot = NextRotation();
-                dvec3 sample = trans * rot * scl * sphereSamples[j];
+                newRay.org += bias * newRay.dir;
+                scn.Intersect(newRay, nextIntsc);
+                newRay.org -= bias * newRay.dir;
 
-                newRay.dir = normalize(sample - newRay.org);
+                double t = nextIntsc.t;
+                double dist = length(sample - newRay.org);
 
-                if (dot(newRay.dir, intsc.normal) > 0.0)
+                if (nextIntsc.t > 0.0 && abs(dist - t) < 2.0 * bias)
                 {
-                    newRay.org += bias * newRay.dir;
-                    scn.Intersect(newRay, nextIntsc);
-                    newRay.org -= bias * newRay.dir;
-
-                    double t = nextIntsc.t;
-                    double dist = length(sample - newRay.org);
-
-                    if (nextIntsc.t > 0.0 && abs(dist - t) < 2 * bias)
-                    {
-                        double theta = dot(newRay.dir, intsc.normal);
-                        double theta2 = dot(-newRay.dir, nextIntsc.normal);
-                        diffColor += 
-                            theta * theta2 * scn.mats[nextIntsc.mat]->GetEmission(newRay, nextIntsc) / (t * t);
-                    }
+                    double theta1 = dot(newRay.dir, intsc.normal);
+                    double theta2 = dot(-newRay.dir, nextIntsc.normal);
+                    diffColor += theta1 * theta2 * emis / (t * t);
                 }
             }
         }

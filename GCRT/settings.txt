@@ -1,2 +1,2 @@
 // imagew imwageh spheresamples pixelsamples filtersize dofsamples numthreads xtiles ytiles
-3840 2160 32 8 2 0 16 32 24
+1920 1080 32 2 2 0 16 32 24

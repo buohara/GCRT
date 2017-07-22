@@ -23,6 +23,17 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
         }
     }
 
+    for (uint32_t i = 0; i < lights.size(); i++)
+    {
+        lights[i].Intersect(ray, intsc2);
+
+        if ((intsc2.t < minDist) && (intsc2.t > 0.001))
+        {
+            intsc = intsc2;
+            minDist = intsc2.t;
+        }
+    }
+
     for (uint32_t i = 0; i < meshes.size(); i++)
     {
         meshes[i]->Intersect(ray, intsc2);
@@ -213,19 +224,19 @@ void RTScene::InitModels()
     lightSphBlue.orgn = dvec3(0.0, -2.0, 20.0);
     lightSphBlue.r = 3.0;
     lightSphBlue.mat = "LightBlue";
-    //spheres.push_back(lightSphBlue);
+    //lights.push_back(lightSphBlue);
 
     RTSphere lightSphRed;
     lightSphRed.orgn = dvec3(-2.0, 2.0, 15.0);
     lightSphRed.r = 1.0;
     lightSphRed.mat = "LightRed";
-    //spheres.push_back(lightSphRed);
+    //lights.push_back(lightSphRed);
 
     RTSphere lightSphWhite;
     lightSphWhite.orgn = dvec3(-4.0, -2.0, 3.0);
     lightSphWhite.r = 0.2;
     lightSphWhite.mat = "LightWhite";
-    spheres.push_back(lightSphWhite);
+    lights.push_back(lightSphWhite);
 
     shared_ptr<RTMesh> pMesh = make_shared<RTMesh>();
     pMesh->LoadModel("../asset/models/boblampclean/boblampclean.md5mesh");
