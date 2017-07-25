@@ -1,0 +1,54 @@
+var renderShaderVS =
+
+"#version 330 core"+
+
+"layout(location = 0) in vec3 inPos;"+
+"layout(location = 1) in vec3 inNorm;"+
+"layout(location = 2) in vec2 inUV;"+
+"layout(location = 3) in vec3 inTan;"+
+
+"out vec4 passPos;"+
+"out vec4 passNorm;"+
+"out vec3 passTan;"+
+"out vec3 passBitan;"+
+"out vec2 passUV;"+
+
+"uniform mat4 model;"+
+"uniform mat4 view;"+
+"uniform mat4 proj;"+
+
+"void main()"+
+"{"+
+"    passPos 	=  vec4(inPos, 1);"+
+"    passNorm 	= vec4(inNorm, 1);"+
+"    passTan    = inTan;"+
+"    passBitan  = -cross(inTan, inNorm);"+
+"    passUV     = inUV;"+
+
+"    gl_Position = proj * view * model * vec4(inPos, 1);"+
+"}";
+
+var renderShadersPS =
+
+"in vec4 passPos;"+
+"in vec4 passNorm;"+
+"in vec3 passTan;"+
+"in vec3 passBitan;"+
+"in vec2 passUV;"+
+
+"uniform mat4 model;"+
+"uniform mat4 modelInv;"+
+
+"uniform vec3 kd;"+
+
+"out vec4 color;"+
+
+"void main()"+
+"{"+
+"	vec4 pos        	= model * passPos;"+
+"   vec3 lightVec   	= normalize(lightPos - pos.xyz);"+
+"   float dist      	= length(lightVec);"+
+"	vec3 norm 			= normalize((modelInv * passNorm).xyz);"+
+"	float theta 		= max(dot(norm, lightVec), 0) / (dist * dist);"+
+"	color 				= theta * vec4(kd, 1);"+
+"}";
