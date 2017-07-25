@@ -40,6 +40,8 @@ var renderShadersPS =
 "uniform mat4 modelInv;"+
 
 "uniform vec3 kd;"+
+"uniform vec3 lightPos;"+
+"uniform vec3 lightColor;"+
 
 "out vec4 color;"+
 
@@ -50,5 +52,5 @@ var renderShadersPS =
 "   float dist      	= length(lightVec);"+
 "	vec3 norm 			= normalize((modelInv * passNorm).xyz);"+
 "	float theta 		= max(dot(norm, lightVec), 0) / (dist * dist);"+
-"	color 				= theta * vec4(kd, 1);"+
+"	color 				= theta * vec4(dot(kd, lightColor), 1);"+
 "}";
