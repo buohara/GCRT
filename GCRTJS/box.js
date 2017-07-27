@@ -4,7 +4,8 @@ class Box
 	{
 		this.gl = glIn;
 		this.vaoID = this.gl.createVertexArray();
-		this.gl.bindVertexArray(this.aoID);
+		this.gl.bindVertexArray(this.vaoID);
+		this.kd = vec3.fromValues(0.1, 0.1, 0.2);
 
 		this.nVerts = 36;
 
@@ -20,9 +21,9 @@ class Box
 	{
 		var pos = [];
 
-		var hx = 1.0;
-	    var hy = 1.0;
-	    var hz = 1.0;
+		var hx = 0.5;
+	    var hy = 0.5;
+	    var hz = 0.5;
 
 	    // Front
 
@@ -67,9 +68,9 @@ class Box
 
 	    for(var i = 0; i < pos.length; i++)
 	    {
-	    	pos32[3 * i] = pos[i].x;
-	    	pos32[3 * i + 1] = pos[i].y;
-	    	pos32[3 * i + 2] = pos[i].z;
+	    	pos32[3 * i] = pos[i][0];
+	    	pos32[3 * i + 1] = pos[i][1];
+	    	pos32[3 * i + 2] = pos[i][2];
 	    }
 
 	    this.posVboID = this.gl.createBuffer();
@@ -125,9 +126,9 @@ class Box
 
 	    for(var i = 0; i < norms.length; i++)
 	    {
-	    	norms32[3 * i]     = norms[i].x;
-	    	norms32[3 * i + 1] = norms[i].y;
-	    	norms32[3 * i + 2] = norms[i].z;
+	    	norms32[3 * i]     = norms[i][0];
+	    	norms32[3 * i + 1] = norms[i][1];
+	    	norms32[3 * i + 2] = norms[i][2];
 	    }
 
 	    this.normVboID = this.gl.createBuffer();
@@ -183,8 +184,8 @@ class Box
 
 	    for(var i = 0; i < uvs.length; i++)
 	    {
-	    	uvs32[2 * i]     = uvs[i].x;
-	    	uvs32[2 * i + 1] = uvs[i].y;
+	    	uvs32[2 * i]     = uvs[i][0];
+	    	uvs32[2 * i + 1] = uvs[i][1];
 	    }
 
 	    this.normVboID = this.gl.createBuffer();
@@ -240,9 +241,9 @@ class Box
 
 	    for(var i = 0; i < tans.length; i++)
 	    {
-	    	tans32[3 * i]     = tans[i].x;
-	    	tans32[3 * i + 1] = tans[i].y;
-	    	tans32[3 * i + 2] = tans[i].z;
+	    	tans32[3 * i]     = tans[i][0];
+	    	tans32[3 * i + 1] = tans[i][1];
+	    	tans32[3 * i + 2] = tans[i][2];
 	    }
 
 	    this.tanVboID = this.gl.createBuffer();
@@ -266,6 +267,6 @@ class Box
 	draw()
 	{
 		this.gl.bindVertexArray(this.vaoID);
-		this.gl.drawArrays(this.gl.TRIANGLES, 0, this.nVerts);
+		this.gl.drawArrays(this.gl.TRIANGLES, 0, 30);
 	}
 }

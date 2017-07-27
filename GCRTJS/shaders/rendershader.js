@@ -11,17 +11,18 @@ out vec4 passNorm;
 out vec3 passTan;
 out vec3 passBitan;
 out vec2 passUV;
+
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
 
 void main()
 {
-    passPos 	=  vec4(inPos, 1);
+    passPos 	= vec4(inPos, 1);
     passNorm 	= vec4(inNorm, 1);
-    passTan    = inTan;
-    passBitan  = -cross(inTan, inNorm);
-    passUV     = inUV;
+    passTan     = inTan;
+    passBitan   = -cross(inTan, inNorm);
+    passUV      = inUV;
 
     gl_Position = proj * view * model * vec4(inPos, 1);
 }`;
@@ -51,5 +52,6 @@ void main()
     float dist      	= length(lightVec);
 	vec3 norm 			= normalize((modelInv * passNorm).xyz);
 	float theta 		= max(dot(norm, lightVec), 0.0) / (dist * dist);
-	color 				=vec4(1.0, 0.0, 0.0, 1.0);//= theta * vec4(vec3(dot(kd, lightColor)), 1.0);
+	vec4 baseColor 		= vec4(theta * kd * lightColor, 1.0);
+	color 				= 1.0 - exp(-5.0 * baseColor);
 }`;

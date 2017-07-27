@@ -20,6 +20,7 @@ class RenderPass
 	{
 		this.gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		this.gl.useProgram(this.shaderProg);
+		this.gl.viewport(0, 0, this.fboW, this.fboH);
 
 		var viewID = this.gl.getUniformLocation(this.shaderProg, "view");
 		var view = scn.Cam.View;
@@ -47,8 +48,12 @@ class RenderPass
 			mat4.invert(modelInv, model);
 			mat4.transpose(modelInvT, modelInv);
 
+			var kd = models[i].kd;
+			var kdID = this.gl.getUniformLocation(this.shaderProg, "kd");
+			this.gl.uniform3fv(kdID, kd);
+
 			var modelID = this.gl.getUniformLocation(this.shaderProg, "model");
-			this.gl.uniformMatrix4fv(modelID, false, view);
+			this.gl.uniformMatrix4fv(modelID, false, model);
 
 			var modelInvID = this.gl.getUniformLocation(this.shaderProg, "modelInv");
 			this.gl.uniformMatrix4fv(modelInvID, false, modelInvT);

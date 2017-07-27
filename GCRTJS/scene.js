@@ -35,4 +35,9 @@ class Scene
 	{
 		this.models.push(newModel);
 	}
+
+	update()
+	{
+		this.cam.update();
+	}
 }
