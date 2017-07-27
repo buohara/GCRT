@@ -1,9 +1,10 @@
 var gl;
+var renderer;
 
 function initWebGL(canvas)
 {
 	gl = null;
-	gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+	gl = canvas.getContext('webgl2') || canvas.getContext('experimental-webgl');
 
 	if (!gl)
 	{
@@ -23,5 +24,6 @@ function startGCRT()
 		return;
 	}
 
-	var renderer = new Renderer(gl);
+	renderer = new Renderer(gl);
+	renderer.render();
 }

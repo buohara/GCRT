@@ -1,21 +1,18 @@
 class PointLight
 {
-	var pos;
-	var color;
-
 	constructor(posIn, colorIn)
 	{
-		pos = posIn;
-		color = colorIn;
+		this.pos = posIn;
+		this.color = colorIn;
 	}
 
-	get pos()
+	get Pos()
 	{
-		return pos;
+		return this.pos;
 	}
 
-	get color()
+	get Color()
 	{
-		return color;
+		return this.color;
 	}
 }

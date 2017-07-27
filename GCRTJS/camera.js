@@ -1,17 +1,5 @@
 class Camera
 {
-	var pos;
-	var lookDir;
-	var up;
-
-	var aspect;
-	var fov;
-	var nclip;
-	var fclip;
-
-	var projection;
-	var view;
-
 	constructor(
 		posIn,
 		lookDirIn,
@@ -22,24 +10,38 @@ class Camera
 		fclipIn
 		)
 	{
-		pos 	= posIn;
-		lookDir = lookDirIn;
-		up 		= upIn;
-		aspect 	= aspectIn;
-		fov 	= fovIn;
-		nclip 	= nclipIn;
-		fclip 	= fclipIn;
+		this.pos 		= posIn;
+		this.lookDir 	= lookDirIn;
+		this.up 		= upIn;
+		this.aspect 	= aspectIn;
+		this.fov 		= fovIn;
+		this.nclip 		= nclipIn;
+		this.fclip 		= fclipIn;
+		this.projection = mat4.create();
+		this.view 		= mat4.create();
 
-		mat4.perspective(projection, fov, aspect, nclip, fclip);
-		mat4.lookAt(view, pos, lookDir, up);
+		mat4.perspective(
+			this.projection, 
+			this.fov, 
+			this.aspect,
+			this.nclip,
+			this.fclip)
+		;
+		
+		mat4.lookAt(
+			this.view, 
+			this.pos, 
+			this.lookDir, 
+			this.up
+		);
 	}
 
-	get projection()
+	get Projection()
 	{
 		return this.projection;
 	}
 
-	get view()
+	get View()
 	{
 		return this.view;
 	}

@@ -1,26 +1,22 @@
 class Box
 {
-	var vaoID;
-	var posVboID;
-	var normVboID;
-	var uvVboID;
-	var tanVboID;
-	var numVerts;
-
-	constructor(gl)
+	constructor(glIn)
 	{
-		vaoID = gl.createVertexArray();
-		gl.bindVertexArray(vaoID);
+		this.gl = glIn;
+		this.vaoID = this.gl.createVertexArray();
+		this.gl.bindVertexArray(this.aoID);
 
-		nVerts = 36;
+		this.nVerts = 36;
 
-		genPositions(gl);
-		genNormals(gl);
-		genUVs(gl);
-		genTans(gl);
+		this.genPositions();
+		this.genNormals();
+		this.genUVs();
+		this.genTans();
+
+		this.model = mat4.create();
 	}
 
-	genPositions(gl)
+	genPositions()
 	{
 		var pos = [];
 
@@ -30,42 +26,42 @@ class Box
 
 	    // Front
 
-	    pos.push(new Vec3(hx, hy, hz));
-	    pos.push(new Vec3(hx, -hy, hz));
-	    pos.push(new Vec3(hx, -hy, -hz));
-	    pos.push(new Vec3(hx, hy, hz));
-	    pos.push(new Vec3(hx, -hy, -hz));
-	    pos.push(new Vec3(hx, hy, -hz));
-	    pos.push(new Vec3(-hx, -hy, hz));
-	    pos.push(new Vec3(-hx, hy, hz));
-	    pos.push(new Vec3(-hx, hy, -hz));
-	    pos.push(new Vec3(-hx, -hy, hz));
-	    pos.push(new Vec3(-hx, hy, -hz));
-	    pos.push(new Vec3(-hx, -hy, -hz));
-	    pos.push(new Vec3(-hx, hy, hz));
-	    pos.push(new Vec3(hx, hy, hz));
-	    pos.push(new Vec3(hx, hy, -hz));
-	    pos.push(new Vec3(-hx, hy, hz));
-	    pos.push(new Vec3(hx, hy, -hz));
-	    pos.push(new Vec3(-hx, hy, -hz));
-	    pos.push(new Vec3(hx, -hy, hz));
-	    pos.push(new Vec3(-hx, -hy, hz));
-	    pos.push(new Vec3(-hx, -hy, -hz));
-	    pos.push(new Vec3(hx, -hy, hz));
-	    pos.push(new Vec3(-hx, -hy, -hz));
-	    pos.push(new Vec3(hx, -hy, -hz));
-	    pos.push(new Vec3(hx, hy, hz));
-	    pos.push(new Vec3(-hx, hy, hz));
-	    pos.push(new Vec3(-hx, -hy, hz));
-	    pos.push(new Vec3(hx, hy, hz));
-	    pos.push(new Vec3(-hx, -hy, hz));
-	    pos.push(new Vec3(hx, -hy, hz));
-	    pos.push(new Vec3(-hx, hy, -hz));
-	    pos.push(new Vec3(hx, hy, -hz));
-	    pos.push(new Vec3(hx, -hy, -hz));
-	    pos.push(new Vec3(-hx, hy, -hz));
-	    pos.push(new Vec3(hx, -hy, -hz));
-	    pos.push(new Vec3(-hx, -hy, -hz));
+	    pos.push(vec3.fromValues(hx, hy, hz));
+	    pos.push(vec3.fromValues(hx, -hy, hz));
+	    pos.push(vec3.fromValues(hx, -hy, -hz));
+	    pos.push(vec3.fromValues(hx, hy, hz));
+	    pos.push(vec3.fromValues(hx, -hy, -hz));
+	    pos.push(vec3.fromValues(hx, hy, -hz));
+	    pos.push(vec3.fromValues(-hx, -hy, hz));
+	    pos.push(vec3.fromValues(-hx, hy, hz));
+	    pos.push(vec3.fromValues(-hx, hy, -hz));
+	    pos.push(vec3.fromValues(-hx, -hy, hz));
+	    pos.push(vec3.fromValues(-hx, hy, -hz));
+	    pos.push(vec3.fromValues(-hx, -hy, -hz));
+	    pos.push(vec3.fromValues(-hx, hy, hz));
+	    pos.push(vec3.fromValues(hx, hy, hz));
+	    pos.push(vec3.fromValues(hx, hy, -hz));
+	    pos.push(vec3.fromValues(-hx, hy, hz));
+	    pos.push(vec3.fromValues(hx, hy, -hz));
+	    pos.push(vec3.fromValues(-hx, hy, -hz));
+	    pos.push(vec3.fromValues(hx, -hy, hz));
+	    pos.push(vec3.fromValues(-hx, -hy, hz));
+	    pos.push(vec3.fromValues(-hx, -hy, -hz));
+	    pos.push(vec3.fromValues(hx, -hy, hz));
+	    pos.push(vec3.fromValues(-hx, -hy, -hz));
+	    pos.push(vec3.fromValues(hx, -hy, -hz));
+	    pos.push(vec3.fromValues(hx, hy, hz));
+	    pos.push(vec3.fromValues(-hx, hy, hz));
+	    pos.push(vec3.fromValues(-hx, -hy, hz));
+	    pos.push(vec3.fromValues(hx, hy, hz));
+	    pos.push(vec3.fromValues(-hx, -hy, hz));
+	    pos.push(vec3.fromValues(hx, -hy, hz));
+	    pos.push(vec3.fromValues(-hx, hy, -hz));
+	    pos.push(vec3.fromValues(hx, hy, -hz));
+	    pos.push(vec3.fromValues(hx, -hy, -hz));
+	    pos.push(vec3.fromValues(-hx, hy, -hz));
+	    pos.push(vec3.fromValues(hx, -hy, -hz));
+	    pos.push(vec3.fromValues(-hx, -hy, -hz));
 
 	    var pos32 = new Float32Array(pos.length * 3);
 
@@ -76,54 +72,54 @@ class Box
 	    	pos32[3 * i + 2] = pos[i].z;
 	    }
 
-	    posVboID = gl.CreateBuffer();
-	    gl.bindBuffer(gl.ARRAY_BUFFER, posVboID);
-	    gl.bufferData(gl.ARRAY_BUFFER, pos32, gl.STATIC_DRAW, 0, pos32.length);
+	    this.posVboID = this.gl.createBuffer();
+	    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.posVboID);
+	    this.gl.bufferData(this.gl.ARRAY_BUFFER, pos32, gl.STATIC_DRAW, 0, pos32.length);
 
-	    gl.vertexAttribPointer(0, 3, gl.GL_FLOAT, false, 0, 0);
-    	gl.enableVertexAttribArray(0);
+	    this.gl.vertexAttribPointer(0, 3, this.gl.FLOAT, gl.FALSE, 0, 0);
+    	this.gl.enableVertexAttribArray(0);
 	}
 
-	genNormals(gl)
+	genNormals()
 	{
 		var norms = [];
 
-	    norms.push(new Vec3(1.0, 0.0, 0.0));
-	    norms.push(new Vec3(1.0, 0.0, 0.0));
-	    norms.push(new Vec3(1.0, 0.0, 0.0));
-	    norms.push(new Vec3(1.0, 0.0, 0.0));
-	    norms.push(new Vec3(1.0, 0.0, 0.0));
-	    norms.push(new Vec3(1.0, 0.0, 0.0));
-	    norms.push(new Vec3(-1.0, 0.0, 0.0));
-	    norms.push(new Vec3(-1.0, 0.0, 0.0));
-	    norms.push(new Vec3(-1.0, 0.0, 0.0));
-	    norms.push(new Vec3(-1.0, 0.0, 0.0));
-	    norms.push(new Vec3(-1.0, 0.0, 0.0));
-	    norms.push(new Vec3(-1.0, 0.0, 0.0));
-	    norms.push(new Vec3(0.0, 1.0, 0.0));
-	    norms.push(new Vec3(0.0, 1.0, 0.0));
-	    norms.push(new Vec3(0.0, 1.0, 0.0));
-	    norms.push(new Vec3(0.0, 1.0, 0.0));
-	    norms.push(new Vec3(0.0, 1.0, 0.0));
-	    norms.push(new Vec3(0.0, 1.0, 0.0));
-	    norms.push(new Vec3(0.0, -1.0, 0.0));
-	    norms.push(new Vec3(0.0, -1.0, 0.0));
-	    norms.push(new Vec3(0.0, -1.0, 0.0));
-	    norms.push(new Vec3(0.0, -1.0, 0.0));
-	    norms.push(new Vec3(0.0, -1.0, 0.0));
-	    norms.push(new Vec3(0.0, -1.0, 0.0));
-	    norms.push(new Vec3(0.0, 0.0, 1.0));
-	    norms.push(new Vec3(0.0, 0.0, 1.0));
-	    norms.push(new Vec3(0.0, 0.0, 1.0));
-	    norms.push(new Vec3(0.0, 0.0, 1.0));
-	    norms.push(new Vec3(0.0, 0.0, 1.0));
-	    norms.push(new Vec3(0.0, 0.0, 1.0));
-	    norms.push(new Vec3(0.0, 0.0, -1.0));
-	    norms.push(new Vec3(0.0, 0.0, -1.0));
-	    norms.push(new Vec3(0.0, 0.0, -1.0));
-	    norms.push(new Vec3(0.0, 0.0, -1.0));
-	    norms.push(new Vec3(0.0, 0.0, -1.0));
-	    norms.push(new Vec3(0.0, 0.0, -1.0));
+	    norms.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    norms.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    norms.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    norms.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    norms.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    norms.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    norms.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    norms.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    norms.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    norms.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    norms.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    norms.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    norms.push(vec3.fromValues(0.0, 1.0, 0.0));
+	    norms.push(vec3.fromValues(0.0, 1.0, 0.0));
+	    norms.push(vec3.fromValues(0.0, 1.0, 0.0));
+	    norms.push(vec3.fromValues(0.0, 1.0, 0.0));
+	    norms.push(vec3.fromValues(0.0, 1.0, 0.0));
+	    norms.push(vec3.fromValues(0.0, 1.0, 0.0));
+	    norms.push(vec3.fromValues(0.0, -1.0, 0.0));
+	    norms.push(vec3.fromValues(0.0, -1.0, 0.0));
+	    norms.push(vec3.fromValues(0.0, -1.0, 0.0));
+	    norms.push(vec3.fromValues(0.0, -1.0, 0.0));
+	    norms.push(vec3.fromValues(0.0, -1.0, 0.0));
+	    norms.push(vec3.fromValues(0.0, -1.0, 0.0));
+	    norms.push(vec3.fromValues(0.0, 0.0, 1.0));
+	    norms.push(vec3.fromValues(0.0, 0.0, 1.0));
+	    norms.push(vec3.fromValues(0.0, 0.0, 1.0));
+	    norms.push(vec3.fromValues(0.0, 0.0, 1.0));
+	    norms.push(vec3.fromValues(0.0, 0.0, 1.0));
+	    norms.push(vec3.fromValues(0.0, 0.0, 1.0));
+	    norms.push(vec3.fromValues(0.0, 0.0, -1.0));
+	    norms.push(vec3.fromValues(0.0, 0.0, -1.0));
+	    norms.push(vec3.fromValues(0.0, 0.0, -1.0));
+	    norms.push(vec3.fromValues(0.0, 0.0, -1.0));
+	    norms.push(vec3.fromValues(0.0, 0.0, -1.0));
+	    norms.push(vec3.fromValues(0.0, 0.0, -1.0));
 
 	    var norms32 = new Float32Array(norms.length * 3);
 
@@ -134,54 +130,54 @@ class Box
 	    	norms32[3 * i + 2] = norms[i].z;
 	    }
 
-	    normVboID = gl.CreateBuffer();
-	    gl.bindBuffer(gl.ARRAY_BUFFER, normVboID);
-	    gl.bufferData(gl.ARRAY_BUFFER, norms32, gl.STATIC_DRAW, 0, norms32.length);
+	    this.normVboID = this.gl.createBuffer();
+	    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normVboID);
+	    this.gl.bufferData(this.gl.ARRAY_BUFFER, norms32, this.gl.STATIC_DRAW, 0, norms32.length);
 
-	    gl.vertexAttribPointer(1, 3, gl.GL_FLOAT, false, 0, 0);
-    	gl.enableVertexAttribArray(1);
+	    this.gl.vertexAttribPointer(1, 3, this.gl.FLOAT, gl.FALSE, 0, 0);
+    	this.gl.enableVertexAttribArray(1);
 	}
 
-	genUVs(gl)
+	genUVs()
 	{
 		var uvs = [];
 
-	    uvs.push(new Vec2(1.0, 0.0));
-	    uvs.push(new Vec2(0.0, 0.0));
-	    uvs.push(new Vec2(0.0, 1.0));
-	    uvs.push(new Vec2(1.0, 0.0));
-	    uvs.push(new Vec2(0.0, 1.0));
-	    uvs.push(new Vec2(1.0, 1.0));
-	    uvs.push(new Vec2(1.0, 0.0));
-	    uvs.push(new Vec2(0.0, 0.0));
-	    uvs.push(new Vec2(0.0, 1.0));
-	    uvs.push(new Vec2(1.0, 0.0));
-	    uvs.push(new Vec2(0.0, 1.0));
-	    uvs.push(new Vec2(1.0, 1.0));
-	    uvs.push(new Vec2(1.0, 0.0));
-	    uvs.push(new Vec2(0.0, 0.0));
-	    uvs.push(new Vec2(0.0, 1.0));
-	    uvs.push(new Vec2(1.0, 0.0));
-	    uvs.push(new Vec2(0.0, 1.0));
-	    uvs.push(new Vec2(1.0, 1.0));
-	    uvs.push(new Vec2(1.0, 0.0));
-	    uvs.push(new Vec2(0.0, 0.0));
-	    uvs.push(new Vec2(0.0, 1.0));
-	    uvs.push(new Vec2(1.0, 0.0));
-	    uvs.push(new Vec2(0.0, 1.0));
-	    uvs.push(new Vec2(1.0, 1.0));
-	    uvs.push(new Vec2(1.0, 0.0));
-	    uvs.push(new Vec2(0.0, 0.0));
-	    uvs.push(new Vec2(0.0, 1.0));
-	    uvs.push(new Vec2(1.0, 0.0));
-	    uvs.push(new Vec2(0.0, 1.0));
-	    uvs.push(new Vec2(1.0, 1.0));
-	    uvs.push(new Vec2(1.0, 0.0));
-	    uvs.push(new Vec2(0.0, 0.0));
-	    uvs.push(new Vec2(0.0, 1.0));
-	    uvs.push(new Vec2(1.0, 0.0));
-	    uvs.push(new Vec2(0.0, 1.0));
-	    uvs.push(new Vec2(1.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 0.0));
+	    uvs.push(vec2.fromValues(0.0, 1.0));
+	    uvs.push(vec2.fromValues(1.0, 1.0));
 
 	    var uvs32 = new Float32Array(uvs.length * 2);
 
@@ -191,76 +187,85 @@ class Box
 	    	uvs32[2 * i + 1] = uvs[i].y;
 	    }
 
-	    normVboID = gl.CreateBuffer();
-	    gl.bindBuffer(gl.ARRAY_BUFFER, normVboID);
-	    gl.bufferData(gl.ARRAY_BUFFER, uvs32, gl.STATIC_DRAW, 0, uvs32.length);
+	    this.normVboID = this.gl.createBuffer();
+	    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normVboID);
+	    this.gl.bufferData(this.gl.ARRAY_BUFFER, uvs32, this.gl.STATIC_DRAW, 0, uvs32.length);
 
-	    gl.vertexAttribPointer(2, 2, gl.GL_FLOAT, false, 0, 0);
-    	gl.enableVertexAttribArray(2);
+	    this.gl.vertexAttribPointer(2, 2, this.gl.FLOAT, gl.FALSE, 0, 0);
+    	this.gl.enableVertexAttribArray(2);
 	}
 
-	genTans(gl)
+	genTans()
 	{
 		var tans = [];
 
-	    tans.push_back(vec3(0.0, 1.0, 0.0));
-	    tans.push_back(vec3(0.0, 1.0, 0.0));
-	    tans.push_back(vec3(0.0, 1.0, 0.0));
-	    tans.push_back(vec3(0.0, 1.0, 0.0));
-	    tans.push_back(vec3(0.0, 1.0, 0.0));
-	    tans.push_back(vec3(0.0, 1.0, 0.0));
-	    tans.push_back(vec3(0.0, -1.0, 0.0));
-	    tans.push_back(vec3(0.0, -1.0, 0.0));
-	    tans.push_back(vec3(0.0, -1.0, 0.0));
-	    tans.push_back(vec3(0.0, -1.0, 0.0));
-	    tans.push_back(vec3(0.0, -1.0, 0.0));
-	    tans.push_back(vec3(0.0, -1.0, 0.0));
-	    tans.push_back(vec3(-1.0, 0.0, 0.0));
-	    tans.push_back(vec3(-1.0, 0.0, 0.0));
-	    tans.push_back(vec3(-1.0, 0.0, 0.0));
-	    tans.push_back(vec3(-1.0, 0.0, 0.0));
-	    tans.push_back(vec3(-1.0, 0.0, 0.0));
-	    tans.push_back(vec3(-1.0, 0.0, 0.0));
-	    tans.push_back(vec3(1.0, 0.0, 0.0));
-	    tans.push_back(vec3(1.0, 0.0, 0.0));
-	    tans.push_back(vec3(1.0, 0.0, 0.0));
-	    tans.push_back(vec3(1.0, 0.0, 0.0));
-	    tans.push_back(vec3(1.0, 0.0, 0.0));
-	    tans.push_back(vec3(1.0, 0.0, 0.0));
-	    tans.push_back(vec3(1.0, 0.0, 0.0));
-	    tans.push_back(vec3(1.0, 0.0, 0.0));
-	    tans.push_back(vec3(1.0, 0.0, 0.0));
-	    tans.push_back(vec3(1.0, 0.0, 0.0));
-	    tans.push_back(vec3(1.0, 0.0, 0.0));
-	    tans.push_back(vec3(1.0, 0.0, 0.0));
-	    tans.push_back(vec3(-1.0, 0.0, 0.0));
-	    tans.push_back(vec3(-1.0, 0.0, 0.0));
-	    tans.push_back(vec3(-1.0, 0.0, 0.0));
-	    tans.push_back(vec3(-1.0, 0.0, 0.0));
-	    tans.push_back(vec3(-1.0, 0.0, 0.0));
-	    tans.push_back(vec3(-1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(0.0, 1.0, 0.0));
+	    tans.push(vec3.fromValues(0.0, 1.0, 0.0));
+	    tans.push(vec3.fromValues(0.0, 1.0, 0.0));
+	    tans.push(vec3.fromValues(0.0, 1.0, 0.0));
+	    tans.push(vec3.fromValues(0.0, 1.0, 0.0));
+	    tans.push(vec3.fromValues(0.0, 1.0, 0.0));
+	    tans.push(vec3.fromValues(0.0, -1.0, 0.0));
+	    tans.push(vec3.fromValues(0.0, -1.0, 0.0));
+	    tans.push(vec3.fromValues(0.0, -1.0, 0.0));
+	    tans.push(vec3.fromValues(0.0, -1.0, 0.0));
+	    tans.push(vec3.fromValues(0.0, -1.0, 0.0));
+	    tans.push(vec3.fromValues(0.0, -1.0, 0.0));
+	    tans.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(-1.0, 0.0, 0.0));
+	    tans.push(vec3.fromValues(-1.0, 0.0, 0.0));
 
-	    var tans32 = new Float32Array(tans.length * 2);
+	    var tans32 = new Float32Array(tans.length * 3);
 
 	    for(var i = 0; i < tans.length; i++)
 	    {
 	    	tans32[3 * i]     = tans[i].x;
 	    	tans32[3 * i + 1] = tans[i].y;
-	    	tans32[3 * i + 2] = tans[i].y;
+	    	tans32[3 * i + 2] = tans[i].z;
 	    }
 
-	    normVboID = gl.CreateBuffer();
-	    gl.bindBuffer(gl.ARRAY_BUFFER, normVboID);
-	    gl.bufferData(gl.ARRAY_BUFFER, tans32, gl.STATIC_DRAW, 0, tans32.length);
+	    this.tanVboID = this.gl.createBuffer();
+	    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.tanVboID);
+	    this.gl.bufferData(this.gl.ARRAY_BUFFER, tans32, this.gl.STATIC_DRAW, 0, tans32.length);
 
-	    gl.vertexAttribPointer(3, 3, gl.GL_FLOAT, false, 0, 0);
-    	gl.enableVertexAttribArray(3);
+	    this.gl.vertexAttribPointer(3, 3, this.gl.FLOAT, gl.FALSE, 0, 0);
+    	this.gl.enableVertexAttribArray(3);
 	}
 
-	draw(gl)
+	setModel(modelIn)
 	{
-		gl.bindVertexArray(vaoID);
-		gl.drawArrays(GL_TRIANGLES, 0, nVerts);
-		gl.bindVertexArray(0);
+		this.model = modelIn;
+	}
+
+	get Model()
+	{
+		return this.model;
+	}
+
+	draw()
+	{
+		this.gl.bindVertexArray(this.vaoID);
+		this.gl.drawArrays(this.gl.TRIANGLES, 0, this.nVerts);
 	}
 }

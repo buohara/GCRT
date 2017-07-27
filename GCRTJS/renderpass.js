@@ -1,38 +1,59 @@
 class RenderPass
 {
-	var shaderProg;
-	var fboW;
-	var fboH;
-	var gl;
-
 	constructor(w, h, glIn)
 	{
-		gl = glIn;
-		fboW = w;
-		fboH = h;
+		this.gl = glIn;
+		this.fboW = w;
+		this.fboH = h;
+		
+		this.shader = new Shader(
+			this.gl, 
+			"RenderPass", 
+			renderShaderVS, 
+			renderShaderPS
+		);
+
+		this.shaderProg = this.shader.Program;
 	}
 
 	render(scn)
 	{
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-		gl.useProgram(shaderProg);
+		this.gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		this.gl.useProgram(this.shaderProg);
 
-		var viewID = gl.getUniformLocation(shaderProg, "view");
-		var view = scn.cam.view;
-		gl.uniformMatrix4fv(viewID, 1, false, view);
+		var viewID = this.gl.getUniformLocation(this.shaderProg, "view");
+		var view = scn.Cam.View;
+		this.gl.uniformMatrix4fv(viewID, false, view);
 
-		var projID = gl.getUniformLocation(shaderProg, "proj");
+		var projID = this.gl.getUniformLocation(this.shaderProg, "proj");
 		var proj = scn.cam.projection;
-		gl.uniformMatrix4fv(projID, 1, false, proj);
+		this.gl.uniformMatrix4fv(projID, false, proj);
 
-		var lightPosID = gl.getUniformLocation(shaderProg, "lightPos");
+		var lightPosID = this.gl.getUniformLocation(this.shaderProg, "lightPos");
 		var lightPos = scn.lights[0].pos;
-		gl.uniform3fv(lightPosID, 1, lightPos);
+		this.gl.uniform3fv(lightPosID, lightPos);
 
-		var lightColID = gl.getUniformLocation(shaderProg, "lightColor");
+		var lightColID = this.gl.getUniformLocation(this.shaderProg, "lightColor");
 		var lightCol = scn.lights[0].color;
-		gl.uniform3fv(lightColID, 1, lightCol);
+		this.gl.uniform3fv(lightColID, lightCol);
 
-		var models = scn.models;
+		var models = scn.Models;
+
+		for (var i = 0; i < models.length; i++)
+		{
+			var model = models[i].model;
+			var modelInv = mat4.create();
+			var modelInvT = mat4.create();
+			mat4.invert(modelInv, model);
+			mat4.transpose(modelInvT, modelInv);
+
+			var modelID = this.gl.getUniformLocation(this.shaderProg, "model");
+			this.gl.uniformMatrix4fv(modelID, false, view);
+
+			var modelInvID = this.gl.getUniformLocation(this.shaderProg, "modelInv");
+			this.gl.uniformMatrix4fv(modelInvID, false, modelInvT);
+
+			models[i].draw();
+		}
 	}
 }

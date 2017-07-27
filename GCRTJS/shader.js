@@ -1,19 +1,32 @@
 class Shader
 {
-	var name;
-	var program;
-
-	constructor(gl, name, vsSrc, psSrc)
+	constructor(glIn, nameIn, vsSrc, psSrc)
 	{
-		var vsID = gl.createShader(gl.GL_VERTEX_sHADER);
-		gl.shaderSource(vsID, 1, vsSrc, null);
+		this.gl = glIn;
+		this.name = nameIn;
 
-		var psID = gl.createShader(gl.GL_FRAGMENT_sHADER);
-		gl.shaderSource(psID, 1, psSrc, null);
+		var vsID = this.gl.createShader(this.gl.VERTEX_SHADER);
+		this.gl.shaderSource(vsID, vsSrc);
+		this.gl.compileShader(vsID);
 
-		program = gl.createProgram();
-		gl.attachShader(program, vsID);
-		gl.attachShader(program, psID);
-		gl.linkProgram(program);
+		var compilationLog = this.gl.getShaderInfoLog(vsID);
+		console.log('VS: ' + compilationLog);
+
+		var psID = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+		this.gl.shaderSource(psID, psSrc);
+		this.gl.compileShader(psID);
+
+		compilationLog = this.gl.getShaderInfoLog(psID);
+		console.log('PS: ' + compilationLog);
+
+		this.program = this.gl.createProgram();
+		this.gl.attachShader(this.program, vsID);
+		this.gl.attachShader(this.program, psID);
+		this.gl.linkProgram(this.program);
+	}
+
+	get Program()
+	{
+		return this.program;
 	}
 }
