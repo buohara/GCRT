@@ -13,8 +13,10 @@ struct SurfaceIntegrator
     vector<dmat4> randomRotations;
     
     uint32_t idx;
+    uint32_t vLightSet;
 
     dmat4 NextRotation();
+    uint32_t NextVLightSet();
 
     void GenerateSphereSamples(uint32_t numSamples);
 

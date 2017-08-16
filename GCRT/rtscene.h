@@ -3,15 +3,18 @@
 #include "GCRT.h"
 #include "rtmesh.h"
 #include "ray.h"
+#include "json.hpp"
 
 using namespace glm;
 using namespace std;
+using json = nlohmann::json;
 
 struct VirtualLight
 {
     dvec3 pos;
     dvec3 color;
     dvec3 normal;
+    string material;
 };
 
 struct RTCamera
@@ -52,15 +55,25 @@ struct RTScene
 {
     RTCamera cam;
     
-    vector<RTSphere> spheres;
     vector<RTSphere> lights;
-    vector<VirtualLight> vLights;
+    vector<vector<VirtualLight>> vLights;
 
-    vector<shared_ptr<RTMesh>> meshes;
+    map<string, shared_ptr<RTMesh>> meshes;
     map<string, shared_ptr<RTMaterial>> mats;
+    map<string, RTModel> models;
 
     void Intersect(Ray ray, Intersection &intsc);
     void Init();
     void InitMaterials();
     void InitModels();
+    
+    void GenerateLightPath(
+        uint32_t setIdx,
+        Ray ray,
+        uint32_t maxDepth,
+        uint32_t depth,
+        dvec3 lightColor
+    );
+    
+    void LoadScene(string filePath);
 };

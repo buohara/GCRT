@@ -12,17 +12,6 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
 
     Intersection intsc2;
 
-    for (uint32_t i = 0; i < spheres.size(); i++)
-    {
-        spheres[i].Intersect(ray, intsc2);
-
-        if ((intsc2.t < minDist) && (intsc2.t > 0.001))
-        {
-            intsc = intsc2;
-            minDist = intsc2.t;
-        }
-    }
-
     for (uint32_t i = 0; i < lights.size(); i++)
     {
         lights[i].Intersect(ray, intsc2);
@@ -34,10 +23,9 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
         }
     }
 
-    for (uint32_t i = 0; i < meshes.size(); i++)
+    for (auto pMesh : meshes)
     {
-        meshes[i]->Intersect(ray, intsc2);
-
+        pMesh.second->Intersect(ray, intsc2);
         if ((intsc2.t < minDist) && (intsc2.t > 0.001))
         {
             intsc = intsc2;
@@ -110,6 +98,13 @@ Ray RTCamera::GeneratePrimaryRay(dvec2 pixel)
     return ray;
 }
 
+/**
+ * [RTCamera::GenerateSecondaryRay description]
+ * @param  primRay [description]
+ * @param  pixel [description]
+ * @return       [description]
+ */
+
 Ray RTCamera::GenerateSecondaryRay(Ray primRay, dvec2 pixel)
 {
     Ray newRay;
@@ -146,6 +141,7 @@ void RTScene::Init()
 {
     InitMaterials();
     InitModels();
+    vLights.resize(1024);
 }
 
 /**
@@ -184,16 +180,16 @@ void RTScene::InitMaterials()
 
     LightMaterial lightMatWhite;
     lightMatWhite.name = "LightWhite";
-    lightMatWhite.lightColor = dvec3(100.0, 90.0, 80.0);
+    lightMatWhite.lightColor = dvec3(400.0, 360.0, 360.0);
 
-    mats["Mirror"] = make_shared<MirrorMaterial>(mirrorMat);
-    mats["Glass"] = make_shared<GlassMaterial>(glassMat);
-    mats["GreenMatte"] = make_shared<MatteMaterial>(greenMat);
-    mats["RedMatte"] = make_shared<MatteMaterial>(redMat);
-    mats["WhiteMatte"] = make_shared<MatteMaterial>(whiteMat);
-    mats["LightBlue"] = make_shared<LightMaterial>(lightMatBlue);
-    mats["LightRed"] = make_shared<LightMaterial>(lightMatRed);
-    mats["LightWhite"] = make_shared<LightMaterial>(lightMatWhite);
+    mats["Mirror"]      = make_shared<MirrorMaterial>(mirrorMat);
+    mats["Glass"]       = make_shared<GlassMaterial>(glassMat);
+    mats["GreenMatte"]  = make_shared<MatteMaterial>(greenMat);
+    mats["RedMatte"]    = make_shared<MatteMaterial>(redMat);
+    mats["WhiteMatte"]  = make_shared<MatteMaterial>(whiteMat);
+    mats["LightBlue"]   = make_shared<LightMaterial>(lightMatBlue);
+    mats["LightRed"]    = make_shared<LightMaterial>(lightMatRed);
+    mats["LightWhite"]  = make_shared<LightMaterial>(lightMatWhite);
 }
 
 /**
@@ -206,43 +202,162 @@ void RTScene::InitModels()
     redSph.orgn = dvec3(-10.0, 8.0, 2.0);
     redSph.r = 1.0;
     redSph.mat = "RedMatte";
-    //spheres.push_back(redSph);
 
     RTSphere mirrSph;
-    mirrSph.orgn = dvec3(-3.0, 2.0, 2.0);
+    mirrSph.orgn = dvec3(-3.0, 0.0, 2.0);
     mirrSph.r = 1.0;
-    mirrSph.mat = "Mirror";
-    spheres.push_back(mirrSph);
+    mirrSph.mat = "Glass";
+    //meshes["MirrorSphere"] = make_shared<RTSphere>(mirrSph);
 
     RTSphere glassSph;
     glassSph.orgn = dvec3(-2.0, 0.0, 2.5);
     glassSph.r = 2.0;
     glassSph.mat = "Glass";
-    //spheres.push_back(glassSph);
 
     RTSphere lightSphBlue;
     lightSphBlue.orgn = dvec3(0.0, -2.0, 20.0);
     lightSphBlue.r = 3.0;
     lightSphBlue.mat = "LightBlue";
-    //lights.push_back(lightSphBlue);
 
     RTSphere lightSphRed;
     lightSphRed.orgn = dvec3(-2.0, 2.0, 15.0);
     lightSphRed.r = 1.0;
     lightSphRed.mat = "LightRed";
-    //lights.push_back(lightSphRed);
 
     RTSphere lightSphWhite;
-    lightSphWhite.orgn = dvec3(-4.0, -2.0, 3.0);
-    lightSphWhite.r = 0.2;
+    lightSphWhite.orgn = dvec3(-2.0, 2.0, 2.5);
+    lightSphWhite.r = 0.4;
     lightSphWhite.mat = "LightWhite";
     lights.push_back(lightSphWhite);
 
-    shared_ptr<RTMesh> pMesh = make_shared<RTMesh>();
+    auto pMesh = make_shared<AssimpMesh>();
     pMesh->LoadModel("../asset/models/boblampclean/boblampclean.md5mesh");
-    meshes.push_back(pMesh);
+    meshes["LampGuy"] = pMesh;
 
-    shared_ptr<RTMesh> pCornellBox = make_shared<RTMesh>();
-    pCornellBox->CreateCornellBox();
-    meshes.push_back(pCornellBox);
+    auto pCornellBox = make_shared<CornellBox>();
+    pCornellBox->Create();
+    meshes["CornellBox"] = pCornellBox;
+}
+
+/**
+ * [RTScene::LoadScene description]
+ * @param filePath [description]
+ */
+
+void RTScene::LoadScene(string filePath)
+{
+    ifstream fin;
+    fin.open(filePath);
+
+    string line;
+    istringstream iss;
+    getline(fin, line);
+
+    json scnJSON = json::parse(line.c_str());
+    
+    for (auto model : scnJSON["models"])
+    {
+        string modelName           = model["name"];
+        models[modelName].mesh     = model["mesh"];
+        models[modelName].material = model["material"];
+    }
+
+    for (auto mesh : scnJSON["meshes"])
+    {
+        string meshName = mesh["name"];
+        string type = mesh["type"];
+
+        if (type == "Sphere")
+        {
+            auto pSphere = make_shared<RTSphere>();
+            pSphere->orgn = dvec3(0.0, 0.0, 0.0);
+            pSphere->r = 1.0;
+            meshes[meshName] = pSphere;
+        }
+        else if (type == "Box")
+        {
+            auto pBox = make_shared<RTBox>();
+            pBox->min = dvec3(-1.0, -1.0, -1.0);
+            pBox->max = dvec3(1.0, 1.0, 1.0);;
+            meshes[meshName] = pBox;
+        }
+        else if (type == "JSON")
+        {
+            auto pMesh = make_shared<JSONMesh>();
+            meshes[meshName] = pMesh;
+        }
+    }
+
+    for (auto mat : scnJSON["materials"])
+    {
+        
+    }
+
+    OutputDebugString(scnJSON.dump(4).c_str());
+    __debugbreak();
+}
+
+/**
+ * [RTScene::GenerateLightPath description]
+ * @param ray        [description]
+ * @param maxDepth   [description]
+ * @param depth      [description]
+ * @param lightColor [description]
+ */
+
+void RTScene::GenerateLightPath(
+    uint32_t setIdx,
+    Ray ray,
+    uint32_t maxDepth,
+    uint32_t depth,
+    dvec3 lightColor
+)
+{
+    double bias = 0.001;
+    Intersection intsc;
+
+    ray.org += bias * ray.dir;
+    Intersect(ray, intsc);
+    ray.org -= bias * ray.dir;
+
+    if (intsc.t > bias)
+    {
+        shared_ptr<RTMaterial> pMat = mats[intsc.mat];
+        
+        double refl     = pMat->GetReflectance(ray, intsc);
+        double trans    = pMat->GetTransmittance(ray, intsc);
+        double diff     = pMat->GetDiffuse(ray, intsc);
+
+        double theta = dot(-ray.dir, intsc.normal);
+        VirtualLight vLight;
+
+        vLight.color    = theta * lightColor;
+        vLight.material = intsc.mat;
+        vLight.normal   = intsc.normal;
+        vLight.pos      = ray.org + intsc.t * ray.dir;
+
+        if (diff > 0.0)
+        {
+            dvec3 diffClr = pMat->GetDiffuseColor();
+            vLight.color *= diff * diffClr;
+        }
+
+        if ((refl > 0.0) && (depth < maxDepth))
+        {
+            vLight.color *= refl;
+            Ray newRay;
+            pMat->GetReflectedRay(ray, intsc, newRay);
+            GenerateLightPath(setIdx, newRay, maxDepth, depth + 1, refl * lightColor);
+        }
+
+        if ((trans > 0.0) && (depth < maxDepth))
+        {
+            vLight.color *= trans;
+            Ray newRay;
+            pMat->GetTransmittedRay(ray, intsc, newRay);
+            GenerateLightPath(setIdx, newRay, maxDepth, depth + 1, trans * lightColor);
+        }
+
+        vLights[setIdx].push_back(vLight);
+    }
 }

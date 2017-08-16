@@ -62,8 +62,16 @@ void RTRenderer::Init()
     filter.xw = 2.0;
     filter.yw = 2.0;
 
-    scn.Init();
-    Preprocess();
+    if (settings.scnFromFile == true)
+    {
+        scn.LoadScene(settings.scnFilePath);
+    }
+    else
+    {
+        scn.Init();
+    }
+
+    Preprocess(settings.lightPathDepth);
     InitThreads();
 }
 
@@ -142,16 +150,16 @@ void RTRenderer::InitThreads()
  * [RTRenderer::Preprocess description]
  */
 
-void RTRenderer::Preprocess()
+void RTRenderer::Preprocess(uint32_t lightPathDepth)
 {
-    GenerateVirtualLights();
+    GenerateVirtualLights(lightPathDepth);
 }
 
 /**
  * [RTRenderer::GenerateVirtualLights description]
  */
 
-void RTRenderer::GenerateVirtualLights()
+void RTRenderer::GenerateVirtualLights(uint32_t lightPathDepth)
 {
     double bias = integrator.bias;
 
@@ -162,33 +170,31 @@ void RTRenderer::GenerateVirtualLights()
         
         dmat4 scl = scale(dvec3(scn.lights[i].r));
         dvec3 emis = scn.mats[scn.lights[i].mat]->GetEmission(ray, intsc);
+        emis;
 
-        for (uint32_t j = 0; j < integrator.sphereSamples.size(); j++)
+        for (uint32_t k = 0; k < 1024; k++)
         {
-            dmat4 rot = integrator.NextRotation();
-            dvec3 sample = rot * scl * integrator.sphereSamples[j];
-
-            ray.org = scn.lights[i].orgn + sample;
-            ray.dir = normalize(sample);
-
-            ray.org += bias * ray.dir;
-            scn.Intersect(ray, intsc);
-            ray.org -= bias * ray.dir;
-
-            shared_ptr<RTMaterial> pMat = scn.mats[intsc.mat];
-            double diff = pMat->GetDiffuse(ray, intsc);
-
-            if (diff > 0.0)
+            for (uint32_t j = 0; j < integrator.sphereSamples.size(); j++)
             {
-                double theta = dot(-ray.dir, intsc.normal);
-                dvec3 diffColor = pMat->GetDiffuseColor();
+                double theta = pi<double>() * (double)rand() / (double)RAND_MAX;
+                double phi = 2.0 * pi<double>() * (double)rand() / (double)RAND_MAX;
 
-                VirtualLight vLight;
-                vLight.color = diff * diffColor * emis;
-                vLight.normal = intsc.normal;
-                vLight.pos = ray.org + intsc.t * ray.dir;
+                dvec3 sample;
 
-                scn.vLights.push_back(vLight);
+                sample.x = sin(theta) * cos(phi);
+                sample.y = sin(theta) * sin(phi);
+                sample.z = cos(theta);
+
+                ray.org = scn.lights[i].orgn + sample;
+                ray.dir = normalize(ray.org - scn.lights[i].orgn);
+
+                scn.GenerateLightPath(
+                    k,
+                    ray,
+                    lightPathDepth,
+                    1,
+                    emis
+                );
             }
         }
     }
@@ -268,8 +274,9 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
 
                         Intersection intsc;
                         scn.Intersect(ray, intsc);
+                        double t = intsc.t;
 
-                        if (intsc.t > 0.0)
+                        if (t > 0.0)
                         {
                             color += integrator.SampleSurface(
                                 ray,
@@ -356,7 +363,7 @@ void RTRenderer::FilterSamples()
                 }
             }
 
-            outImage[y * imageW + x] = weightedSamples / weightSum;
+            outImage[y * imageW + x] = 1.0 - exp(-weightedSamples / weightSum);
         }
     }
 }
@@ -438,9 +445,13 @@ void RTRenderer::LoadSettings(string file)
     uint32_t pixelSamples;
     uint32_t filterSize;
     uint32_t dofSamples;
+    uint32_t camPathDepth;
+    uint32_t lightPathDepth;
     uint32_t numThreads;
     uint32_t xBlocks;
     uint32_t yBlocks;
+    bool scnFromFile;
+    string scnFilePath;
 
     getline(fin, line);
     getline(fin, line);
@@ -453,19 +464,27 @@ void RTRenderer::LoadSettings(string file)
         >> pixelSamples
         >> filterSize
         >> dofSamples
+        >> camPathDepth
+        >> lightPathDepth
         >> numThreads
         >> xBlocks
-        >> yBlocks;
+        >> yBlocks
+        >> scnFromFile
+        >> scnFilePath;
 
-    settings.imageW = imageW;
-    settings.imageH = imageH;
-    settings.sphereSamples = sphereSamples;
-    settings.pixelSamples = pixelSamples;
-    settings.filterSize = filterSize;
-    settings.dofSamples = dofSamples;
-    settings.numThreads = numThreads;
-    settings.xBlocks = xBlocks;
-    settings.yBlocks = yBlocks;
+    settings.imageW         = imageW;
+    settings.imageH         = imageH;
+    settings.sphereSamples  = sphereSamples;
+    settings.pixelSamples   = pixelSamples;
+    settings.filterSize     = filterSize;
+    settings.dofSamples     = dofSamples;
+    settings.camPathDepth   = camPathDepth;
+    settings.lightPathDepth = lightPathDepth;
+    settings.numThreads     = numThreads;
+    settings.xBlocks        = xBlocks;
+    settings.yBlocks        = yBlocks;
+    settings.scnFromFile    = scnFromFile;
+    settings.scnFilePath    = scnFilePath;
 
     fin.close();
 }

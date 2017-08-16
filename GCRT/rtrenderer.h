@@ -39,9 +39,13 @@ struct RTRenderSettings
     uint32_t pixelSamples;
     uint32_t filterSize;
     uint32_t dofSamples;
+    uint32_t camPathDepth;
+    uint32_t lightPathDepth;
     uint32_t numThreads;
     uint32_t xBlocks;
     uint32_t yBlocks;
+    bool scnFromFile;
+    string scnFilePath;
 };
 
 struct RTRenderer
@@ -71,8 +75,8 @@ struct RTRenderer
 
     void Init();
     void InitThreads();
-    void Preprocess();
-    void GenerateVirtualLights();
+    void Preprocess(uint32_t lightPathDepth);
+    void GenerateVirtualLights(uint32_t lightPathDepth);
     void SaveImage(string fileName);
     void LoadSettings(string file);
 };

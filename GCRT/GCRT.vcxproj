@@ -170,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filter.h" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="Octree.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="rtmaterial.h" />

@@ -121,12 +121,46 @@ void Submesh::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * [RTMesh::Intersect description]
+ * [AssimpMesh::Intersect description]
  * @param ray  [description]
  * @param intc [description]
  */
 
-void RTMesh::Intersect(Ray ray, Intersection &intsc)
+void AssimpMesh::Intersect(Ray ray, Intersection &intsc)
+{
+    double minDist = DBL_MAX;
+    intsc.t = -1.0;
+    Intersection subMeshIntsc;
+
+    bbox.Intersect(ray, subMeshIntsc);
+    if (subMeshIntsc.t <= 0.0)
+    {
+        return;
+    }
+
+    for (uint32_t i = 0; i < submeshes.size(); i++)
+    {
+        submeshes[i].root.box.Intersect(ray, subMeshIntsc);
+
+        if (subMeshIntsc.t > 0.0)
+        {
+            submeshes[i].Intersect(ray, subMeshIntsc);
+            if (subMeshIntsc.t > 0.0 && subMeshIntsc.t < minDist)
+            {
+                minDist = subMeshIntsc.t;
+                intsc = subMeshIntsc;
+            }
+        }
+    }
+}
+
+/**
+ * [CornellBox::Intersect description]
+ * @param ray  [description]
+ * @param intc [description]
+ */
+
+void CornellBox::Intersect(Ray ray, Intersection &intsc)
 {
     double minDist = DBL_MAX;
     intsc.t = -1.0;
@@ -158,7 +192,7 @@ void RTMesh::Intersect(Ray ray, Intersection &intsc)
  * [RTMesh::CreateCornellBox description]
  */
 
-void RTMesh::CreateCornellBox()
+void CornellBox::Create()
 {
     submeshes.resize(5);
     
@@ -344,7 +378,7 @@ void RTMesh::CreateCornellBox()
  * @param file [description]
  */
 
-void RTMesh::LoadModel(string file)
+void AssimpMesh::LoadModel(string file)
 {
     Assimp::Importer importer;
 
@@ -400,7 +434,7 @@ void RTMesh::LoadModel(string file)
         submeshes[i].root.box.max = submax;
         submeshes[i].root.depth    = 1;
         submeshes[i].root.maxDepth = 10;
-        submeshes[i].mat = "Glass";
+        submeshes[i].mat = "WhiteMatte";
 
         for (uint32_t j = 0; j < mesh.mNumFaces; j++)
         {
@@ -519,4 +553,25 @@ void RTBox::Intersect(Ray ray, Intersection &intsc)
 
     intsc.t = t0;
     intsc.mat = mat;
+}
+
+/**
+ * [JSONMesh::LoadModel description]
+ * @param file [description]
+ */
+
+void JSONMesh::LoadModel(string file)
+{
+    return;
+}
+
+/**
+ * [JSONMesh::Intersect description]
+ * @param ray   [description]
+ * @param intsc [description]
+ */
+
+void JSONMesh::Intersect(Ray ray, Intersection &intsc)
+{
+    return;
 }

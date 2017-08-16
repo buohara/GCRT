@@ -54,6 +54,21 @@ dmat4 SurfaceIntegrator::NextRotation()
 }
 
 /**
+ * [SurfaceIntegrator::NextVLightSet description]
+ * @return [description]
+ */
+
+uint32_t SurfaceIntegrator::NextVLightSet()
+{
+    if (vLightSet >= 1024)
+    {
+        vLightSet = 0;
+    }
+
+    return vLightSet++;
+}
+
+/**
  * [SurfaceIntegrator::SampleSurface description]
  * @param  ray        [description]
  * @param  intsc      [description]
@@ -82,9 +97,9 @@ dvec3 SurfaceIntegrator::SampleSurface(
         return outColor;
     }
 
-    double refl = pMat->GetReflectance(rayIn, intsc);
-    double trans = pMat->GetTransmittance(rayIn, intsc);
-    double diff = pMat->GetDiffuse(rayIn, intsc);
+    double refl     = pMat->GetReflectance(rayIn, intsc);
+    double trans    = pMat->GetTransmittance(rayIn, intsc);
+    double diff     = pMat->GetDiffuse(rayIn, intsc);
 
     // Reflection
 
@@ -190,15 +205,17 @@ dvec3 SurfaceIntegrator::CalcDiffuse(
     Intersection nextIntsc;
     dvec3 diffColor = dvec3(0.0, 0.0, 0.0);
 
-    uint32_t numSamples = (uint32_t)sphereSamples.size();
+    uint32_t numSamples = (uint32_t)(2 * sphereSamples.size());
+
+    // Sample direct lights.
 
     for (uint32_t i = 0; i < scn.lights.size(); i++)
     {
         shared_ptr<RTMaterial> pMat = scn.mats[scn.lights[i].mat];
         
-        dvec3 emis = pMat->GetEmission(rayIn, intsc);
+        dvec3 emis  = pMat->GetEmission(rayIn, intsc);
         dmat4 trans = translate(scn.lights[i].orgn);
-        dmat4 scl = scale(dvec3(scn.lights[i].r));
+        dmat4 scl   = scale(dvec3(scn.lights[i].r));
 
         for (uint32_t j = 0; j < sphereSamples.size(); j++)
         {
@@ -220,16 +237,49 @@ dvec3 SurfaceIntegrator::CalcDiffuse(
                 {
                     double theta1 = dot(newRay.dir, intsc.normal);
                     double theta2 = dot(-newRay.dir, nextIntsc.normal);
-                    diffColor += theta1 * theta2 * emis / (t * t);
+                    double g = theta1 * theta2 / (t * t);
+                    diffColor += g * emis;
                 }
             }
         }
     }
 
-    if (numSamples > 0)
+    dvec3 virtColor = dvec3(0.0, 0.0, 0.0);
+    uint32_t vLightSet = NextVLightSet();
+
+    // Sample virtual lights.
+
+    for (uint32_t i = 0; i < scn.vLights[vLightSet].size(); i++)
     {
-        diffColor /= (double)(numSamples);
+        newRay.dir = normalize(scn.vLights[vLightSet][i].pos - newRay.org);
+        
+        if (dot(newRay.dir, intsc.normal) > 0.0)
+        {
+            newRay.org += bias * newRay.dir;
+            scn.Intersect(newRay, nextIntsc);
+            newRay.org -= bias * newRay.dir;
+
+            double t = nextIntsc.t;
+            double dist = length(scn.vLights[vLightSet][i].pos - newRay.org);
+
+            if (t > 0.0 && abs(dist - t) < 2.0 * bias)
+            {
+                double theta1 = dot(newRay.dir, intsc.normal);
+                double theta2 = dot(-newRay.dir, scn.vLights[vLightSet][i].normal);             
+                double g = theta1 * theta2 / (t * t);
+
+                if (g < 5.0)
+                {
+                    virtColor += g * scn.vLights[vLightSet][i].color;
+                }
+                else
+                {
+                    double g2 = (g - 5.0) * t * t / theta2;
+                    virtColor += (5.0 + g2) * scn.vLights[vLightSet][i].color;       
+                }
+            }
+        }
     }
 
-    return diffColor;
+    return (2.0 * virtColor) / ((double)numSamples);
 }
