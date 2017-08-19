@@ -1,116 +1,6 @@
 #include "rtmaterial.h"
 
 /**
- * [MatteMaterial::GetReflectance description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-double MatteMaterial::GetReflectance(Ray ray, Intersection intsc)
-{
-    return 0.0;
-}
-
-/**
- * [MatteMaterial::GetTransmittance description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-double MatteMaterial::GetTransmittance(Ray ray, Intersection intsc)
-{
-    return 0.0;
-}
-
-/**
- * [MatteMaterial::GetDiffuse description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-double MatteMaterial::GetDiffuse(Ray ray, Intersection intsc)
-{
-    return 1.0;
-}
-
-/**
- * [MatteMaterial::GetReflectedRay description]
- * @param rayIn  [description]
- * @param intsc  [description]
- * @param rayOut [description]
- */
-
-void MatteMaterial::GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut)
-{
-    rayOut.org = rayIn.org + (intsc.t * rayIn.dir);
-    rayOut.dir = normalize(reflect(rayIn.dir, intsc.normal));
-    return;
-}
-
-/**
- * [MatteMaterial::GetTransmittedRay description]
- * @param ray    [description]
- * @param intsc  [description]
- * @param rayOut [description]
- */
-
-void MatteMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &rayOut)
-{
-    return;
-}
-
-/**
- * [MatteMaterial::GetEmission description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-dvec3 MatteMaterial::GetEmission(Ray ray, Intersection intsc)
-{
-    return dvec3(0.0, 0.0, 0.0);
-}
-
-/**
- * [MirrorMaterial::GetReflectance description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-double MirrorMaterial::GetReflectance(Ray ray, Intersection intsc)
-{
-    return 1.0;
-}
-
-/**
- * [MirrorMaterial::GetTransmittance description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-double MirrorMaterial::GetTransmittance(Ray ray, Intersection intsc)
-{
-    return 0.0;
-}
-
-/**
- * [MirrorMaterial::GetDiffuse description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-double MirrorMaterial::GetDiffuse(Ray ray, Intersection intsc)
-{
-    return 0.0;
-}
-
-/**
  * [MirrorMaterial::GetReflectedRay description]
  * @param rayIn  [description]
  * @param intsc  [description]
@@ -121,30 +11,6 @@ void MirrorMaterial::GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut)
 {
     rayOut.org = rayIn.org + (intsc.t * rayIn.dir);
     rayOut.dir = normalize(reflect(rayIn.dir, intsc.normal));
-}
-
-/**
- * [MirrorMaterial::GetTransmittedRay description]
- * @param ray    [description]
- * @param intsc  [description]
- * @param rayOut [description]
- */
-
-void MirrorMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &rayOut)
-{
-    return;
-}
-
-/**
- * [MirrorMaterial::GetEmission description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-dvec3 MirrorMaterial::GetEmission(Ray ray, Intersection intsc)
-{
-    return dvec3(0.0, 0.0, 0.0);
 }
 
 /**
@@ -209,18 +75,6 @@ double GlassMaterial::GetTransmittance(Ray ray, Intersection intsc)
 }
 
 /**
- * [GlassMaterial::GetDiffuse description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-double GlassMaterial::GetDiffuse(Ray ray, Intersection intsc)
-{
-    return 0.0;
-}
-
-/**
  * [GlassMaterial::GetReflectedRay description]
  * @param rayIn  [description]
  * @param intsc  [description]
@@ -263,42 +117,6 @@ void GlassMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &rayOut)
 }
 
 /**
- * [GlassMaterial::GetEmission description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-dvec3 GlassMaterial::GetEmission(Ray ray, Intersection intsc)
-{
-    return dvec3(0.0, 0.0, 0.0);
-}
-
-/**
- * [LightMaterial::GetReflectance description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-double LightMaterial::GetReflectance(Ray ray, Intersection intsc)
-{
-    return 0.0;
-}
-
-/**
- * [LightMaterial::GetTransmittance description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-double LightMaterial::GetTransmittance(Ray ray, Intersection intsc)
-{
-    return 0.0;
-}
-
-/**
  * [LightMaterial::GetDiffuse description]
  * @param  ray   [description]
  * @param  intsc [description]
@@ -311,30 +129,6 @@ double LightMaterial::GetDiffuse(Ray ray, Intersection intsc)
 }
 
 /**
- * [LightMaterial::GetReflectedRay description]
- * @param rayIn  [description]
- * @param intsc  [description]
- * @param rayOut [description]
- */
-
-void LightMaterial::GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut)
-{
-    return;
-}
-
-/**
- * [LightMaterial::GetTransmittedRay description]
- * @param ray    [description]
- * @param intsc  [description]
- * @param rayOut [description]
- */
-
-void LightMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &rayOut)
-{
-    return;
-}
-
-/**
  * [LightMaterial::GetEmission description]
  * @param  ray   [description]
  * @param  intsc [description]
@@ -344,4 +138,14 @@ void LightMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &rayOut)
 dvec3 LightMaterial::GetEmission(Ray ray, Intersection intsc)
 {
     return lightColor;
+}
+
+/**
+ * [TexMaterial::GetDiffuseColor description]
+ * @return       [description]
+ */
+
+dvec3 TexMaterial::GetDiffuseColor(Ray ray, Intersection intsc)
+{
+    return diffTex.Sample(dvec2(0.5, 0.5));
 }

@@ -2,6 +2,7 @@
 
 #include "GCRT.h"
 #include "ray.h"
+#include "texture.h"
 
 using namespace std;
 using namespace glm;
@@ -10,39 +11,34 @@ struct RTMaterial
 {
     string name;
 
-    virtual double GetReflectance(Ray ray, Intersection intsc) = 0;
-    virtual double GetTransmittance(Ray ray, Intersection intsc) = 0;
-    virtual double GetDiffuse(Ray ray, Intersection intsc) = 0;
-    virtual dvec3 GetDiffuseColor() { return dvec3(0.0, 0.0, 0.0); }
+    virtual double GetReflectance(Ray ray, Intersection intsc) { return 0.0; };
+    virtual double GetTransmittance(Ray ray, Intersection intsc) { return 0.0; };
+    virtual double GetDiffuse(Ray ray, Intersection intsc) { return 1.0; };
+    virtual dvec3 GetDiffuseColor(Ray ray, Intersection intsc) { return dvec3(0.3, 0.3, 0.3); }
 
-    virtual void GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut) = 0;
-    virtual void GetTransmittedRay(Ray rayIn, Intersection intsc, Ray &rayOut) = 0;
-    virtual dvec3 GetEmission(Ray rayIn, Intersection intsc) = 0;
+    virtual void GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut) { return; }
+    virtual void GetTransmittedRay(Ray rayIn, Intersection intsc, Ray &rayOut) { return; }
+    virtual dvec3 GetEmission(Ray rayIn, Intersection intsc) { return dvec3(0.0, 0.0, 0.0); }
+};
+
+struct TexMaterial : RTMaterial
+{
+    Texture diffTex;
+    Texture normalTex;
+    dvec3 GetDiffuseColor(Ray ray, Intersection intsc);
 };
 
 struct MatteMaterial : RTMaterial
 {
     dvec3 kd;
-
-    double GetReflectance(Ray ray, Intersection intsc);
-    double GetTransmittance(Ray ray, Intersection intsc);
-    double GetDiffuse(Ray ray, Intersection intsc);
     dvec3 GetDiffuseColor() { return kd; }
-
-    void GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut);
-    void GetTransmittedRay(Ray rayIn, Intersection intsc, Ray &rayOut);
-    dvec3 GetEmission(Ray rayIn, Intersection intsc);
 };
 
 struct MirrorMaterial : RTMaterial
 {
-    double GetReflectance(Ray ray, Intersection intsc);
-    double GetTransmittance(Ray ray, Intersection intsc);
-    double GetDiffuse(Ray ray, Intersection intsc);
-
+    double GetReflectance(Ray ray, Intersection intsc) { return 1.0; }
+    double GetDiffuse(Ray ray, Intersection intsc) { return 0.0; }
     void GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut);
-    void GetTransmittedRay(Ray rayIn, Intersection intsc, Ray &rayOut);
-    dvec3 GetEmission(Ray rayIn, Intersection intsc);
 };
 
 struct GlassMaterial : RTMaterial
@@ -52,22 +48,15 @@ struct GlassMaterial : RTMaterial
 
     double GetReflectance(Ray ray, Intersection intsc);
     double GetTransmittance(Ray ray, Intersection intsc);
-    double GetDiffuse(Ray ray, Intersection intsc);
+    double GetDiffuse(Ray ray, Intersection intsc) { return 0.0; }
 
     void GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut);
     void GetTransmittedRay(Ray rayIn, Intersection intsc, Ray &rayOut);
-    dvec3 GetEmission(Ray rayIn, Intersection intsc);
 };
 
 struct LightMaterial : RTMaterial
 {
     dvec3 lightColor;
-
-    double GetReflectance(Ray ray, Intersection intsc);
-    double GetTransmittance(Ray ray, Intersection intsc);
     double GetDiffuse(Ray ray, Intersection intsc);
-
-    void GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut);
-    void GetTransmittedRay(Ray rayIn, Intersection intsc, Ray &rayOut);
     dvec3 GetEmission(Ray rayIn, Intersection intsc);
 };

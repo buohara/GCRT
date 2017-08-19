@@ -14,6 +14,7 @@ struct SurfaceIntegrator
     
     uint32_t idx;
     uint32_t vLightSet;
+    uint32_t vLightSets;
 
     dmat4 NextRotation();
     uint32_t NextVLightSet();

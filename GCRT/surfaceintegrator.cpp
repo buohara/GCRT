@@ -60,7 +60,7 @@ dmat4 SurfaceIntegrator::NextRotation()
 
 uint32_t SurfaceIntegrator::NextVLightSet()
 {
-    if (vLightSet >= 1024)
+    if (vLightSet >= vLightSets)
     {
         vLightSet = 0;
     }
@@ -205,7 +205,7 @@ dvec3 SurfaceIntegrator::CalcDiffuse(
     Intersection nextIntsc;
     dvec3 diffColor = dvec3(0.0, 0.0, 0.0);
 
-    uint32_t numSamples = (uint32_t)(2 * sphereSamples.size());
+    uint32_t numSamples = (uint32_t)(sphereSamples.size() + scn.vLights[0].size());
 
     // Sample direct lights.
 

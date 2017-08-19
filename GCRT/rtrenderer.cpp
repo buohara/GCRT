@@ -55,6 +55,7 @@ void RTRenderer::Init()
     );
 
     integrator.GenerateSphereSamples(settings.sphereSamples);
+    integrator.vLightSets = settings.vLightSets;
     sampler.numSamples = settings.pixelSamples;
     
     filter.b = 0.33;
@@ -71,7 +72,7 @@ void RTRenderer::Init()
         scn.Init();
     }
 
-    Preprocess(settings.lightPathDepth);
+    Preprocess();
     InitThreads();
 }
 
@@ -143,6 +144,7 @@ void RTRenderer::InitThreads()
         threadData[i].imageH        = imageH;
         threadData[i].pImageBlocks  = &imageBlocks;
         threadData[i].pIntegrator   = &integrator;
+        threadData[i].camPathDepth  = settings.camPathDepth;
     }
 }
 
@@ -150,18 +152,19 @@ void RTRenderer::InitThreads()
  * [RTRenderer::Preprocess description]
  */
 
-void RTRenderer::Preprocess(uint32_t lightPathDepth)
+void RTRenderer::Preprocess()
 {
-    GenerateVirtualLights(lightPathDepth);
+    GenerateVirtualLights();
 }
 
 /**
  * [RTRenderer::GenerateVirtualLights description]
  */
 
-void RTRenderer::GenerateVirtualLights(uint32_t lightPathDepth)
+void RTRenderer::GenerateVirtualLights()
 {
     double bias = integrator.bias;
+    scn.vLights.resize(settings.vLightSets);
 
     for (uint32_t i = 0; i < scn.lights.size(); i++)
     {
@@ -172,11 +175,12 @@ void RTRenderer::GenerateVirtualLights(uint32_t lightPathDepth)
         dvec3 emis = scn.mats[scn.lights[i].mat]->GetEmission(ray, intsc);
         emis;
 
-        for (uint32_t k = 0; k < 1024; k++)
+        for (uint32_t k = 0; k < settings.vLightSets; k++)
         {
-            for (uint32_t j = 0; j < integrator.sphereSamples.size(); j++)
+            for (uint32_t j = 0; j < settings.vLightSetSize; j++)
             {
-                double theta = pi<double>() * (double)rand() / (double)RAND_MAX;
+                //double theta = pi<double>() * (double)rand() / (double)RAND_MAX;
+                double theta = acos(2.0 * (double)rand() / (double)RAND_MAX - 1.0);
                 double phi = 2.0 * pi<double>() * (double)rand() / (double)RAND_MAX;
 
                 dvec3 sample;
@@ -191,7 +195,7 @@ void RTRenderer::GenerateVirtualLights(uint32_t lightPathDepth)
                 scn.GenerateLightPath(
                     k,
                     ray,
-                    lightPathDepth,
+                    settings.lightPathDepth,
                     1,
                     emis
                 );
@@ -210,9 +214,10 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
 {
     // Unpack thread params.
 
-    ThreadData &data = *((ThreadData*)(lpParam)); 
+    ThreadData &data                = *((ThreadData*)(lpParam)); 
     uint32_t imageW                 = data.imageW;
     uint32_t imageH                 = data.imageH;
+    uint32_t camPathDepth           = data.camPathDepth;
     RTScene &scn                    = *(data.pScn);
     
     vector<vector<Sample>> &imgSamples 
@@ -283,7 +288,7 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
                                 scn,
                                 intsc,
                                 1,
-                                5
+                                camPathDepth
                             ) * dofSamplesInv;
                         }
                     }
@@ -442,11 +447,13 @@ void RTRenderer::LoadSettings(string file)
     uint32_t imageW;
     uint32_t imageH;
     uint32_t sphereSamples;
+    uint32_t vLightSets;
+    uint32_t vLightSetSize;
+    uint32_t camPathDepth;
+    uint32_t lightPathDepth;
     uint32_t pixelSamples;
     uint32_t filterSize;
     uint32_t dofSamples;
-    uint32_t camPathDepth;
-    uint32_t lightPathDepth;
     uint32_t numThreads;
     uint32_t xBlocks;
     uint32_t yBlocks;
@@ -461,11 +468,13 @@ void RTRenderer::LoadSettings(string file)
         >> imageW
         >> imageH
         >> sphereSamples
+        >> vLightSets
+        >> vLightSetSize
+        >> camPathDepth
+        >> lightPathDepth
         >> pixelSamples
         >> filterSize
         >> dofSamples
-        >> camPathDepth
-        >> lightPathDepth
         >> numThreads
         >> xBlocks
         >> yBlocks
@@ -475,6 +484,10 @@ void RTRenderer::LoadSettings(string file)
     settings.imageW         = imageW;
     settings.imageH         = imageH;
     settings.sphereSamples  = sphereSamples;
+    settings.vLightSets     = vLightSets;
+    settings.vLightSetSize  = vLightSetSize;
+    settings.camPathDepth   = camPathDepth;
+    settings.lightPathDepth = lightPathDepth;
     settings.pixelSamples   = pixelSamples;
     settings.filterSize     = filterSize;
     settings.dofSamples     = dofSamples;

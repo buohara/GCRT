@@ -141,7 +141,6 @@ void RTScene::Init()
 {
     InitMaterials();
     InitModels();
-    vLights.resize(1024);
 }
 
 /**
@@ -207,7 +206,7 @@ void RTScene::InitModels()
     mirrSph.orgn = dvec3(-3.0, 0.0, 2.0);
     mirrSph.r = 1.0;
     mirrSph.mat = "Glass";
-    //meshes["MirrorSphere"] = make_shared<RTSphere>(mirrSph);
+    meshes["MirrorSphere"] = make_shared<RTSphere>(mirrSph);
 
     RTSphere glassSph;
     glassSph.orgn = dvec3(-2.0, 0.0, 2.5);
@@ -225,14 +224,14 @@ void RTScene::InitModels()
     lightSphRed.mat = "LightRed";
 
     RTSphere lightSphWhite;
-    lightSphWhite.orgn = dvec3(-2.0, 2.0, 2.5);
+    lightSphWhite.orgn = dvec3(-2.0, 2.0, 3.5);
     lightSphWhite.r = 0.4;
     lightSphWhite.mat = "LightWhite";
     lights.push_back(lightSphWhite);
 
     auto pMesh = make_shared<AssimpMesh>();
     pMesh->LoadModel("../asset/models/boblampclean/boblampclean.md5mesh");
-    meshes["LampGuy"] = pMesh;
+    //meshes["LampGuy"] = pMesh;
 
     auto pCornellBox = make_shared<CornellBox>();
     pCornellBox->Create();

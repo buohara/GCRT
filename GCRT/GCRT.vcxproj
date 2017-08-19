@@ -167,6 +167,7 @@
     <ClCompile Include="sampler.cpp" />
     <ClCompile Include="raytrace.cpp" />
     <ClCompile Include="surfaceintegrator.cpp" />
+    <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filter.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="sampler.h" />
     <ClInclude Include="GCRT.h" />
     <ClInclude Include="surfaceintegrator.h" />
+    <ClInclude Include="texture.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="settings.txt" />

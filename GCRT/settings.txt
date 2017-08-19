@@ -1,2 +1,2 @@
-// imagew imwageh spheresamples pixelsamples filtersize dofsamples cameraPathDepth lightPathDepth numthreads xtiles ytiles sceneFromFile filePath
-1920 1080 256 16 2 0 1 4 16 32 24 0 ../scenes/testscn.json
+// imagew imwageh lightsamples vlightsets vlightsetsize cameraPathDepth lightPathDepth pixelsamples filtersize dofsamples numthreads xtiles ytiles sceneFromFile filePath
+512 512 32 1024 128 4 4 64 3 0 8 32 24 0 ../scenes/testscn.json

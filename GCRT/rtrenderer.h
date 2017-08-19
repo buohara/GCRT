@@ -19,6 +19,7 @@ struct ThreadData
     uint32_t threadID;
     uint32_t imageW;
     uint32_t imageH;
+    uint32_t camPathDepth;
 
     RTScene *pScn;
     Sampler *pSampler;
@@ -36,11 +37,13 @@ struct RTRenderSettings
     uint32_t imageW;
     uint32_t imageH;
     uint32_t sphereSamples;
+    uint32_t vLightSets;
+    uint32_t vLightSetSize;
+    uint32_t camPathDepth;
+    uint32_t lightPathDepth;
     uint32_t pixelSamples;
     uint32_t filterSize;
     uint32_t dofSamples;
-    uint32_t camPathDepth;
-    uint32_t lightPathDepth;
     uint32_t numThreads;
     uint32_t xBlocks;
     uint32_t yBlocks;
@@ -75,8 +78,8 @@ struct RTRenderer
 
     void Init();
     void InitThreads();
-    void Preprocess(uint32_t lightPathDepth);
-    void GenerateVirtualLights(uint32_t lightPathDepth);
+    void Preprocess();
+    void GenerateVirtualLights();
     void SaveImage(string fileName);
     void LoadSettings(string file);
 };
