@@ -15,5 +15,6 @@ struct Intersection
 {
     double t;
     dvec3 normal;
+    dvec2 uv;
     string mat;
 };

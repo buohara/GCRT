@@ -147,5 +147,17 @@ dvec3 LightMaterial::GetEmission(Ray ray, Intersection intsc)
 
 dvec3 TexMaterial::GetDiffuseColor(Ray ray, Intersection intsc)
 {
-    return diffTex.Sample(dvec2(0.5, 0.5));
+    return diffTex.Sample(intsc.uv);
+}
+
+/**
+ * [TexMaterial::Load description]
+ * @param diffTexFile [description]
+ * @param normTexFile [description]
+ */
+
+void TexMaterial::Load(string diffTexFile, string normTexFile)
+{
+    diffTex.Load(diffTexFile);
+    normTex.Load(normTexFile);
 }

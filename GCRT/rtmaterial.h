@@ -24,8 +24,9 @@ struct RTMaterial
 struct TexMaterial : RTMaterial
 {
     Texture diffTex;
-    Texture normalTex;
+    Texture normTex;
     dvec3 GetDiffuseColor(Ray ray, Intersection intsc);
+    void Load(string diffTexFile, string normTexFile);
 };
 
 struct MatteMaterial : RTMaterial

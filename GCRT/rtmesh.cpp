@@ -29,17 +29,55 @@ void RTSphere::Intersect(Ray ray, Intersection &intsc)
 
     if (t1 > 0.0)
     {
+        dvec3 n = normalize(o + t1 * d - orgn);
         intsc.t = t1;
-        intsc.normal = normalize(o + t1 * d - orgn);
+        intsc.normal = n;
         intsc.mat = mat;
+        intsc.uv.x = acos(n.z / r) / glm::pi<double>();
+        intsc.uv.y = atan2(n.y, n.x);
+
+        if (n.y < 0.0 && n.x < 0.0)
+        {
+            intsc.uv.y += glm::pi<double>();
+        }
+        else if (n.y < 0.0)
+        {
+            intsc.uv.y += glm::pi<double>() / 2.0;
+        }
+        else if (n.x < 0.0)
+        {
+            intsc.uv.y -= glm::pi<double>() / 2.0;
+        }
+
+        intsc.uv.y /= (2.0 * glm::pi<double>());
+
         return;
     }
 
     if (t2 > 0.0)
     {
+        dvec3 n = normalize(o + t1 * d - orgn);
         intsc.t = t2;
-        intsc.normal = normalize(o + t2 * d - orgn);
+        intsc.normal = n;
         intsc.mat = mat;
+        intsc.uv.x = acos(n.z / r) / glm::pi<double>();
+        intsc.uv.y = atan2(n.y, n.x);
+
+        if (n.y < 0.0 && n.x < 0.0)
+        {
+            intsc.uv.y += glm::pi<double>();
+        }
+        else if (n.y < 0.0)
+        {
+            intsc.uv.y += glm::pi<double>() / 2.0;
+        }
+        else if (n.x < 0.0)
+        {
+            intsc.uv.y -= glm::pi<double>() / 2.0;
+        }
+
+        intsc.uv.y /= (2.0 * glm::pi<double>());
+
         return;
     }
 }
@@ -74,9 +112,6 @@ void RTPlane::Intersect(Ray ray, Intersection &intsc)
 
 void Submesh::Intersect(Ray ray, Intersection &intsc)
 {
-    // Triangle intersection method using barycentric coordinates.
-    // Adapted from the PBRT book.
-
     intsc.t = DBL_MAX;
     vector<uint32_t> faceIdcs;
     faceIdcs.reserve(1024);

@@ -23,7 +23,7 @@ void Texture::Load(string imgPathIn)
     h = ilGetInteger(IL_IMAGE_HEIGHT);
     BYTE* pData = ilGetData();
 
-    pixels.reserve(w * h);
+    pixels.resize(w * h);
 
     for (uint32_t r = 0; r < h; r++)
     {
@@ -52,6 +52,9 @@ dvec3 Texture::Sample(dvec2 uv)
 {
     double x = uv.x * (double)w;
     double y = uv.y * (double)h;
+
+    printf("x=%g\n", x);
+    printf("y=%g\n", y);
 
     uint32_t xh = (uint32_t)ceil(x);
     uint32_t xl = (uint32_t)floor(x);

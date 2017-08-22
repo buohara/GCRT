@@ -20,6 +20,8 @@ struct ThreadData
     uint32_t imageW;
     uint32_t imageH;
     uint32_t camPathDepth;
+    uint32_t numVLightSets;
+    uint32_t vLightSetSize;
 
     RTScene *pScn;
     Sampler *pSampler;

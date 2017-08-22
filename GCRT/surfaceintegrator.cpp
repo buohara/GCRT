@@ -8,6 +8,7 @@
 void SurfaceIntegrator::GenerateSphereSamples(uint32_t numSamples)
 {
     idx = 0;
+    numLightSamples = numSamples;
 
     dvec4 sample;
     sample.x = 0.0;
@@ -58,14 +59,12 @@ dmat4 SurfaceIntegrator::NextRotation()
  * @return [description]
  */
 
-uint32_t SurfaceIntegrator::NextVLightSet()
+void SurfaceIntegrator::NextVLightSet()
 {
-    if (vLightSet >= vLightSets)
+    if (curVLightSet >= numVLightSets)
     {
-        vLightSet = 0;
+        curVLightSet = 0;
     }
-
-    return vLightSet++;
 }
 
 /**
@@ -165,7 +164,7 @@ dvec3 SurfaceIntegrator::SampleSurface(
 
     if (diff > bias)
     {
-        dvec3 diffColor = pMat->GetDiffuseColor();
+        dvec3 diffColor = pMat->GetDiffuseColor(rayIn, intsc);
         dvec3 diffColorIn;
 
         diffColorIn = CalcDiffuse(
@@ -200,22 +199,57 @@ dvec3 SurfaceIntegrator::CalcDiffuse(
     uint32_t maxBounces
 )
 {
+    uint32_t numSamples = numLightSamples + vLightSetSize;
+
+    dvec3 diffColor = SampleDirectLights(
+        rayIn,
+        scn,
+        intsc,
+        bounce,
+        maxBounces
+    );
+
+    dvec3 virtColor = SampleVirtualLights(
+        rayIn,
+        scn,
+        intsc,
+        bounce,
+        maxBounces
+    );
+
+    return (2.0 * virtColor + diffColor) / ((double)numSamples);
+}
+
+/**
+ * [SurfaceIntegrator::SampleDirectLights description]
+ * @param  rayIn      [description]
+ * @param  scn        [description]
+ * @param  intsc      [description]
+ * @param  bounce     [description]
+ * @param  maxBounces [description]
+ * @return            [description]
+ */
+
+dvec3 SurfaceIntegrator::SampleDirectLights(
+    Ray rayIn,
+    RTScene &scn,
+    Intersection intsc,
+    uint32_t bounce,
+    uint32_t maxBounces
+)
+{
     Ray newRay;
     newRay.org = rayIn.org + (intsc.t * rayIn.dir);
     Intersection nextIntsc;
     dvec3 diffColor = dvec3(0.0, 0.0, 0.0);
 
-    uint32_t numSamples = (uint32_t)(sphereSamples.size() + scn.vLights[0].size());
-
-    // Sample direct lights.
-
     for (uint32_t i = 0; i < scn.lights.size(); i++)
     {
         shared_ptr<RTMaterial> pMat = scn.mats[scn.lights[i].mat];
-        
-        dvec3 emis  = pMat->GetEmission(rayIn, intsc);
+
+        dvec3 emis = pMat->GetEmission(rayIn, intsc);
         dmat4 trans = translate(scn.lights[i].orgn);
-        dmat4 scl   = scale(dvec3(scn.lights[i].r));
+        dmat4 scl = scale(dvec3(scn.lights[i].r));
 
         for (uint32_t j = 0; j < sphereSamples.size(); j++)
         {
@@ -244,42 +278,68 @@ dvec3 SurfaceIntegrator::CalcDiffuse(
         }
     }
 
+    return diffColor;
+}
+
+/**
+ * [SurfaceIntegrator::SampleVirtualLights description]
+ * @param  rayIn      [description]
+ * @param  scn        [description]
+ * @param  intsc      [description]
+ * @param  bounce     [description]
+ * @param  maxBounces [description]
+ * @return            [description]
+ */
+
+dvec3 SurfaceIntegrator::SampleVirtualLights(
+    Ray rayIn,
+    RTScene &scn,
+    Intersection intsc,
+    uint32_t bounce,
+    uint32_t maxBounces
+)
+{
     dvec3 virtColor = dvec3(0.0, 0.0, 0.0);
-    uint32_t vLightSet = NextVLightSet();
 
-    // Sample virtual lights.
-
-    for (uint32_t i = 0; i < scn.vLights[vLightSet].size(); i++)
+    if (vLightSetSize > 0)
     {
-        newRay.dir = normalize(scn.vLights[vLightSet][i].pos - newRay.org);
-        
-        if (dot(newRay.dir, intsc.normal) > 0.0)
+        Ray newRay;
+        newRay.org = rayIn.org + (intsc.t * rayIn.dir);
+        Intersection nextIntsc;
+        NextVLightSet();
+
+        for (uint32_t i = 0; i < vLightSetSize; i++)
         {
-            newRay.org += bias * newRay.dir;
-            scn.Intersect(newRay, nextIntsc);
-            newRay.org -= bias * newRay.dir;
+            newRay.dir = normalize(scn.vLights[curVLightSet][i].pos - newRay.org);
 
-            double t = nextIntsc.t;
-            double dist = length(scn.vLights[vLightSet][i].pos - newRay.org);
-
-            if (t > 0.0 && abs(dist - t) < 2.0 * bias)
+            if (dot(newRay.dir, intsc.normal) > 0.0)
             {
-                double theta1 = dot(newRay.dir, intsc.normal);
-                double theta2 = dot(-newRay.dir, scn.vLights[vLightSet][i].normal);             
-                double g = theta1 * theta2 / (t * t);
+                newRay.org += bias * newRay.dir;
+                scn.Intersect(newRay, nextIntsc);
+                newRay.org -= bias * newRay.dir;
 
-                if (g < 5.0)
+                double t = nextIntsc.t;
+                double dist = length(scn.vLights[curVLightSet][i].pos - newRay.org);
+
+                if (t > 0.0 && abs(dist - t) < 2.0 * bias)
                 {
-                    virtColor += g * scn.vLights[vLightSet][i].color;
-                }
-                else
-                {
-                    double g2 = (g - 5.0) * t * t / theta2;
-                    virtColor += (5.0 + g2) * scn.vLights[vLightSet][i].color;       
+                    double theta1 = dot(newRay.dir, intsc.normal);
+                    double theta2 = dot(-newRay.dir, scn.vLights[curVLightSet][i].normal);
+                    double g = theta1 * theta2 / (t * t);
+
+                    if (g < 5.0)
+                    {
+                        virtColor += g * scn.vLights[curVLightSet][i].color;
+                    }
+                    else
+                    {
+                        double g2 = (g - 5.0) * t * t / theta2;
+                        virtColor += (5.0 + g2) * scn.vLights[curVLightSet][i].color;
+                    }
                 }
             }
         }
     }
 
-    return (2.0 * virtColor) / ((double)numSamples);
+    return virtColor;
 }

@@ -169,26 +169,20 @@ void RTScene::InitMaterials()
     redMat.name = "RedMatte";
     redMat.kd = vec3(0.7, 0.1, 0.2);
 
-    LightMaterial lightMatBlue;
-    lightMatBlue.name = "LightBlue";
-    lightMatBlue.lightColor = dvec3(100.0, 200.0, 2000.0);
-
-    LightMaterial lightMatRed;
-    lightMatRed.name = "LightRed";
-    lightMatRed.lightColor = dvec3(1000.0, 200.0, 100.0);
-
     LightMaterial lightMatWhite;
     lightMatWhite.name = "LightWhite";
     lightMatWhite.lightColor = dvec3(400.0, 360.0, 360.0);
+
+    TexMaterial dirtMat;
+    dirtMat.Load("../asset/dirtdiffuse.jpg", "../asset/dirtnormal.jpg");
 
     mats["Mirror"]      = make_shared<MirrorMaterial>(mirrorMat);
     mats["Glass"]       = make_shared<GlassMaterial>(glassMat);
     mats["GreenMatte"]  = make_shared<MatteMaterial>(greenMat);
     mats["RedMatte"]    = make_shared<MatteMaterial>(redMat);
     mats["WhiteMatte"]  = make_shared<MatteMaterial>(whiteMat);
-    mats["LightBlue"]   = make_shared<LightMaterial>(lightMatBlue);
-    mats["LightRed"]    = make_shared<LightMaterial>(lightMatRed);
     mats["LightWhite"]  = make_shared<LightMaterial>(lightMatWhite);
+    mats["Dirt"]        = make_shared<TexMaterial>(dirtMat);
 }
 
 /**
@@ -197,31 +191,16 @@ void RTScene::InitMaterials()
 
 void RTScene::InitModels()
 {
-    RTSphere redSph;
-    redSph.orgn = dvec3(-10.0, 8.0, 2.0);
-    redSph.r = 1.0;
-    redSph.mat = "RedMatte";
-
     RTSphere mirrSph;
     mirrSph.orgn = dvec3(-3.0, 0.0, 2.0);
     mirrSph.r = 1.0;
-    mirrSph.mat = "Glass";
+    mirrSph.mat = "Dirt";
     meshes["MirrorSphere"] = make_shared<RTSphere>(mirrSph);
 
     RTSphere glassSph;
     glassSph.orgn = dvec3(-2.0, 0.0, 2.5);
     glassSph.r = 2.0;
     glassSph.mat = "Glass";
-
-    RTSphere lightSphBlue;
-    lightSphBlue.orgn = dvec3(0.0, -2.0, 20.0);
-    lightSphBlue.r = 3.0;
-    lightSphBlue.mat = "LightBlue";
-
-    RTSphere lightSphRed;
-    lightSphRed.orgn = dvec3(-2.0, 2.0, 15.0);
-    lightSphRed.r = 1.0;
-    lightSphRed.mat = "LightRed";
 
     RTSphere lightSphWhite;
     lightSphWhite.orgn = dvec3(-2.0, 2.0, 3.5);
@@ -337,7 +316,7 @@ void RTScene::GenerateLightPath(
 
         if (diff > 0.0)
         {
-            dvec3 diffClr = pMat->GetDiffuseColor();
+            dvec3 diffClr = pMat->GetDiffuseColor(ray, intsc);
             vLight.color *= diff * diffClr;
         }
 

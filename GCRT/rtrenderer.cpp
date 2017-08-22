@@ -55,7 +55,8 @@ void RTRenderer::Init()
     );
 
     integrator.GenerateSphereSamples(settings.sphereSamples);
-    integrator.vLightSets = settings.vLightSets;
+    integrator.numVLightSets = settings.vLightSets;
+    integrator.vLightSetSize = settings.vLightSetSize;
     sampler.numSamples = settings.pixelSamples;
     
     filter.b = 0.33;
@@ -219,14 +220,12 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
     uint32_t imageH                 = data.imageH;
     uint32_t camPathDepth           = data.camPathDepth;
     RTScene &scn                    = *(data.pScn);
-    
-    vector<vector<Sample>> &imgSamples 
-                                    = *(data.pImgSamples);
-    
     vector<Rect> &imageBlocks       = *(data.pImageBlocks);
     Sampler &sampler                = *(data.pSampler);
     SurfaceIntegrator integrator    = *(data.pIntegrator);
     double dofSamplesInv            = 1.0 / (double)(scn.cam.dofSamples + 1.0);
+
+    vector<vector<Sample>> &imgSamples = *(data.pImgSamples);
 
     long long start = GetMilliseconds();
 

@@ -13,11 +13,13 @@ struct SurfaceIntegrator
     vector<dmat4> randomRotations;
     
     uint32_t idx;
-    uint32_t vLightSet;
-    uint32_t vLightSets;
+    uint32_t curVLightSet;
+    uint32_t numVLightSets;
+    uint32_t vLightSetSize;
+    uint32_t numLightSamples;
 
     dmat4 NextRotation();
-    uint32_t NextVLightSet();
+    void NextVLightSet();
 
     void GenerateSphereSamples(uint32_t numSamples);
 
@@ -30,6 +32,22 @@ struct SurfaceIntegrator
     );
 
     dvec3 CalcDiffuse(
+        Ray rayIn,
+        RTScene &scn,
+        Intersection intsc,
+        uint32_t bounce,
+        uint32_t maxBounces
+    );
+
+    dvec3 SampleDirectLights(
+        Ray rayIn,
+        RTScene &scn,
+        Intersection intsc,
+        uint32_t bounce,
+        uint32_t maxBounces
+    );
+
+    dvec3 SampleVirtualLights(
         Ray rayIn,
         RTScene &scn,
         Intersection intsc,
