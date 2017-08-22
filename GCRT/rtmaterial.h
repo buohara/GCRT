@@ -32,7 +32,7 @@ struct TexMaterial : RTMaterial
 struct MatteMaterial : RTMaterial
 {
     dvec3 kd;
-    dvec3 GetDiffuseColor() { return kd; }
+    dvec3 GetDiffuseColor(Ray ray, Intersection intsc) { return kd; }
 };
 
 struct MirrorMaterial : RTMaterial

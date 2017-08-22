@@ -171,7 +171,7 @@ void RTScene::InitMaterials()
 
     LightMaterial lightMatWhite;
     lightMatWhite.name = "LightWhite";
-    lightMatWhite.lightColor = dvec3(400.0, 360.0, 360.0);
+    lightMatWhite.lightColor = dvec3(100.0, 90.0, 90.0);
 
     TexMaterial dirtMat;
     dirtMat.Load("../asset/dirtdiffuse.jpg", "../asset/dirtnormal.jpg");

@@ -31,9 +31,9 @@ void Texture::Load(string imgPathIn)
         {
             dvec3 pixel;
             uint32_t offset = 3 * (r * w + c);
-            pixel.r = pData[offset];
-            pixel.g = pData[offset + 1];
-            pixel.b = pData[offset + 2];
+            pixel.r = pData[offset] / 256.0;
+            pixel.g = pData[offset + 1] / 256.0;
+            pixel.b = pData[offset + 2] / 256.0;
             pixels[r * w + c] = pixel;
         }
     }
@@ -52,9 +52,6 @@ dvec3 Texture::Sample(dvec2 uv)
 {
     double x = uv.x * (double)w;
     double y = uv.y * (double)h;
-
-    printf("x=%g\n", x);
-    printf("y=%g\n", y);
 
     uint32_t xh = (uint32_t)ceil(x);
     uint32_t xl = (uint32_t)floor(x);
