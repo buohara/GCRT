@@ -85,7 +85,8 @@ dvec3 SurfaceIntegrator::SampleSurface(
 )
 {
     dvec3 outColor = dvec3(0.0, 0.0, 0.0);
-    shared_ptr<RTMaterial> pMat = scn.mats[intsc.mat];
+    auto pMat = scn.mats[intsc.mat];
+    pMat->PerturbNormal(intsc);
 
     // Emissive
 
@@ -245,7 +246,7 @@ dvec3 SurfaceIntegrator::SampleDirectLights(
 
     for (uint32_t i = 0; i < scn.lights.size(); i++)
     {
-        shared_ptr<RTMaterial> pMat = scn.mats[scn.lights[i].mat];
+        auto pMat = scn.mats[scn.lights[i].mat];
 
         dvec3 emis = pMat->GetEmission(rayIn, intsc);
         dmat4 trans = translate(scn.lights[i].orgn);

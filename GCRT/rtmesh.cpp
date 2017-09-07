@@ -7,15 +7,14 @@
 
 void RTSphere::Intersect(Ray ray, Intersection &intsc)
 {
-    intsc.t = -1.0;
+    intsc.t     = -1.0;
+    dvec3 d     = ray.dir;
+    dvec3 o     = ray.org;
+    dvec3 cnt   = orgn;
 
-    dvec3 d = ray.dir;
-    dvec3 o = ray.org;
-    dvec3 cnt = orgn;
-
-    double a = dot(d, d);
-    double b = 2.0 * dot(d, o - cnt);
-    double c = dot(o - cnt, o - cnt) - r * r;
+    double a    = dot(d, d);
+    double b    = 2.0 * dot(d, o - cnt);
+    double c    = dot(o - cnt, o - cnt) - r * r;
 
     double det = b * b - 4.0 * a * c;
 
@@ -29,12 +28,14 @@ void RTSphere::Intersect(Ray ray, Intersection &intsc)
 
     if (t1 > 0.0)
     {
-        dvec3 n = normalize(o + t1 * d - orgn);
-        intsc.t = t1;
-        intsc.normal = n;
-        intsc.mat = mat;
-        intsc.uv.x = acos(n.z / r) / glm::pi<double>();
-        intsc.uv.y = atan2(n.y, n.x);
+        dvec3 n         = normalize(o + t1 * d - orgn);
+        intsc.t         = t1;
+        intsc.normal    = n;
+        intsc.tan       = dvec3(n.y, -n.x, 0.0);
+        intsc.mat       = mat;
+        
+        intsc.uv.x      = acos(n.z / r) / glm::pi<double>();
+        intsc.uv.y      = atan2(n.y, n.x);
 
         if (n.y < 0.0 && n.x < 0.0)
         {
@@ -56,12 +57,14 @@ void RTSphere::Intersect(Ray ray, Intersection &intsc)
 
     if (t2 > 0.0)
     {
-        dvec3 n = normalize(o + t1 * d - orgn);
-        intsc.t = t2;
-        intsc.normal = n;
-        intsc.mat = mat;
-        intsc.uv.x = acos(n.z / r) / glm::pi<double>();
-        intsc.uv.y = atan2(n.y, n.x);
+        dvec3 n         = normalize(o + t1 * d - orgn);
+        intsc.t         = t2;
+        intsc.normal    = n;
+        intsc.tan       = dvec3(n.y, -n.x, 0.0);
+        intsc.mat       = mat;
+        
+        intsc.uv.x      = acos(n.z / r) / glm::pi<double>();
+        intsc.uv.y      = atan2(n.y, n.x);
 
         if (n.y < 0.0 && n.x < 0.0)
         {

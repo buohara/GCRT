@@ -15,6 +15,7 @@ struct RTMaterial
     virtual double GetTransmittance(Ray ray, Intersection intsc) { return 0.0; };
     virtual double GetDiffuse(Ray ray, Intersection intsc) { return 1.0; };
     virtual dvec3 GetDiffuseColor(Ray ray, Intersection intsc) { return dvec3(0.3, 0.3, 0.3); }
+    virtual void PerturbNormal(Intersection &intsc) { return; }
 
     virtual void GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut) { return; }
     virtual void GetTransmittedRay(Ray rayIn, Intersection intsc, Ray &rayOut) { return; }
@@ -26,6 +27,7 @@ struct TexMaterial : RTMaterial
     Texture diffTex;
     Texture normTex;
     dvec3 GetDiffuseColor(Ray ray, Intersection intsc);
+    void PerturbNormal(Intersection &intsc);
     void Load(string diffTexFile, string normTexFile);
 };
 
