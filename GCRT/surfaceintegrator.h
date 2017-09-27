@@ -21,8 +21,6 @@ struct SurfaceIntegrator
     dmat4 NextRotation();
     void NextVLightSet();
 
-    void GenerateSphereSamples(uint32_t numSamples);
-
     dvec3 SampleSurface(
         Ray rayIn,
         RTScene &scn,

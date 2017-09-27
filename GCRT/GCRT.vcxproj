@@ -158,7 +158,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="coshemisampler.cpp" />
     <ClCompile Include="filter.cpp" />
+    <ClCompile Include="glassmaterial.cpp" />
+    <ClCompile Include="mattematerial.cpp" />
+    <ClCompile Include="mirrormaterial.cpp" />
     <ClCompile Include="Octree.cpp" />
     <ClCompile Include="rtmaterial.cpp" />
     <ClCompile Include="rtmesh.cpp" />
@@ -166,12 +170,17 @@
     <ClCompile Include="rtscene.cpp" />
     <ClCompile Include="sampler.cpp" />
     <ClCompile Include="raytrace.cpp" />
+    <ClCompile Include="spheresampler.cpp" />
     <ClCompile Include="surfaceintegrator.cpp" />
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="coshemisampler.h" />
     <ClInclude Include="filter.h" />
+    <ClInclude Include="glassmaterial.h" />
     <ClInclude Include="json.hpp" />
+    <ClInclude Include="mattematerial.h" />
+    <ClInclude Include="mirrormaterial.h" />
     <ClInclude Include="Octree.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="rtmaterial.h" />
@@ -180,6 +189,7 @@
     <ClInclude Include="rtscene.h" />
     <ClInclude Include="sampler.h" />
     <ClInclude Include="GCRT.h" />
+    <ClInclude Include="spheresampler.h" />
     <ClInclude Include="surfaceintegrator.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>

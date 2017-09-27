@@ -1,45 +1,6 @@
 #include "surfaceintegrator.h"
 
 /**
- * [SurfaceIntegrator::GenerateSamplePoints description]
- * @param numSamples [description]
- */
-
-void SurfaceIntegrator::GenerateSphereSamples(uint32_t numSamples)
-{
-    idx = 0;
-    numLightSamples = numSamples;
-
-    dvec4 sample;
-    sample.x = 0.0;
-    sample.y = 0.0;
-    sample.z = 0.0;
-    sample.w = 1.0;
-
-    sphereSamples.push_back(sample);
-
-    for (uint32_t i = 1; i < numSamples; i++)
-    {
-        double theta = pi<double>() * (double)rand() / (double)RAND_MAX;
-        double phi = 2.0 * pi<double>() * (double)rand() / (double)RAND_MAX;
-
-        sample.x = sin(theta) * cos(phi);
-        sample.y = sin(theta) * sin(phi);
-        sample.z = cos(theta);
-        sample.w = 1.0;
-
-        sphereSamples.push_back(sample);
-    }
-
-    for (uint32_t i = 0; i < 1024; i++)
-    {
-        double rotRand = 2.0 * pi<double>() * (double)rand() / (double)RAND_MAX;
-        dmat4 rot = rotate(rotRand, dvec3(0.0, 0.0, 1.0));
-        randomRotations.push_back(rot);
-    }
-}
-
-/**
  * [SurfaceIntegrator::NextRotation description]
  * @return [description]
  */
@@ -61,6 +22,8 @@ dmat4 SurfaceIntegrator::NextRotation()
 
 void SurfaceIntegrator::NextVLightSet()
 {
+    curVLightSet++;
+
     if (curVLightSet >= numVLightSets)
     {
         curVLightSet = 0;
@@ -309,7 +272,7 @@ dvec3 SurfaceIntegrator::SampleVirtualLights(
         Intersection nextIntsc;
         NextVLightSet();
 
-        for (uint32_t i = 0; i < vLightSetSize; i++)
+        for (uint32_t i = 0; i < scn.vLights[curVLightSet].size(); i++)
         {
             newRay.dir = normalize(scn.vLights[curVLightSet][i].pos - newRay.org);
 

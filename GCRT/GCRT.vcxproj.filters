@@ -13,15 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Material">
+      <UniqueIdentifier>{0cc03ccb-9a85-4141-a53a-fa0aa9a5e08d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sampler">
+      <UniqueIdentifier>{d45f857c-4e18-4f0d-b085-d750ef26dcce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light">
+      <UniqueIdentifier>{75ce671b-285c-4dcf-9326-fbc1c1cab163}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Octree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="raytrace.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="rtmaterial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="rtmesh.cpp">
@@ -45,6 +51,24 @@
     <ClCompile Include="texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="rtmaterial.cpp">
+      <Filter>Material</Filter>
+    </ClCompile>
+    <ClCompile Include="mirrormaterial.cpp">
+      <Filter>Material</Filter>
+    </ClCompile>
+    <ClCompile Include="glassmaterial.cpp">
+      <Filter>Material</Filter>
+    </ClCompile>
+    <ClCompile Include="mattematerial.cpp">
+      <Filter>Material</Filter>
+    </ClCompile>
+    <ClCompile Include="coshemisampler.cpp">
+      <Filter>Sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="spheresampler.cpp">
+      <Filter>Sampler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GCRT.h">
@@ -54,9 +78,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="rtmaterial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="rtmesh.h">
@@ -82,6 +103,24 @@
     </ClInclude>
     <ClInclude Include="texture.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rtmaterial.h">
+      <Filter>Material</Filter>
+    </ClInclude>
+    <ClInclude Include="mirrormaterial.h">
+      <Filter>Material</Filter>
+    </ClInclude>
+    <ClInclude Include="glassmaterial.h">
+      <Filter>Material</Filter>
+    </ClInclude>
+    <ClInclude Include="mattematerial.h">
+      <Filter>Material</Filter>
+    </ClInclude>
+    <ClInclude Include="spheresampler.h">
+      <Filter>Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="coshemisampler.h">
+      <Filter>Sampler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

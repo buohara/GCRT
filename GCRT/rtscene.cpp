@@ -174,7 +174,7 @@ void RTScene::InitMaterials()
     lightMatWhite.lightColor = dvec3(100.0, 90.0, 90.0);
 
     TexMaterial dirtMat;
-    dirtMat.Load("../asset/dirtdiffuse.jpg", "../asset/dirtnormal.jpg");
+    dirtMat.Load("../asset/dirtdiffuse.jpg", "../asset/dirtnormal.JPG");
 
     mats["Mirror"]      = make_shared<MirrorMaterial>(mirrorMat);
     mats["Glass"]       = make_shared<GlassMaterial>(glassMat);
@@ -203,7 +203,7 @@ void RTScene::InitModels()
     glassSph.mat = "Glass";
 
     RTSphere lightSphWhite;
-    lightSphWhite.orgn = dvec3(-2.0, 2.0, 3.5);
+    lightSphWhite.orgn = dvec3(0.0, 2.0, 3.5);
     lightSphWhite.r = 0.4;
     lightSphWhite.mat = "LightWhite";
     lights.push_back(lightSphWhite);

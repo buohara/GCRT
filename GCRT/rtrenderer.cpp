@@ -57,6 +57,7 @@ void RTRenderer::Init()
     integrator.GenerateSphereSamples(settings.sphereSamples);
     integrator.numVLightSets = settings.vLightSets;
     integrator.vLightSetSize = settings.vLightSetSize;
+    integrator.curVLightSet  = 0;
     sampler.numSamples = settings.pixelSamples;
     
     filter.b = 0.33;
