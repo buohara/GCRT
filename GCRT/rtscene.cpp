@@ -12,24 +12,26 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
 
     Intersection intsc2;
 
-    for (uint32_t i = 0; i < lights.size(); i++)
+    for (auto &mesh : meshes)
     {
-        lights[i].Intersect(ray, intsc2);
-
+        mesh.second->Intersect(ray, intsc2);
         if ((intsc2.t < minDist) && (intsc2.t > 0.001))
         {
             intsc = intsc2;
             minDist = intsc2.t;
         }
     }
-
-    for (auto pMesh : meshes)
+    
+    for (auto &light : lights)
     {
-        pMesh.second->Intersect(ray, intsc2);
+        light.Intersect(ray, intsc2);
+
         if ((intsc2.t < minDist) && (intsc2.t > 0.001))
         {
-            intsc = intsc2;
-            minDist = intsc2.t;
+            //intsc = intsc2;
+            //minDist = intsc2.t;
+            intsc.t = -1.0;
+            return;
         }
     }
 }

@@ -99,7 +99,12 @@ void GlassMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &rayOut)
  * @return         [description]
  */
 
-dvec3 GlassMaterial::EvalBDRF(Ray rayIn, dvec3 colorIn, Ray rayOut)
+dvec3 GlassMaterial::EvalBSDF(
+    Ray rayIn,
+    Intersection intsc,
+    dvec3 colorIn,
+    Ray rayOut
+)
 {
     return colorIn;
 }
@@ -112,7 +117,7 @@ dvec3 GlassMaterial::EvalBDRF(Ray rayIn, dvec3 colorIn, Ray rayOut)
  * @param weights [description]
  */
 
-void GlassMaterial::GetSamples(
+void GlassMaterial::GetBSDFSamples(
     uint32_t numSamples,
     Ray rayIn,
     Intersection intsc,

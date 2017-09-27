@@ -1,8 +1,15 @@
 #include "coshemisampler.h"
 
+/**
+ * [CosHemiSampler::GenerateSamples description]
+ * @param numSets [description]
+ * @param setSize [description]
+ */
+
 void CosHemiSampler::GenerateSamples(uint32_t numSets, uint32_t setSize)
 {
     samples.resize(numSets);
+    curSet = 0;
 
     dvec4 sample;
 
@@ -15,9 +22,25 @@ void CosHemiSampler::GenerateSamples(uint32_t numSets, uint32_t setSize)
 
             sample.x = r * cos(phi);
             sample.y = r * sin(phi);
-            sample.z = sqrt(1.0 - sample.x * sample.x - sample.y * sample.y);
+            sample.z = max(0.0, sqrt(1.0 - sample.x * sample.x - sample.y * sample.y));
             sample.w = 1.0;
             samples[i].push_back(sample);
         }
     }
+}
+
+/**
+ * [CosHemiSampler::NextSet description]
+ * @return [description]
+ */
+
+uint32_t CosHemiSampler::NextSet()
+{
+    curSet++;
+    if (curSet >= samples.size())
+    {
+        curSet = 0;
+    }
+
+    return curSet;
 }

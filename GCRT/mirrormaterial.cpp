@@ -1,11 +1,34 @@
 #include "mirrormaterial.h"
 
-dvec3 MirrorMaterial::EvalBDRF(Ray rayIn, dvec3 colorIn, Ray rayOut)
+/**
+ * [MirrorMaterial::EvalBSDF description]
+ * @param  rayIn   [description]
+ * @param  intsc   [description]
+ * @param  colorIn [description]
+ * @param  rayOut  [description]
+ * @return         [description]
+ */
+
+dvec3 MirrorMaterial::EvalBSDF(
+    Ray rayIn,
+    Intersection intsc,
+    dvec3 colorIn,
+    Ray rayOut
+)
 {
     return colorIn;
 }
 
-void MirrorMaterial::GetSamples(
+/**
+ * [MirrorMaterial::GetBSDFSamples description]
+ * @param numSamples [description]
+ * @param rayIn      [description]
+ * @param intsc      [description]
+ * @param raysOut    [description]
+ * @param weights    [description]
+ */
+
+void MirrorMaterial::GetBSDFSamples(
     uint32_t numSamples,
     Ray rayIn,
     Intersection intsc,

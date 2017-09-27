@@ -69,6 +69,9 @@
     <ClCompile Include="spheresampler.cpp">
       <Filter>Sampler</Filter>
     </ClCompile>
+    <ClCompile Include="spherelight.cpp">
+      <Filter>Light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GCRT.h">
@@ -121,6 +124,12 @@
     </ClInclude>
     <ClInclude Include="coshemisampler.h">
       <Filter>Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="spherelight.h">
+      <Filter>Light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

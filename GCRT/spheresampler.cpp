@@ -10,13 +10,17 @@ void SphereSampler::GenerateSamples(uint32_t numSets, uint32_t setSize)
 {
     samples.resize(numSets);
     dvec4 sample;
+    curSet = 0;
 
     for (uint32_t i = 0; i < numSets; i++)
     {
         for (uint32_t j = 1; j < setSize; j++)
         {
-            double theta = pi<double>() * (double)rand() / (double)RAND_MAX;
-            double phi = 2.0 * pi<double>() * (double)rand() / (double)RAND_MAX;
+            double u = (double)rand() / (double)RAND_MAX;
+            double v = (double)rand() / (double)RAND_MAX;
+
+            double theta = acos(2 * v - 1.0);
+            double phi = 2.0 * pi<double>() * u;
 
             sample.x = sin(theta) * cos(phi);
             sample.y = sin(theta) * sin(phi);
@@ -25,4 +29,20 @@ void SphereSampler::GenerateSamples(uint32_t numSets, uint32_t setSize)
             samples[i].push_back(sample);
         }
     }
+}
+
+/**
+ * [SphereSampler::NextSet description]
+ * @return [description]
+ */
+
+uint32_t SphereSampler::NextSet()
+{
+    curSet++;
+    if (curSet >= samples.size())
+    {
+        curSet = 0;
+    }
+
+    return curSet;
 }
