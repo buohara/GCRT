@@ -4,6 +4,7 @@
 #include "rtmesh.h"
 #include "ray.h"
 #include "json.hpp"
+#include "light.h"
 
 using namespace glm;
 using namespace std;
@@ -55,7 +56,7 @@ struct RTScene
 {
     RTCamera cam;
     
-    vector<RTSphere> lights;
+    vector<Light> lights;
     vector<vector<VirtualLight>> vLights;
 
     map<string, shared_ptr<RTMesh>> meshes;

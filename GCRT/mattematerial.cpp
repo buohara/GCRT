@@ -32,25 +32,18 @@ void MatteMaterial::GetBSDFSamples(
     uint32_t numSamples,
     Ray rayIn,
     Intersection intsc,
-    vector<Ray> &raysOut,
-    vector<double> &weights
+    vector<Ray> &raysOut
 )
 {
     dvec3 org = rayIn.org + intsc.t * rayIn.dir;
     uint32_t sampleSet = sampler.NextSet();
-    double piInv = 1.0 / glm::pi<double>();
 
     for (uint32_t i = 0; i < numSamples; i++)
     {
         Ray rayOut;
         rayOut.org = org;
         rayOut.dir = sampler.samples[sampleSet][i];
-
-        double theta = asin(rayOut.dir.z);
-        double p = cos(theta) * piInv;
-
         raysOut.push_back(rayOut);
-        weights.push_back(p);
     }
 }
 

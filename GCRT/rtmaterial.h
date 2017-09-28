@@ -25,8 +25,7 @@ struct RTMaterial
         uint32_t numSamples,
         Ray rayIn,
         Intersection intsc,
-        vector<Ray> &raysOut,
-        vector<double> &weights
+        vector<Ray> &raysOut
     ) 
     {
         return; 
@@ -35,11 +34,6 @@ struct RTMaterial
     virtual void Init(uint32_t sampleSets, uint32_t setSize) 
     { 
         return; 
-    }
-
-    virtual dvec3 GetEmission(Ray rayIn, Intersection intsc) 
-    { 
-        return dvec3(0.0, 0.0, 0.0); 
     }
 };
 

@@ -15,7 +15,6 @@ struct MirrorMaterial : RTMaterial
         uint32_t numSamples,
         Ray rayIn,
         Intersection intsc,
-        vector<Ray> &raysOut,
-        vector<double> &weights
+        vector<Ray> &raysOut
     );
 };

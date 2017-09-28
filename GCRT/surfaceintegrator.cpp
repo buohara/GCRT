@@ -33,7 +33,32 @@ dvec3 SurfaceIntegrator::SampleSurface(
     uint32_t maxBounces
 )
 {
-    
+    uint32_t bsdfSamples = 32;
+    uint32_t lightSamples = 16;
+
+    if (bounce < maxBounces)
+    {
+        vector<Ray> bsdfRays;
+        vector<double> ps;
+        auto &mat = *scn.mats[intsc.mat];
+
+        mat.GetBSDFSamples(bsdfSamples, rayIn, intsc, bsdfRays, ps);
+    }
+
+    for (auto &light : scn.lights)
+    {
+        vector<Ray> lightRays;
+        vector<double> ps;
+        
+        light.GetLightSamples(lightSamples, rayIn, intsc, lightRays, ps);
+
+        Intersection nextIntsc;
+
+        for (auto &ray : lightRays)
+        {
+            scn.Intersect(ray, nextIntsc);
+        }
+    }
 }
 
 /**

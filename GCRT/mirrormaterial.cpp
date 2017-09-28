@@ -32,14 +32,11 @@ void MirrorMaterial::GetBSDFSamples(
     uint32_t numSamples,
     Ray rayIn,
     Intersection intsc,
-    vector<Ray> &raysOut,
-    vector<double> &weights
+    vector<Ray> &raysOut
 )
 {
     Ray rayOut;
     rayOut.org = rayIn.org + (intsc.t * rayIn.dir);
     rayOut.dir = normalize(reflect(rayIn.dir, intsc.normal));
-
     raysOut.push_back(rayOut);
-    weights.push_back(1.0);
 }
