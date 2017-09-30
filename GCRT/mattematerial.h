@@ -8,6 +8,8 @@ struct MatteMaterial : RTMaterial
     dvec3 kd;
     CosHemiSampler sampler;
 
+    double BSDFPDF(Ray rayIn, Ray rayOut, Intersection intsc);
+
     dvec3 EvalBSDF(
         Ray rayIn,
         dvec3 colorIn,

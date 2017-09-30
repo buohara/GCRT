@@ -31,6 +31,11 @@ struct RTMaterial
         return; 
     }
 
+    virtual double BSDFPDF(Ray rayIn, Ray rayOut, Intersection intsc)
+    {
+        return 0.0;
+    }
+
     virtual void Init(uint32_t sampleSets, uint32_t setSize) 
     { 
         return; 

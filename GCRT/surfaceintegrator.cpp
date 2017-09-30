@@ -1,22 +1,6 @@
 #include "surfaceintegrator.h"
 
 /**
- * [SurfaceIntegrator::NextVLightSet description]
- * @return [description]
- */
-
-
-void SurfaceIntegrator::NextVLightSet()
-{
-    curVLightSet++;
-
-    if (curVLightSet >= numVLightSets)
-    {
-        curVLightSet = 0;
-    }
-}
-
-/**
  * [SurfaceIntegrator::SampleSurface description]
  * @param  ray        [description]
  * @param  intsc      [description]
@@ -33,132 +17,114 @@ dvec3 SurfaceIntegrator::SampleSurface(
     uint32_t maxBounces
 )
 {
-    uint32_t bsdfSamples = 32;
-    uint32_t lightSamples = 16;
+    vector<SurfSample> surfSamples;
+    auto &mat = *scn.mats[intsc.mat];
+    uint32_t nBSDFSamples = 0;
+    uint32_t nLightSamples = 0;
+
+    // Collect BSDF samples.
 
     if (bounce < maxBounces)
     {
         vector<Ray> bsdfRays;
-        vector<double> ps;
-        auto &mat = *scn.mats[intsc.mat];
+        mat.GetBSDFSamples(16, rayIn, intsc, bsdfRays);
+        nBSDFSamples += bsdfRays.size();
 
-        mat.GetBSDFSamples(bsdfSamples, rayIn, intsc, bsdfRays, ps);
+        for (auto &ray : bsdfRays)
+        {
+            Intersection nextIntsc;
+            SurfSample curSample = { { 0.0 }, 0.0, 0.0, MAX_TYPES };
+            curSample.BSDFPDF = mat.BSDFPDF(rayIn, ray, intsc);
+            curSample.distType = BSDF_TYPE;
+
+            for (auto &light : scn.lights)
+            {
+                Intersection lightIntsc;
+                light.Intersect(ray, lightIntsc);
+
+                if (lightIntsc.t > 0.0)
+                {
+                    curSample.LightPDF = light.GetLightPDF(ray, lightIntsc);
+                    break;
+                }
+            }
+
+            scn.Intersect(ray, nextIntsc);
+            
+            if (nextIntsc.t > bias)
+            {
+                dvec3 colorIn = SampleSurface(
+                    ray,
+                    scn,
+                    nextIntsc,
+                    bounce + 1,
+                    maxBounces
+                );
+
+                curSample.BSDF = mat.EvalBSDF(ray, colorIn, intsc, rayIn);
+            }
+
+            surfSamples.push_back(curSample);
+        }
     }
+
+    // Collect light samples.
 
     for (auto &light : scn.lights)
     {
         vector<Ray> lightRays;
-        vector<double> ps;
-        
-        light.GetLightSamples(lightSamples, rayIn, intsc, lightRays, ps);
-
-        Intersection nextIntsc;
+        light.GetLightSamples(16, rayIn, intsc, lightRays);
+        nLightSamples += lightRays.size();
 
         for (auto &ray : lightRays)
         {
+            Intersection nextIntsc;
+            Intersection lightIntsc;
+            SurfSample curSample = { { 0.0 }, 0.0, 0.0, MAX_TYPES };
+
+            light.Intersect(ray, lightIntsc);
             scn.Intersect(ray, nextIntsc);
-        }
-    }
-}
 
-/**
- * [SurfaceIntegrator::CalcDiffuse description]
- * @param  rayIn      [description]
- * @param  scn        [description]
- * @param  intsc      [description]
- * @param  bounce     [description]
- * @param  maxBounces [description]
- * @return            [description]
- */
+            curSample.LightPDF = light.GetLightPDF(ray, lightIntsc);
+            curSample.BSDFPDF = mat.BSDFPDF(ray, rayIn, intsc);
 
-dvec3 SurfaceIntegrator::CalcDiffuse(
-    Ray rayIn,
-    RTScene &scn,
-    Intersection intsc,
-    uint32_t bounce,
-    uint32_t maxBounces
-)
-{
-    uint32_t numSamples = numLightSamples + vLightSetSize;
-
-    dvec3 diffColor = SampleDirectLights(
-        rayIn,
-        scn,
-        intsc,
-        bounce,
-        maxBounces
-    );
-
-    dvec3 virtColor = SampleVirtualLights(
-        rayIn,
-        scn,
-        intsc,
-        bounce,
-        maxBounces
-    );
-
-    return (2.0 * virtColor + diffColor) / ((double)numSamples);
-}
-
-/**
- * [SurfaceIntegrator::SampleDirectLights description]
- * @param  rayIn      [description]
- * @param  scn        [description]
- * @param  intsc      [description]
- * @param  bounce     [description]
- * @param  maxBounces [description]
- * @return            [description]
- */
-
-dvec3 SurfaceIntegrator::SampleDirectLights(
-    Ray rayIn,
-    RTScene &scn,
-    Intersection intsc,
-    uint32_t bounce,
-    uint32_t maxBounces
-)
-{
-    Ray newRay;
-    newRay.org = rayIn.org + (intsc.t * rayIn.dir);
-    Intersection nextIntsc;
-    dvec3 diffColor = dvec3(0.0, 0.0, 0.0);
-
-    for (uint32_t i = 0; i < scn.lights.size(); i++)
-    {
-        auto pMat = scn.mats[scn.lights[i].mat];
-
-        dvec3 emis = pMat->GetEmission(rayIn, intsc);
-        dmat4 trans = translate(scn.lights[i].orgn);
-        dmat4 scl = scale(dvec3(scn.lights[i].r));
-
-        for (uint32_t j = 0; j < sphereSamples.size(); j++)
-        {
-            dmat4 rot = NextRotation();
-            dvec3 sample = trans * rot * scl * sphereSamples[j];
-
-            newRay.dir = normalize(sample - newRay.org);
-
-            if (dot(newRay.dir, intsc.normal) > 0.0)
+            if (abs(lightIntsc.t - nextIntsc.t) < bias)
             {
-                newRay.org += bias * newRay.dir;
-                scn.Intersect(newRay, nextIntsc);
-                newRay.org -= bias * newRay.dir;
-
-                double t = nextIntsc.t;
-                double dist = length(sample - newRay.org);
-
-                if (nextIntsc.t > 0.0 && abs(dist - t) < 2.0 * bias)
-                {
-                    double theta1 = dot(newRay.dir, intsc.normal);
-                    double theta2 = dot(-newRay.dir, nextIntsc.normal);
-                    double g = theta1 * theta2 / (t * t);
-                    diffColor += g * emis;
-                }
+                dvec3 color = light.EvalEmission(ray, lightIntsc);
+                curSample.BSDF = mat.EvalBSDF(ray, color, intsc, rayIn);
             }
+
+            surfSamples.push_back(curSample);
         }
     }
 
-    return diffColor;
+    dvec3 bsdfTerm = { 0.0 };
+    dvec3 lightTerm = { 0.0 };
+
+    for (auto sample : surfSamples)
+    {
+        switch (sample.distType)
+        {
+
+        }
+    }
+}
+
+
+
+/**
+ * [SurfaceIntegrator::NextVLightSet description]
+ * @return [description]
+ */
+
+void SurfaceIntegrator::NextVLightSet()
+{
+    curVLightSet++;
+
+    if (curVLightSet >= numVLightSets)
+    {
+        curVLightSet = 0;
+    }
 }
 
 /**

@@ -88,7 +88,24 @@ void SphereLight::Init(uint32_t sampleSets, uint32_t setSize)
  * @return [description]
  */
 
-dvec3 SphereLight::GetEmission()
+dvec3 SphereLight::EvalEmission(Ray rayOut, Intersection intsc)
 {
-    return pwr / (r * r);
+    double cosTheta = dot(-rayOut.dir, intsc.normal);
+    return cosTheta * pwr / (r * r);
+}
+
+/**
+ * [SphereLight::GetLightPDF description]
+ * @param  rayIn [description]
+ * @param  intsc [description]
+ * @return       [description]
+ */
+
+double SphereLight::GetLightPDF(Ray rayIn, Intersection intsc)
+{
+    double cosTheta = dot(-rayIn.dir, intsc.normal);
+    double t = intsc.t;
+    double fourPi = 4.0 * glm::pi<double>();
+
+    return cosTheta / (fourPi * t * t);
 }

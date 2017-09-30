@@ -48,6 +48,21 @@ void MatteMaterial::GetBSDFSamples(
 }
 
 /**
+ * [BSDFPDF description]
+ * @param  rayIn  [description]
+ * @param  rayOut [description]
+ * @param  intsc  [description]
+ * @return        [description]
+ */
+
+double MatteMaterial::BSDFPDF(Ray rayIn, Ray rayOut, Intersection intsc)
+{
+    dvec3 n = intsc.normal;
+    double costheta = dot(rayOut.dir, n);
+    return costheta / glm::pi<double>();
+}
+
+/**
  * [MatteMaterial::Init description]
  * @param sampleSets [description]
  * @param setSize    [description]

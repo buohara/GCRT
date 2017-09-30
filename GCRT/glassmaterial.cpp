@@ -134,7 +134,4 @@ void GlassMaterial::GetBSDFSamples(
 
     raysOut.push_back(rayReflect);
     raysOut.push_back(rayTransmit);
-
-    weights.push_back(reflectWt);
-    weights.push_back(transWt);
 }

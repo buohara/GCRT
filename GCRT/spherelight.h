@@ -24,5 +24,7 @@ struct SphereLight : Light
         vector<Ray> &raysOut
     );
 
-    dvec3 GetEmission();
+    double GetLightPDF(Ray rayIn, Intersection intsc);
+
+    dvec3 EvalEmission(Ray rayOut, Intersection intsc);
 };
