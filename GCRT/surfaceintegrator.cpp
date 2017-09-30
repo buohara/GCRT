@@ -105,9 +105,31 @@ dvec3 SurfaceIntegrator::SampleSurface(
     {
         switch (sample.distType)
         {
+        case BSDF_TYPE:
 
+            double w = nBSDFSamples * sample.BSDFPDF / 
+                (nBSDFSamples * sample.BSDFPDF + nLightSamples * sample.LightPDF);
+
+            bsdfTerm += sample.BSDF * w / sample.BSDFPDF;
+            break;
+
+        case LIGHT_TYPE:
+
+            double w = nLightSamples * sample.LightPDF / 
+                (nBSDFSamples * sample.BSDFPDF + nLightSamples * sample.LightPDF);
+            
+            bsdfTerm += sample.BSDF * w / sample.LightPDF;
+            break;
+
+        default:
+            break;
         }
     }
+
+    double nBSDFInv = 1.0 / ((double)nBSDFSamples);
+    double nLightInv = 1.0 / ((double)nLightSamples);
+
+    return nBSDFInv * bsdfTerm + nLightInv * lightTerm;
 }
 
 
