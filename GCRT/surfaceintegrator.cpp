@@ -27,19 +27,21 @@ dvec3 SurfaceIntegrator::SampleSurface(
     if (bounce < maxBounces)
     {
         vector<Ray> bsdfRays;
-        mat.GetBSDFSamples(16, rayIn, intsc, bsdfRays);
+        mat.GetBSDFSamples(4, rayIn, intsc, bsdfRays);
         nBSDFSamples += bsdfRays.size();
 
         for (auto &ray : bsdfRays)
         {
             Intersection nextIntsc;
-            SurfSample curSample = { { 0.0 }, 0.0, 0.0, MAX_TYPES };
+            SurfSample curSample = { dvec3(0.0), 0.0, 0.0, BSDF_TYPE };
             curSample.BSDFPDF = mat.BSDFPDF(rayIn, ray, intsc);
             curSample.distType = BSDF_TYPE;
 
-            for (auto &light : scn.lights)
+            for (auto &lightKV : scn.lights)
             {
                 Intersection lightIntsc;
+                auto &light = *lightKV.second;
+
                 light.Intersect(ray, lightIntsc);
 
                 if (lightIntsc.t > 0.0)
@@ -51,7 +53,7 @@ dvec3 SurfaceIntegrator::SampleSurface(
 
             scn.Intersect(ray, nextIntsc);
             
-            if (nextIntsc.t > bias)
+            if ((nextIntsc.t > bias) && (nextIntsc.mat != "Light"))
             {
                 dvec3 colorIn = SampleSurface(
                     ray,
@@ -70,9 +72,11 @@ dvec3 SurfaceIntegrator::SampleSurface(
 
     // Collect light samples.
 
-    for (auto &light : scn.lights)
+    for (auto &lightKV : scn.lights)
     {
         vector<Ray> lightRays;
+        auto &light = *lightKV.second;
+
         light.GetLightSamples(16, rayIn, intsc, lightRays);
         nLightSamples += lightRays.size();
 
@@ -80,17 +84,18 @@ dvec3 SurfaceIntegrator::SampleSurface(
         {
             Intersection nextIntsc;
             Intersection lightIntsc;
-            SurfSample curSample = { { 0.0 }, 0.0, 0.0, MAX_TYPES };
+            SurfSample curSample = { dvec3(0.0), 0.0, 0.0, LIGHT_TYPE };
 
             light.Intersect(ray, lightIntsc);
             scn.Intersect(ray, nextIntsc);
 
             curSample.LightPDF = light.GetLightPDF(ray, lightIntsc);
-            curSample.BSDFPDF = mat.BSDFPDF(ray, rayIn, intsc);
+            curSample.BSDFPDF = mat.BSDFPDF(rayIn, ray, intsc);
 
             if (abs(lightIntsc.t - nextIntsc.t) < bias)
             {
-                dvec3 color = light.EvalEmission(ray, lightIntsc);
+                double t = lightIntsc.t;
+                dvec3 color = light.EvalEmission(ray, lightIntsc) / (t * t);
                 curSample.BSDF = mat.EvalBSDF(ray, color, intsc, rayIn);
             }
 
@@ -98,8 +103,8 @@ dvec3 SurfaceIntegrator::SampleSurface(
         }
     }
 
-    dvec3 bsdfTerm = { 0.0 };
-    dvec3 lightTerm = { 0.0 };
+    dvec3 bsdfTerm = dvec3(0.0);
+    dvec3 lightTerm = dvec3(0.0);
 
     for (auto sample : surfSamples)
     {
@@ -107,18 +112,32 @@ dvec3 SurfaceIntegrator::SampleSurface(
         {
         case BSDF_TYPE:
 
-            double w = nBSDFSamples * sample.BSDFPDF / 
-                (nBSDFSamples * sample.BSDFPDF + nLightSamples * sample.LightPDF);
+            if (sample.BSDFPDF == 0.0)
+            {
+                bsdfTerm += sample.BSDF;
+            }
+            else
+            {
+                double w = nBSDFSamples * sample.BSDFPDF /
+                    (nBSDFSamples * sample.BSDFPDF + nLightSamples * sample.LightPDF);
 
-            bsdfTerm += sample.BSDF * w / sample.BSDFPDF;
+                bsdfTerm += sample.BSDF * w / sample.BSDFPDF;
+            }
             break;
 
         case LIGHT_TYPE:
 
-            double w = nLightSamples * sample.LightPDF / 
-                (nBSDFSamples * sample.BSDFPDF + nLightSamples * sample.LightPDF);
-            
-            bsdfTerm += sample.BSDF * w / sample.LightPDF;
+            if (sample.LightPDF == 0.0)
+            {
+                lightTerm += sample.BSDF;
+            }
+            else
+            {
+                double w = nLightSamples * sample.LightPDF /
+                    (nBSDFSamples * sample.BSDFPDF + nLightSamples * sample.LightPDF);
+
+                lightTerm += sample.BSDF * w / sample.LightPDF;
+            }
             break;
 
         default:

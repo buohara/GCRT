@@ -4,8 +4,6 @@
 
 struct MirrorMaterial : RTMaterial
 {
-    double BSDFPDF(Ray rayIn, Ray rayOut, Intersection intsc);
-
     dvec3 EvalBSDF(
         Ray rayIn,
         Intersection intsc,

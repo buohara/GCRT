@@ -22,15 +22,15 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
         }
     }
     
-    for (auto &light : lights)
+    for (auto &lightKV : lights)
     {
+        auto &light = *lightKV.second;
         light.Intersect(ray, intsc2);
 
         if ((intsc2.t < minDist) && (intsc2.t > 0.001))
         {
-            //intsc = intsc2;
-            //minDist = intsc2.t;
-            intsc.t = -1.0;
+            intsc = intsc2;
+            minDist = intsc2.t;
             return;
         }
     }
@@ -161,30 +161,28 @@ void RTScene::InitMaterials()
 
     MatteMaterial greenMat;
     greenMat.name = "GreenMatte";
-    greenMat.kd = dvec3(0.1, 0.7, 0.2);
+    greenMat.kd = { 0.1, 0.7, 0.2 };
+    greenMat.Init(16, 16);
 
     MatteMaterial whiteMat;
     whiteMat.name = "WhiteMatte";
-    whiteMat.kd = dvec3(1.0, 0.9, 0.8);
+    whiteMat.kd = { 1.0, 0.9, 0.8 };
+    whiteMat.Init(16, 16);
 
     MatteMaterial redMat;
     redMat.name = "RedMatte";
-    redMat.kd = vec3(0.7, 0.1, 0.2);
+    redMat.kd = { 0.7, 0.1, 0.2 };
+    redMat.Init(16, 16);
 
-    LightMaterial lightMatWhite;
-    lightMatWhite.name = "LightWhite";
-    lightMatWhite.lightColor = dvec3(100.0, 90.0, 90.0);
-
-    TexMaterial dirtMat;
-    dirtMat.Load("../asset/dirtdiffuse.jpg", "../asset/dirtnormal.JPG");
+    //TexMaterial dirtMat;
+    //dirtMat.Load("../asset/dirtdiffuse.jpg", "../asset/dirtnormal.JPG");
 
     mats["Mirror"]      = make_shared<MirrorMaterial>(mirrorMat);
     mats["Glass"]       = make_shared<GlassMaterial>(glassMat);
     mats["GreenMatte"]  = make_shared<MatteMaterial>(greenMat);
-    mats["RedMatte"]    = make_shared<MatteMaterial>(redMat);
-    mats["WhiteMatte"]  = make_shared<MatteMaterial>(whiteMat);
-    mats["LightWhite"]  = make_shared<LightMaterial>(lightMatWhite);
-    mats["Dirt"]        = make_shared<TexMaterial>(dirtMat);
+    mats["RedMatte"]    = make_shared<MatteMaterial>(whiteMat);
+    mats["WhiteMatte"]  = make_shared<MatteMaterial>(redMat);
+    //mats["Dirt"]        = make_shared<TexMaterial>(dirtMat);
 }
 
 /**
@@ -194,24 +192,25 @@ void RTScene::InitMaterials()
 void RTScene::InitModels()
 {
     RTSphere mirrSph;
-    mirrSph.orgn = dvec3(-3.0, 0.0, 2.0);
-    mirrSph.r = 1.0;
-    mirrSph.mat = "Dirt";
+    mirrSph.orgn    = dvec3(-3.0, 0.0, 2.0);
+    mirrSph.r       = 1.0;
+    mirrSph.mat     = "WhiteMatte";
     meshes["MirrorSphere"] = make_shared<RTSphere>(mirrSph);
 
     RTSphere glassSph;
-    glassSph.orgn = dvec3(-2.0, 0.0, 2.5);
-    glassSph.r = 2.0;
-    glassSph.mat = "Glass";
+    glassSph.orgn   = dvec3(-2.0, 0.0, 2.5);
+    glassSph.r      = 2.0;
+    glassSph.mat    = "Glass";
 
-    RTSphere lightSphWhite;
-    lightSphWhite.orgn = dvec3(0.0, 2.0, 3.5);
-    lightSphWhite.r = 0.4;
-    lightSphWhite.mat = "LightWhite";
-    lights.push_back(lightSphWhite);
+    SphereLight lightSphWhite;
+    lightSphWhite.Init(16, 16);
+    lightSphWhite.pos   = { 0.0, 2.0, 3.5 };
+    lightSphWhite.r     = 0.4;
+    lightSphWhite.pwr   = { 100.0, 90.0, 80.0 };
+    lights["WhiteSphere"] = make_shared<SphereLight>(lightSphWhite);
 
-    auto pMesh = make_shared<AssimpMesh>();
-    pMesh->LoadModel("../asset/models/boblampclean/boblampclean.md5mesh");
+    //auto pMesh = make_shared<AssimpMesh>();
+    //pMesh->LoadModel("../asset/models/boblampclean/boblampclean.md5mesh");
     //meshes["LampGuy"] = pMesh;
 
     auto pCornellBox = make_shared<CornellBox>();
@@ -293,51 +292,5 @@ void RTScene::GenerateLightPath(
     dvec3 lightColor
 )
 {
-    double bias = 0.001;
-    Intersection intsc;
-
-    ray.org += bias * ray.dir;
-    Intersect(ray, intsc);
-    ray.org -= bias * ray.dir;
-
-    if (intsc.t > bias)
-    {
-        shared_ptr<RTMaterial> pMat = mats[intsc.mat];
-        
-        double refl     = pMat->GetReflectance(ray, intsc);
-        double trans    = pMat->GetTransmittance(ray, intsc);
-        double diff     = pMat->GetDiffuse(ray, intsc);
-
-        double theta = dot(-ray.dir, intsc.normal);
-        VirtualLight vLight;
-
-        vLight.color    = theta * lightColor;
-        vLight.material = intsc.mat;
-        vLight.normal   = intsc.normal;
-        vLight.pos      = ray.org + intsc.t * ray.dir;
-
-        if (diff > 0.0)
-        {
-            dvec3 diffClr = pMat->GetDiffuseColor(ray, intsc);
-            vLight.color *= diff * diffClr;
-        }
-
-        if ((refl > 0.0) && (depth < maxDepth))
-        {
-            vLight.color *= refl;
-            Ray newRay;
-            pMat->GetReflectedRay(ray, intsc, newRay);
-            GenerateLightPath(setIdx, newRay, maxDepth, depth + 1, refl * lightColor);
-        }
-
-        if ((trans > 0.0) && (depth < maxDepth))
-        {
-            vLight.color *= trans;
-            Ray newRay;
-            pMat->GetTransmittedRay(ray, intsc, newRay);
-            GenerateLightPath(setIdx, newRay, maxDepth, depth + 1, trans * lightColor);
-        }
-
-        vLights[setIdx].push_back(vLight);
-    }
+    return;
 }

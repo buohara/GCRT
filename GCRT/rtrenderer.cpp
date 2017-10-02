@@ -54,7 +54,6 @@ void RTRenderer::Init()
         settings.dofSamples
     );
 
-    integrator.GenerateSphereSamples(settings.sphereSamples);
     integrator.numVLightSets = settings.vLightSets;
     integrator.vLightSetSize = settings.vLightSetSize;
     integrator.curVLightSet  = 0;
@@ -165,45 +164,7 @@ void RTRenderer::Preprocess()
 
 void RTRenderer::GenerateVirtualLights()
 {
-    double bias = integrator.bias;
-    scn.vLights.resize(settings.vLightSets);
-
-    for (uint32_t i = 0; i < scn.lights.size(); i++)
-    {
-        Ray ray;
-        Intersection intsc;
-        
-        dmat4 scl = scale(dvec3(scn.lights[i].r));
-        dvec3 emis = scn.mats[scn.lights[i].mat]->GetEmission(ray, intsc);
-        emis;
-
-        for (uint32_t k = 0; k < settings.vLightSets; k++)
-        {
-            for (uint32_t j = 0; j < settings.vLightSetSize; j++)
-            {
-                //double theta = pi<double>() * (double)rand() / (double)RAND_MAX;
-                double theta = acos(2.0 * (double)rand() / (double)RAND_MAX - 1.0);
-                double phi = 2.0 * pi<double>() * (double)rand() / (double)RAND_MAX;
-
-                dvec3 sample;
-
-                sample.x = sin(theta) * cos(phi);
-                sample.y = sin(theta) * sin(phi);
-                sample.z = cos(theta);
-
-                ray.org = scn.lights[i].orgn + sample;
-                ray.dir = normalize(ray.org - scn.lights[i].orgn);
-
-                scn.GenerateLightPath(
-                    k,
-                    ray,
-                    settings.lightPathDepth,
-                    1,
-                    emis
-                );
-            }
-        }
-    }
+    return;
 }
 
 /**
@@ -281,7 +242,7 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
                         scn.Intersect(ray, intsc);
                         double t = intsc.t;
 
-                        if (t > 0.0)
+                        if (t > 0.0 && intsc.mat != "Light")
                         {
                             color += integrator.SampleSurface(
                                 ray,

@@ -1,30 +1,6 @@
 #include "rtmaterial.h"
 
 /**
- * [LightMaterial::GetDiffuse description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-double LightMaterial::GetDiffuse(Ray ray, Intersection intsc)
-{
-    return 0.0;
-}
-
-/**
- * [LightMaterial::GetEmission description]
- * @param  ray   [description]
- * @param  intsc [description]
- * @return       [description]
- */
-
-dvec3 LightMaterial::GetEmission(Ray ray, Intersection intsc)
-{
-    return lightColor;
-}
-
-/**
  * [TexMaterial::GetDiffuseColor description]
  * @return       [description]
  */

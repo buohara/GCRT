@@ -150,10 +150,16 @@ void Submesh::Intersect(Ray ray, Intersection &intsc)
         {
             intsc.t = t;
             intsc.mat = mat;
+            
             intsc.normal =
                 (1.0 - b1 - b2) * norm[curFace.x] +
                 b1 * norm[curFace.y] +
                 b2 * norm[curFace.z];
+
+            intsc.tan =
+                (1.0 - b1 - b2) * tan[curFace.x] +
+                b1 * tan[curFace.y] +
+                b2 * tan[curFace.z];
         }
     }
 }
@@ -252,6 +258,11 @@ void CornellBox::Create()
     submeshes[0].norm.push_back(dvec3(0.0, 0.0, -1.0));
     submeshes[0].norm.push_back(dvec3(0.0, 0.0, -1.0));
 
+    submeshes[0].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[0].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[0].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[0].tan.push_back(dvec3(1.0, 0.0, 0.0));
+
     submeshes[0].root.box.min = dvec3(min.x, min.y, max.z - 0.001);
     submeshes[0].root.box.max = dvec3(max.x, max.y, max.z + 0.001);
 
@@ -285,6 +296,11 @@ void CornellBox::Create()
     submeshes[1].norm.push_back(dvec3(0.0, 0.0, 1.0));
     submeshes[1].norm.push_back(dvec3(0.0, 0.0, 1.0));
     submeshes[1].norm.push_back(dvec3(0.0, 0.0, 1.0));
+
+    submeshes[1].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[1].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[1].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[1].tan.push_back(dvec3(1.0, 0.0, 0.0));
 
     submeshes[1].root.box.min = dvec3(min.x, min.y, min.z - 0.001);
     submeshes[1].root.box.max = dvec3(max.x, max.y, min.z + 0.001);
@@ -320,6 +336,11 @@ void CornellBox::Create()
     submeshes[2].norm.push_back(dvec3(0.0, 1.0, 0.0));
     submeshes[2].norm.push_back(dvec3(0.0, 1.0, 0.0));
 
+    submeshes[2].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[2].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[2].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[2].tan.push_back(dvec3(1.0, 0.0, 0.0));
+
     submeshes[2].root.box.min = dvec3(min.x, min.y - 0.001, min.z);
     submeshes[2].root.box.max = dvec3(max.x, min.y + 0.001, max.z);
 
@@ -354,6 +375,11 @@ void CornellBox::Create()
     submeshes[3].norm.push_back(dvec3(0.0, -1.0, 0.0));
     submeshes[3].norm.push_back(dvec3(0.0, -1.0, 0.0));
 
+    submeshes[3].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[3].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[3].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[3].tan.push_back(dvec3(1.0, 0.0, 0.0));
+
     submeshes[3].root.box.min = dvec3(min.x, max.y - 0.001, min.z);
     submeshes[3].root.box.max = dvec3(max.x, max.y + 0.001, max.z);
 
@@ -387,6 +413,11 @@ void CornellBox::Create()
     submeshes[4].norm.push_back(dvec3(1.0, 0.0, 0.0));
     submeshes[4].norm.push_back(dvec3(1.0, 0.0, 0.0));
     submeshes[4].norm.push_back(dvec3(1.0, 0.0, 0.0));
+
+    submeshes[4].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[4].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[4].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[4].tan.push_back(dvec3(1.0, 0.0, 0.0));
 
     submeshes[4].root.box.min = dvec3(min.x - 0.1, min.y, min.z);
     submeshes[4].root.box.max = dvec3(min.x + 0.1, max.y, max.z);

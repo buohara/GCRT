@@ -5,6 +5,10 @@
 #include "ray.h"
 #include "json.hpp"
 #include "light.h"
+#include "spherelight.h"
+#include "glassmaterial.h"
+#include "mirrormaterial.h"
+#include "mattematerial.h"
 
 using namespace glm;
 using namespace std;
@@ -56,7 +60,7 @@ struct RTScene
 {
     RTCamera cam;
     
-    vector<Light> lights;
+    map<string, shared_ptr<Light>> lights;
     vector<vector<VirtualLight>> vLights;
 
     map<string, shared_ptr<RTMesh>> meshes;

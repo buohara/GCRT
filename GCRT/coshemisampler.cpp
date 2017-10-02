@@ -15,7 +15,7 @@ void CosHemiSampler::GenerateSamples(uint32_t numSets, uint32_t setSize)
 
     for (uint32_t i = 0; i < numSets; i++)
     {
-        for (uint32_t j = 1; j < setSize; j++)
+        for (uint32_t j = 0; j < setSize; j++)
         {
             double r = sqrt((double)rand() / (double)RAND_MAX);
             double phi = 2.0 * pi<double>() * (double)rand() / (double)RAND_MAX;
@@ -42,5 +42,7 @@ uint32_t CosHemiSampler::NextSet()
         curSet = 0;
     }
 
-    return curSet;
+    uint32_t outSet = curSet;
+
+    return (outSet >= 16 ? 15 : outSet);
 }

@@ -25,7 +25,7 @@ struct Light
 
     virtual double GetLightPDF(Ray rayIn, Intersection intsc) = 0;
 
-    dvec3 EvalEmission(Ray rayOut, Intersection intsc)
+    virtual dvec3 EvalEmission(Ray rayOut, Intersection intsc)
     {
         return dvec3(0.0, 0.0, 0.0);
     }

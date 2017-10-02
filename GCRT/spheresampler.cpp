@@ -14,7 +14,7 @@ void SphereSampler::GenerateSamples(uint32_t numSets, uint32_t setSize)
 
     for (uint32_t i = 0; i < numSets; i++)
     {
-        for (uint32_t j = 1; j < setSize; j++)
+        for (uint32_t j = 0; j < setSize; j++)
         {
             double u = (double)rand() / (double)RAND_MAX;
             double v = (double)rand() / (double)RAND_MAX;
@@ -44,5 +44,7 @@ uint32_t SphereSampler::NextSet()
         curSet = 0;
     }
 
-    return curSet;
+    uint32_t outSet = curSet;
+    
+    return (outSet >= 16 ? 15 : outSet);
 }

@@ -50,10 +50,3 @@ struct TexMaterial : RTMaterial
     void PerturbNormal(Intersection &intsc);
     void Load(string diffTexFile, string normTexFile);
 };
-
-struct LightMaterial : RTMaterial
-{
-    dvec3 lightColor;
-    double GetDiffuse(Ray ray, Intersection intsc);
-    dvec3 GetEmission(Ray rayIn, Intersection intsc);
-};

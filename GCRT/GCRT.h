@@ -12,6 +12,7 @@
 #include <fstream>
 #include <map>
 #include <chrono>
+#include <mutex>
 
 // Windows headers
 

@@ -31,7 +31,8 @@ void SphereLight::Intersect(Ray ray, Intersection &intsc)
     {
         dvec3 n         = normalize(o + t1 * d - pos);
         intsc.t         = t1;
-        intsc.normal    = n;      
+        intsc.normal    = n;
+        intsc.mat = "Light";
         return;
     }
 
@@ -40,6 +41,7 @@ void SphereLight::Intersect(Ray ray, Intersection &intsc)
         dvec3 n         = normalize(o + t1 * d - pos);
         intsc.t         = t2;
         intsc.normal    = n;
+        intsc.mat = "Light";
         return;
     }
 }
@@ -67,7 +69,8 @@ void SphereLight::GetLightSamples(
     {
         Ray rayOut;
         rayOut.org = org;
-        rayOut.dir = sampler.samples[sampleSet][i];
+        rayOut.dir = 
+            normalize((0.4 * sampler.samples[sampleSet][i] + dvec4(pos, 1.0)) - dvec4(org, 1.0));
         raysOut.push_back(rayOut);
     }
 }

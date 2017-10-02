@@ -16,6 +16,7 @@ struct Submesh
     Octree root;
     vector<dvec3> pos;
     vector<dvec3> norm;
+    vector<dvec3> tan;
     vector<uvec3> faces;
 
     string mat;

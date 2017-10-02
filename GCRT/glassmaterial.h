@@ -11,8 +11,6 @@ struct GlassMaterial : RTMaterial
     void GetTransmittedRay(Ray ray, Intersection intsc, Ray &rayOut);
     void GetReflectedRay(Ray ray, Intersection intsc, Ray &rayOut);
 
-    double BSDFPDF(Ray rayIn, Ray rayOut, Intersection intsc);
-
     dvec3 EvalBSDF(
         Ray rayIn,
         Intersection intsc,

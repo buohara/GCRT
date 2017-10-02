@@ -16,7 +16,7 @@ dvec3 MatteMaterial::EvalBSDF(
     Ray rayOut
 )
 {
-    return colorIn * dot(-rayIn.dir, intsc.normal);
+    return colorIn * kd * dot(rayIn.dir, intsc.normal);
 }
 
 /**
@@ -38,11 +38,14 @@ void MatteMaterial::GetBSDFSamples(
     dvec3 org = rayIn.org + intsc.t * rayIn.dir;
     uint32_t sampleSet = sampler.NextSet();
 
+    dvec3 bitan = cross(intsc.normal, intsc.tan);
+    dmat3 tbn = dmat3(intsc.tan, bitan, intsc.normal);
+
     for (uint32_t i = 0; i < numSamples; i++)
     {
         Ray rayOut;
         rayOut.org = org;
-        rayOut.dir = sampler.samples[sampleSet][i];
+        rayOut.dir = tbn * sampler.samples[sampleSet][i];
         raysOut.push_back(rayOut);
     }
 }
