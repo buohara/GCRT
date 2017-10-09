@@ -194,7 +194,7 @@ void RTScene::InitModels()
     RTSphere mirrSph;
     mirrSph.orgn    = dvec3(-3.0, 0.0, 2.0);
     mirrSph.r       = 1.0;
-    mirrSph.mat     = "Mirror";
+    mirrSph.mat     = "Glass";
     meshes["MirrorSphere"] = make_shared<RTSphere>(mirrSph);
 
     RTSphere glassSph;
@@ -206,7 +206,7 @@ void RTScene::InitModels()
     lightSphWhite.Init(256, 16);
     lightSphWhite.pos   = { 0.0, 2.0, 3.5 };
     lightSphWhite.r     = 0.4;
-    lightSphWhite.pwr   = { 8.0, 7.0, 7.0 };
+    lightSphWhite.pwr   = { 20.0, 19.0, 18.0 };
     lights["WhiteSphere"] = make_shared<SphereLight>(lightSphWhite);
 
     //auto pMesh = make_shared<AssimpMesh>();

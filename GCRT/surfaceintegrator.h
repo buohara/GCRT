@@ -33,8 +33,23 @@ struct SurfaceIntegrator
 
     void NextVLightSet();
 
-    void SampleBSDF();
-    void SampleLightDistribution();
+    uint32_t SampleBSDF(
+        vector<SurfSample> &surfSamples,
+        uint32_t bounce,
+        uint32_t maxBounces,
+        Ray rayIn,
+        RTScene &scn,
+        Intersection intsc
+    );
+    
+    uint32_t SampleLightDistribution(
+        vector<SurfSample> &surfSamples,
+        uint32_t bounce,
+        uint32_t maxBounces,
+        Ray rayIn,
+        RTScene &scn,
+        Intersection intsc
+    );
 
     dvec3 SampleSurface(
         Ray rayIn,
@@ -44,6 +59,12 @@ struct SurfaceIntegrator
         uint32_t maxBounces
     );
 
+    dvec3 ApplyBalanceHeuristic(
+        vector<SurfSample> &surfSamples,
+        uint32_t nBSDFSamples,
+        uint32_t nLightSamples
+    );
+    
     dvec3 SampleVirtualLights(
         Ray rayIn,
         RTScene &scn,

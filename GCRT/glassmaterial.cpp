@@ -106,7 +106,17 @@ dvec3 GlassMaterial::EvalBSDF(
     Ray rayOut
 )
 {
-    return colorIn;
+    double reflectWt = GetReflectance(rayOut, intsc);
+
+    if (dot(rayIn.dir, intsc.normal) > 0.0)
+    {
+        return reflectWt * colorIn;
+    }
+    else
+    {
+        double transWt = 1.0 - reflectWt;
+        return transWt * colorIn;
+    }
 }
 
 /**
@@ -126,9 +136,7 @@ void GlassMaterial::GetBSDFSamples(
 {
     Ray rayReflect;
     Ray rayTransmit;
-    double reflectWt = GetReflectance(rayIn, intsc);
-    double transWt = 1.0 - reflectWt;
-
+    
     GetReflectedRay(rayIn, intsc, rayReflect);
     GetTransmittedRay(rayIn, intsc, rayTransmit);
 
