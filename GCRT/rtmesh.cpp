@@ -414,10 +414,10 @@ void CornellBox::Create()
     submeshes[4].norm.push_back(dvec3(1.0, 0.0, 0.0));
     submeshes[4].norm.push_back(dvec3(1.0, 0.0, 0.0));
 
-    submeshes[4].tan.push_back(dvec3(1.0, 0.0, 0.0));
-    submeshes[4].tan.push_back(dvec3(1.0, 0.0, 0.0));
-    submeshes[4].tan.push_back(dvec3(1.0, 0.0, 0.0));
-    submeshes[4].tan.push_back(dvec3(1.0, 0.0, 0.0));
+    submeshes[4].tan.push_back(dvec3(0.0, 1.0, 0.0));
+    submeshes[4].tan.push_back(dvec3(0.0, 1.0, 0.0));
+    submeshes[4].tan.push_back(dvec3(0.0, 1.0, 0.0));
+    submeshes[4].tan.push_back(dvec3(0.0, 1.0, 0.0));
 
     submeshes[4].root.box.min = dvec3(min.x - 0.1, min.y, min.z);
     submeshes[4].root.box.max = dvec3(min.x + 0.1, max.y, max.z);

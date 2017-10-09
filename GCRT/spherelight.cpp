@@ -70,7 +70,7 @@ void SphereLight::GetLightSamples(
         Ray rayOut;
         rayOut.org = org;
         rayOut.dir = 
-            normalize((0.4 * sampler.samples[sampleSet][i] + dvec4(pos, 1.0)) - dvec4(org, 1.0));
+            normalize((0.9 * r * sampler.samples[sampleSet][i] + dvec4(pos, 1.0)) - dvec4(org, 1.0));
         raysOut.push_back(rayOut);
     }
 }
@@ -109,6 +109,5 @@ double SphereLight::GetLightPDF(Ray rayIn, Intersection intsc)
     double cosTheta = dot(-rayIn.dir, intsc.normal);
     double t = intsc.t;
     double fourPi = 4.0 * glm::pi<double>();
-
-    return cosTheta / (fourPi * t * t);
+    return cosTheta;
 }

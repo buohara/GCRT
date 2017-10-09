@@ -162,17 +162,17 @@ void RTScene::InitMaterials()
     MatteMaterial greenMat;
     greenMat.name = "GreenMatte";
     greenMat.kd = { 0.1, 0.7, 0.2 };
-    greenMat.Init(16, 16);
+    greenMat.Init(256, 16);
 
     MatteMaterial whiteMat;
     whiteMat.name = "WhiteMatte";
-    whiteMat.kd = { 1.0, 0.9, 0.8 };
-    whiteMat.Init(16, 16);
+    whiteMat.kd = { 0.9, 0.8, 0.7 };
+    whiteMat.Init(256, 16);
 
     MatteMaterial redMat;
     redMat.name = "RedMatte";
     redMat.kd = { 0.7, 0.1, 0.2 };
-    redMat.Init(16, 16);
+    redMat.Init(256, 16);
 
     //TexMaterial dirtMat;
     //dirtMat.Load("../asset/dirtdiffuse.jpg", "../asset/dirtnormal.JPG");
@@ -180,8 +180,8 @@ void RTScene::InitMaterials()
     mats["Mirror"]      = make_shared<MirrorMaterial>(mirrorMat);
     mats["Glass"]       = make_shared<GlassMaterial>(glassMat);
     mats["GreenMatte"]  = make_shared<MatteMaterial>(greenMat);
-    mats["RedMatte"]    = make_shared<MatteMaterial>(whiteMat);
-    mats["WhiteMatte"]  = make_shared<MatteMaterial>(redMat);
+    mats["RedMatte"]    = make_shared<MatteMaterial>(redMat);
+    mats["WhiteMatte"]  = make_shared<MatteMaterial>(whiteMat);
     //mats["Dirt"]        = make_shared<TexMaterial>(dirtMat);
 }
 
@@ -194,7 +194,7 @@ void RTScene::InitModels()
     RTSphere mirrSph;
     mirrSph.orgn    = dvec3(-3.0, 0.0, 2.0);
     mirrSph.r       = 1.0;
-    mirrSph.mat     = "WhiteMatte";
+    mirrSph.mat     = "Mirror";
     meshes["MirrorSphere"] = make_shared<RTSphere>(mirrSph);
 
     RTSphere glassSph;
@@ -203,10 +203,10 @@ void RTScene::InitModels()
     glassSph.mat    = "Glass";
 
     SphereLight lightSphWhite;
-    lightSphWhite.Init(16, 16);
+    lightSphWhite.Init(256, 16);
     lightSphWhite.pos   = { 0.0, 2.0, 3.5 };
     lightSphWhite.r     = 0.4;
-    lightSphWhite.pwr   = { 100.0, 90.0, 80.0 };
+    lightSphWhite.pwr   = { 8.0, 7.0, 7.0 };
     lights["WhiteSphere"] = make_shared<SphereLight>(lightSphWhite);
 
     //auto pMesh = make_shared<AssimpMesh>();

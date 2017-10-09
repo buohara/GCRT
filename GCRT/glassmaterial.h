@@ -13,8 +13,8 @@ struct GlassMaterial : RTMaterial
 
     dvec3 EvalBSDF(
         Ray rayIn,
-        Intersection intsc,
         dvec3 colorIn,
+        Intersection intsc,
         Ray rayOut
     );
     

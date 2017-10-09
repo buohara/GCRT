@@ -101,8 +101,8 @@ void GlassMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &rayOut)
 
 dvec3 GlassMaterial::EvalBSDF(
     Ray rayIn,
-    Intersection intsc,
     dvec3 colorIn,
+    Intersection intsc,
     Ray rayOut
 )
 {

@@ -16,7 +16,9 @@ dvec3 MatteMaterial::EvalBSDF(
     Ray rayOut
 )
 {
-    return colorIn * kd * dot(rayIn.dir, intsc.normal);
+    dvec3 out = 0.3 * colorIn * kd * dot(rayIn.dir, intsc.normal);
+
+    return out;
 }
 
 /**
@@ -45,7 +47,7 @@ void MatteMaterial::GetBSDFSamples(
     {
         Ray rayOut;
         rayOut.org = org;
-        rayOut.dir = tbn * sampler.samples[sampleSet][i];
+        rayOut.dir = normalize(tbn * sampler.samples[sampleSet][i]);
         raysOut.push_back(rayOut);
     }
 }

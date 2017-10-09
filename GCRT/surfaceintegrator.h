@@ -23,7 +23,7 @@ struct SurfSample
 
 struct SurfaceIntegrator
 {   
-    const double bias = 0.001;
+    const double bias = 0.002;
     
     uint32_t idx;
     uint32_t curVLightSet;
@@ -34,6 +34,7 @@ struct SurfaceIntegrator
     void NextVLightSet();
 
     void SampleBSDF();
+    void SampleLightDistribution();
 
     dvec3 SampleSurface(
         Ray rayIn,

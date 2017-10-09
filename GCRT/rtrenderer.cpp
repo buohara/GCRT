@@ -320,8 +320,8 @@ void RTRenderer::FilterSamples()
 
                 for (uint32_t l = 0; l < numSamples; l++)
                 {
-                    double evalX = (double)x - imageSamples[pixelIdx][l].pos.x;
-                    double evalY = (double)y - imageSamples[pixelIdx][l].pos.y;
+                    double evalX = imageSamples[pixelIdx][l].pos.x - (double)x;
+                    double evalY = imageSamples[pixelIdx][l].pos.y - (double)y;
                     double weight = filter.Evaluate(evalX, evalY);
 
                     weightedSamples += weight * imageSamples[pixelIdx][l].color;

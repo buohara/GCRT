@@ -1,2 +1,2 @@
 // imagew imwageh lightsamples vlightsets vlightsetsize cameraPathDepth lightPathDepth pixelsamples filtersize dofsamples numthreads xtiles ytiles sceneFromFile filePath
-512 512 32 1024 512 3 4 4 3 0 1 32 24 0 ../scenes/testscn.json
+1024 512 32 1024 512 3 4 4 3 0 8 32 24 0 ../scenes/testscn.json

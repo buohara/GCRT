@@ -27,7 +27,7 @@ dvec3 SurfaceIntegrator::SampleSurface(
     if (bounce < maxBounces)
     {
         vector<Ray> bsdfRays;
-        mat.GetBSDFSamples(4, rayIn, intsc, bsdfRays);
+        mat.GetBSDFSamples(8, rayIn, intsc, bsdfRays);
         nBSDFSamples += bsdfRays.size();
 
         for (auto &ray : bsdfRays)
@@ -35,7 +35,8 @@ dvec3 SurfaceIntegrator::SampleSurface(
             Intersection nextIntsc;
             SurfSample curSample = { dvec3(0.0), 0.0, 0.0, BSDF_TYPE };
             curSample.BSDFPDF = mat.BSDFPDF(rayIn, ray, intsc);
-            curSample.distType = BSDF_TYPE;
+
+            ray.org += bias * ray.dir;
 
             for (auto &lightKV : scn.lights)
             {
@@ -67,6 +68,7 @@ dvec3 SurfaceIntegrator::SampleSurface(
             }
 
             surfSamples.push_back(curSample);
+            ray.org -= bias * ray.dir;
         }
     }
 
@@ -77,7 +79,7 @@ dvec3 SurfaceIntegrator::SampleSurface(
         vector<Ray> lightRays;
         auto &light = *lightKV.second;
 
-        light.GetLightSamples(16, rayIn, intsc, lightRays);
+        light.GetLightSamples(8, rayIn, intsc, lightRays);
         nLightSamples += lightRays.size();
 
         for (auto &ray : lightRays)
@@ -86,11 +88,13 @@ dvec3 SurfaceIntegrator::SampleSurface(
             Intersection lightIntsc;
             SurfSample curSample = { dvec3(0.0), 0.0, 0.0, LIGHT_TYPE };
 
+            ray.org += bias * ray.dir;
+
             light.Intersect(ray, lightIntsc);
             scn.Intersect(ray, nextIntsc);
 
-            curSample.LightPDF = light.GetLightPDF(ray, lightIntsc);
             curSample.BSDFPDF = mat.BSDFPDF(rayIn, ray, intsc);
+            curSample.LightPDF = light.GetLightPDF(ray, lightIntsc);
 
             if (abs(lightIntsc.t - nextIntsc.t) < bias)
             {
@@ -100,6 +104,8 @@ dvec3 SurfaceIntegrator::SampleSurface(
             }
 
             surfSamples.push_back(curSample);
+
+            ray.org -= bias * ray.dir;
         }
     }
 
@@ -118,8 +124,8 @@ dvec3 SurfaceIntegrator::SampleSurface(
             }
             else
             {
-                double w = nBSDFSamples * sample.BSDFPDF /
-                    (nBSDFSamples * sample.BSDFPDF + nLightSamples * sample.LightPDF);
+                double w = (double)nBSDFSamples * sample.BSDFPDF /
+                    ((double)nBSDFSamples * sample.BSDFPDF + (double)nLightSamples * sample.LightPDF);
 
                 bsdfTerm += sample.BSDF * w / sample.BSDFPDF;
             }
@@ -127,14 +133,14 @@ dvec3 SurfaceIntegrator::SampleSurface(
 
         case LIGHT_TYPE:
 
-            if (sample.LightPDF == 0.0)
+            if (sample.BSDFPDF == 0.0)
             {
-                lightTerm += sample.BSDF;
+                continue;
             }
             else
             {
-                double w = nLightSamples * sample.LightPDF /
-                    (nBSDFSamples * sample.BSDFPDF + nLightSamples * sample.LightPDF);
+                double w = (double)nLightSamples * sample.LightPDF /
+                    ((double)nBSDFSamples * sample.BSDFPDF + (double)nLightSamples * sample.LightPDF);
 
                 lightTerm += sample.BSDF * w / sample.LightPDF;
             }
@@ -145,13 +151,15 @@ dvec3 SurfaceIntegrator::SampleSurface(
         }
     }
 
-    double nBSDFInv = 1.0 / ((double)nBSDFSamples);
-    double nLightInv = 1.0 / ((double)nLightSamples);
-
+    double nBSDFInv = nBSDFSamples > 0 ? 1.0 / ((double)nBSDFSamples) : 0.0;
+    double nLightInv = nLightSamples > 0 ? 1.0 / ((double)nLightSamples) : 0.0;
     return nBSDFInv * bsdfTerm + nLightInv * lightTerm;
 }
 
+void SampleBSDF(vector<SurfSample> &samples)
+{
 
+}
 
 /**
  * [SurfaceIntegrator::NextVLightSet description]

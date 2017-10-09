@@ -11,8 +11,8 @@
 
 dvec3 MirrorMaterial::EvalBSDF(
     Ray rayIn,
-    Intersection intsc,
     dvec3 colorIn,
+    Intersection intsc,
     Ray rayOut
 )
 {
