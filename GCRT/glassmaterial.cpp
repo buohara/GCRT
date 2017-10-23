@@ -110,12 +110,12 @@ dvec3 GlassMaterial::EvalBSDF(
 
     if (dot(rayIn.dir, intsc.normal) > 0.0)
     {
-        return reflectWt * colorIn;
+        return 2.0 * reflectWt * colorIn;
     }
     else
     {
         double transWt = 1.0 - reflectWt;
-        return transWt * colorIn;
+        return 2.0 * transWt * colorIn;
     }
 }
 

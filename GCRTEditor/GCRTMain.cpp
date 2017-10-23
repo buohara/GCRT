@@ -2,23 +2,20 @@
 
 #include "renderer.h"
 
-// Forward declarations.
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 bool resized = false;
 uint32_t windowWidth = 1920;
 uint32_t windowHeight = 1080;
 
-
 /**
- * [CreateGLContext description]
- * @param  hWnd [description]
- * @return      [description]
+ * CreateGLContext Create OpenGL context and swapchain.
+ * @param  hWnd Window handle for this app.
+ * @return Handle to GL context.   
  */
 
 HDC CreateGLContext(HWND hWnd)
 {
-    // Pixel format.
+    // Swapchain format format.
 
     PIXELFORMATDESCRIPTOR pfd;
     memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
@@ -69,11 +66,11 @@ HDC CreateGLContext(HWND hWnd)
 
 /**
  * [WinMain description]
- * @param  hInstance     [description]
- * @param  hPrevInstance [description]
- * @param  lpCmdLine     [description]
- * @param  nShowCmd      [description]
- * @return               [description]
+ * @param  hInstance     Process Instance
+ * @param  hPrevInstance Previous application instance.
+ * @param  lpCmdLine     Command line parameters.
+ * @param  nShowCmd      How to show the window (maximized, minimized, ...).
+ * @return               Error code.
  */
 
 int CALLBACK WinMain(
@@ -150,12 +147,12 @@ int CALLBACK WinMain(
 }
 
 /**
- * [WndProc description]
- * @param  hWnd    [description]
- * @param  message [description]
- * @param  wParam  [description]
- * @param  lParam  [description]
- * @return         [description]
+ * WndProc Windows message handler.
+ * @param  hWnd    Application window handle.
+ * @param  message Message to process.
+ * @param  wParam  Message parameters.
+ * @param  lParam  More message parameters.
+ * @return         Status code for message handler.
  */
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

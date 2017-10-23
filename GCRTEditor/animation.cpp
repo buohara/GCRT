@@ -1,9 +1,9 @@
 #include "animation.h"
 
 /**
- * [KeyFrame::KeyFrame description]
- * @param tIn    [description]
- * @param poseIn [description]
+ * KeyFrame::KeyFrame Initialize a keyframe with a time and pose.
+ * @param tIn    Time for this keyframe.
+ * @param poseIn Pose for this keyframe.
  */
 
 KeyFrame::KeyFrame(float tIn, mat4 poseIn)
@@ -14,8 +14,8 @@ KeyFrame::KeyFrame(float tIn, mat4 poseIn)
 }
 
 /**
- * [Animation::AddKF description]
- * @param kf [description]
+ * Animation::AddKF Add a keyframe to this animation.
+ * @param kf New keyframe.
  */
 
 void Animation::AddKF(KeyFrame &kf)
@@ -31,9 +31,9 @@ void Animation::AddKF(KeyFrame &kf)
 }
 
 /**
- * [Animation::GetAnimationMatrix description]
- * @param  t [description]
- * @return   [description]
+ * Animation::GetAnimationMatrix Get interpolated animation at time t.
+ * @param  t Time to get animation pose.
+ * @return   Matrix for pose at time t.
  */
 
 mat4 Animation::GetAnimationMatrix(float t)
@@ -59,10 +59,10 @@ mat4 Animation::GetAnimationMatrix(float t)
 }
 
 /**
- * [Animation::GetMatrixFromVersor description]
- * @param  vers    [description]
- * @param  versInv [description]
- * @return         [description]
+ * Animation::GetMatrixFromVersor Convert a versor to a matrix.
+ * @param  vers    Input versor.
+ * @param  versInv Input versor inverse.
+ * @return         Matrix representation of versor.
  */
 
 mat4 Animation::GetMatrixFromVersor(c3ga::TRversor &vers, c3ga::TRversor &versInv)

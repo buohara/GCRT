@@ -72,7 +72,7 @@ dvec3 SurfaceIntegrator::ApplyBalanceHeuristic(
 
             if (sample.BSDFPDF == 0.0)
             {
-                bsdfTerm += (double)nBSDFSamples * sample.BSDF;
+                bsdfTerm += sample.BSDF;
             }
             else
             {
@@ -130,7 +130,7 @@ uint32_t SurfaceIntegrator::SampleBSDF(
 {
     vector<Ray> bsdfRays;
     auto &mat = *scn.mats[intsc.mat];
-    mat.GetBSDFSamples(16, rayIn, intsc, bsdfRays);
+    mat.GetBSDFSamples(4, rayIn, intsc, bsdfRays);
     uint32_t nBSDFSamples = bsdfRays.size();
 
     for (auto &ray : bsdfRays)

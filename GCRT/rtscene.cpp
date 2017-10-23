@@ -157,7 +157,7 @@ void RTScene::InitMaterials()
     GlassMaterial glassMat;
     glassMat.name = "Glass";
     glassMat.etai = 1.0;
-    glassMat.etat = 1.5;
+    glassMat.etat = 1.4;
 
     MatteMaterial greenMat;
     greenMat.name = "GreenMatte";

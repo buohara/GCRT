@@ -1,7 +1,8 @@
 #include "renderer.h"
 
 /**
- * [Renderer::Init description]
+ * Renderer::Init Parse renderer settings from file and initialize
+ * camera and render passes.
  */
 
 void Renderer::Init()
@@ -71,23 +72,35 @@ void Renderer::Init()
     if (settings.loadSceneFromFile)
     {
         scn.Load(settings.sceneName);
-        for (uint32_t i = 0; i < scn.models.size(); i++)
+        for (auto &model : scn.models)
         {
             nextPickerColor();
         }
     }
     else
     {
-        LoadTextures();
-        InitMaterials();
-        InitModels();
-        InitLights();
+        LoadDefaultScene();
     }
 }
 
 /**
- * [Renderer::nextPickerColor description]
- * @return [description]
+ * Renderer::LoadDefaultScene Load default scene (a plane with knight character).
+ */
+
+void Renderer::LoadDefaultScene()
+{
+    LoadDefaultTextures();
+    InitDefaultMaterials();
+    InitDefaultModels();
+    InitDefaultLights();
+}
+
+/**
+ * Renderer::nextPickerColor For picking objects on screen, every object
+ * is assigned a unique color and rendered to a picker buffer, which is then
+ * read back on mouse clicks. Assign picker colors with this function.
+ *
+ * @return New picker color.
  */
 
 vec3 Renderer::nextPickerColor()
@@ -103,14 +116,15 @@ vec3 Renderer::nextPickerColor()
     }
 
     nextPickClr[nextPickIdx] += 0.1f;
-
     return retVec;
 }
 
 /**
- * [Renderer::UpdateViewPorts description]
- * @param w [description]
- * @param h [description]
+ * Renderer::UpdateViewPorts On window resizes, update render pass
+ * resources appropriately.
+ *
+ * @param w New window width.
+ * @param h New window height.
  */
 
 void Renderer::UpdateViewPorts(uint32_t w, uint32_t h)
@@ -129,7 +143,8 @@ void Renderer::UpdateViewPorts(uint32_t w, uint32_t h)
 }
 
 /**
- * [Renderer::ResizeRenderFbo description]
+ * Renderer::ResizeRenderFbo Resize main render target that will be presented to
+ * screen.
  */
 
 void Renderer::ResizeRenderFbo()
@@ -140,7 +155,8 @@ void Renderer::ResizeRenderFbo()
 }
 
 /**
- * [Renderer::CreateRenderPassFbo description]
+ * Renderer::CreateRenderPassFbo Create main render pass FBO (HDR) with
+ * depth attachment.
  */
 
 void Renderer::CreateRenderPassFbo()
@@ -191,10 +207,10 @@ void Renderer::CreateRenderPassFbo()
 }
 
 /**
- * [Renderer::LoadTextures description]
+ * Renderer::LoadTextures Load default scene textures.
  */
 
-void Renderer::LoadTextures()
+void Renderer::LoadDefaultTextures()
 {
     scn.AddDiffTexture(
         "DirtDiffuse",
@@ -210,10 +226,10 @@ void Renderer::LoadTextures()
 }
 
 /**
- * [Renderer::InitLights description]
+ * Renderer::InitLights Create default scene lights.
  */
 
-void Renderer::InitLights()
+void Renderer::InitDefaultLights()
 {
     DirectionalLight dirLight;
     dirLight.pos = vec3(0.0, -25.0, 25.0);
@@ -226,10 +242,10 @@ void Renderer::InitLights()
 }
 
 /**
- * [Renderer::InitMaterials description]
+ * Renderer::InitMaterials Create default scene materials.
  */
 
-void Renderer::InitMaterials()
+void Renderer::InitDefaultMaterials()
 {
     RMaterial defaultMat;
     defaultMat.name = "Default";
@@ -241,13 +257,11 @@ void Renderer::InitMaterials()
 }
 
 /**
- * [Renderer::InitModels description]
+ * Renderer::InitModels Create default scene models.
  */
 
-void Renderer::InitModels()
+void Renderer::InitDefaultModels()
 {
-    // Plane
-
     Plane pln;
     pln.Create(10, 10);
     pln.name = "Plane";
@@ -275,20 +289,20 @@ void Renderer::InitModels()
 }
 
 /**
- * [Renderer::Render description]
- * @param hDC [description]
+ * Renderer::Render Main rendering routine. Update camera, model animations,
+ * and execute each render pass.
+ *
+ * @param hDC Device context handle (for flipping back buffers).
  */
 
 void Renderer::Render(HDC hDC)
 {
     scn.cam.Update();
-
-    map<string, Model>::iterator it;
     
-    for (it = scn.models.begin(); it != scn.models.end(); it++)
+    for (auto &model : scn.models)
     {
-        shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
-        (*it).second.UpdateAnimation(t, pMesh);
+        auto pMesh = scn.meshes[model.second.meshName];
+        model.second.UpdateAnimation(t, pMesh);
     }
 
     pickerPass.Render(scn);
@@ -316,8 +330,8 @@ void Renderer::Render(HDC hDC)
 }
 
 /**
- * [Renderer::HandleInputs description]
- * @param msg [description]
+ * Renderer::HandleInputs Handle keyboard and mouse inputs.
+ * @param msg Input message.
  */
 
 void Renderer::HandleInputs(MSG &msg)
@@ -337,11 +351,6 @@ void Renderer::HandleInputs(MSG &msg)
         {
             settings.wireFrame = !settings.wireFrame;
             renderPass.wireFrame = settings.wireFrame;
-        }
-
-        if (msg.wParam == 0x54) // 't' key to kick off ray trace.
-        {
-            
         }
 
         scn.cam.HandleKeyDown(msg.wParam);
@@ -401,8 +410,10 @@ void Renderer::HandleInputs(MSG &msg)
 }
 
 /**
- * [Renderer::DoPick description]
- * @param mouseCoord [description]
+ * Renderer::DoPick On mouse click, read pixel color from (x, y) coordinates
+ * and find object in scene with matching color.
+ *
+ * @param mouseCoord (x, y) coordinates of mouse click.
  */
 
 void Renderer::DoPick(LPARAM mouseCoord)
@@ -416,17 +427,16 @@ void Renderer::DoPick(LPARAM mouseCoord)
     glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &pixel4[0]);
     vec3 pixel = vec3(pixel4[0], pixel4[1], pixel4[2]);
 
-    map<string, Model>::iterator it;
     static bool firstHit = true;
 
-    for (it = scn.models.begin(); it != scn.models.end(); it++)
+    for (auto &model : scn.models)
     {
-        vec3 pickerColor = (*it).second.pickerColor;
+        vec3 pickerColor = model.second.pickerColor;
         if (abs(pickerColor.x - pixel.x) < 0.05 &&
             abs(pickerColor.y - pixel.y) < 0.05 &&
             abs(pickerColor.z - pixel.z) < 0.05)
         {
-            (*it).second.selected = true;
+            model.second.selected = true;
 
             if (firstHit == true)
             {
@@ -434,19 +444,20 @@ void Renderer::DoPick(LPARAM mouseCoord)
             }
             else
             {
-                if ((*it).first != selected)
+                if (model.first != selected)
                 {
                     scn.models[selected].selected = false;
                 }
             }
 
-            selected = (*it).first;
+            selected = model.first;
         }
     }
 }
 
 /**
- * [Renderer::CreateNoiseTexture description]
+ * Renderer::CreateNoiseTexture Create a texture with random pixel values
+ * for effects that require random samples at each pixel.
  */
 
 void Renderer::CreateNoiseTexture()
@@ -476,8 +487,8 @@ void Renderer::CreateNoiseTexture()
 }
 
 /**
- * [Renderer::LoadSettings description]
- * @param file [description]
+ * Renderer::LoadSettings Load renderer settings from file.
+ * @param file Settings file name.
  */
 
 void Renderer::LoadSettings(string file)

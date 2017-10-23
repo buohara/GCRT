@@ -48,10 +48,13 @@ struct Renderer
 
     void HandleInputs(MSG &msg);
     void Init();
-    void LoadTextures();
-    void InitMaterials();
-    void InitModels();
-    void InitLights();
+    
+    void LoadDefaultScene();
+    void LoadDefaultTextures();
+    void InitDefaultMaterials();
+    void InitDefaultModels();
+    void InitDefaultLights();
+    
     void Render(HDC hDC);
     void DoPick(LPARAM mouseCoord);
     void UpdateImGui();
@@ -60,8 +63,6 @@ struct Renderer
     void RenderRendererWindow();
     void UpdateViewPorts(uint32_t w, uint32_t h);
     void LoadSettings(string file);
-
-    void KickoffRayTrace();
 
     float nextPickClr[3];
     uint32_t nextPickIdx;
