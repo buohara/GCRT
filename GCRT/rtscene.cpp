@@ -154,34 +154,39 @@ void RTScene::InitMaterials()
     MirrorMaterial mirrorMat;
     mirrorMat.name = "Mirror";
 
-    GlassMaterial glassMat;
+    FresnelGlassMaterial glassMat;
     glassMat.name = "Glass";
     glassMat.etai = 1.0;
     glassMat.etat = 1.4;
 
-    MatteMaterial greenMat;
+    LambertMaterial greenMat;
     greenMat.name = "GreenMatte";
     greenMat.kd = { 0.1, 0.7, 0.2 };
     greenMat.Init(256, 16);
 
-    MatteMaterial whiteMat;
+    LambertMaterial whiteMat;
     whiteMat.name = "WhiteMatte";
     whiteMat.kd = { 0.9, 0.8, 0.7 };
     whiteMat.Init(256, 16);
 
-    MatteMaterial redMat;
+    LambertMaterial redMat;
     redMat.name = "RedMatte";
     redMat.kd = { 0.7, 0.1, 0.2 };
     redMat.Init(256, 16);
+
+    BlinnMaterial glossyBlue;
+    glossyBlue.name = "GlossyBlue";
+    glossyBlue.ks = 15.0;
 
     //TexMaterial dirtMat;
     //dirtMat.Load("../asset/dirtdiffuse.jpg", "../asset/dirtnormal.JPG");
 
     mats["Mirror"]      = make_shared<MirrorMaterial>(mirrorMat);
-    mats["Glass"]       = make_shared<GlassMaterial>(glassMat);
-    mats["GreenMatte"]  = make_shared<MatteMaterial>(greenMat);
-    mats["RedMatte"]    = make_shared<MatteMaterial>(redMat);
-    mats["WhiteMatte"]  = make_shared<MatteMaterial>(whiteMat);
+    mats["Glass"]       = make_shared<FresnelGlassMaterial>(glassMat);
+    mats["GreenMatte"]  = make_shared<LambertMaterial>(greenMat);
+    mats["RedMatte"]    = make_shared<LambertMaterial>(redMat);
+    mats["WhiteMatte"]  = make_shared<LambertMaterial>(whiteMat);
+    mats["GlossyBlue"]  = make_shared<BlinnMaterial>(glossyBlue);
     //mats["Dirt"]        = make_shared<TexMaterial>(dirtMat);
 }
 
@@ -192,15 +197,22 @@ void RTScene::InitMaterials()
 void RTScene::InitModels()
 {
     RTSphere mirrSph;
-    mirrSph.orgn    = dvec3(-3.0, 0.0, 2.0);
+    mirrSph.orgn    = dvec3(-3.0, -3.0, 2.0);
     mirrSph.r       = 1.0;
-    mirrSph.mat     = "Glass";
+    mirrSph.mat     = "Mirror";
     meshes["MirrorSphere"] = make_shared<RTSphere>(mirrSph);
 
     RTSphere glassSph;
-    glassSph.orgn   = dvec3(-2.0, 0.0, 2.5);
-    glassSph.r      = 2.0;
-    glassSph.mat    = "Glass";
+    glassSph.orgn   = dvec3(-3.0, 0.0, 2.0);
+    glassSph.r      = 1.0;
+    glassSph.mat    = "WhiteMatte";
+    meshes["GlassSphere"] = make_shared<RTSphere>(glassSph);
+
+    RTSphere matteSph;
+    matteSph.orgn   = dvec3(-3.0, 3.0, 2.0);
+    matteSph.r      = 1.0;
+    matteSph.mat    = "GlossyBlue";
+    meshes["MatteSphere"] = make_shared<RTSphere>(matteSph);
 
     SphereLight lightSphWhite;
     lightSphWhite.Init(256, 16);

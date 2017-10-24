@@ -210,7 +210,7 @@ uint32_t SurfaceIntegrator::SampleLightDistribution(
         vector<Ray> lightRays;
         auto &light = *lightKV.second;
 
-        light.GetLightSamples(16, rayIn, intsc, lightRays);
+        light.GetLightSamples(8, rayIn, intsc, lightRays);
         nLightSamples += lightRays.size();
 
         for (auto &ray : lightRays)

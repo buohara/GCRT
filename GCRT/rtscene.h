@@ -6,9 +6,10 @@
 #include "json.hpp"
 #include "light.h"
 #include "spherelight.h"
-#include "glassmaterial.h"
+#include "fresnelglassmaterial.h"
 #include "mirrormaterial.h"
-#include "mattematerial.h"
+#include "lambertmaterial.h"
+#include "blinnmaterial.h"
 
 using namespace glm;
 using namespace std;

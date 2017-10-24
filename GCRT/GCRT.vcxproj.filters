@@ -57,12 +57,6 @@
     <ClCompile Include="mirrormaterial.cpp">
       <Filter>Material</Filter>
     </ClCompile>
-    <ClCompile Include="glassmaterial.cpp">
-      <Filter>Material</Filter>
-    </ClCompile>
-    <ClCompile Include="mattematerial.cpp">
-      <Filter>Material</Filter>
-    </ClCompile>
     <ClCompile Include="coshemisampler.cpp">
       <Filter>Sampler</Filter>
     </ClCompile>
@@ -71,6 +65,15 @@
     </ClCompile>
     <ClCompile Include="spherelight.cpp">
       <Filter>Light</Filter>
+    </ClCompile>
+    <ClCompile Include="lambertmaterial.cpp">
+      <Filter>Material</Filter>
+    </ClCompile>
+    <ClCompile Include="fresnelglassmaterial.cpp">
+      <Filter>Material</Filter>
+    </ClCompile>
+    <ClCompile Include="blinnmaterial.cpp">
+      <Filter>Material</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -113,12 +116,6 @@
     <ClInclude Include="mirrormaterial.h">
       <Filter>Material</Filter>
     </ClInclude>
-    <ClInclude Include="glassmaterial.h">
-      <Filter>Material</Filter>
-    </ClInclude>
-    <ClInclude Include="mattematerial.h">
-      <Filter>Material</Filter>
-    </ClInclude>
     <ClInclude Include="spheresampler.h">
       <Filter>Sampler</Filter>
     </ClInclude>
@@ -130,6 +127,15 @@
     </ClInclude>
     <ClInclude Include="spherelight.h">
       <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="lambertmaterial.h">
+      <Filter>Material</Filter>
+    </ClInclude>
+    <ClInclude Include="fresnelglassmaterial.h">
+      <Filter>Material</Filter>
+    </ClInclude>
+    <ClInclude Include="blinnmaterial.h">
+      <Filter>Material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
