@@ -52,23 +52,21 @@ void RTCamera::Init(
     dvec3 look,
     double fov,
     double apertureIn,
-    double focalDistIn,
-    uint32_t dofSamplesIn
+    double focalDistIn
 )
 {
-    imageW = (double)w;
-    imageH = (double)h;
-    aspect = (double)w / (double)h;
-    tanfov = tan(fov * pi<double>() / (360.0));
-    aperture = apertureIn;
-    focalDist = focalDistIn;
-    dofSamples = dofSamplesIn;
+    imageW      = (double)w;
+    imageH      = (double)h;
+    aspect      = (double)w / (double)h;
+    tanfov      = tan(fov * pi<double>() / (360.0));
+    aperture    = apertureIn;
+    focalDist   = focalDistIn;
 
-    pos = posIn;
-    lookDir = look - posIn;
+    pos         = posIn;
+    lookDir     = look - posIn;
 
-    viewInv = lookAt(pos, look, dvec3(0.0, 0.0, 1.0));
-    viewInv = inverse(viewInv);
+    viewInv     = lookAt(pos, look, dvec3(0.0, 0.0, 1.0));
+    viewInv     = inverse(viewInv);
 }
 
 /**
@@ -139,17 +137,31 @@ Ray RTCamera::GenerateSecondaryRay(Ray primRay, dvec2 pixel)
  * [RTScene::Init description]
  */
 
-void RTScene::Init()
+void RTScene::LoadDefaultScene(uint32_t w, uint32_t h)
 {
-    InitMaterials();
-    InitModels();
+    dvec3 camPos = dvec3(8.0, -2.0, 3.0);
+    dvec3 camLook = dvec3(0.0, 0.0, 2.0);
+
+    cam.Init(
+        w,
+        h,
+        camPos,
+        camLook,
+        45.0,
+        0.5,
+        12.7
+    );
+
+    InitDefaultMaterials();
+    InitDefaultModels();
+    tl.Init(0.0, 5.0, 24.0);
 }
 
 /**
- * [RTScene::InitMaterials description]
+ * [RTScene::InitDefaultMaterials description]
  */
 
-void RTScene::InitMaterials()
+void RTScene::InitDefaultMaterials()
 {
     MirrorMaterial mirrorMat;
     mirrorMat.name = "Mirror";
@@ -174,45 +186,75 @@ void RTScene::InitMaterials()
     redMat.kd = { 0.7, 0.1, 0.2 };
     redMat.Init(256, 16);
 
-    BlinnMaterial glossyBlue;
-    glossyBlue.name = "GlossyBlue";
-    glossyBlue.ks = 15.0;
-
-    //TexMaterial dirtMat;
-    //dirtMat.Load("../asset/dirtdiffuse.jpg", "../asset/dirtnormal.JPG");
+    BlinnMaterial metalMat;
+    metalMat.name = "Metal";
+    metalMat.ks = 15.0;
 
     mats["Mirror"]      = make_shared<MirrorMaterial>(mirrorMat);
     mats["Glass"]       = make_shared<FresnelGlassMaterial>(glassMat);
     mats["GreenMatte"]  = make_shared<LambertMaterial>(greenMat);
     mats["RedMatte"]    = make_shared<LambertMaterial>(redMat);
     mats["WhiteMatte"]  = make_shared<LambertMaterial>(whiteMat);
-    mats["GlossyBlue"]  = make_shared<BlinnMaterial>(glossyBlue);
-    //mats["Dirt"]        = make_shared<TexMaterial>(dirtMat);
+    mats["Metal"]  = make_shared<BlinnMaterial>(metalMat);
 }
 
 /**
- * [RTScene::InitModels description]
+ * [RTScene::InitDefaultModels description]
  */
 
-void RTScene::InitModels()
+void RTScene::InitDefaultModels()
 {
+    Keyframe k1;
+    Keyframe k2;
+    k1.t = 0.0;
+    k2.t = 0.0;
+
+    // Mirror sphere
+
     RTSphere mirrSph;
     mirrSph.orgn    = dvec3(-3.0, -3.0, 2.0);
     mirrSph.r       = 1.0;
     mirrSph.mat     = "Mirror";
+    
+    k1.pos = dvec3(-3.0, -3.0, 2.0);
+    k2.pos = dvec3(0.0, -3.0, 2.0);
+
+    mirrSph.animation.kfs.push_back(k1);
+    mirrSph.animation.kfs.push_back(k2);
+
     meshes["MirrorSphere"] = make_shared<RTSphere>(mirrSph);
 
-    RTSphere glassSph;
-    glassSph.orgn   = dvec3(-3.0, 0.0, 2.0);
-    glassSph.r      = 1.0;
-    glassSph.mat    = "WhiteMatte";
-    meshes["GlassSphere"] = make_shared<RTSphere>(glassSph);
+    // White Lambert sphere
 
     RTSphere matteSph;
-    matteSph.orgn   = dvec3(-3.0, 3.0, 2.0);
+    matteSph.orgn   = dvec3(-3.0, 0.0, 2.0);
     matteSph.r      = 1.0;
-    matteSph.mat    = "GlossyBlue";
+    matteSph.mat    = "WhiteMatte";
+
+    k1.pos = dvec3(-3.0, 0.0, 2.0);
+    k2.pos = dvec3(1.0, 0.0, 2.0);
+
+    matteSph.animation.kfs.push_back(k1);
+    matteSph.animation.kfs.push_back(k2);
+
     meshes["MatteSphere"] = make_shared<RTSphere>(matteSph);
+
+    // Burshed metal sphere
+
+    RTSphere metalSph;
+    metalSph.orgn   = dvec3(-3.0, 3.0, 2.0);
+    metalSph.r      = 1.0;
+    metalSph.mat    = "Metal";
+
+    k1.pos = dvec3(-3.0, 3.0, 2.0);
+    k2.pos = dvec3(2.0, 3.0, 2.0);
+
+    metalSph.animation.kfs.push_back(k1);
+    metalSph.animation.kfs.push_back(k2);
+
+    meshes["MetalSphere"] = make_shared<RTSphere>(metalSph);
+
+    // Light source
 
     SphereLight lightSphWhite;
     lightSphWhite.Init(256, 16);
@@ -220,10 +262,6 @@ void RTScene::InitModels()
     lightSphWhite.r     = 0.4;
     lightSphWhite.pwr   = { 20.0, 19.0, 18.0 };
     lights["WhiteSphere"] = make_shared<SphereLight>(lightSphWhite);
-
-    //auto pMesh = make_shared<AssimpMesh>();
-    //pMesh->LoadModel("../asset/models/boblampclean/boblampclean.md5mesh");
-    //meshes["LampGuy"] = pMesh;
 
     auto pCornellBox = make_shared<CornellBox>();
     pCornellBox->Create();

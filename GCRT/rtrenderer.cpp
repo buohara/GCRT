@@ -40,20 +40,6 @@ void RTRenderer::Init()
     imageSamples.resize(imageW * imageH);
     outImage.resize(imageW * imageH);
 
-    dvec3 camPos = dvec3(8.0, -2.0, 3.0);
-    dvec3 camLook = dvec3(0.0, 0.0, 2.0);
-    
-    scn.cam.Init(
-        imageW,
-        imageH,
-        camPos,
-        camLook,
-        45.0,
-        0.5,
-        12.7,
-        settings.dofSamples
-    );
-
     integrator.numVLightSets = settings.vLightSets;
     integrator.vLightSetSize = settings.vLightSetSize;
     integrator.curVLightSet  = 0;
@@ -70,7 +56,7 @@ void RTRenderer::Init()
     }
     else
     {
-        scn.Init();
+        scn.LoadDefaultScene(imageW, imageH);
     }
 
     Preprocess();
@@ -146,6 +132,7 @@ void RTRenderer::InitThreads()
         threadData[i].pImageBlocks  = &imageBlocks;
         threadData[i].pIntegrator   = &integrator;
         threadData[i].camPathDepth  = settings.camPathDepth;
+        threadData[i].dofSamples    = settings.dofSamples;
     }
 }
 
@@ -185,7 +172,8 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
     vector<Rect> &imageBlocks       = *(data.pImageBlocks);
     Sampler &sampler                = *(data.pSampler);
     SurfaceIntegrator integrator    = *(data.pIntegrator);
-    double dofSamplesInv            = 1.0 / (double)(scn.cam.dofSamples + 1.0);
+    uint32_t dofSamples             = (data.dofSamples);
+    double dofSamplesInv            = 1.0 / (double)(dofSamples + 1);
 
     vector<vector<Sample>> &imgSamples = *(data.pImgSamples);
 
@@ -233,7 +221,7 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
                     Ray primRay = scn.cam.GeneratePrimaryRay(samples[i]);
                     dvec3 color = dvec3(0.0, 0.0, 0.0);
 
-                    for (uint32_t j = 0; j <= scn.cam.dofSamples; j++)
+                    for (uint32_t j = 0; j <= dofSamples; j++)
                     {
                         Ray ray = (j == 0) ? primRay :
                             scn.cam.GenerateSecondaryRay(primRay, samples[i]);
@@ -274,21 +262,27 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
 void RTRenderer::Render()
 {
     long long start = GetMilliseconds();
+    double curAnimTime = scn.tl.curTime;
 
-    for (uint32_t i = 0; i < numThreads; i++)
+    while (curAnimTime <= scn.tl.tf)
     {
-        hThreadArray[i] = CreateThread(
-            NULL,
-            0,
-            RenderThreadFunc,
-            &threadData[i],
-            0,
-            NULL
-        );
-    }
+        for (uint32_t i = 0; i < numThreads; i++)
+        {
+            hThreadArray[i] = CreateThread(
+                NULL,
+                0,
+                RenderThreadFunc,
+                &threadData[i],
+                0,
+                NULL
+            );
+        }
 
-    WaitForMultipleObjects(numThreads, hThreadArray, TRUE, INFINITE);
-    FilterSamples();
+        WaitForMultipleObjects(numThreads, hThreadArray, TRUE, INFINITE);
+        FilterSamples();
+
+        curAnimTime = scn.tl.Next();
+    }
 
     long long stop = GetMilliseconds();
 

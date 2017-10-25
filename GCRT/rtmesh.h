@@ -4,6 +4,7 @@
 #include "rtmaterial.h"
 #include "ray.h"
 #include "Octree.h"
+#include "animation.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -28,6 +29,7 @@ struct RTMesh
     BBox bbox;
     vector<Submesh> submeshes;
     virtual void Intersect(Ray ray, Intersection &intsc) = 0;
+    virtual void UpdateAnimation(double t) { return; }
 };
 
 struct AssimpMesh : RTMesh
@@ -53,7 +55,9 @@ struct RTSphere : RTMesh
     double r;
     dvec3 orgn;
     string mat;
+    Animation animation;
     void Intersect(Ray ray, Intersection &intsc);
+    void UpdateAnimation(double t);
 };
 
 struct RTPlane : RTMesh

@@ -10,6 +10,8 @@
 #include "mirrormaterial.h"
 #include "lambertmaterial.h"
 #include "blinnmaterial.h"
+#include "timeline.h"
+#include "animation.h"
 
 using namespace glm;
 using namespace std;
@@ -35,8 +37,6 @@ struct RTCamera
     double imageW;
     double imageH;
 
-    uint32_t dofSamples;
-
     mat4 viewInv;
     
     dvec3 pos;
@@ -49,8 +49,7 @@ struct RTCamera
         dvec3 look,
         double fov,
         double apertureIn,
-        double focalDistIn,
-        uint32_t dofSamplesIn
+        double focalDistIn
     );
 
     Ray GeneratePrimaryRay(dvec2 pixel);
@@ -60,6 +59,7 @@ struct RTCamera
 struct RTScene
 {
     RTCamera cam;
+    Timeline tl;
     
     map<string, shared_ptr<Light>> lights;
     vector<vector<VirtualLight>> vLights;
@@ -68,10 +68,11 @@ struct RTScene
     map<string, shared_ptr<RTMaterial>> mats;
     map<string, RTModel> models;
 
+    void LoadDefaultScene(uint32_t w, uint32_t h);
+    void InitDefaultMaterials();
+    void InitDefaultModels();
+
     void Intersect(Ray ray, Intersection &intsc);
-    void Init();
-    void InitMaterials();
-    void InitModels();
     
     void GenerateLightPath(
         uint32_t setIdx,

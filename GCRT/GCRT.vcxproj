@@ -158,6 +158,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="animation.cpp" />
     <ClCompile Include="blinnmaterial.cpp" />
     <ClCompile Include="coshemisampler.cpp" />
     <ClCompile Include="filter.cpp" />
@@ -175,8 +176,10 @@
     <ClCompile Include="spheresampler.cpp" />
     <ClCompile Include="surfaceintegrator.cpp" />
     <ClCompile Include="texture.cpp" />
+    <ClCompile Include="timeline.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="animation.h" />
     <ClInclude Include="blinnmaterial.h" />
     <ClInclude Include="coshemisampler.h" />
     <ClInclude Include="filter.h" />
@@ -197,6 +200,7 @@
     <ClInclude Include="spheresampler.h" />
     <ClInclude Include="surfaceintegrator.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="timeline.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="settings.txt" />

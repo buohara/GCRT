@@ -86,6 +86,17 @@ void RTSphere::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
+ * [RTSphere::UpdateAnimation description]
+ * @param  t [description]
+ */
+
+void RTSphere::UpdateAnimation(double t)
+{
+    dmat4 pose = animation.GetPose(t);
+    orgn *= pose;
+}
+
+/**
  * [RTPlane::Intersect description]
  * @param  ray [description]
  */
