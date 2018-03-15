@@ -25,6 +25,7 @@
 
 #include <Windows.h>
 #include <Windowsx.h>
+#include <shellapi.h>
 
 // GLM headers
 

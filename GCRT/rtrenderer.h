@@ -78,6 +78,8 @@ struct RTRenderer
     void Render();
     void FilterSamples();
     void GetFilterBox(int x, int y, int w, vector<uvec2> &filterBox);
+    void ResetImageSamples();
+    void GenerateImageBlocks();
 
     void Init();
     void InitThreads();

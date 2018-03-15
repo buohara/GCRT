@@ -93,7 +93,12 @@ void RTSphere::Intersect(Ray ray, Intersection &intsc)
 void RTSphere::UpdateAnimation(double t)
 {
     dmat4 pose = animation.GetPose(t);
-    orgn *= pose;
+    dvec4 orgn4 = dvec4(0.0, 0.0, 0.0, 1.0);
+    orgn4 = pose * orgn4;
+
+    orgn.x = orgn4.x;
+    orgn.y = orgn4.y;
+    orgn.z = orgn4.z;
 }
 
 /**
@@ -181,7 +186,7 @@ void Submesh::Intersect(Ray ray, Intersection &intsc)
  * @param intc [description]
  */
 
-void AssimpMesh::Intersect(Ray ray, Intersection &intsc)
+void SkeletalMesh::Intersect(Ray ray, Intersection &intsc)
 {
     double minDist = DBL_MAX;
     intsc.t = -1.0;
@@ -454,11 +459,11 @@ void CornellBox::Create()
 }
 
 /**
- * [RTMesh::LoadModel description]
+ * [SkeletalMesh::LoadModel description]
  * @param file [description]
  */
 
-void AssimpMesh::LoadModel(string file)
+void SkeletalMesh::LoadModel(string file)
 {
     Assimp::Importer importer;
 
@@ -479,6 +484,7 @@ void AssimpMesh::LoadModel(string file)
         submeshes[i].pos.resize(mesh.mNumVertices);
         submeshes[i].norm.resize(mesh.mNumVertices);
         submeshes[i].faces.resize(mesh.mNumFaces);
+        submeshes[i].tan.resize(mesh.mNumVertices);
 
         dvec3 submin = dvec3(DBL_MAX, DBL_MAX, DBL_MAX);
         dvec3 submax = dvec3(DBL_MIN, DBL_MIN, DBL_MIN);

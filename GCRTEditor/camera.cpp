@@ -18,14 +18,14 @@ const uint32_t KEY_8 = 0x38;
 const uint32_t KEY_9 = 0x39;
 
 /**
- * [Camera::Init description]
- * @param posIn    [description]
- * @param lookAtIn [description]
- * @param upIn     [description]
- * @param aspectIn [description]
- * @param fovIn    [description]
- * @param nclipIn  [description]
- * @param fclipIn  [description]
+ * Camera::Init Initialize camera orientation and FOV.
+ * @param posIn    Camera position.
+ * @param lookAtIn Position camera is looking at.
+ * @param upIn     Camera up direction.
+ * @param aspectIn Camera aspect ratio.
+ * @param fovIn    Camera field of view.
+ * @param nclipIn  Near clipping plane.
+ * @param fclipIn  Far clipping plane.
  */
 
 void Camera::Init(
@@ -51,8 +51,10 @@ void Camera::Init(
 }
 
 /**
- * [Camera::HandleMouseDown description]
- * @param mouse [description]
+ * Camera::HandleMouseDown Handle mouse click down events. Camera is panned
+ * by clicking and dragging. Collect initial mouse position on click.
+ *
+ * @param mouse Mouse x and y coordinates.
  */
 
 void Camera::HandleMouseDown(LPARAM mouse)
@@ -63,7 +65,8 @@ void Camera::HandleMouseDown(LPARAM mouse)
 }
 
 /**
- * [Camera::HandleMouseUp description]
+ * Camera::HandleMouseUp Handle mouse click up events. Camera is panned
+ * by clicking and dragging. Reset mouse positions when click is released.
  */
 
 void Camera::HandleMouseUp()
@@ -76,8 +79,10 @@ void Camera::HandleMouseUp()
 }
 
 /**
- * [Camera::HandleMouseMove description]
- * @param mouse [description]
+ * Camera::HandleMouseMove When mouse button is down and mouse moving,
+ * continuously update mouse positions.
+ *
+ * @param mouse New mouse x and y coordinates.
  */
 
 void Camera::HandleMouseMove(LPARAM mouse)
@@ -96,8 +101,8 @@ void Camera::HandleMouseMove(LPARAM mouse)
 }
 
 /**
- * [Camera::HandleKeyDown description]
- * @param key [description]
+ * Camera::HandleKeyDown Register any keyboard presses.
+ * @param key Key that was pressed.
  */
 
 void Camera::HandleKeyDown(WPARAM key)
@@ -106,8 +111,8 @@ void Camera::HandleKeyDown(WPARAM key)
 }
 
 /**
- * [Camera::HandleKeyUp description]
- * @param key [description]
+ * Camera::HandleKeyUp Register any keyboard releases.
+ * @param key Register key that was released.
  */
 
 void Camera::HandleKeyUp(WPARAM key)
@@ -116,8 +121,8 @@ void Camera::HandleKeyUp(WPARAM key)
 }
 
 /**
- * [Camera::GetView description]
- * @return [description]
+ * Camera::GetView Get view matrix for MVP matrix from current camera.
+ * @return View matrix.
  */
 
 mat4 Camera::GetView()
@@ -130,8 +135,8 @@ mat4 Camera::GetView()
 }
 
 /**
- * [Camera::GetProjection description]
- * @return [description]
+ * Camera::GetProjection Get projection for MVP matrix from current camera.
+ * @return Projection matrix.
  */
 
 mat4 Camera::GetProjection()
@@ -145,7 +150,8 @@ mat4 Camera::GetProjection()
 }
 
 /**
- * [Camera::Update description]
+ * Camera::Update Update camera for current frame from mouse and keyboard
+ * inputs.
  */
 
 void Camera::Update()

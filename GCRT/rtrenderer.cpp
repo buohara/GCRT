@@ -64,10 +64,10 @@ void RTRenderer::Init()
 }
 
 /**
- * [RTRenderer::InitThreads description]
+ * [RTRenderer::GenerateImageBlocks description]
  */
 
-void RTRenderer::InitThreads()
+void RTRenderer::GenerateImageBlocks()
 {
     uint32_t xBlocks;
     uint32_t yBlocks;
@@ -112,11 +112,18 @@ void RTRenderer::InitThreads()
             {
                 rect.ymax = (j + 1) * blockSizeY - 1;
             }
-            
+
             imageBlocks.push_back(rect);
         }
     }
+}
 
+/**
+ * [RTRenderer::InitThreads description]
+ */
+
+void RTRenderer::InitThreads()
+{
     InitializeCriticalSection(&imageBlockCS);
 
     numThreads = settings.numThreads;
@@ -263,9 +270,13 @@ void RTRenderer::Render()
 {
     long long start = GetMilliseconds();
     double curAnimTime = scn.tl.curTime;
+    uint32_t frameNum = 0;
 
     while (curAnimTime <= scn.tl.tf)
     {
+        GenerateImageBlocks();
+        scn.UpdateAnimations(curAnimTime);
+
         for (uint32_t i = 0; i < numThreads; i++)
         {
             hThreadArray[i] = CreateThread(
@@ -281,6 +292,15 @@ void RTRenderer::Render()
         WaitForMultipleObjects(numThreads, hThreadArray, TRUE, INFINITE);
         FilterSamples();
 
+        stringstream ss;
+        ss << "C:/Users/beno.NVIDIA.COM/Desktop/Frames/Frame" << std::setfill('0')
+            << std::setw(5) << frameNum << ".jpg";
+
+        string fileName = ss.str();
+        SaveImage(fileName);
+
+        frameNum++;
+        ResetImageSamples();
         curAnimTime = scn.tl.Next();
     }
 
@@ -384,6 +404,19 @@ void RTRenderer::SaveImage(string fileName)
     );
 
     ilSave(IL_JPG, fileName.c_str());
+}
+
+/**
+ * [RTRenderer::ResetImageSamples description]
+ */
+
+void RTRenderer::ResetImageSamples()
+{
+    uint32_t numPixels = imageW * imageH;
+    for (uint32_t pixel = 0; pixel < numPixels; pixel++)
+    {
+        imageSamples[pixel].resize(0);
+    }
 }
 
 /**

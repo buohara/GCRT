@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -21,6 +13,17 @@
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{fc42fa7f-4a3c-44bf-8669-8940e4d757b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scenes">
+      <UniqueIdentifier>{35931b40-2703-42ad-9490-72251f9afcc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="CommonInclude">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,58 +58,67 @@
       <Filter>IMGUI</Filter>
     </ClInclude>
     <ClInclude Include="animation.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="box.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="cylinder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCRT.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="imgloader.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="light.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="material.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="mesh.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="model.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="plane.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="renderpass.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="scene.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="shader.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="skeletalmesh.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="sphere.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
     </ClInclude>
     <ClInclude Include="imgui_impl_gcrt.h">
       <Filter>IMGUI</Filter>
     </ClInclude>
     <ClInclude Include="renderer.h">
-      <Filter>Header Files</Filter>
+      <Filter>CommonInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>CommonInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="gcrt.h">
+      <Filter>CommonInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="sceneselector.h">
+      <Filter>CommonInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="animationscene.h">
+      <Filter>Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -135,56 +147,63 @@
       <Filter>IMGUI</Filter>
     </ClCompile>
     <ClCompile Include="animation.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="box.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="cylinder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCRTMain.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="imgloader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="ImGuiGCRT.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="material.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="mesh.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="model.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="plane.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="renderer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="renderpass.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="scene.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="skeletalmesh.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="sphere.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="shader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="sceneselector.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="animationscene.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="gcrtmain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BrightShader.fs">

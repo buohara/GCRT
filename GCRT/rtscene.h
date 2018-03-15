@@ -73,7 +73,8 @@ struct RTScene
     void InitDefaultModels();
 
     void Intersect(Ray ray, Intersection &intsc);
-    
+    void UpdateAnimations(double t);
+
     void GenerateLightPath(
         uint32_t setIdx,
         Ray ray,

@@ -134,6 +134,18 @@ Ray RTCamera::GenerateSecondaryRay(Ray primRay, dvec2 pixel)
 }
 
 /**
+ * [RTScene::UpdateAnimations description]
+ */
+
+void RTScene::UpdateAnimations(double t)
+{
+    for (auto& mesh : meshes)
+    {
+        mesh.second->UpdateAnimation(t);
+    }
+}
+
+/**
  * [RTScene::Init description]
  */
 
@@ -154,7 +166,7 @@ void RTScene::LoadDefaultScene(uint32_t w, uint32_t h)
 
     InitDefaultMaterials();
     InitDefaultModels();
-    tl.Init(0.0, 5.0, 24.0);
+    tl.Init(0.0, 0.0, 24.0);
 }
 
 /**
@@ -207,7 +219,7 @@ void RTScene::InitDefaultModels()
     Keyframe k1;
     Keyframe k2;
     k1.t = 0.0;
-    k2.t = 0.0;
+    k2.t = 5.0;
 
     // Mirror sphere
 
@@ -222,7 +234,7 @@ void RTScene::InitDefaultModels()
     mirrSph.animation.kfs.push_back(k1);
     mirrSph.animation.kfs.push_back(k2);
 
-    meshes["MirrorSphere"] = make_shared<RTSphere>(mirrSph);
+    //meshes["MirrorSphere"] = make_shared<RTSphere>(mirrSph);
 
     // White Lambert sphere
 
@@ -237,7 +249,7 @@ void RTScene::InitDefaultModels()
     matteSph.animation.kfs.push_back(k1);
     matteSph.animation.kfs.push_back(k2);
 
-    meshes["MatteSphere"] = make_shared<RTSphere>(matteSph);
+   // meshes["MatteSphere"] = make_shared<RTSphere>(matteSph);
 
     // Burshed metal sphere
 
@@ -252,7 +264,11 @@ void RTScene::InitDefaultModels()
     metalSph.animation.kfs.push_back(k1);
     metalSph.animation.kfs.push_back(k2);
 
-    meshes["MetalSphere"] = make_shared<RTSphere>(metalSph);
+    //meshes["MetalSphere"] = make_shared<RTSphere>(metalSph);
+
+    AssimpMesh lampGuy;
+    lampGuy.LoadModel("F:/GCRT/asset/models/boblampclean/boblampclean.md5mesh");
+    meshes["LampGuy"] = make_shared<AssimpMesh>(lampGuy);
 
     // Light source
 

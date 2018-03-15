@@ -1,5 +1,106 @@
 #include "renderer.h"
 
+#define GLEW_STATIC
+
+/**
+ * Renderer::CreateGLContext Create OpenGL context and swapchain.
+ *
+ * @param  hWnd Window handle for this app.
+ * @return Handle to GL context.
+ */
+
+void Renderer::CreateGLContext()
+{
+    // Swapchain format format.
+
+    PIXELFORMATDESCRIPTOR pfd;
+    memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
+
+    pfd.nSize       = sizeof(PIXELFORMATDESCRIPTOR);
+    pfd.nVersion    = 1;
+    pfd.dwFlags     = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
+    pfd.iPixelType  = PFD_TYPE_RGBA;
+    pfd.cColorBits  = 32;
+    pfd.cDepthBits  = 32;
+    pfd.iLayerType  = PFD_MAIN_PLANE;
+
+    hDC = GetDC(hWnd);
+
+    int pxFmt;
+    pxFmt = ChoosePixelFormat(hDC, &pfd);
+    SetPixelFormat(hDC, pxFmt, &pfd);
+
+    // Dummy 2.1 context.
+
+    HGLRC hDummyCtx = wglCreateContext(hDC);
+    wglMakeCurrent(hDC, hDummyCtx);
+
+    GLenum err = glewInit();
+
+    if (err != GLEW_OK)
+    {
+        MessageBoxA(0, "Coult not initialize GLEW.", "Error", 0);
+    }
+
+    // Real 3.1 context.
+
+    int attribs[] =
+    {
+        WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+        WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+        WGL_CONTEXT_FLAGS_ARB, 0,
+        0
+    };
+
+    HGLRC hCtx = wglCreateContextAttribsARB(hDC, 0, attribs);
+    wglMakeCurrent(NULL, NULL);
+    wglDeleteContext(hDummyCtx);
+    wglMakeCurrent(hDC, hCtx);
+}
+
+/**
+ * Renderer::CreateRenderWindow Create a windows window for rendering.
+ */
+
+void Renderer::CreateRenderWindow(
+    HINSTANCE hInstance,
+    uint32_t width,
+    uint32_t height,
+    string title
+)
+{
+    WNDCLASS wc         = { 0 };
+    wc.lpfnWndProc      = WndProc;
+    wc.hInstance        = hInstance;
+    wc.hbrBackground    = (HBRUSH)(COLOR_BACKGROUND);
+    wc.lpszClassName    = "GLWindow";
+    wc.style            = CS_OWNDC;
+
+    if (!RegisterClass(&wc))
+    {
+        return;
+    }
+
+    // Create the main GL Window.
+
+    hWnd = CreateWindowW(
+        L"GLWindow",
+        L"GLWindow",
+        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+        0,
+        0,
+        width,
+        height,
+        0,
+        0,
+        hInstance,
+        0
+    );
+
+    DWORD err = GetLastError();
+    return;
+}
+
 /**
  * Renderer::Init Parse renderer settings from file and initialize
  * camera and render passes.
@@ -11,8 +112,6 @@ void Renderer::Init()
     glEnable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
     glCullFace(GL_BACK);
-
-    LoadSettings("settings.txt");
 
     nextPickClr[0] = 0.0f;
     nextPickClr[1] = 0.0f;
@@ -295,7 +394,7 @@ void Renderer::InitDefaultModels()
  * @param hDC Device context handle (for flipping back buffers).
  */
 
-void Renderer::Render(HDC hDC)
+void Renderer::Render()
 {
     scn.cam.Update();
     
@@ -319,7 +418,6 @@ void Renderer::Render(HDC hDC)
         bloomPass.Render();
     }
 
-    UpdateImGui();
     SwapBuffers(hDC);
 
     t += 0.25f;
@@ -484,55 +582,4 @@ void Renderer::CreateNoiseTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     scn.AddDiffTexture("NoiseTex", "", noiseTexID);
-}
-
-/**
- * Renderer::LoadSettings Load renderer settings from file.
- * @param file Settings file name.
- */
-
-void Renderer::LoadSettings(string file)
-{
-    ifstream fin;
-    fin.open(file);
-
-    string line;
-    istringstream iss;
-
-    uint32_t winW;
-    uint32_t winH;
-    bool wireFrame;
-    bool useDOF;
-    bool useBloom;
-    bool rtDebug;
-    uint32_t msaaSamples;
-    bool loadSceneFromFile;
-    string scene;
-
-    getline(fin, line);
-    getline(fin, line);
-    iss.str(line);
-    
-    iss 
-        >> winW 
-        >> winH 
-        >> wireFrame 
-        >> useDOF 
-        >> useBloom 
-        >> msaaSamples 
-        >> loadSceneFromFile 
-        >> scene
-        >> rtDebug;
-
-    settings.winW = winW;
-    settings.winH = winH;
-    settings.wireFrame = wireFrame;
-    settings.useDOF = useDOF;
-    settings.useBloom = useBloom;
-    settings.msaaSamples = msaaSamples;
-    settings.loadSceneFromFile = loadSceneFromFile;
-    settings.sceneName = scene;
-    settings.rtDebug = rtDebug;
-
-    fin.close();
 }

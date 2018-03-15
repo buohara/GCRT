@@ -36,8 +36,8 @@ void Box::Create()
 }
 
 /**
- * [Box::GenPositions description]
- * @param pos [description]
+ * Box::GenPositions Generate vertex positions for a box.
+ * @param pos Vector to fill with box positions.
  */
 
 void Box::GenPositions(vector<vec3> &pos)
@@ -108,8 +108,8 @@ void Box::GenPositions(vector<vec3> &pos)
 }
 
 /**
- * [Box::GenNormals description]
- * @param norms [description]
+ * Box::GenNormals Get vertex normals for a box.
+ * @param norms Vector of normals to fill.
  */
 
 void Box::GenNormals(vector<vec3> &norms)
@@ -180,8 +180,8 @@ void Box::GenNormals(vector<vec3> &norms)
 }
 
 /**
- * [Box::GenUVs description]
- * @param uvs [description]
+ * Box::GenUVs Generate vertex UVs for a box.
+ * @param uvs Vector of UVs to fill.
  */
 
 void Box::GenUVs(vector<vec2> &uvs)
@@ -252,8 +252,8 @@ void Box::GenUVs(vector<vec2> &uvs)
 }
 
 /**
- * [Box::GenTans description]
- * @param tans [description]
+ * Box::GenTans Generate vertex tangents for a box.
+ * @param tans Vector of tangents to fill.
  */
 
 void Box::GenTans(vector<vec3> &tans)
@@ -320,7 +320,7 @@ void Box::GenTans(vector<vec3> &tans)
 }
 
 /**
- * [Box::Draw description]
+ * Box::Draw Set box VAO and do draw call.
  */
 
 void Box::Draw()

@@ -32,7 +32,7 @@ struct RTMesh
     virtual void UpdateAnimation(double t) { return; }
 };
 
-struct AssimpMesh : RTMesh
+struct SkeletalMesh : RTMesh
 {
     void LoadModel(string file);
     void Intersect(Ray ray, Intersection &intsc);

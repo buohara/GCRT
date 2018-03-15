@@ -1,8 +1,8 @@
 #include "cylinder.h"
 
 /**
- * [Cylinder::Create description]
- * @param numSectors [description]
+ * Cylinder::Create Initialize a cylinder mesh and related GL resources.
+ * @param numSectors Number of cylinder sectors.
  */
 
 void Cylinder::Create(
@@ -31,9 +31,10 @@ void Cylinder::Create(
 }
 
 /**
- * [Cylinder::GenPositions description]
- * @param pos        [description]
- * @param numSectors [description]
+ * Cylinder::GenPositions Generate cylinder vertex positions.
+ *
+ * @param pos        Vector of vertex positions to fill.
+ * @param numSectors Number of cylinder sectors.
  */
 
 void Cylinder::GenPositions(vector<vec3> &pos, uint32_t numSectors)
@@ -85,9 +86,9 @@ void Cylinder::GenPositions(vector<vec3> &pos, uint32_t numSectors)
 }
 
 /**
- * [Cylinder::GenNormals description]
- * @param norms      [description]
- * @param numSectors [description]
+ * Cylinder::GenNormals Generate cylinder vertex normals.
+ * @param norms      Vector of normals to fill out.
+ * @param numSectors Number of cylinder sectors.
  */
 
 void Cylinder::GenNormals(vector<vec3> &norms, uint32_t numSectors)
@@ -127,9 +128,9 @@ void Cylinder::GenNormals(vector<vec3> &norms, uint32_t numSectors)
 }
 
 /**
- * [Cylinder::GenUVs description]
- * @param uvs        [description]
- * @param numSectors [description]
+ * Cylinder::GenUVs Generate cylinder vertex UVs.
+ * @param uvs        Vector of UVs to fill.
+ * @param numSectors Number of cylinder sectors.
  */
 
 void Cylinder::GenUVs(vector<vec2> &uvs, uint32_t numSectors)
@@ -169,9 +170,9 @@ void Cylinder::GenUVs(vector<vec2> &uvs, uint32_t numSectors)
 }
 
 /**
- * [Cylinder::GenTans description]
- * @param tans       [description]
- * @param numSectors [description]
+ * Cylinder::GenTans Generate vertex tangents.
+ * @param tans       Vector of tangets to fill.
+ * @param numSectors Number of cylinder sectors.
  */
 
 void Cylinder::GenTans(vector<vec3> &tans, uint32_t numSectors)
@@ -212,7 +213,7 @@ void Cylinder::GenTans(vector<vec3> &tans, uint32_t numSectors)
 }
 
 /**
- * [Cylinder::Draw description]
+ * Cylinder::Draw Set cylinder VAO and draw.
  */
 
 void Cylinder::Draw()
