@@ -25,6 +25,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Passes">
+      <UniqueIdentifier>{214586eb-6995-4a5b-a2d9-40ea342be382}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libgasandbox\c3ga.h">
@@ -204,6 +207,21 @@
       <Filter>Scenes</Filter>
     </ClCompile>
     <ClCompile Include="gcrtmain.cpp" />
+    <ClCompile Include="bloompass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="depthpass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="dofpass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="mainpass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="pickerpass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="BrightShader.fs">

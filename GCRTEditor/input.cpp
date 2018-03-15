@@ -3,13 +3,13 @@
 #include "input.h"
 
 /**
-* WndProc Windows message handler.
-* @param  hWnd    Application window handle.
-* @param  message Message to process.
-* @param  wParam  Message parameters.
-* @param  lParam  More message parameters.
-* @return         Status code for message handler.
-*/
+ * WndProc Windows message handler.
+ * @param  hWnd    Application window handle.
+ * @param  message Message to process.
+ * @param  wParam  Message parameters.
+ * @param  lParam  More message parameters.
+ * @return         Status code for message handler.
+ */
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

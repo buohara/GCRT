@@ -1,0 +1,94 @@
+#include "renderpass.h"
+
+/**
+ * [DepthPass::Init description]
+ */
+
+void DepthPass::Init()
+{
+    // Compile the depth pass shader.
+
+    Shader depthShader;
+    depthShader.Create(
+        string("DepthPass"),
+        string("DepthPassShaderAnim.vs"),
+        string("DepthPassShaderAnim.fs")
+    );
+
+    // Create a depth FBO and associated texture.
+
+    depthProgram = depthShader.program;
+
+    glGenFramebuffers(1, &dbFboID);
+
+    glGenTextures(1, &depthTexID);
+    glBindTexture(GL_TEXTURE_2D, depthTexID);
+
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_DEPTH_COMPONENT32,
+        depthMapSize,
+        depthMapSize,
+        0,
+        GL_DEPTH_COMPONENT,
+        GL_FLOAT,
+        0
+    );
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, dbFboID);
+
+    glFramebufferTexture2D(
+        GL_DRAW_FRAMEBUFFER,
+        GL_DEPTH_ATTACHMENT,
+        GL_TEXTURE_2D,
+        depthTexID,
+        0
+    );
+
+    glDrawBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+/**
+ * [DepthPass::Render description]
+ * @param scn [description]
+ */
+
+void DepthPass::Render(Scene &scn)
+{
+    map<string, Model> &models = scn.models;
+    vector<DirectionalLight> &dirLights = scn.dirLights;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, dbFboID);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, depthMapSize, depthMapSize);
+
+    glUseProgram(depthProgram);
+
+    vec3 lightPos = dirLights[0].pos;
+    vec3 lightLook = dirLights[0].look;
+
+    mat4 depthView = lookAt(lightPos, lightLook, vec3(0.0, 1.0, 0.0));
+    mat4 depthProj = ortho(-10.0, 10.0, -10.0, 10.0, 1.0, 100.0);
+
+    GLuint viewID = glGetUniformLocation(depthProgram, "view");
+    glUniformMatrix4fv(viewID, 1, false, &depthView[0][0]);
+
+    GLuint projID = glGetUniformLocation(depthProgram, "proj");
+    glUniformMatrix4fv(projID, 1, false, &depthProj[0][0]);
+
+    map<string, Model>::iterator it;
+
+    for (it = models.begin(); it != models.end(); it++)
+    {
+        shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
+        (*it).second.SetAnimMatrices(depthProgram);
+        pMesh->Draw();
+    }
+}
