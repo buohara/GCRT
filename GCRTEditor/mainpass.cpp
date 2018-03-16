@@ -1,4 +1,4 @@
-#include "renderpass.h"
+#include "mainpass.h"
 
 /**
  * MainPass::Init Initialize main render pass.
@@ -11,16 +11,17 @@
  */
 
 void MainPass::Init(
-    GLuint depthTexIn,
+    GLuint depthTexInput,
     uint32_t screenW,
     uint32_t screenH,
     bool useDOFIn,
-    uint32_t msaaSamples
+    uint32_t msaaSamples,
+    bool renderToScreen
 )
 {
     Shader renderShader;
-    wireFrame = false;
-    useMSAA = false;
+    wireFrame   = false;
+    useMSAA     = false;
 
     if (msaaSamples > 1)
     {
@@ -33,22 +34,27 @@ void MainPass::Init(
         string("RenderShaderAnim.fs")
     );
 
-    renderProgram = renderShader.program;
-    depthTex = depthTexIn;
-
-    fboWidth = screenW;
-    fboHeight = screenH;
-
-    renderFboID = renderFbo;
-    useDOF = useDOFIn;
+    renderProgram   = renderShader.program;
+    depthTexIn      = depthTexInput;
+    fboWidth        = screenW;
+    fboHeight       = screenH;
+    useDOF          = useDOFIn;
 
     if (useMSAA)
     {
-        
+        CreateMSAAFbo(msaaSamples);
     }
+
+    renderToScreen ? renderFbo = 0 : CreateRenderFbo();
 }
 
-void MainPass::CreateMSAAFbo()
+/**
+ * MainPass::CreateMSAAFbo If multisampling requested, create MSAA resources.
+ *
+ * @param msaaSamples Number of MSAA samples.
+ */
+
+void MainPass::CreateMSAAFbo(uint32_t msaaSamples)
 {
     glGenTextures(1, &multisampleTexID);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, multisampleTexID);
@@ -98,20 +104,25 @@ void MainPass::CreateMSAAFbo()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+/**
+ * MainPass::CreateRenderFbo If not rendering to screen, create render FBO
+ * resources.
+ */
+
 void MainPass::CreateRenderFbo()
 {
     glGenFramebuffers(1, &renderFbo);
 
     // Output texture.
 
-    glGenTextures(1, &renderTex);
-    glBindTexture(GL_TEXTURE_2D, renderTex);
+    glGenTextures(1, &renderTexOut);
+    glBindTexture(GL_TEXTURE_2D, renderTexOut);
 
     glTexImage2D(
         GL_TEXTURE_2D,
         0, GL_RGBA32F,
-        settings.winW,
-        settings.winH,
+        fboWidth,
+        fboHeight,
         0,
         GL_RGBA,
         GL_FLOAT,
@@ -128,7 +139,7 @@ void MainPass::CreateRenderFbo()
     GLuint depthRenderBuffer;
     glGenRenderbuffers(1, &depthRenderBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, settings.winW, settings.winH);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, fboWidth, fboHeight);
 
     // Attach 
 
@@ -138,7 +149,7 @@ void MainPass::CreateRenderFbo()
         GL_DRAW_FRAMEBUFFER,
         GL_COLOR_ATTACHMENT0,
         GL_TEXTURE_2D,
-        renderTex,
+        renderTexOut,
         0
     );
 
@@ -157,33 +168,14 @@ void MainPass::CreateRenderFbo()
  * @param scn [description]
  */
 
-void MainPass::Render(Scene &scn, float t)
+void MainPass::Render(Scene &scn)
 {
     map<string, Model> &models = scn.models;
     Camera cam = scn.cam;
     vector<DirectionalLight> dirLights = scn.dirLights;
 
-    // Set wireframe.
-
-    if (wireFrame)
-    {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    }
-    else
-    {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    }
-
-    // Set MSAA FBO.
-
-    if (useMSAA)
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, multisampleFboID);
-    }
-    else
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, renderFboID);
-    }
+    glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
+    glBindFramebuffer(GL_FRAMEBUFFER, useMSAA ? multisampleFboID : renderFbo);
 
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glViewport(0, 0, fboWidth, fboHeight);
@@ -192,7 +184,7 @@ void MainPass::Render(Scene &scn, float t)
     // Set depth map (on texture unit 2).
 
     glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, depthTex);
+    glBindTexture(GL_TEXTURE_2D, depthTexIn);
     GLuint depthID = glGetUniformLocation(renderProgram, "depthTex");
     glUniform1i(depthID, 2);
 
@@ -270,7 +262,7 @@ void MainPass::Render(Scene &scn, float t)
 
     if (useMSAA)
     {
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderFboID);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderFbo);
         glBindFramebuffer(GL_READ_FRAMEBUFFER, multisampleFboID);
 
         glBlitFramebuffer(

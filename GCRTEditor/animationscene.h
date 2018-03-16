@@ -2,7 +2,8 @@
 
 #include "renderer.h"
 #include "input.h"
-#include "renderpass.h"
+#include "mainpass.h"
+#include "depthpass.h"
 
 struct AnimationScene
 {

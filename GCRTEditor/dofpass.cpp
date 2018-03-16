@@ -1,4 +1,4 @@
-#include "renderpass.h"
+#include "dofpass.h"
 
 /**
  * DOFPass::LoadQuadVerts Load quad verts for DOF texture render.
@@ -24,21 +24,21 @@ void DOFPass::LoadQuadVerts()
     uvs.push_back(vec2(1.0, 0.0));
     uvs.push_back(vec2(1.0, 1.0));
 
-    uint32_t numVerts = (uint32_t)pos.size();
-    size_t posBufSize = 3 * numVerts * sizeof(float);
-    size_t uvBufSize = 2 * numVerts * sizeof(float);
+    uint32_t numVerts   = (uint32_t)pos.size();
+    size_t posBufSize   = 3 * numVerts * sizeof(float);
+    size_t uvBufSize    = 2 * numVerts * sizeof(float);
 
-    glGenVertexArrays(1, &vaoID);
-    glBindVertexArray(vaoID);
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
 
-    glGenBuffers(1, &posVboID);
-    glBindBuffer(GL_ARRAY_BUFFER, posVboID);
+    glGenBuffers(1, &posVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, posVbo);
     glBufferData(GL_ARRAY_BUFFER, posBufSize, &pos[0], GL_STATIC_DRAW);
     glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
-    glGenBuffers(1, &uvVboID);
-    glBindBuffer(GL_ARRAY_BUFFER, uvVboID);
+    glGenBuffers(1, &uvVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, uvVbo);
     glBufferData(GL_ARRAY_BUFFER, uvBufSize, &uvs[0], GL_STATIC_DRAW);
     glVertexAttribPointer((GLuint)1, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(1);
@@ -74,17 +74,16 @@ void DOFPass::GenerateSamplePoints()
  * @param screenH     [description]
  */
 
-void DOFPass::InitOld(
-    GLuint colorTexIn,
-    GLuint noiseTexIn,
-    GLuint renderFboIn,
+void DOFPass::Init(
+    GLuint colorTexInput,
+    GLuint noiseTexInput,
     uint32_t screenW,
-    uint32_t screenH
+    uint32_t screenH,
+    bool renderToScreen
 )
 {
-    colorTexID  = colorTexIn;
-    noiseTexID  = noiseTexIn;
-    renderFbo   = renderFboIn;
+    colorTexIn  = colorTexInput;
+    noiseTexIn  = noiseTexInput;
     fboHeight   = screenH;
     fboWidth    = screenW;
 
@@ -99,32 +98,79 @@ void DOFPass::InitOld(
     );
 
     dofProgram = dofShader.program;
+
+    renderToScreen ? renderFbo = 0 : CreateRenderFbo();
 }
 
 /**
- * [DOFPass::Render description]
+ * DOFPass::Render Process DOF.
  */
 
-void DOFPass::Render(Scene &scn, float t)
+void DOFPass::Render(Scene &scn)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, renderFbo);
     glViewport(0, 0, fboWidth, fboHeight);
     glUseProgram(dofProgram);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, colorTexID);
+    glBindTexture(GL_TEXTURE_2D, colorTexIn);
     GLuint colorID = glGetUniformLocation(dofProgram, "colorTex");
     glUniform1i(colorID, 0);
 
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, noiseTexID);
+    glBindTexture(GL_TEXTURE_2D, noiseTexIn);
     GLuint noiseID = glGetUniformLocation(dofProgram, "noiseTex");
     glUniform1i(noiseID, 1);
 
     GLuint sampleID = glGetUniformLocation(dofProgram, "samplePts");
     glUniform2fv(sampleID, 32, samplePts);
 
-    glBindVertexArray(vaoID);
+    glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+}
+
+/**
+ * DOFPass::CreateRenderFbo If not rendering to screen, create render FBO
+ * resources.
+ */
+
+void DOFPass::CreateRenderFbo()
+{
+    glGenFramebuffers(1, &renderFbo);
+
+    // Output texture.
+
+    glGenTextures(1, &renderTexOut);
+    glBindTexture(GL_TEXTURE_2D, renderTexOut);
+
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0, GL_RGBA32F,
+        fboWidth,
+        fboHeight,
+        0,
+        GL_RGBA,
+        GL_FLOAT,
+        0)
+        ;
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // Attach 
+
+    glBindFramebuffer(GL_FRAMEBUFFER, renderFbo);
+
+    glFramebufferTexture2D(
+        GL_DRAW_FRAMEBUFFER,
+        GL_COLOR_ATTACHMENT0,
+        GL_TEXTURE_2D,
+        renderTexOut,
+        0
+    );
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

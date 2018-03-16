@@ -1,4 +1,4 @@
-#include "renderpass.h"
+#include "depthpass.h"
 
 /**
  * [DepthPass::Init description]

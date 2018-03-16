@@ -212,9 +212,9 @@ void Renderer::UpdateViewPorts(uint32_t w, uint32_t h)
 
 void Renderer::ResizeRenderFbo()
 {
-    glDeleteFramebuffers(1, &renderFbo);
-    glDeleteTextures(1, &renderTex);
-    CreateRenderPassFbo();
+    //glDeleteFramebuffers(1, &renderFbo);
+    //glDeleteTextures(1, &renderTex);
+    //CreateRenderPassFbo();
 }
 
 /**
@@ -345,7 +345,7 @@ void Renderer::HandleInputs(MSG &msg)
         if (msg.wParam == 0x46) // 'f' key for wireframe.
         {
             settings.wireFrame = !settings.wireFrame;
-            renderPass.wireFrame = settings.wireFrame;
+            //renderPass.wireFrame = settings.wireFrame;
         }
 
         scn.cam.HandleKeyDown(msg.wParam);
