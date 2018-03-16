@@ -26,15 +26,7 @@ struct Renderer
     HWND hWnd;
     HDC hDC;
 
-    PickerPass pickerPass;
-    DepthPass depthPass;
-    RenderPass renderPass;
-    BloomPass bloomPass;
-    DOFPass dofPass;
-
-    GLuint dbFboID;
-    GLuint renderFbo;
-    GLuint renderTex;
+    vector<shared_ptr<RenderPass>> passes;
     string selected;
 
     bool mouseDown[3];
@@ -44,8 +36,6 @@ struct Renderer
 
     static const uint32_t RENDER_TO_SCREEN = 0;
     
-    vector<uint32_t> ImGuiKeys;
-
     void HandleInputs(MSG &msg);
     void Init();
     

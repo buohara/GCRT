@@ -59,7 +59,7 @@ void PickerPass::Resize(uint32_t w, uint32_t h)
  * @param screenH [description]
  */
 
-void PickerPass::Init(uint32_t screenW, uint32_t screenH)
+void PickerPass::InitOld(uint32_t screenW, uint32_t screenH)
 {
     fboWidth = screenW;
     fboHeight = screenH;
@@ -80,7 +80,7 @@ void PickerPass::Init(uint32_t screenW, uint32_t screenH)
  * @param scn [description]
  */
 
-void PickerPass::Render(Scene &scn)
+void PickerPass::Render(Scene &scn, float t)
 {
     map<string, Model> models = scn.models;
     Camera cam = scn.cam;

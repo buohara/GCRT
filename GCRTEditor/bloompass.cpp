@@ -54,7 +54,7 @@ void BloomPass::LoadQuadVerts()
 * @param screenH    [description]
 */
 
-void BloomPass::Init(
+void BloomPass::InitOld(
     GLuint colorTexIn,
     GLuint renderFbo,
     uint32_t screenW,
@@ -190,7 +190,7 @@ void BloomPass::Resize(uint32_t w, uint32_t h)
 * [BloomPass::Render description]
 */
 
-void BloomPass::Render()
+void BloomPass::Render(Scene &scn, float t)
 {
     // Do bright pass.
 

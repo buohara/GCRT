@@ -1,5 +1,9 @@
 #include "animationscene.h"
 
+/**
+ * Externs updated from WinProc. See input.cpp.
+ */
+
 bool gResized;
 uint32_t gWindowHeight;
 uint32_t gWindowWidth;
@@ -23,6 +27,8 @@ void AnimationScene::LaunchAnimationScene(HINSTANCE hInstance)
 
 void AnimationScene::Init(HINSTANCE hInstance)
 {
+    rndr.Init();
+
     rndr.CreateRenderWindow(
         hInstance,
         1920,
@@ -40,7 +46,14 @@ void AnimationScene::Init(HINSTANCE hInstance)
     rndr.settings.winW              = 1920;
     rndr.settings.wireFrame         = false;
 
-    rndr.Init();
+    DepthPass depthPass;
+    depthPass.Init();
+
+    MainPass mainPass;
+    mainPass.Init(depthPass.depthTexOut, 1920, 1080, false, 4);
+
+    rndr.passes.push_back(make_shared<RenderPass>(depthPass));
+    rndr.passes.push_back(make_shared<RenderPass>(mainPass));
 }
 
 /**

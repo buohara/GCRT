@@ -19,10 +19,10 @@ void DepthPass::Init()
 
     depthProgram = depthShader.program;
 
-    glGenFramebuffers(1, &dbFboID);
+    glGenFramebuffers(1, &dbFbo);
 
-    glGenTextures(1, &depthTexID);
-    glBindTexture(GL_TEXTURE_2D, depthTexID);
+    glGenTextures(1, &depthTexOut);
+    glBindTexture(GL_TEXTURE_2D, depthTexOut);
 
     glTexImage2D(
         GL_TEXTURE_2D,
@@ -41,13 +41,13 @@ void DepthPass::Init()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, dbFboID);
+    glBindFramebuffer(GL_FRAMEBUFFER, dbFbo);
 
     glFramebufferTexture2D(
         GL_DRAW_FRAMEBUFFER,
         GL_DEPTH_ATTACHMENT,
         GL_TEXTURE_2D,
-        depthTexID,
+        depthTexOut,
         0
     );
 
@@ -56,8 +56,8 @@ void DepthPass::Init()
 }
 
 /**
- * [DepthPass::Render description]
- * @param scn [description]
+ * DepthPass::Render Loop over scene meshes and render depth.
+ * @param scn Scene to render.
  */
 
 void DepthPass::Render(Scene &scn)
@@ -65,7 +65,7 @@ void DepthPass::Render(Scene &scn)
     map<string, Model> &models = scn.models;
     vector<DirectionalLight> &dirLights = scn.dirLights;
 
-    glBindFramebuffer(GL_FRAMEBUFFER, dbFboID);
+    glBindFramebuffer(GL_FRAMEBUFFER, dbFbo);
     glClear(GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, depthMapSize, depthMapSize);
 

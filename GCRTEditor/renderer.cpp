@@ -139,34 +139,6 @@ void Renderer::Init()
     );
 
     CreateNoiseTexture();
-    CreateRenderPassFbo();
-
-    pickerPass.Init(settings.winW, settings.winH);
-    depthPass.Init();
-
-    renderPass.Init(
-        depthPass.getDepthTex(),
-        renderFbo,
-        settings.winW,
-        settings.winH,
-        false,
-        settings.msaaSamples
-    );
-
-    dofPass.Init(
-        renderTex,
-        scn.diffTextures["NoiseTex"].texID,
-        renderFbo,
-        settings.winW,
-        settings.winH
-    );
-
-    bloomPass.Init(
-        renderTex,
-        RENDER_TO_SCREEN,
-        settings.winW,
-        settings.winH
-    );
 
     if (settings.loadSceneFromFile)
     {
@@ -229,16 +201,8 @@ vec3 Renderer::nextPickerColor()
 void Renderer::UpdateViewPorts(uint32_t w, uint32_t h)
 {
     scn.cam.aspect = (float)w / (float)h;
-
     settings.winW = w;
     settings.winH = h;
-    renderPass.fboWidth = w;
-    renderPass.fboHeight = h;
-    ResizeRenderFbo();
-
-    ImGuiGCRTResize(w, h);
-    pickerPass.Resize(w, h);
-    bloomPass.Resize(w, h);
 }
 
 /**
@@ -251,58 +215,6 @@ void Renderer::ResizeRenderFbo()
     glDeleteFramebuffers(1, &renderFbo);
     glDeleteTextures(1, &renderTex);
     CreateRenderPassFbo();
-}
-
-/**
- * Renderer::CreateRenderPassFbo Create main render pass FBO (HDR) with
- * depth attachment.
- */
-
-void Renderer::CreateRenderPassFbo()
-{
-    glGenFramebuffers(1, &renderFbo);
-
-    // Output texture.
-
-    glGenTextures(1, &renderTex);
-    glBindTexture(GL_TEXTURE_2D, renderTex);
-    
-    glTexImage2D(
-        GL_TEXTURE_2D,
-        0, GL_RGBA32F,
-        settings.winW,
-        settings.winH,
-        0, 
-        GL_RGBA,
-        GL_FLOAT,
-        0)
-    ;
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    // Depth attachment
-
-    GLuint depthRenderBuffer;
-    glGenRenderbuffers(1, &depthRenderBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, settings.winW, settings.winH);
-
-    // Attach 
-
-    glBindFramebuffer(GL_FRAMEBUFFER, renderFbo);
-    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
-    
-    glFramebufferRenderbuffer(
-        GL_FRAMEBUFFER,
-        GL_DEPTH_ATTACHMENT,
-        GL_RENDERBUFFER,
-        depthRenderBuffer
-        );
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 /**
@@ -404,18 +316,9 @@ void Renderer::Render()
         model.second.UpdateAnimation(t, pMesh);
     }
 
-    pickerPass.Render(scn);
-    depthPass.Render(scn);
-    renderPass.Render(scn, t);
-
-    if (settings.useDOF == true)
+    for (auto &pass : passes)
     {
-        dofPass.Render();
-    }
-
-    if (settings.useBloom == true)
-    {
-        bloomPass.Render();
+        pass->Render(scn);
     }
 
     SwapBuffers(hDC);
@@ -434,14 +337,8 @@ void Renderer::Render()
 
 void Renderer::HandleInputs(MSG &msg)
 {
-    ImGuiIO& io = ImGui::GetIO();
-
     switch (msg.message)
     {
-    case WM_CHAR:
-
-        io.AddInputCharacter((ImWchar)msg.wParam);
-        break;
 
     case WM_KEYDOWN:
 
@@ -453,44 +350,22 @@ void Renderer::HandleInputs(MSG &msg)
 
         scn.cam.HandleKeyDown(msg.wParam);
 
-        if (msg.wParam == 0x10) // IMGUI 'shift' modifier shouldn't be cleared until released.
-        {
-            ImGuiGCRTSetKey((int)msg.wParam, 1);
-        }
-        else
-        {
-            ImGuiKeys.push_back((uint32_t)msg.wParam);
-        }
-        break;
-
     case WM_KEYUP:
-
-        if (msg.wParam == 0x10) // Clear IMGUI 'shift' modifier.
-        {
-            ImGuiGCRTSetKey((int)msg.wParam, 0);
-        }
 
         scn.cam.HandleKeyUp(msg.wParam);
         break;
 
     case WM_MOUSEMOVE:
 
-        if (io.WantCaptureMouse == false)
-        {
-            scn.cam.HandleMouseMove(msg.lParam);
-        }
+        scn.cam.HandleMouseMove(msg.lParam);
         mousePos[0] = (double)GET_X_LPARAM(msg.lParam);
         mousePos[1] = (double)GET_Y_LPARAM(msg.lParam) + 40.0;
         break;
 
     case WM_LBUTTONDOWN:
 
-        if (io.WantCaptureMouse == false)
-        {
-            scn.cam.HandleMouseDown(msg.lParam);
-            DoPick(msg.lParam);
-        }
-
+        scn.cam.HandleMouseDown(msg.lParam);
+        DoPick(msg.lParam);
         mouseDown[0] = true;
         mousePos[0] = (double)GET_X_LPARAM(msg.lParam);
         mousePos[1] = (double)GET_Y_LPARAM(msg.lParam) + 40.0;

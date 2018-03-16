@@ -1,7 +1,7 @@
 #include "renderpass.h"
 
 /**
- * [DOFPass::LoadQuadVerts description]
+ * DOFPass::LoadQuadVerts Load quad verts for DOF texture render.
  */
 
 void DOFPass::LoadQuadVerts()
@@ -47,7 +47,8 @@ void DOFPass::LoadQuadVerts()
 }
 
 /**
- * GenerateSamplePoints
+ * GenerateSamplePoints For each pixel, DOF samples depth of surround pixels
+ * to compute focus. Generate Samples here.
  */
 
 void DOFPass::GenerateSamplePoints()
@@ -59,7 +60,7 @@ void DOFPass::GenerateSamplePoints()
         float r = (float)rand() / (float)RAND_MAX;
         float theta = twoPi * ((float)rand() / (float)RAND_MAX);
 
-        samplePts[2 * i] = r;
+        samplePts[2 * i] = sqrt(r);
         samplePts[2 * i + 1] = theta;
     }
 }
@@ -73,7 +74,7 @@ void DOFPass::GenerateSamplePoints()
  * @param screenH     [description]
  */
 
-void DOFPass::Init(
+void DOFPass::InitOld(
     GLuint colorTexIn,
     GLuint noiseTexIn,
     GLuint renderFboIn,
@@ -104,7 +105,7 @@ void DOFPass::Init(
  * [DOFPass::Render description]
  */
 
-void DOFPass::Render()
+void DOFPass::Render(Scene &scn, float t)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, renderFbo);
     glViewport(0, 0, fboWidth, fboHeight);

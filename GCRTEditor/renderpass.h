@@ -5,63 +5,78 @@
 #include "shader.h"
 #include "scene.h"
 
-// Main render pass. Draw every object in the scene using its particular
-// material properties.
-
 struct RenderPass
 {
-    void Render(Scene &scn, float t);
+    virtual void Render(Scene &scn) = 0;
+};
+
+/**
+ * Main render pass. Draw every object in the scene using its particular
+ * material properties.
+ */
+
+struct MainPass : RenderPass
+{
+    void Render(Scene &scn);
 
     GLuint renderProgram;
     bool wireFrame;
     bool useMSAA;
-
-    GLuint renderFboID;
+    
+    GLuint renderFbo;
+    GLuint renderTexOut;
 
     GLuint multisampleFboID;
     GLuint multisampleTexID;
     GLuint multisampleDepthID;
 
     bool useDOF;
-    GLuint depthTex;
+    GLuint depthTexIn;
     uint32_t fboWidth;
     uint32_t fboHeight;
 
     void Init(
         GLuint depthTexIn, 
-        GLuint renderFbo,
         uint32_t screenW,
         uint32_t screenH,
         bool useDOFIn,
         uint32_t msaaSamples
     );
+
+    void CreateRenderFbo();
+    void CreateMSAAFbo();
 };
 
-// Picker pass. Draw every object to a picker FBO using its unique picker color.
-// Use readPixel calls on this FBO and use the returned color to determine what
-// object was picked.
+/**
+ * Picker pass. Draw every object to a picker FBO using its unique picker color.
+ * Use readPixel calls on this FBO and use the returned color to determine what
+ * object was picked.
+ */
 
-struct PickerPass
+struct PickerPass : RenderPass
 {
-    GLuint pickerFboID;
+    GLuint pickerFbo;
     GLuint pickerProgram;
 
     uint32_t fboWidth;
     uint32_t fboHeight;
 
-    void Init(uint32_t screenW, uint32_t screenH);
+    void InitOld(uint32_t screenW, uint32_t screenH);
+    
     void GenFrameBuffers();
     void Resize(uint32_t w, uint32_t h);
     void Render(Scene &scn);
 };
 
-// Depth pass for shadow mapping and SSS.
+/**
+ * Depth pass for shadow mapping and SSS.
+ */
 
-struct DepthPass
+struct DepthPass : RenderPass
 {
-    GLuint dbFboID;
+    GLuint dbFbo;
     GLuint depthProgram;
-    GLuint depthTexID;
+    GLuint depthTexOut;
     GLuint depthMapSize = 2048;
 
     void Init();
@@ -71,19 +86,21 @@ struct DepthPass
     GLuint getDepthProgram() { return depthProgram; }
 };
 
-// Depth of field pass.
+/**
+ * Depth of field pass.
+ */
 
-struct DOFPass
+struct DOFPass : RenderPass
 {
     GLuint dofProgram;
 
-    GLuint colorTexID;
-    GLuint noiseTexID;
+    GLuint colorTexIn;
+    GLuint noiseTexIn;
     GLuint renderFbo;
 
-    GLuint vaoID;
-    GLuint posVboID;
-    GLuint uvVboID;
+    GLuint vao;
+    GLuint posVbo;
+    GLuint uvVbo;
 
     uint32_t fboWidth;
     uint32_t fboHeight;
@@ -93,37 +110,40 @@ struct DOFPass
     void Init(
         GLuint colorTexIn, 
         GLuint noiseTexIn, 
-        GLuint renderFboIn,
         uint32_t screenW,
         uint32_t screenH
     );
 
-    void Render();
+    void Render(Scene &scn);
     void LoadQuadVerts();
     void GenerateSamplePoints();
 };
 
-// A nice bloom and tone mapping pass.
+/** 
+ * A nice bloom and tone mapping pass.
+ */
 
-struct BloomPass
+struct BloomPass : RenderPass
 {
     GLuint brightProgram;
     GLuint blurProgram;
     GLuint composeProgram;
 
-    GLuint colorTexID;
+    GLuint colorTexIn;
 
     GLuint renderFboID;
+    GLuint renderTexOut;
+
     uint32_t fboWidth;
     uint32_t fboHeight;
 
-    GLuint brightTexID;
+    GLuint brightTexOut;
     GLuint brightFboID;
 
-    GLuint hBlurTexID;
+    GLuint hBlurTexOut;
     GLuint hBlurFboID;
 
-    GLuint vBlurTexID;
+    GLuint vBlurTexOut;
     GLuint vBlurFboID;
 
     GLuint vaoID;
@@ -135,11 +155,10 @@ struct BloomPass
 
     void Init(
         GLuint colorTexIn,
-        GLuint renderFbo,
         uint32_t screenW,
         uint32_t screenH
     );
 
-    void Render();
+    void Render(Scene &scn);
     void LoadQuadVerts();
 };

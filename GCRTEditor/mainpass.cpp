@@ -1,18 +1,17 @@
 #include "renderpass.h"
 
 /**
- * [RenderPass::Init description]
- * @param depthTexIn  [description]
- * @param renderFbo   [description]
- * @param screenW     [description]
- * @param screenH     [description]
- * @param useDOFIn    [description]
- * @param msaaSamples [description]
+ * MainPass::Init Initialize main render pass.
+ *
+ * @param depthTexIn  Input depth texture for shadow mapping.
+ * @param screenW     Output FBO width.
+ * @param screenH     Output FBO height.
+ * @param useDOFIn    Set if using DOF, this pass needs to output focal distance data.
+ * @param msaaSamples Number of MSAA samples to render.
  */
 
-void RenderPass::Init(
+void MainPass::Init(
     GLuint depthTexIn,
-    GLuint renderFbo,
     uint32_t screenW,
     uint32_t screenH,
     bool useDOFIn,
@@ -45,61 +44,120 @@ void RenderPass::Init(
 
     if (useMSAA)
     {
-        glGenTextures(1, &multisampleTexID);
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, multisampleTexID);
-
-        glTexImage2DMultisample(
-            GL_TEXTURE_2D_MULTISAMPLE,
-            msaaSamples,
-            GL_RGBA,
-            fboWidth,
-            fboHeight,
-            true
-        );
-
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-
-        GLuint depthRenderBuffer;
-
-        glGenRenderbuffers(1, &depthRenderBuffer);
-        glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
-
-        glRenderbufferStorageMultisample(
-            GL_RENDERBUFFER,
-            msaaSamples,
-            GL_DEPTH_COMPONENT,
-            fboWidth,
-            fboHeight
-        );
-
-        glGenFramebuffers(1, &multisampleFboID);
-        glBindFramebuffer(GL_FRAMEBUFFER, multisampleFboID);
-
-        glFramebufferTexture2D(
-            GL_FRAMEBUFFER,
-            GL_COLOR_ATTACHMENT0,
-            GL_TEXTURE_2D_MULTISAMPLE,
-            multisampleTexID,
-            0
-        );
-
-        glFramebufferRenderbuffer(
-            GL_FRAMEBUFFER,
-            GL_DEPTH_ATTACHMENT,
-            GL_RENDERBUFFER,
-            depthRenderBuffer
-        );
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
     }
 }
 
+void MainPass::CreateMSAAFbo()
+{
+    glGenTextures(1, &multisampleTexID);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, multisampleTexID);
+
+    glTexImage2DMultisample(
+        GL_TEXTURE_2D_MULTISAMPLE,
+        msaaSamples,
+        GL_RGBA,
+        fboWidth,
+        fboHeight,
+        true
+    );
+
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+
+    GLuint depthRenderBuffer;
+
+    glGenRenderbuffers(1, &depthRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
+
+    glRenderbufferStorageMultisample(
+        GL_RENDERBUFFER,
+        msaaSamples,
+        GL_DEPTH_COMPONENT,
+        fboWidth,
+        fboHeight
+    );
+
+    glGenFramebuffers(1, &multisampleFboID);
+    glBindFramebuffer(GL_FRAMEBUFFER, multisampleFboID);
+
+    glFramebufferTexture2D(
+        GL_FRAMEBUFFER,
+        GL_COLOR_ATTACHMENT0,
+        GL_TEXTURE_2D_MULTISAMPLE,
+        multisampleTexID,
+        0
+    );
+
+    glFramebufferRenderbuffer(
+        GL_FRAMEBUFFER,
+        GL_DEPTH_ATTACHMENT,
+        GL_RENDERBUFFER,
+        depthRenderBuffer
+    );
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void MainPass::CreateRenderFbo()
+{
+    glGenFramebuffers(1, &renderFbo);
+
+    // Output texture.
+
+    glGenTextures(1, &renderTex);
+    glBindTexture(GL_TEXTURE_2D, renderTex);
+
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0, GL_RGBA32F,
+        settings.winW,
+        settings.winH,
+        0,
+        GL_RGBA,
+        GL_FLOAT,
+        0)
+        ;
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // Depth attachment
+
+    GLuint depthRenderBuffer;
+    glGenRenderbuffers(1, &depthRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, settings.winW, settings.winH);
+
+    // Attach 
+
+    glBindFramebuffer(GL_FRAMEBUFFER, renderFbo);
+
+    glFramebufferTexture2D(
+        GL_DRAW_FRAMEBUFFER,
+        GL_COLOR_ATTACHMENT0,
+        GL_TEXTURE_2D,
+        renderTex,
+        0
+    );
+
+    glFramebufferRenderbuffer(
+        GL_FRAMEBUFFER,
+        GL_DEPTH_ATTACHMENT,
+        GL_RENDERBUFFER,
+        depthRenderBuffer
+    );
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 /**
- * [RenderPass::Render description]
+ * [MainPass::Render description]
  * @param scn [description]
  */
 
-void RenderPass::Render(Scene &scn, float t)
+void MainPass::Render(Scene &scn, float t)
 {
     map<string, Model> &models = scn.models;
     Camera cam = scn.cam;
