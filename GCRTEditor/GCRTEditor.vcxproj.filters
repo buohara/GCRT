@@ -8,9 +8,6 @@
     <Filter Include="GA">
       <UniqueIdentifier>{115262be-9ddc-4fc1-a9b7-7f59439006b6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="IMGUI">
-      <UniqueIdentifier>{2d6a21b8-bff3-4616-935b-89219e9c1dea}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{fc42fa7f-4a3c-44bf-8669-8940e4d757b5}</UniqueIdentifier>
     </Filter>
@@ -41,24 +38,6 @@
     </ClInclude>
     <ClInclude Include="..\libgasandbox\e3ga_util.h">
       <Filter>GA</Filter>
-    </ClInclude>
-    <ClInclude Include="..\imgui\imconfig.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\imgui\imgui.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\imgui\imgui_internal.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\imgui\stb_rect_pack.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\imgui\stb_textedit.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\imgui\stb_truetype.h">
-      <Filter>IMGUI</Filter>
     </ClInclude>
     <ClInclude Include="animation.h">
       <Filter>CommonInclude</Filter>
@@ -101,9 +80,6 @@
     </ClInclude>
     <ClInclude Include="sphere.h">
       <Filter>CommonInclude</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui_impl_gcrt.h">
-      <Filter>IMGUI</Filter>
     </ClInclude>
     <ClInclude Include="renderer.h">
       <Filter>CommonInclude</Filter>
@@ -152,18 +128,6 @@
     <ClCompile Include="..\libgasandbox\e3ga_util.cpp">
       <Filter>GA</Filter>
     </ClCompile>
-    <ClCompile Include="..\imgui\imgui.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\imgui\imgui_demo.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\imgui\imgui_draw.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui_impl_gcrt.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
     <ClCompile Include="animation.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -177,9 +141,6 @@
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="imgloader.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGuiGCRT.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="material.cpp">

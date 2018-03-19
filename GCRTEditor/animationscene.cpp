@@ -27,8 +27,6 @@ void AnimationScene::LaunchAnimationScene(HINSTANCE hInstance)
 
 void AnimationScene::Init(HINSTANCE hInstance)
 {
-    rndr.Init();
-
     rndr.CreateRenderWindow(
         hInstance,
         1920,
@@ -39,21 +37,23 @@ void AnimationScene::Init(HINSTANCE hInstance)
     rndr.CreateGLContext();
 
     rndr.settings.loadSceneFromFile = false;
-    rndr.settings.msaaSamples       = 4;
-    rndr.settings.useBloom          = false;
-    rndr.settings.useDOF            = false;
-    rndr.settings.winH              = 1080;
-    rndr.settings.winW              = 1920;
-    rndr.settings.wireFrame         = false;
+    rndr.settings.msaaSamples = 4;
+    rndr.settings.useBloom = false;
+    rndr.settings.useDOF = false;
+    rndr.settings.winH = 1080;
+    rndr.settings.winW = 1920;
+    rndr.settings.wireFrame = false;
+
+    rndr.Init();
 
     DepthPass depthPass;
     depthPass.Init();
 
     MainPass mainPass;
-    mainPass.Init(depthPass.depthTexOut, 1920, 1080, false, 4);
+    mainPass.Init(depthPass.depthTexOut, 1920, 1080, false, 4, true);
 
-    rndr.passes.push_back(make_shared<RenderPass>(depthPass));
-    rndr.passes.push_back(make_shared<RenderPass>(mainPass));
+    rndr.passes["DepthPass"]    = make_shared<DepthPass>(depthPass);
+    rndr.passes["MainPass"]     = make_shared<MainPass>(mainPass);
 }
 
 /**

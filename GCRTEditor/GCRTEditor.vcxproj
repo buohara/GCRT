@@ -150,12 +150,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\imgui\imconfig.h" />
-    <ClInclude Include="..\imgui\imgui.h" />
-    <ClInclude Include="..\imgui\imgui_internal.h" />
-    <ClInclude Include="..\imgui\stb_rect_pack.h" />
-    <ClInclude Include="..\imgui\stb_textedit.h" />
-    <ClInclude Include="..\imgui\stb_truetype.h" />
     <ClInclude Include="..\libgasandbox\c3ga.h" />
     <ClInclude Include="..\libgasandbox\c3ga_util.h" />
     <ClInclude Include="..\libgasandbox\e3ga.h" />
@@ -170,7 +164,6 @@
     <ClInclude Include="dofpass.h" />
     <ClInclude Include="gcrt.h" />
     <ClInclude Include="imgloader.h" />
-    <ClInclude Include="imgui_impl_gcrt.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="mainpass.h" />
@@ -188,9 +181,6 @@
     <ClInclude Include="sphere.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\imgui\imgui.cpp" />
-    <ClCompile Include="..\imgui\imgui_demo.cpp" />
-    <ClCompile Include="..\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\libgasandbox\c3ga.cpp" />
     <ClCompile Include="..\libgasandbox\c3ga_util.cpp" />
     <ClCompile Include="..\libgasandbox\e3ga.cpp" />
@@ -205,8 +195,6 @@
     <ClCompile Include="dofpass.cpp" />
     <ClCompile Include="gcrtmain.cpp" />
     <ClCompile Include="imgloader.cpp" />
-    <ClCompile Include="ImGuiGCRT.cpp" />
-    <ClCompile Include="imgui_impl_gcrt.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="mainpass.cpp" />
     <ClCompile Include="material.cpp" />

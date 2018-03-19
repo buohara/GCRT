@@ -30,6 +30,7 @@ GLuint ImgLoader::LoadTexture(string &fileName)
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w,
         h, 0, GL_RGB, GL_UNSIGNED_BYTE, pData);
+
     glGenerateMipmap(GL_TEXTURE_2D);
 
     ilBindImage(0);

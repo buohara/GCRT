@@ -3,6 +3,7 @@
 #include "gcrt.h"
 #include "scene.h"
 #include "renderpass.h"
+#include "pickerpass.h"
 #include "imgui_impl_gcrt.h"
 #include "input.h"
 
@@ -26,7 +27,9 @@ struct Renderer
     HWND hWnd;
     HDC hDC;
 
-    vector<shared_ptr<RenderPass>> passes;
+    GLuint pickerFbo;
+
+    map<string, shared_ptr<RenderPass>> passes;
     string selected;
 
     bool mouseDown[3];
@@ -66,6 +69,5 @@ struct Renderer
     vec3 nextPickerColor();
 
     void CreateNoiseTexture();
-    void CreateRenderPassFbo();
     void ResizeRenderFbo();
 };

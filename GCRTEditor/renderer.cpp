@@ -113,17 +113,17 @@ void Renderer::Init()
     glEnable(GL_MULTISAMPLE);
     glCullFace(GL_BACK);
 
-    nextPickClr[0] = 0.0f;
-    nextPickClr[1] = 0.0f;
-    nextPickClr[2] = 0.1f;
-    nextPickIdx = 2;
-    t = 0.0;
+    nextPickClr[0]  = 0.0f;
+    nextPickClr[1]  = 0.0f;
+    nextPickClr[2]  = 0.1f;
+    nextPickIdx     = 2;
+    t               = 0.0;
 
-    mousePos[0] = 0.0;
-    mousePos[1] = 0.0;
-    mouseDown[0] = false;
-    mouseDown[1] = false;
-    mouseDown[2] = false;
+    mousePos[0]     = 0.0;
+    mousePos[1]     = 0.0;
+    mouseDown[0]    = false;
+    mouseDown[1]    = false;
+    mouseDown[2]    = false;
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClearDepth(1.0f);
@@ -243,8 +243,8 @@ void Renderer::LoadDefaultTextures()
 void Renderer::InitDefaultLights()
 {
     DirectionalLight dirLight;
-    dirLight.pos = vec3(0.0, -25.0, 25.0);
-    dirLight.look = vec3(0.0, 0.0, 0.0);
+    dirLight.pos    = vec3(0.0, -25.0, 25.0);
+    dirLight.look   = vec3(0.0, 0.0, 0.0);
     scn.dirLights.push_back(dirLight);
 
     PointLight ptLight;
@@ -259,11 +259,12 @@ void Renderer::InitDefaultLights()
 void Renderer::InitDefaultMaterials()
 {
     RMaterial defaultMat;
-    defaultMat.name = "Default";
-    defaultMat.kd = vec3(0.8, 0.8, 0.8);
+    defaultMat.name     = "Default";
+    defaultMat.kd       = vec3(0.8, 0.8, 0.8);
+    
     defaultMat.UseShadows(true);
-    defaultMat.spec = 1.0;
-    defaultMat.useSSS = true;
+    defaultMat.spec     = 1.0;
+    defaultMat.useSSS   = true;
     scn.AddMaterial("Default", defaultMat);
 }
 
@@ -275,17 +276,17 @@ void Renderer::InitDefaultModels()
 {
     Plane pln;
     pln.Create(10, 10);
-    pln.name = "Plane";
-    pln.loadFromFile = false;
-    pln.filePath = "NA";
+    pln.name            = "Plane";
+    pln.loadFromFile    = false;
+    pln.filePath        = "NA";
 
     scn.AddMesh("Plane", make_shared<Plane>(pln));
 
     Model plane;
     plane.InitModelMatrices();
     plane.Scale(vec3(10.0, 10.0, 1.0));
-    plane.meshName = string("Plane");
-    plane.matName = string("Default");
+    plane.meshName  = string("Plane");
+    plane.matName   = string("Default");
     plane.pickerColor = nextPickerColor();
     scn.AddModel("Plane0", plane);
 
@@ -318,7 +319,7 @@ void Renderer::Render()
 
     for (auto &pass : passes)
     {
-        pass->Render(scn);
+        pass.second->Render(scn);
     }
 
     SwapBuffers(hDC);
@@ -391,39 +392,42 @@ void Renderer::HandleInputs(MSG &msg)
 
 void Renderer::DoPick(LPARAM mouseCoord)
 {
-    uint32_t x = GET_X_LPARAM(mouseCoord);
-    uint32_t y = settings.winH - (GET_Y_LPARAM(mouseCoord) + 40);
-
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, pickerPass.pickerFboID);
-
-    float pixel4[4];
-    glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &pixel4[0]);
-    vec3 pixel = vec3(pixel4[0], pixel4[1], pixel4[2]);
-
-    static bool firstHit = true;
-
-    for (auto &model : scn.models)
+    if (passes.count("PickerPass") > 0)
     {
-        vec3 pickerColor = model.second.pickerColor;
-        if (abs(pickerColor.x - pixel.x) < 0.05 &&
-            abs(pickerColor.y - pixel.y) < 0.05 &&
-            abs(pickerColor.z - pixel.z) < 0.05)
+        uint32_t x = GET_X_LPARAM(mouseCoord);
+        uint32_t y = settings.winH - (GET_Y_LPARAM(mouseCoord) + 40);
+
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, pickerFbo);
+
+        float pixel4[4];
+        glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &pixel4[0]);
+        vec3 pixel = vec3(pixel4[0], pixel4[1], pixel4[2]);
+
+        static bool firstHit = true;
+
+        for (auto &model : scn.models)
         {
-            model.second.selected = true;
+            vec3 pickerColor = model.second.pickerColor;
+            if (abs(pickerColor.x - pixel.x) < 0.05 &&
+                abs(pickerColor.y - pixel.y) < 0.05 &&
+                abs(pickerColor.z - pixel.z) < 0.05)
+            {
+                model.second.selected = true;
 
-            if (firstHit == true)
-            {
-                firstHit = false;
-            }
-            else
-            {
-                if (model.first != selected)
+                if (firstHit == true)
                 {
-                    scn.models[selected].selected = false;
+                    firstHit = false;
                 }
-            }
+                else
+                {
+                    if (model.first != selected)
+                    {
+                        scn.models[selected].selected = false;
+                    }
+                }
 
-            selected = model.first;
+                selected = model.first;
+            }
         }
     }
 }

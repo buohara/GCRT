@@ -31,5 +31,5 @@ struct DOFPass : RenderPass
     void Render(Scene &scn);
     void LoadQuadVerts();
     void GenerateSamplePoints();
-    void CreateRenderFbo()
+    void CreateRenderFbo();
 };

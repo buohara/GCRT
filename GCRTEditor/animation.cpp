@@ -8,9 +8,9 @@
 
 KeyFrame::KeyFrame(float tIn, mat4 poseIn)
 {
-    t = tIn;
+    t       = tIn;
     poseMat = poseIn;
-    pose = c3ga::matrix4x4ToVersor((c3ga::mv::Float*)&poseIn[0], true);
+    pose    = c3ga::matrix4x4ToVersor((c3ga::mv::Float*)&poseIn[0], true);
 }
 
 /**
