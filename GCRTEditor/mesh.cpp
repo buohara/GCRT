@@ -1,14 +1,14 @@
 #include "Mesh.h"
 
 /**
- * [Mesh::InitVertexObjects description]
- * @param subMeshIdx  [description]
- * @param pos         [description]
- * @param norms       [description]
- * @param uvs         [description]
- * @param tans        [description]
- * @param boneIDs     [description]
- * @param boneWeights [description]
+ * Mesh::InitVertexObjects Create GL buffers/vertex attributes for a mesh.
+ * @param subMeshIdx  Mesh submesh index (for composite meshes).
+ * @param pos         Vertex positions.
+ * @param norms       Vertex normals.
+ * @param uvs         Vertex UVs.
+ * @param tans        Vertex tangents.
+ * @param boneIDs     Vertex bones.
+ * @param boneWeights Vertex bone weights.
  */
 
 void Mesh::InitVertexObjects(
@@ -73,13 +73,13 @@ void Mesh::InitVertexObjects(
 }
 
 /**
- * [Mesh::InitVertexObjects description]
- * @param subMeshIdx  [description]
- * @param pos         [description]
- * @param norms       [description]
- * @param uvs         [description]
- * @param boneIDs     [description]
- * @param boneWeights [description]
+ * Mesh::InitVertexObjects Create GL buffers/vertex attributes for a mesh.
+ * @param subMeshIdx  Mesh submesh index (for composite meshes).
+ * @param pos         Vertex positions.
+ * @param norms       Vertex normals.
+ * @param uvs         Vertex UVs.
+ * @param boneIDs     Vertex bones.
+ * @param boneWeights Vertex bone weights.
  */
 
 void Mesh::InitVertexObjects(
@@ -136,15 +136,15 @@ void Mesh::InitVertexObjects(
 }
 
 /**
- * [Mesh::InitVertexObjects description]
- * @param subMeshIdx  [description]
- * @param pos         [description]
- * @param norms       [description]
- * @param uvs         [description]
- * @param idcs        [description]
- * @param boneIDs     [description]
- * @param boneWeights [description]
- */
+* Mesh::InitVertexObjects Create GL buffers/vertex attributes for a mesh.
+* @param subMeshIdx  Mesh submesh index (for composite meshes).
+* @param pos         Vertex positions.
+* @param norms       Vertex normals.
+* @param uvs         Vertex UVs.
+* @param idcs        Triangle vertex indices.
+* @param boneIDs     Vertex bones.
+* @param boneWeights Vertex bone weights.
+*/
 
 void Mesh::InitVertexObjects(
     uint32_t subMeshIdx,

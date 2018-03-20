@@ -2,7 +2,8 @@
 
 map<string, PFNLAUNCH> launchTable =
 {
-    { "AnimationScene", AnimationScene::LaunchAnimationScene }
+    { "AnimationScene", AnimationScene::LaunchAnimationScene },
+    { "TerrainScene", TerrainScene::LaunchTerrainScene }
 };
 
 void Launch(string &name, HINSTANCE hInstance)

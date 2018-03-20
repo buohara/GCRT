@@ -4,6 +4,7 @@
 #include <map>
 
 #include "animationscene.h"
+#include "terrainscene.h"
 
 using namespace std;
 

@@ -37,12 +37,12 @@ void AnimationScene::Init(HINSTANCE hInstance)
     rndr.CreateGLContext();
 
     rndr.settings.loadSceneFromFile = false;
-    rndr.settings.msaaSamples = 4;
-    rndr.settings.useBloom = false;
-    rndr.settings.useDOF = false;
-    rndr.settings.winH = 1080;
-    rndr.settings.winW = 1920;
-    rndr.settings.wireFrame = false;
+    rndr.settings.msaaSamples       = 4;
+    rndr.settings.useBloom          = false;
+    rndr.settings.useDOF            = false;
+    rndr.settings.winH              = 1080;
+    rndr.settings.winW              = 1920;
+    rndr.settings.wireFrame         = false;
 
     rndr.Init();
 

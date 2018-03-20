@@ -114,6 +114,15 @@
     <ClInclude Include="pickerpass.h">
       <Filter>Passes</Filter>
     </ClInclude>
+    <ClInclude Include="noise.h">
+      <Filter>CommonInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="terrainscene.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="perlinterrain.h">
+      <Filter>CommonInclude</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\libgasandbox\c3ga.cpp">
@@ -197,6 +206,15 @@
     </ClCompile>
     <ClCompile Include="renderpass.cpp">
       <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="noise.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="terrainscene.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="perlinterrain.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
