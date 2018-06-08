@@ -132,11 +132,13 @@ void RTPlane::Intersect(Ray ray, Intersection &intsc)
 void Submesh::Intersect(Ray ray, Intersection &intsc)
 {
     intsc.t = DBL_MAX;
-    vector<uint32_t> faceIdcs;
-    faceIdcs.reserve(1024);
-    root.Intersect(ray, faceIdcs);
+    uint32_t faceCnt = 0;
 
-    for (uint32_t i = 0; i < faceIdcs.size(); i++)
+    uint32_t faceIdcs[1024];
+
+    root.Intersect(ray, faceIdcs, faceCnt);
+
+    for (uint32_t i = 0; i < faceCnt; i++)
     {
         uvec3 curFace = faces[faceIdcs[i]];
 
@@ -299,7 +301,7 @@ void CornellBox::Create()
         1
     );
 
-    submeshes[0].mat = "WhiteMatte";
+    submeshes[0].mat = 4;
 
     // floor
 
@@ -338,7 +340,7 @@ void CornellBox::Create()
         1
     );
 
-    submeshes[1].mat = "WhiteMatte";
+    submeshes[1].mat = 4;
 
     // left wall
 
@@ -377,7 +379,7 @@ void CornellBox::Create()
         1
     );
 
-    submeshes[2].mat = "RedMatte";
+    submeshes[2].mat = 3;
 
     // right wall
 
@@ -416,7 +418,7 @@ void CornellBox::Create()
         1
     );
 
-    submeshes[3].mat = "GreenMatte";
+    submeshes[3].mat = 2;
 
     // back wall
 
@@ -455,7 +457,7 @@ void CornellBox::Create()
         1
     );
 
-    submeshes[4].mat = "WhiteMatte";
+    submeshes[4].mat = 4;
 }
 
 /**
@@ -520,7 +522,7 @@ void SkeletalMesh::LoadModel(string file)
         submeshes[i].root.box.max = submax;
         submeshes[i].root.depth    = 1;
         submeshes[i].root.maxDepth = 10;
-        submeshes[i].mat = "WhiteMatte";
+        submeshes[i].mat = 4;
 
         for (uint32_t j = 0; j < mesh.mNumFaces; j++)
         {

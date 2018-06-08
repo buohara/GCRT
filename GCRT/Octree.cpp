@@ -194,31 +194,23 @@ exit:
  * @param faceIdcs [description]
  */
 
-void Octree::Intersect(Ray ray, vector<uint32_t> &faceIdcs)
+void Octree::Intersect(Ray ray, uint32_t faceIdcs[], uint32_t &faceCnt)
 {
-    for (uint32_t i = 0; i < faces.size(); i++)
+    for (auto &face : faces)
     {
-        faceIdcs.push_back(faces[i]);
+        faceIdcs[faceCnt++] = face;
     }
 
-    for (uint32_t x = 0; x < 2; x++)
+    for (auto &child : children)
     {
-        for (uint32_t y = 0; y < 2; y++)
+        if (child)
         {
-            for (uint32_t z = 0; z < 2; z++)
+            Intersection intsc;
+            child->box.Intersect(ray, intsc);
+
+            if (intsc.t > 0.0)
             {
-                uint32_t child = 4 * x + 2 * y + z;
-
-                if (children[child] != nullptr)
-                {
-                    Intersection intsc;
-                    children[child]->box.Intersect(ray, intsc);
-
-                    if (intsc.t > 0.0)
-                    {
-                        children[child]->Intersect(ray, faceIdcs);
-                    }
-                }
+                child->Intersect(ray, faceIdcs, faceCnt);
             }
         }
     }

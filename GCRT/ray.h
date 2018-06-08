@@ -17,5 +17,5 @@ struct Intersection
     dvec3 normal;
     dvec2 uv;
     dvec3 tan;
-    string mat;
+    uint32_t mat;
 };

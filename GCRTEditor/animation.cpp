@@ -45,10 +45,10 @@ mat4 Animation::GetAnimationMatrix(float t)
         if (t < kfs[i].t)
         {
             float alpha = (t - kfs[i - 1].t) / (kfs[i].t - kfs[i - 1].t);
-            c3ga::TRversor src = kfs[i - 1].pose;
-            c3ga::dualLine log = poseLogs[i - 1];
-            c3ga::TRversor interp = _TRversor(src * exp(_dualLine(alpha * log)));
-            c3ga::TRversor interpInv = inverse(interp);
+            c3ga::TRversor src          = kfs[i - 1].pose;
+            c3ga::dualLine log          = poseLogs[i - 1];
+            c3ga::TRversor interp       = _TRversor(src * exp(_dualLine(alpha * log)));
+            c3ga::TRversor interpInv    = inverse(interp);
 
             out = GetMatrixFromVersor(interp, interpInv);
             break;

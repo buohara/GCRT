@@ -1,8 +1,11 @@
 #include "rtscene.h"
 
 /**
- * [RTScene::Intersect description]
- * @param  ray [description]
+ * RTScene::Intersect Shoot a ray into the scene and get its
+ * intersection.
+ *
+ * @param  ray Ray to shoot into scene.
+ * @param  intsc Output. Intersection information.
  */
 
 void RTScene::Intersect(Ray ray, Intersection &intsc)
@@ -37,13 +40,14 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
-* [RTCamera::Init description]
-* @param w     [description]
-* @param h     [description]
-* @param posIn [description]
-* @param look  [description]
-* @param fov   [description]
-*/
+ * RTCamera::Init Initialize camera properties.
+ *
+ * @param w     Image width.
+ * @param h     Image height.
+ * @param posIn Camera position.
+ * @param look  Position camera is looking at.
+ * @param fov   Camera field of view.
+ */
 
 void RTCamera::Init(
     uint32_t w,
@@ -202,12 +206,12 @@ void RTScene::InitDefaultMaterials()
     metalMat.name = "Metal";
     metalMat.ks = 15.0;
 
-    mats["Mirror"]      = make_shared<MirrorMaterial>(mirrorMat);
-    mats["Glass"]       = make_shared<FresnelGlassMaterial>(glassMat);
-    mats["GreenMatte"]  = make_shared<LambertMaterial>(greenMat);
-    mats["RedMatte"]    = make_shared<LambertMaterial>(redMat);
-    mats["WhiteMatte"]  = make_shared<LambertMaterial>(whiteMat);
-    mats["Metal"]  = make_shared<BlinnMaterial>(metalMat);
+    mats[0]  = make_shared<MirrorMaterial>(mirrorMat);
+    mats[1]  = make_shared<FresnelGlassMaterial>(glassMat);
+    mats[2]  = make_shared<LambertMaterial>(greenMat);
+    mats[3]  = make_shared<LambertMaterial>(redMat);
+    mats[4]  = make_shared<LambertMaterial>(whiteMat);
+    mats[5]  = make_shared<BlinnMaterial>(metalMat);
 }
 
 /**
@@ -226,7 +230,7 @@ void RTScene::InitDefaultModels()
     RTSphere mirrSph;
     mirrSph.orgn    = dvec3(-3.0, -3.0, 2.0);
     mirrSph.r       = 1.0;
-    mirrSph.mat     = "Mirror";
+    mirrSph.mat     = 0;
     
     k1.pos = dvec3(-3.0, -3.0, 2.0);
     k2.pos = dvec3(0.0, -3.0, 2.0);
@@ -241,7 +245,7 @@ void RTScene::InitDefaultModels()
     RTSphere matteSph;
     matteSph.orgn   = dvec3(-3.0, 0.0, 2.0);
     matteSph.r      = 1.0;
-    matteSph.mat    = "WhiteMatte";
+    matteSph.mat    = 4;
 
     k1.pos = dvec3(-3.0, 0.0, 2.0);
     k2.pos = dvec3(1.0, 0.0, 2.0);
@@ -256,7 +260,7 @@ void RTScene::InitDefaultModels()
     RTSphere metalSph;
     metalSph.orgn   = dvec3(-3.0, 3.0, 2.0);
     metalSph.r      = 1.0;
-    metalSph.mat    = "Metal";
+    metalSph.mat    = 5;
 
     k1.pos = dvec3(-3.0, 3.0, 2.0);
     k2.pos = dvec3(2.0, 3.0, 2.0);
@@ -265,10 +269,6 @@ void RTScene::InitDefaultModels()
     metalSph.animation.kfs.push_back(k2);
 
     //meshes["MetalSphere"] = make_shared<RTSphere>(metalSph);
-
-    AssimpMesh lampGuy;
-    lampGuy.LoadModel("F:/GCRT/asset/models/boblampclean/boblampclean.md5mesh");
-    meshes["LampGuy"] = make_shared<AssimpMesh>(lampGuy);
 
     // Light source
 
@@ -304,7 +304,6 @@ void RTScene::LoadScene(string filePath)
     {
         string modelName           = model["name"];
         models[modelName].mesh     = model["mesh"];
-        models[modelName].material = model["material"];
     }
 
     for (auto mesh : scnJSON["meshes"])

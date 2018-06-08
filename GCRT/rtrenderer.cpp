@@ -159,6 +159,46 @@ void RTRenderer::Preprocess()
 void RTRenderer::GenerateVirtualLights()
 {
     return;
+
+    //double bias = integrator.bias;
+    //scn.vLights.resize(settings.vLightSets);
+
+    //for (uint32_t i = 0; i < scn.lights.size(); i++)
+    //{
+    //    Ray ray;
+    //    Intersection intsc;
+
+    //    dmat4 scl = scale(dvec3(scn.lights[i].r));
+    //    dvec3 emis = scn.mats[scn.lights[i].mat]->GetEmission(ray, intsc);
+    //    emis;
+
+    //    for (uint32_t k = 0; k < settings.vLightSets; k++)
+    //    {
+    //        for (uint32_t j = 0; j < settings.vLightSetSize; j++)
+    //        {
+    //            //double theta = pi<double>() * (double)rand() / (double)RAND_MAX;
+    //            double theta = acos(2.0 * (double)rand() / (double)RAND_MAX - 1.0);
+    //            double phi = 2.0 * pi<double>() * (double)rand() / (double)RAND_MAX;
+
+    //            dvec3 sample;
+
+    //            sample.x = sin(theta) * cos(phi);
+    //            sample.y = sin(theta) * sin(phi);
+    //            sample.z = cos(theta);
+
+    //            ray.org = scn.lights[i].orgn + sample;
+    //            ray.dir = normalize(ray.org - scn.lights[i].orgn);
+
+    //            scn.GenerateLightPath(
+    //                k,
+    //                ray,
+    //                settings.lightPathDepth,
+    //                1,
+    //                emis
+    //            );
+    //        }
+    //    }
+    //}
 }
 
 /**
@@ -237,7 +277,7 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
                         scn.Intersect(ray, intsc);
                         double t = intsc.t;
 
-                        if (t > 0.0 && intsc.mat != "Light")
+                        if (t > 0.0 && intsc.mat != 6)
                         {
                             color += integrator.SampleSurface(
                                 ray,
@@ -449,25 +489,79 @@ void RTRenderer::LoadSettings(string file)
     string scnFilePath;
 
     getline(fin, line);
+    iss.str(line);
+    iss >> imageW;
+    iss.clear();
+
     getline(fin, line);
     iss.str(line);
+    iss >> imageH;
+    iss.clear();
 
-    iss
-        >> imageW
-        >> imageH
-        >> sphereSamples
-        >> vLightSets
-        >> vLightSetSize
-        >> camPathDepth
-        >> lightPathDepth
-        >> pixelSamples
-        >> filterSize
-        >> dofSamples
-        >> numThreads
-        >> xBlocks
-        >> yBlocks
-        >> scnFromFile
-        >> scnFilePath;
+    getline(fin, line);
+    iss.str(line);
+    iss >> sphereSamples;
+    iss.clear();
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> vLightSets;
+    iss.clear();
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> vLightSetSize;
+    iss.clear();
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> camPathDepth;
+    iss.clear();
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> lightPathDepth;
+    iss.clear();
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> pixelSamples;
+    iss.clear();
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> filterSize;
+    iss.clear();
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> dofSamples;
+    iss.clear();
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> numThreads;
+    iss.clear();
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> xBlocks;
+    iss.clear();
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> yBlocks;
+    iss.clear();
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> scnFromFile;
+    iss.clear();
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> scnFilePath;
+    iss.clear();
 
     settings.imageW         = imageW;
     settings.imageH         = imageH;
@@ -479,8 +573,6 @@ void RTRenderer::LoadSettings(string file)
     settings.pixelSamples   = pixelSamples;
     settings.filterSize     = filterSize;
     settings.dofSamples     = dofSamples;
-    settings.camPathDepth   = camPathDepth;
-    settings.lightPathDepth = lightPathDepth;
     settings.numThreads     = numThreads;
     settings.xBlocks        = xBlocks;
     settings.yBlocks        = yBlocks;

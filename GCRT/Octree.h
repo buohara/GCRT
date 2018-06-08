@@ -23,5 +23,5 @@ struct Octree
     uint32_t maxDepth;
 
     void Insert(dvec3 p0, dvec3 p1, dvec3 p2, uint32_t face);
-    void Intersect(Ray ray, vector<uint32_t> &faceIdcs);
+    void Intersect(Ray ray, uint32_t faceIdcs[], uint32_t &faceCnt);
 };

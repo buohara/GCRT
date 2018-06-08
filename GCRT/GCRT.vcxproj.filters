@@ -22,6 +22,9 @@
     <Filter Include="Light">
       <UniqueIdentifier>{75ce671b-285c-4dcf-9326-fbc1c1cab163}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{c5cc50fb-edc3-4cd9-8ba3-327795d4c5ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Octree.cpp">
@@ -80,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="animation.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestBVH.cpp">
+      <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -20,7 +20,7 @@ struct Submesh
     vector<dvec3> tan;
     vector<uvec3> faces;
 
-    string mat;
+    uint32_t mat;
     void Intersect(Ray ray, Intersection &intsc);
 };
 
@@ -54,7 +54,7 @@ struct RTSphere : RTMesh
 {
     double r;
     dvec3 orgn;
-    string mat;
+    uint32_t mat;
     Animation animation;
     void Intersect(Ray ray, Intersection &intsc);
     void UpdateAnimation(double t);
@@ -63,7 +63,7 @@ struct RTSphere : RTMesh
 struct RTPlane : RTMesh
 {
     dvec4 normal;
-    string mat;
+    uint32_t mat;
     void Intersect(Ray ray, Intersection &intsc);
 };
 
@@ -71,12 +71,12 @@ struct RTBox : RTMesh
 {
     dvec3 min;
     dvec3 max;
-    string mat;
+    uint32_t mat;
     void Intersect(Ray ray, Intersection &intsc);
 };
 
 struct RTModel
 {
     string mesh;
-    string material;
+    uint32_t material;
 };

@@ -161,7 +161,7 @@ uint32_t SurfaceIntegrator::SampleBSDF(
         {
             dvec3 colorIn;
 
-            if (nextIntsc.mat != "Light")
+            if (nextIntsc.mat != 6)
             {
                 colorIn = SampleSurface(
                     ray,
@@ -208,9 +208,10 @@ uint32_t SurfaceIntegrator::SampleLightDistribution(
     for (auto &lightKV : scn.lights)
     {
         vector<Ray> lightRays;
+        //lightRays.reserve(8);
         auto &light = *lightKV.second;
 
-        light.GetLightSamples(8, rayIn, intsc, lightRays);
+        light.GetLightSamples(4, rayIn, intsc, lightRays);
         nLightSamples += lightRays.size();
 
         for (auto &ray : lightRays)
