@@ -39,7 +39,8 @@ struct SurfaceIntegrator
         uint32_t maxBounces,
         Ray rayIn,
         RTScene &scn,
-        Intersection intsc
+        Intersection intsc,
+        uint32_t &totalSamples
     );
     
     uint32_t SampleLightDistribution(
@@ -48,7 +49,8 @@ struct SurfaceIntegrator
         uint32_t maxBounces,
         Ray rayIn,
         RTScene &scn,
-        Intersection intsc
+        Intersection intsc,
+        uint32_t &totalSamples
     );
 
     dvec3 SampleSurface(

@@ -29,7 +29,7 @@ dvec3 LambertMaterial::EvalBSDF(
  * @param weights    [description]
  */
 
-void LambertMaterial::GetBSDFSamples(
+uint32_t LambertMaterial::GetBSDFSamples(
     uint32_t numSamples,
     Ray rayIn,
     Intersection intsc,
@@ -44,11 +44,11 @@ void LambertMaterial::GetBSDFSamples(
 
     for (uint32_t i = 0; i < numSamples; i++)
     {
-        Ray rayOut;
-        rayOut.org = org;
-        rayOut.dir = normalize(tbn * sampler.samples[sampleSet][i]);
-        raysOut.push_back(rayOut);
+        raysOut[i].org = org;
+        raysOut[i].dir = normalize(tbn * sampler.samples[sampleSet][i]);
     }
+
+    return numSamples;
 }
 
 /**

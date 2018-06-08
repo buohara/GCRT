@@ -14,7 +14,7 @@ struct BlinnMaterial : RTMaterial
         Ray rayOut
     );
 
-    void GetBSDFSamples(
+    uint32_t GetBSDFSamples(
         uint32_t numSamples,
         Ray rayIn,
         Intersection intsc,

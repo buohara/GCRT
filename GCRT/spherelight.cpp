@@ -67,11 +67,9 @@ void SphereLight::GetLightSamples(
 
     for (uint32_t i = 0; i < numSamples; i++)
     {
-        Ray rayOut;
-        rayOut.org = org;
-        rayOut.dir = 
+        raysOut[i].org = org;
+        raysOut[i].dir = 
             normalize((0.9 * r * sampler.samples[sampleSet][i] + dvec4(pos, 1.0)) - dvec4(org, 1.0));
-        raysOut.push_back(rayOut);
     }
 }
 

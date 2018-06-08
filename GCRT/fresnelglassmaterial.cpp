@@ -127,7 +127,7 @@ dvec3 FresnelGlassMaterial::EvalBSDF(
  * @param weights [description]
  */
 
-void FresnelGlassMaterial::GetBSDFSamples(
+uint32_t FresnelGlassMaterial::GetBSDFSamples(
     uint32_t numSamples,
     Ray rayIn,
     Intersection intsc,
@@ -140,6 +140,8 @@ void FresnelGlassMaterial::GetBSDFSamples(
     GetReflectedRay(rayIn, intsc, rayReflect);
     GetTransmittedRay(rayIn, intsc, rayTransmit);
 
-    raysOut.push_back(rayReflect);
-    raysOut.push_back(rayTransmit);
+    raysOut[0] = rayReflect;
+    raysOut[0] = rayTransmit;
+
+    return 1;
 }

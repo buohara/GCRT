@@ -19,7 +19,7 @@ struct LambertMaterial : RTMaterial
 
     void Init(uint32_t sampleSets, uint32_t setSize);
 
-    void GetBSDFSamples(
+    uint32_t GetBSDFSamples(
         uint32_t numSamples,
         Ray rayIn,
         Intersection intsc,

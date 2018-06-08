@@ -21,14 +21,14 @@ struct RTMaterial
         return dvec3(0.0, 0.0, 0.0); 
     }
     
-    virtual void GetBSDFSamples(
+    virtual uint32_t GetBSDFSamples(
         uint32_t numSamples,
         Ray rayIn,
         Intersection intsc,
         vector<Ray> &raysOut
     ) 
     {
-        return; 
+        return 0; 
     }
 
     virtual double BSDFPDF(Ray rayIn, Ray rayOut, Intersection intsc)

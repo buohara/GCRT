@@ -30,7 +30,7 @@ dvec3 BlinnMaterial::EvalBSDF(
  * @param raysOut    [description]
  */
 
-void BlinnMaterial::GetBSDFSamples(
+uint32_t BlinnMaterial::GetBSDFSamples(
     uint32_t numSamples,
     Ray rayIn,
     Intersection intsc,
@@ -63,14 +63,11 @@ void BlinnMaterial::GetBSDFSamples(
             halfDir = -halfDir;
         }
 
-        dvec3 newDir = rayIn.dir + 2.0 * dot(-rayIn.dir, halfDir) * halfDir;
-
-        Ray newRay;
-        newRay.dir = newDir;
-        newRay.org = org;
-
-        raysOut.push_back(newRay);
+        raysOut[i].dir = rayIn.dir + 2.0 * dot(-rayIn.dir, halfDir) * halfDir;;
+        raysOut[i].org = org;
     }
+
+    return numSamples;
 }
 
 /**

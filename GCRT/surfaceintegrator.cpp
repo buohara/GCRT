@@ -17,10 +17,12 @@ dvec3 SurfaceIntegrator::SampleSurface(
     uint32_t maxBounces
 )
 {
-    vector<SurfSample> surfSamples;
+    vector<SurfSample> surfSamples(256);
     auto &mat = *scn.mats[intsc.mat];
-    uint32_t nBSDFSamples = 0;
-    uint32_t nLightSamples = 0;
+
+    uint32_t nBSDFSamples   = 0;
+    uint32_t nLightSamples  = 0;
+    uint32_t totalSamples   = 0;
 
     if (bounce < maxBounces)
     {
@@ -30,7 +32,8 @@ dvec3 SurfaceIntegrator::SampleSurface(
             maxBounces,
             rayIn,
             scn,
-            intsc
+            intsc,
+            totalSamples
         );
     }
 
@@ -40,7 +43,8 @@ dvec3 SurfaceIntegrator::SampleSurface(
         maxBounces,
         rayIn,
         scn,
-        intsc
+        intsc,
+        totalSamples
     );
 
     dvec3 out = ApplyBalanceHeuristic(surfSamples, nBSDFSamples, nLightSamples);
@@ -64,8 +68,10 @@ dvec3 SurfaceIntegrator::ApplyBalanceHeuristic(
     dvec3 bsdfTerm = dvec3(0.0);
     dvec3 lightTerm = dvec3(0.0);
 
-    for (auto sample : surfSamples)
+    for (uint32_t i = 0; i < (nBSDFSamples + nLightSamples); i++)
     {
+        SurfSample &sample = surfSamples[i];
+
         switch (sample.distType)
         {
         case BSDF_TYPE:
@@ -125,16 +131,21 @@ uint32_t SurfaceIntegrator::SampleBSDF(
     uint32_t maxBounces,
     Ray rayIn,
     RTScene &scn,
-    Intersection intsc
+    Intersection intsc,
+    uint32_t &totalSamples
 )
 {
-    vector<Ray> bsdfRays;
+    const uint32_t requestedBSDFSamples = 4;
+
+    vector<Ray> bsdfRays(requestedBSDFSamples);
     auto &mat = *scn.mats[intsc.mat];
-    mat.GetBSDFSamples(4, rayIn, intsc, bsdfRays);
+    uint32_t numSamples = mat.GetBSDFSamples(requestedBSDFSamples, rayIn, intsc, bsdfRays);
     uint32_t nBSDFSamples = bsdfRays.size();
 
-    for (auto &ray : bsdfRays)
+    for (uint32_t i = 0; i < numSamples; i++)
     {
+        Ray &ray = bsdfRays[i];
+
         Intersection nextIntsc;
         SurfSample curSample = { dvec3(0.0), 0.0, 0.0, BSDF_TYPE };
         curSample.BSDFPDF = mat.BSDFPDF(rayIn, ray, intsc);
@@ -175,7 +186,7 @@ uint32_t SurfaceIntegrator::SampleBSDF(
             curSample.BSDF = mat.EvalBSDF(ray, colorIn, intsc, rayIn);
         }
 
-        surfSamples.push_back(curSample);
+        surfSamples[totalSamples++] = curSample;
         ray.org -= bias * ray.dir;
     }
 
@@ -199,7 +210,8 @@ uint32_t SurfaceIntegrator::SampleLightDistribution(
     uint32_t maxBounces,
     Ray rayIn,
     RTScene &scn,
-    Intersection intsc
+    Intersection intsc,
+    uint32_t &totalSamples
 )
 {
     uint32_t nLightSamples = 0;
@@ -207,15 +219,18 @@ uint32_t SurfaceIntegrator::SampleLightDistribution(
 
     for (auto &lightKV : scn.lights)
     {
-        vector<Ray> lightRays;
-        //lightRays.reserve(8);
+        const uint32_t numLightSamples = 8;
+
+        vector<Ray> lightRays(numLightSamples);
         auto &light = *lightKV.second;
 
-        light.GetLightSamples(4, rayIn, intsc, lightRays);
+        light.GetLightSamples(8, rayIn, intsc, lightRays);
         nLightSamples += lightRays.size();
 
-        for (auto &ray : lightRays)
+        for (uint32_t i = 0; i < numLightSamples; i++)
         {
+            Ray &ray = lightRays[i];
+
             Intersection nextIntsc;
             Intersection lightIntsc;
             SurfSample curSample = { dvec3(0.0), 0.0, 0.0, LIGHT_TYPE };
@@ -235,7 +250,7 @@ uint32_t SurfaceIntegrator::SampleLightDistribution(
                 curSample.BSDF = mat.EvalBSDF(ray, color, intsc, rayIn);
             }
 
-            surfSamples.push_back(curSample);
+            surfSamples[totalSamples++] = curSample;
 
             ray.org -= bias * ray.dir;
         }

@@ -28,15 +28,15 @@ dvec3 MirrorMaterial::EvalBSDF(
  * @param weights    [description]
  */
 
-void MirrorMaterial::GetBSDFSamples(
+uint32_t MirrorMaterial::GetBSDFSamples(
     uint32_t numSamples,
     Ray rayIn,
     Intersection intsc,
     vector<Ray> &raysOut
 )
 {
-    Ray rayOut;
-    rayOut.org = rayIn.org + (intsc.t * rayIn.dir);
-    rayOut.dir = normalize(reflect(rayIn.dir, intsc.normal));
-    raysOut.push_back(rayOut);
+    raysOut[0].org = rayIn.org + (intsc.t * rayIn.dir);
+    raysOut[0].dir = normalize(reflect(rayIn.dir, intsc.normal));
+
+    return 1;
 }

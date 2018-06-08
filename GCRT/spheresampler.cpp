@@ -19,7 +19,7 @@ void SphereSampler::GenerateSamples(uint32_t numSets, uint32_t setSize)
             double u = (double)rand() / (double)RAND_MAX;
             double v = (double)rand() / (double)RAND_MAX;
 
-            double theta = acos(2 * v - 1.0);
+            double theta = acos(1.0 - 2 * v);
             double phi = 2.0 * pi<double>() * u;
 
             sample.x = sin(theta) * cos(phi);
