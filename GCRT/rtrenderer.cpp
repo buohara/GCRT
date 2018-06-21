@@ -3,8 +3,8 @@
 CRITICAL_SECTION imageBlockCS;
 
 /**
- * [GetMilliseconds description]
- * @return [description]
+ * GetMilliseconds Get timestamp in milliseconds since beginning of clock epoch.
+ * @return Timestamp in milliseconds.
  */
 
 long long GetMilliseconds()
@@ -25,9 +25,15 @@ long long GetMilliseconds()
 }
 
 /**
- * [RTRenderer::Init description]
- * @param w [description]
- * @param h [description]
+ * RTRenderer::Init Initialize the raytrace renderer.
+ *
+ * - Load settings from file.
+ * - Initialize output image.
+ * - Configure filter parameters.
+ * - Initialize render threads.
+ * - Configure surface integrator settings.
+ * - Load scene models/lights.
+ * - Process virtual lights for scene.
  */
 
 void RTRenderer::Init()
@@ -50,21 +56,14 @@ void RTRenderer::Init()
     filter.xw = 2.0;
     filter.yw = 2.0;
 
-    if (settings.scnFromFile == true)
-    {
-        scn.LoadScene(settings.scnFilePath);
-    }
-    else
-    {
-        scn.LoadDefaultScene(imageW, imageH);
-    }
-
+    scn.LoadDefaultScene(imageW, imageH);
     Preprocess();
     InitThreads();
 }
 
 /**
- * [RTRenderer::GenerateImageBlocks description]
+ * RTRenderer::GenerateImageBlocks Break output image into tiles for threads
+ * to render.
  */
 
 void RTRenderer::GenerateImageBlocks()
@@ -119,15 +118,22 @@ void RTRenderer::GenerateImageBlocks()
 }
 
 /**
- * [RTRenderer::InitThreads description]
+ * RTRenderer::InitThreads Prepare data for render threads.
  */
 
 void RTRenderer::InitThreads()
 {
     InitializeCriticalSection(&imageBlockCS);
 
+#ifdef _DEBUG
+
+    numThreads = 1;
+
+#else
+
     numThreads = settings.numThreads;
 
+#endif
     for (uint32_t i = 0; i < numThreads; i++)
     {
         threadData[i].threadID      = i;
@@ -144,7 +150,7 @@ void RTRenderer::InitThreads()
 }
 
 /**
- * [RTRenderer::Preprocess description]
+ * RTRenderer::Preprocess Do any preprocessing on scene before rendering.
  */
 
 void RTRenderer::Preprocess()
@@ -153,7 +159,8 @@ void RTRenderer::Preprocess()
 }
 
 /**
- * [RTRenderer::GenerateVirtualLights description]
+ * RTRenderer::GenerateVirtualLights Shoot rays from light sources and deposit virtual
+ * lights around scene for bidirectional path tracing.
  */
 
 void RTRenderer::GenerateVirtualLights()
@@ -202,9 +209,12 @@ void RTRenderer::GenerateVirtualLights()
 }
 
 /**
- * [RenderThreadFunc description]
- * @param  lpParam [description]
- * @return         [description]
+ * RenderThreadFunc Render thread routine. Grab image tiles from queue
+ * and ray trace pixels in that tile until no more tiles.
+ *
+ * @param  lpParam Render thread data.
+ *
+ * @return         Zero when no more thread work to consume.
  */
 
 DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
@@ -303,7 +313,12 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
 }
 
 /**
- * [RTRenderer::Render description]
+ * RTRenderer::Render Main render routine. For each animation timestamp:
+ *
+ * - Update scene animation. 
+ * - Kick off threads to render image tiles.
+ * - When threads are done, run filter over image samples to generate final image.
+ * - Save final image to file.
  */
 
 void RTRenderer::Render()
@@ -352,7 +367,7 @@ void RTRenderer::Render()
 }
 
 /**
- * [RTRenderer::FilterSamples description]
+ * RTRenderer::FilterSamples Apply simple filter box to generated image samples.
  */
 
 void RTRenderer::FilterSamples()
@@ -389,11 +404,12 @@ void RTRenderer::FilterSamples()
 }
 
 /**
- * [RTRenderer::GetFilterBox description]
- * @param x         [description]
- * @param y         [description]
- * @param w         [description]
- * @param filterBox [description]
+ * RTRenderer::GetFilterBox 
+ *
+ * @param x         Pixel x position.
+ * @param y         Pixel y position.
+ * @param w         Filter box width.
+ * @param filterBox List of neighbor pixels to filter for current (x,y) pixel.
  */
 
 void RTRenderer::GetFilterBox(int x, int y, int w, vector<uvec2> &filterBox)
@@ -423,8 +439,8 @@ void RTRenderer::GetFilterBox(int x, int y, int w, vector<uvec2> &filterBox)
 }
 
 /**
- * [RTRenderer::SaveImage description]
- * @param fileName [description]
+ * RTRenderer::SaveImage Save a final image to file.
+ * @param fileName Output image file name.
  */
 
 void RTRenderer::SaveImage(string fileName)
@@ -447,7 +463,8 @@ void RTRenderer::SaveImage(string fileName)
 }
 
 /**
- * [RTRenderer::ResetImageSamples description]
+ * RTRenderer::ResetImageSamples Clear all samples generated for image from previous
+ * ray tracing passes.
  */
 
 void RTRenderer::ResetImageSamples()
@@ -460,8 +477,8 @@ void RTRenderer::ResetImageSamples()
 }
 
 /**
- * [RTRenderer::LoadSettings description]
- * @param file [description]
+ * RTRenderer::LoadSettings Load ray tracer settings from settings file.
+ * @param file Settings file path.
  */
 
 void RTRenderer::LoadSettings(string file)

@@ -46,5 +46,5 @@ uint32_t SphereSampler::NextSet()
 
     uint32_t outSet = curSet;
     
-    return (outSet >= samples.size() ? samples.size() - 1 : outSet);
+    return (uint32_t)(outSet >= samples.size() ? samples.size() - 1 : outSet);
 }

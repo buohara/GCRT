@@ -140,7 +140,7 @@ uint32_t SurfaceIntegrator::SampleBSDF(
     vector<Ray> bsdfRays(requestedBSDFSamples);
     auto &mat = *scn.mats[intsc.mat];
     uint32_t numSamples = mat.GetBSDFSamples(requestedBSDFSamples, rayIn, intsc, bsdfRays);
-    uint32_t nBSDFSamples = bsdfRays.size();
+    uint32_t nBSDFSamples = (uint32_t)bsdfRays.size();
 
     for (uint32_t i = 0; i < numSamples; i++)
     {
@@ -225,7 +225,7 @@ uint32_t SurfaceIntegrator::SampleLightDistribution(
         auto &light = *lightKV.second;
 
         light.GetLightSamples(8, rayIn, intsc, lightRays);
-        nLightSamples += lightRays.size();
+        nLightSamples += (uint32_t)lightRays.size();
 
         for (uint32_t i = 0; i < numLightSamples; i++)
         {

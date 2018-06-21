@@ -274,7 +274,7 @@ void RTScene::InitDefaultModels()
 
     SphereLight lightSphWhite;
     lightSphWhite.Init(256, 16);
-    lightSphWhite.pos   = { 0.0, 2.0, 3.5 };
+    lightSphWhite.pos   = { 0.0, 0.0, 3.5 };
     lightSphWhite.r     = 0.4;
     lightSphWhite.pwr   = { 20.0, 19.0, 18.0 };
     lights["WhiteSphere"] = make_shared<SphereLight>(lightSphWhite);
@@ -282,63 +282,10 @@ void RTScene::InitDefaultModels()
     auto pCornellBox = make_shared<CornellBox>();
     pCornellBox->Create();
     meshes["CornellBox"] = pCornellBox;
-}
 
-/**
- * [RTScene::LoadScene description]
- * @param filePath [description]
- */
-
-void RTScene::LoadScene(string filePath)
-{
-    ifstream fin;
-    fin.open(filePath);
-
-    string line;
-    istringstream iss;
-    getline(fin, line);
-
-    json scnJSON = json::parse(line.c_str());
-    
-    for (auto model : scnJSON["models"])
-    {
-        string modelName           = model["name"];
-        models[modelName].mesh     = model["mesh"];
-    }
-
-    for (auto mesh : scnJSON["meshes"])
-    {
-        string meshName = mesh["name"];
-        string type = mesh["type"];
-
-        if (type == "Sphere")
-        {
-            auto pSphere = make_shared<RTSphere>();
-            pSphere->orgn = dvec3(0.0, 0.0, 0.0);
-            pSphere->r = 1.0;
-            meshes[meshName] = pSphere;
-        }
-        else if (type == "Box")
-        {
-            auto pBox = make_shared<RTBox>();
-            pBox->min = dvec3(-1.0, -1.0, -1.0);
-            pBox->max = dvec3(1.0, 1.0, 1.0);;
-            meshes[meshName] = pBox;
-        }
-        else if (type == "JSON")
-        {
-            auto pMesh = make_shared<JSONMesh>();
-            meshes[meshName] = pMesh;
-        }
-    }
-
-    for (auto mat : scnJSON["materials"])
-    {
-        
-    }
-
-    OutputDebugString(scnJSON.dump(4).c_str());
-    __debugbreak();
+    SkeletalMesh mesh;
+    mesh.LoadModel(string("../asset/models/dragon/dragon_vrip.ply"));
+    meshes["Dragon"] = make_shared<SkeletalMesh>(mesh);
 }
 
 /**

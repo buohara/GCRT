@@ -5,6 +5,7 @@
 #include "sampler.h"
 #include "surfaceintegrator.h"
 #include "filter.h"
+#include <iomanip>
 
 struct Rect
 {

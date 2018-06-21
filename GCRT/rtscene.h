@@ -3,7 +3,6 @@
 #include "GCRT.h"
 #include "rtmesh.h"
 #include "ray.h"
-#include "json.hpp"
 #include "light.h"
 #include "spherelight.h"
 #include "fresnelglassmaterial.h"
@@ -15,7 +14,6 @@
 
 using namespace glm;
 using namespace std;
-using json = nlohmann::json;
 
 struct VirtualLight
 {
@@ -82,6 +80,4 @@ struct RTScene
         uint32_t depth,
         dvec3 lightColor
     );
-    
-    void LoadScene(string filePath);
 };

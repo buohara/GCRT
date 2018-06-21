@@ -109,10 +109,12 @@
       <AdditionalIncludeDirectories>..\assimp-3.3.1\include;..\glm;..\DevIL\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>assimp-vc140-mt.lib;DevIL.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\assimp-3.3.1\out\code\Release;..\DevIL\lib\x64\Release</AdditionalLibraryDirectories>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -168,6 +170,7 @@
     <ClCompile Include="lambertmaterial.cpp" />
     <ClCompile Include="mirrormaterial.cpp" />
     <ClCompile Include="Octree.cpp" />
+    <ClCompile Include="plyfile.c" />
     <ClCompile Include="rtmaterial.cpp" />
     <ClCompile Include="rtmesh.cpp" />
     <ClCompile Include="rtrenderer.cpp" />
@@ -177,7 +180,6 @@
     <ClCompile Include="spherelight.cpp" />
     <ClCompile Include="spheresampler.cpp" />
     <ClCompile Include="surfaceintegrator.cpp" />
-    <ClCompile Include="TestBVH.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="timeline.cpp" />
   </ItemGroup>
@@ -187,11 +189,11 @@
     <ClInclude Include="coshemisampler.h" />
     <ClInclude Include="filter.h" />
     <ClInclude Include="fresnelglassmaterial.h" />
-    <ClInclude Include="json.hpp" />
     <ClInclude Include="light.h" />
     <ClInclude Include="lambertmaterial.h" />
     <ClInclude Include="mirrormaterial.h" />
     <ClInclude Include="Octree.h" />
+    <ClInclude Include="ply.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="rtmaterial.h" />
     <ClInclude Include="rtmesh.h" />

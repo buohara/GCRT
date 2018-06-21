@@ -1,8 +1,9 @@
 #include "RTMesh.h"
 
 /**
- * [RTSphere::Intersect description]
- * @param  ray [description]
+ * RTSphere::Intersect Find a ray sphere intersection.
+ * @param  ray    Ray to intersect with this sphere.
+ * @param  instsc Output intersection information.
  */
 
 void RTSphere::Intersect(Ray ray, Intersection &intsc)
@@ -86,8 +87,8 @@ void RTSphere::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * [RTSphere::UpdateAnimation description]
- * @param  t [description]
+ * RTSphere::UpdateAnimation Update this sphere's animation at a given time.
+ * @param  t Time for this animation's pose.
  */
 
 void RTSphere::UpdateAnimation(double t)
@@ -102,8 +103,9 @@ void RTSphere::UpdateAnimation(double t)
 }
 
 /**
- * [RTPlane::Intersect description]
- * @param  ray [description]
+ * RTPlane::Intersect Intersect a ray with a plane.
+ * @param  ray Ray to intersect with this plane.
+ * @param  intsc Output intersection information.
  */
 
 void RTPlane::Intersect(Ray ray, Intersection &intsc)
@@ -124,9 +126,9 @@ void RTPlane::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * [Submesh::Intersect description]
- * @param ray  [description]
- * @param intc [description]
+ * Submesh::Intersect Check if ray intersects this submesh.
+ * @param ray  Ray to intersect.
+ * @param intc Intersection point information.
  */
 
 void Submesh::Intersect(Ray ray, Intersection &intsc)
@@ -183,9 +185,9 @@ void Submesh::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * [AssimpMesh::Intersect description]
- * @param ray  [description]
- * @param intc [description]
+ * SkeletalMesh::Intersect a ray with a skeletal mesh.
+ * @param ray  Ray to intersect.
+ * @param intc Intersection point information.
  */
 
 void SkeletalMesh::Intersect(Ray ray, Intersection &intsc)
@@ -217,9 +219,9 @@ void SkeletalMesh::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * [CornellBox::Intersect description]
- * @param ray  [description]
- * @param intc [description]
+ * CornellBox::Intersect Intersect a ray with the Cornell box.
+ * @param ray  Ray to intersect with.
+ * @param intc Intersection point information.
  */
 
 void CornellBox::Intersect(Ray ray, Intersection &intsc)
@@ -251,7 +253,7 @@ void CornellBox::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * [RTMesh::CreateCornellBox description]
+ * CornellBox::Create Create the geometry/materials of a Cornell box.
  */
 
 void CornellBox::Create()
@@ -287,6 +289,9 @@ void CornellBox::Create()
     submeshes[0].faces.push_back(dvec3(0, 2, 1));
     submeshes[0].faces.push_back(dvec3(0, 3, 2));
 
+    submeshes[0].root.maxDepth = 1;
+    submeshes[0].root.depth = 0;
+
     submeshes[0].root.Insert(
         submeshes[0].pos[0], 
         submeshes[0].pos[2], 
@@ -304,6 +309,9 @@ void CornellBox::Create()
     submeshes[0].mat = 4;
 
     // floor
+
+    submeshes[1].root.maxDepth = 1;
+    submeshes[1].root.depth = 0;
 
     submeshes[1].pos.push_back(dvec3(max.x, max.y, min.z));
     submeshes[1].pos.push_back(dvec3(min.x, max.y, min.z));
@@ -344,6 +352,9 @@ void CornellBox::Create()
 
     // left wall
 
+    submeshes[2].root.maxDepth = 1;
+    submeshes[2].root.depth = 0;
+
     submeshes[2].pos.push_back(dvec3(max.x, min.y, max.z));
     submeshes[2].pos.push_back(dvec3(min.x, min.y, max.z));
     submeshes[2].pos.push_back(dvec3(min.x, min.y, min.z));
@@ -382,6 +393,9 @@ void CornellBox::Create()
     submeshes[2].mat = 3;
 
     // right wall
+
+    submeshes[3].root.maxDepth = 1;
+    submeshes[3].root.depth = 0;
 
     submeshes[3].pos.push_back(dvec3(max.x, max.y, max.z));
     submeshes[3].pos.push_back(dvec3(min.x, max.y, max.z));
@@ -422,6 +436,9 @@ void CornellBox::Create()
 
     // back wall
 
+    submeshes[4].root.maxDepth = 1;
+    submeshes[4].root.depth = 0;
+
     submeshes[4].pos.push_back(dvec3(min.x, max.y, max.z));
     submeshes[4].pos.push_back(dvec3(min.x, min.y, max.z));
     submeshes[4].pos.push_back(dvec3(min.x, min.y, min.z));
@@ -461,11 +478,30 @@ void CornellBox::Create()
 }
 
 /**
- * [SkeletalMesh::LoadModel description]
- * @param file [description]
+ * SkeletalMesh::LoadModel Load a model using different loaders based on file
+ * extension.
+ *
+ * @param file Name of file to load.
  */
 
 void SkeletalMesh::LoadModel(string file)
+{
+    if (file.rfind(".ply") != string::npos)
+    {
+        LoadPLYModel(file);
+    }
+    else
+    {
+        LoadAssimpModel(file);
+    }
+}
+
+/**
+ * SkeletalMesh::LoadModel Load a given file using the Assimp loader.
+ * @param file Name of file to load.
+ */
+
+void SkeletalMesh::LoadAssimpModel(string file)
 {
     Assimp::Importer importer;
 
@@ -543,9 +579,9 @@ void SkeletalMesh::LoadModel(string file)
 }
 
 /**
- * [RTBox::Intersect description]
- * @param ray   [description]
- * @param intsc [description]
+ * RTBox::Intersect Intersect a ray with a generic box.
+ * @param ray   Ray to intersect with.
+ * @param intsc Information about ray intersection point.
  */
 
 void RTBox::Intersect(Ray ray, Intersection &intsc)
@@ -644,22 +680,156 @@ void RTBox::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * [JSONMesh::LoadModel description]
- * @param file [description]
+ * SkeletalMesh::LoadPLYModel Load a model from PLY file format.
+ *
+ * @param file Name of file to load.
  */
 
-void JSONMesh::LoadModel(string file)
+void SkeletalMesh::LoadPLYModel(string &file)
 {
-    return;
-}
+    int nElems;
+    char **eList;
+    int fileType;
+    float version;
+    PlyFile *ply;
+    int num_elems;
+    int nprops;
+    char** comments;
+    int num_obj_info;
+    char **obj_info;
+    int num_comments;
 
-/**
- * [JSONMesh::Intersect description]
- * @param ray   [description]
- * @param intsc [description]
- */
+    PlyProperty vert_props[] = 
+    {
+        { "x", PLY_FLOAT, PLY_FLOAT, offsetof(Vertex,x), 0, 0, 0, 0 },
+        { "y", PLY_FLOAT, PLY_FLOAT, offsetof(Vertex,y), 0, 0, 0, 0 },
+        { "z", PLY_FLOAT, PLY_FLOAT, offsetof(Vertex,z), 0, 0, 0, 0 },
+    };
 
-void JSONMesh::Intersect(Ray ray, Intersection &intsc)
-{
-    return;
+    PlyProperty face_props[] = 
+    {
+        { "vertex_indices", PLY_UCHAR, PLY_INT, offsetof(Face,verts),
+        1, PLY_UCHAR, PLY_UCHAR, offsetof(Face,nverts) },
+    };
+
+    mat4 model = transl
+
+    char fileName[128];
+    strcpy_s(fileName, file.c_str());
+    cout << "Processing PLY file: " << file << endl;
+    ply = ply_open_for_reading(fileName, &nElems, &eList, &fileType, &version);
+
+    submeshes.resize(1);
+    submeshes[0].root.depth = 0;
+    submeshes[0].root.maxDepth = 10;
+    submeshes[0].mat = 4;
+
+    for (int i = 0; i < nElems; i++) 
+    {
+        char *elem_name = eList[i];
+        PlyProperty **plist = ply_get_element_description(ply, elem_name, &num_elems, &nprops);
+
+        uint32_t tenPct         = num_elems / 10;
+        uint32_t vertPctCnt     = tenPct;
+        uint32_t facePctCnt     = tenPct;
+        uint32_t vertPct        = 10;
+        uint32_t facePct        = 10;
+
+        dvec3 max = { -1000.0, -1000.0, -1000.0 };
+        dvec3 min = { 1000.0, 1000.0, 1000.0 };
+        double scale = 25.0;
+
+        dvec3 offset = { 0.0, -1.0, 2.0 };
+
+        if (equal_strings("vertex", elem_name)) 
+        {
+            vector<Vertex> vlist(num_elems);
+            ply_get_property(ply, elem_name, &vert_props[0]);
+            ply_get_property(ply, elem_name, &vert_props[1]);
+            ply_get_property(ply, elem_name, &vert_props[2]);
+
+            cout << "Loading vertices...\n" << endl;
+
+            for (int j = 0; j < num_elems; j++) 
+            {
+                if (j >= vertPctCnt)
+                {
+                    cout << vertPct << "%" << endl;
+                    vertPct += 10;
+                    vertPctCnt += tenPct;
+                }
+
+                ply_get_element(ply, (void*)&vlist[j]);
+
+                dvec3 vert = scale * dvec3(vlist[j].x, vlist[j].y, vlist[j].z) + offset;
+                submeshes[0].pos.push_back(vert);
+
+                if (vert.x > max.x) max.x = vert.x;
+                if (vert.x < min.x) min.x = vert.x;
+                if (vert.y > max.y) max.y = vert.y;
+                if (vert.y < min.y) min.y = vert.y;
+                if (vert.z > max.z) max.z = vert.z;
+                if (vert.z < min.z) min.z = vert.z;
+            }
+
+            submeshes[0].root.box.min = min;
+            submeshes[0].root.box.max = max;
+
+            submeshes[0].norm.resize(num_elems);
+            submeshes[0].tan.resize(num_elems);
+
+            bbox.min = min;
+            bbox.max = max;
+        }
+
+        if (equal_strings("face", elem_name)) 
+        {
+            vector<Face> flist(num_elems);
+            ply_get_property(ply, elem_name, &face_props[0]);
+
+            cout << "Loading faces...\n" << endl;
+
+            for (int j = 0; j < num_elems; j++) 
+            {
+                if (j >= facePctCnt)
+                {
+                    cout << facePct << "%" << endl;
+                    facePct += 10;
+                    facePctCnt += tenPct;
+                }
+
+                ply_get_element(ply, (void*)&flist[j]);
+                
+                submeshes[0].faces.push_back(
+                    uvec3((uint32_t)flist[j].verts[0], 
+                    (uint32_t)flist[j].verts[1], 
+                    (uint32_t)flist[j].verts[2])
+                );
+
+                dvec3 t1 = submeshes[0].pos[flist[j].verts[1]] - submeshes[0].pos[flist[j].verts[0]];
+                dvec3 t2 = submeshes[0].pos[flist[j].verts[2]] - submeshes[0].pos[flist[j].verts[0]];
+
+                dvec3 n = -normalize(cross(t2, t1));
+
+                submeshes[0].norm[flist[j].verts[0]] = n;
+                submeshes[0].norm[flist[j].verts[1]] = n;
+                submeshes[0].norm[flist[j].verts[2]] = n;
+
+                submeshes[0].tan[flist[j].verts[0]] = normalize(t1);
+                submeshes[0].tan[flist[j].verts[1]] = normalize(t1);
+                submeshes[0].tan[flist[j].verts[2]] = normalize(t1);
+
+                submeshes[0].root.Insert(
+                    submeshes[0].pos[flist[j].verts[0]],
+                    submeshes[0].pos[flist[j].verts[1]],
+                    submeshes[0].pos[flist[j].verts[2]],
+                    j
+                );
+            }
+        }
+    }
+
+    comments = ply_get_comments(ply, &num_comments);
+    obj_info = ply_get_obj_info(ply, &num_obj_info);
+    ply_close(ply);
 }

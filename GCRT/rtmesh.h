@@ -5,6 +5,7 @@
 #include "ray.h"
 #include "Octree.h"
 #include "animation.h"
+#include "ply.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -35,12 +36,9 @@ struct RTMesh
 struct SkeletalMesh : RTMesh
 {
     void LoadModel(string file);
-    void Intersect(Ray ray, Intersection &intsc);
-};
+    void LoadAssimpModel(string file);
+    void LoadPLYModel(string &fileName);
 
-struct JSONMesh : RTMesh
-{
-    void LoadModel(string file);
     void Intersect(Ray ray, Intersection &intsc);
 };
 

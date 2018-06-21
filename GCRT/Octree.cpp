@@ -1,9 +1,10 @@
 #include "Octree.h"
 
 /**
- * [BBox::Intersect description]
- * @param ray   [description]
- * @param intsc [description]
+ * BBox::Intersect Intersect a ray with a box using plane-slicing method.
+ *
+ * @param ray   Ray to intersect with this box.
+ * @param intsc Information about intersection point.
  */
 
 void BBox::Intersect(Ray ray, Intersection &intsc)
@@ -77,11 +78,13 @@ void BBox::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * [BBox::Contains description]
- * @param  p0 [description]
- * @param  p1 [description]
- * @param  p2 [description]
- * @return    [description]
+ * BBox::Contains Does this box contain a given triangle.
+ *
+ * @param  p0 First triangle vertex.
+ * @param  p1 Second triangle vertex.
+ * @param  p2 Third triangle vertex.
+ *
+ * @return    True if all points contained in box.
  */
 
 bool BBox::Contains(dvec3 p0, dvec3 p1, dvec3 p2)
@@ -114,16 +117,56 @@ bool BBox::Contains(dvec3 p0, dvec3 p1, dvec3 p2)
 }
 
 /**
- * [Insert description]
- * @param p0   [description]
- * @param p1   [description]
- * @param p2   [description]
- * @param face [description]
+ * BBox::Overlaps Check if a triangle overlaps this box.
+ *
+ * @param p0 First triangle vertex.
+ * @param p1 First triangle vertex.
+ * @param p2 First triangle vertex.
+ *
+ * @return True if any points are contained in this box.
+ */
+
+bool BBox::Overlaps(dvec3 p0, dvec3 p1, dvec3 p2)
+{
+    if (p0.x < max.x && p0.x > min.x &&
+        p0.y < max.y && p0.y > min.y &&
+        p0.z < max.z && p0.z > min.z
+        )
+    {
+        return true;
+    }
+
+    if (p1.x < max.x && p1.x > min.x &&
+        p1.y < max.y && p1.y > min.y &&
+        p1.z < max.z && p1.z > min.z
+        )
+    {
+        return true;
+    }
+
+    if (p2.x < max.x && p2.x > min.x &&
+        p2.y < max.y && p2.y > min.y &&
+        p2.z < max.z && p2.z > min.z
+        )
+    {
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Insert Insert a triangle into this octree.
+ *
+ * @param p0   First triangle vertex.
+ * @param p1   Second triangle vertex.
+ * @param p2   Third triangle vertex.
+ * @param face Face index/ID for this triangle.
  */
 
 void Octree::Insert(dvec3 p0, dvec3 p1, dvec3 p2, uint32_t face)
 {
-    if (depth == maxDepth)
+    if (depth == maxDepth - 1)
     {
         faces.push_back(face);
         return;
@@ -155,7 +198,7 @@ void Octree::Insert(dvec3 p0, dvec3 p1, dvec3 p2, uint32_t face)
                     childBox.max.y = box.min.y + ((double)(y + 1)) * hy;
                     childBox.max.z = box.min.z + ((double)(z + 1)) * hz;
 
-                    if (childBox.Contains(p0, p1, p2) == true)
+                    if (childBox.Overlaps(p0, p1, p2) == true)
                     {
                         children[child] = make_shared<Octree>();
                         children[child]->box = childBox;
@@ -169,7 +212,7 @@ void Octree::Insert(dvec3 p0, dvec3 p1, dvec3 p2, uint32_t face)
                 }
                 else
                 {
-                    if (children[child]->box.Contains(p0, p1, p2) == true)
+                    if (children[child]->box.Overlaps(p0, p1, p2) == true)
                     {
                         children[child]->Insert(p0, p1, p2, face);
                         childContainsFace = true;
@@ -189,9 +232,11 @@ exit:
 }
 
 /**
- * [Intersect description]
- * @param ray      [description]
- * @param faceIdcs [description]
+ * Intersect Intersect a ray with this octree and get list of potentially hit triangles.
+ *
+ * @param ray      Ray to intersect with this octree.
+ * @param faceIdcs Output list of potentially hit triangles.
+ * @param faceCnt  Number of potentially hit triangles.
  */
 
 void Octree::Intersect(Ray ray, uint32_t faceIdcs[], uint32_t &faceCnt)
@@ -201,6 +246,8 @@ void Octree::Intersect(Ray ray, uint32_t faceIdcs[], uint32_t &faceCnt)
         faceIdcs[faceCnt++] = face;
     }
 
+    double minT = 10000.0;
+
     for (auto &child : children)
     {
         if (child)
@@ -208,7 +255,7 @@ void Octree::Intersect(Ray ray, uint32_t faceIdcs[], uint32_t &faceCnt)
             Intersection intsc;
             child->box.Intersect(ray, intsc);
 
-            if (intsc.t > 0.0)
+            if (intsc.t > 0.0 && intsc.t < minT)
             {
                 child->Intersect(ray, faceIdcs, faceCnt);
             }
