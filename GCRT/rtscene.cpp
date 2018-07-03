@@ -230,7 +230,7 @@ void RTScene::InitDefaultModels()
     RTSphere mirrSph;
     mirrSph.orgn    = dvec3(-3.0, -3.0, 2.0);
     mirrSph.r       = 1.0;
-    mirrSph.mat     = 0;
+    mirrSph.mat     = MIRROR;
     
     k1.pos = dvec3(-3.0, -3.0, 2.0);
     k2.pos = dvec3(0.0, -3.0, 2.0);
@@ -245,7 +245,7 @@ void RTScene::InitDefaultModels()
     RTSphere matteSph;
     matteSph.orgn   = dvec3(-3.0, 0.0, 2.0);
     matteSph.r      = 1.0;
-    matteSph.mat    = 4;
+    matteSph.mat    = WHITE_MATTE;
 
     k1.pos = dvec3(-3.0, 0.0, 2.0);
     k2.pos = dvec3(1.0, 0.0, 2.0);
@@ -260,7 +260,7 @@ void RTScene::InitDefaultModels()
     RTSphere metalSph;
     metalSph.orgn   = dvec3(-3.0, 3.0, 2.0);
     metalSph.r      = 1.0;
-    metalSph.mat    = 5;
+    metalSph.mat    = METAL;
 
     k1.pos = dvec3(-3.0, 3.0, 2.0);
     k2.pos = dvec3(2.0, 3.0, 2.0);

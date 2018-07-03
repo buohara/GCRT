@@ -21,6 +21,13 @@ struct SurfSample
     DistType distType;
 };
 
+struct PathDebugData
+{
+    dvec3 rayOrigins[16];
+    uint32_t intscMaterials[16];
+    uint32_t stackPtr;
+};
+
 struct SurfaceIntegrator
 {   
     const double bias = 0.002;
@@ -74,4 +81,6 @@ struct SurfaceIntegrator
         uint32_t bounce,
         uint32_t maxBounces
     );
+
+    void DumpPath();
 };

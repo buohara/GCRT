@@ -306,7 +306,7 @@ void CornellBox::Create()
         1
     );
 
-    submeshes[0].mat = 4;
+    submeshes[0].mat = WHITE_MATTE;
 
     // floor
 
@@ -348,7 +348,7 @@ void CornellBox::Create()
         1
     );
 
-    submeshes[1].mat = 4;
+    submeshes[1].mat = WHITE_MATTE;
 
     // left wall
 
@@ -390,7 +390,7 @@ void CornellBox::Create()
         1
     );
 
-    submeshes[2].mat = 3;
+    submeshes[2].mat = RED_MATTE;
 
     // right wall
 
@@ -432,7 +432,7 @@ void CornellBox::Create()
         1
     );
 
-    submeshes[3].mat = 2;
+    submeshes[3].mat = GREEN_MATTE;
 
     // back wall
 
@@ -474,7 +474,7 @@ void CornellBox::Create()
         1
     );
 
-    submeshes[4].mat = 4;
+    submeshes[4].mat = WHITE_MATTE;
 }
 
 /**
@@ -712,8 +712,6 @@ void SkeletalMesh::LoadPLYModel(string &file)
         1, PLY_UCHAR, PLY_UCHAR, offsetof(Face,nverts) },
     };
 
-    mat4 model = transl
-
     char fileName[128];
     strcpy_s(fileName, file.c_str());
     cout << "Processing PLY file: " << file << endl;
@@ -723,6 +721,12 @@ void SkeletalMesh::LoadPLYModel(string &file)
     submeshes[0].root.depth = 0;
     submeshes[0].root.maxDepth = 10;
     submeshes[0].mat = 4;
+
+    mat4 scl    = scale(dvec3(15.0));
+    mat4 roty   = rotate(pi<double>() / 2.0, dvec3(0.0, 1.0, 0.0));
+    mat4 rotx   = rotate(pi<double>() / 2.0, dvec3(1.0, 0.0, 0.0));
+    mat4 tx     = translate(dvec3(1.5, -1.0, 0.0));
+    mat4 mvp    = tx * rotx * roty * scl;
 
     for (int i = 0; i < nElems; i++) 
     {
@@ -737,9 +741,6 @@ void SkeletalMesh::LoadPLYModel(string &file)
 
         dvec3 max = { -1000.0, -1000.0, -1000.0 };
         dvec3 min = { 1000.0, 1000.0, 1000.0 };
-        double scale = 25.0;
-
-        dvec3 offset = { 0.0, -1.0, 2.0 };
 
         if (equal_strings("vertex", elem_name)) 
         {
@@ -761,8 +762,10 @@ void SkeletalMesh::LoadPLYModel(string &file)
 
                 ply_get_element(ply, (void*)&vlist[j]);
 
-                dvec3 vert = scale * dvec3(vlist[j].x, vlist[j].y, vlist[j].z) + offset;
-                submeshes[0].pos.push_back(vert);
+                dvec4 vert = dvec4(vlist[j].x, vlist[j].y, vlist[j].z, 1.0);
+                vert = mvp * vert;
+
+                submeshes[0].pos.push_back(dvec3(vert.x, vert.y, vert.z));
 
                 if (vert.x > max.x) max.x = vert.x;
                 if (vert.x < min.x) min.x = vert.x;

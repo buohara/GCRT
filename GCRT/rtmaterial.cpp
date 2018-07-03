@@ -35,3 +35,24 @@ void TexMaterial::PerturbNormal(Intersection &intsc)
     dmat3 tbn       = dmat3(intsc.tan, bitan, intsc.normal);
     intsc.normal    = tbn * nPerturb;
 }
+
+string RTMaterial::GetName(Material mat)
+{
+    switch (mat)
+    {
+    case MIRROR:
+        return string("MIRROR");
+    case GLASS:
+        return string("GLASS");
+    case GREEN_MATTE:
+        return string("GREEN_MATTE");
+    case RED_MATTE:
+        return string("RED_MATTE");
+    case WHITE_MATTE:
+        return string("WHITE_MATTE");
+    case METAL:
+        return string("METAL");
+    default:
+        return string("UNKNOWN");
+    }
+}

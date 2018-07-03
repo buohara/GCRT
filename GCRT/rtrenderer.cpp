@@ -208,6 +208,8 @@ void RTRenderer::GenerateVirtualLights()
     //}
 }
 
+_declspec(thread) PathDebugData tls_pathDbgData = {};
+
 /**
  * RenderThreadFunc Render thread routine. Grab image tiles from queue
  * and ray trace pixels in that tile until no more tiles.
@@ -233,8 +235,9 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
     double dofSamplesInv            = 1.0 / (double)(dofSamples + 1);
 
     vector<vector<Sample>> &imgSamples = *(data.pImgSamples);
-
     long long start = GetMilliseconds();
+
+    memset(&tls_pathDbgData, 0, sizeof(PathDebugData));
 
     while (1)
     {

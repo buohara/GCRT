@@ -1,12 +1,58 @@
 #include "surfaceintegrator.h"
 
+extern _declspec(thread) PathDebugData tls_pathDbgData;
+
 /**
- * [SurfaceIntegrator::SampleSurface description]
- * @param  ray        [description]
- * @param  intsc      [description]
- * @param  bounce     [description]
- * @param  maxBounces [description]
- * @return            [description]
+ * InvalidColor Check if a color has any Nan values.
+ * @param  color Input color to check.
+ * @return       True if color is invalid.
+ */
+
+bool InvalidColor(dvec3 color)
+{
+    if (isnan(color.x) ||
+        isnan(color.y) ||
+        isnan(color.z)
+        )
+    {
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * SurfaceIntegrator::DumpPath For debugging. Print a ray path and the intersections
+ * it has hit along the way.
+ */
+
+void SurfaceIntegrator::DumpPath()
+{
+    printf("Ray Path Data\n");
+
+    for (uint32_t i = 0; i < tls_pathDbgData.stackPtr; i++)
+    {
+        printf(
+            "Ray %d: Origin = (%2.2f, %2.2f, %2.2f), Origin Mat = %s\n", 
+            i,
+            tls_pathDbgData.rayOrigins[i].x,
+            tls_pathDbgData.rayOrigins[i].y,
+            tls_pathDbgData.rayOrigins[i].z,
+            RTMaterial::GetName((Material)tls_pathDbgData.intscMaterials[i]).c_str()
+        );
+    }
+}
+
+/**
+ * SurfaceIntegrator::SampleSurface For a given incoming ray from a surface,
+ * generate sets of sample rays based on material BSDR and light sources and use
+ * these samples to approximate the rendering equation.
+ *
+ * @param  ray        Incoming ray.
+ * @param  intsc      Surface intersection point.
+ * @param  bounce     Current bounce depth from camera.
+ * @param  maxBounces Maximum number of bounces for this camera path.
+ * @return            Output rendering equation color along this ray.
  */
 
 dvec3 SurfaceIntegrator::SampleSurface(
@@ -23,6 +69,9 @@ dvec3 SurfaceIntegrator::SampleSurface(
     uint32_t nBSDFSamples   = 0;
     uint32_t nLightSamples  = 0;
     uint32_t totalSamples   = 0;
+
+    tls_pathDbgData.rayOrigins[tls_pathDbgData.stackPtr] = rayIn.org;
+    tls_pathDbgData.intscMaterials[tls_pathDbgData.stackPtr++] = intsc.mat;
 
     if (bounce < maxBounces)
     {
@@ -48,15 +97,28 @@ dvec3 SurfaceIntegrator::SampleSurface(
     );
 
     dvec3 out = ApplyBalanceHeuristic(surfSamples, nBSDFSamples, nLightSamples);
+
+    if (InvalidColor(out))
+    {
+        DumpPath();
+        __debugbreak();
+    }
+
+    tls_pathDbgData.stackPtr--;
+
     return out;
 }
 
 /**
- * [SurfaceIntegrator::ApplyBalanceHeuristic description]
- * @param  surfSamples   [description]
- * @param  nBSDFSamples  [description]
- * @param  nLightSamples [description]
- * @return               [description]
+ * SurfaceIntegrator::ApplyBalanceHeuristic Weight together different sets of
+ * rendering equation samples obtained from different distributions (e.g., BSDF and
+ * light distributions).
+ *
+ * @param  surfSamples   A list of samples.
+ * @param  nBSDFSamples  Number of samples from BSDF.
+ * @param  nLightSamples Number of samples from lights.
+ *
+ * @return               Color obtained by weighting samples from different distributions.
  */
 
 dvec3 SurfaceIntegrator::ApplyBalanceHeuristic(
