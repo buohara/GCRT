@@ -2,6 +2,7 @@
 
 #include "GCRT.h"
 #include "ray.h"
+#include "rtmaterial.h"
 
 using namespace std;
 using namespace glm;

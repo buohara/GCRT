@@ -18,7 +18,6 @@ struct SurfSample
     dvec3 BSDF;
     double BSDFPDF;
     double LightPDF;
-    DistType distType;
 };
 
 struct PathDebugData
@@ -30,7 +29,7 @@ struct PathDebugData
 
 struct SurfaceIntegrator
 {   
-    const double bias = 0.002;
+    const double bias = 0.01;
     
     uint32_t idx;
     uint32_t curVLightSet;
@@ -40,24 +39,22 @@ struct SurfaceIntegrator
 
     void NextVLightSet();
 
-    uint32_t SampleBSDF(
+    void SampleBSDF(
         vector<SurfSample> &surfSamples,
         uint32_t bounce,
         uint32_t maxBounces,
         Ray rayIn,
         RTScene &scn,
-        Intersection intsc,
-        uint32_t &totalSamples
+        Intersection intsc
     );
     
-    uint32_t SampleLightDistribution(
+    void SampleLightDistribution(
         vector<SurfSample> &surfSamples,
         uint32_t bounce,
         uint32_t maxBounces,
         Ray rayIn,
         RTScene &scn,
-        Intersection intsc,
-        uint32_t &totalSamples
+        Intersection intsc
     );
 
     dvec3 SampleSurface(
@@ -69,9 +66,8 @@ struct SurfaceIntegrator
     );
 
     dvec3 ApplyBalanceHeuristic(
-        vector<SurfSample> &surfSamples,
-        uint32_t nBSDFSamples,
-        uint32_t nLightSamples
+        vector<SurfSample> &bsdfSamples,
+        vector<SurfSample> &lightSamples
     );
     
     dvec3 SampleVirtualLights(

@@ -1,6 +1,7 @@
 #include "surfaceintegrator.h"
 
 extern _declspec(thread) PathDebugData tls_pathDbgData;
+extern RTRenderSettings gSettings;
 
 /**
  * InvalidColor Check if a color has any Nan values.
@@ -18,7 +19,49 @@ bool InvalidColor(dvec3 color)
         return true;
     }
 
+    if (color.x == 0.0 && color.y == 0.0 && color.z == 0.0)
+    {
+        return true;
+    }
+
     return false;
+}
+
+/**
+ * DumpSamples For given surface intersection, dump samples used to estimate render
+ * integral on that surface.
+ *
+ * @param bsdfSamples  Material BSDF samples used.
+ * @param lightSamples Light samples used.
+ */
+
+void DumpSamples(vector<SurfSample> &bsdfSamples, vector<SurfSample> &lightSamples)
+{
+    printf("\nSurface Samples:\n\n");
+
+    for (auto &sample : bsdfSamples)
+    {
+        printf(
+            "BSDF: (%2.2f, %2.2f, %2.2f), BSDF PDF = %2.2f, Light PDF = %2.2f\n",
+            sample.BSDF.x,
+            sample.BSDF.y, 
+            sample.BSDF.z,
+            sample.BSDFPDF,
+            sample.LightPDF
+        );
+    }
+
+    for (auto &sample : lightSamples)
+    {
+        printf(
+            "Light: (%2.2f, %2.2f, %2.2f), BSDF PDF = %2.2f, Light PDF = %2.2f\n",
+            sample.BSDF.x,
+            sample.BSDF.y,
+            sample.BSDF.z,
+            sample.BSDFPDF,
+            sample.LightPDF
+        );
+    }
 }
 
 /**
@@ -28,7 +71,7 @@ bool InvalidColor(dvec3 color)
 
 void SurfaceIntegrator::DumpPath()
 {
-    printf("Ray Path Data\n");
+    printf("\nRay Path Data\n\n");
 
     for (uint32_t i = 0; i < tls_pathDbgData.stackPtr; i++)
     {
@@ -63,49 +106,67 @@ dvec3 SurfaceIntegrator::SampleSurface(
     uint32_t maxBounces
 )
 {
-    vector<SurfSample> surfSamples(256);
+    vector<SurfSample> bsdfSamples;
+    vector<SurfSample> lightSamples;
+    const uint32_t maxSampleAttempts = 10;
+    
     auto &mat = *scn.mats[intsc.mat];
 
-    uint32_t nBSDFSamples   = 0;
-    uint32_t nLightSamples  = 0;
-    uint32_t totalSamples   = 0;
-
-    tls_pathDbgData.rayOrigins[tls_pathDbgData.stackPtr] = rayIn.org;
-    tls_pathDbgData.intscMaterials[tls_pathDbgData.stackPtr++] = intsc.mat;
+    tls_pathDbgData.rayOrigins[tls_pathDbgData.stackPtr++] = rayIn.org;
+    tls_pathDbgData.intscMaterials[tls_pathDbgData.stackPtr] = intsc.mat;
 
     if (bounce < maxBounces)
     {
-        nBSDFSamples = SampleBSDF(
-            surfSamples,
+        SampleBSDF(
+            bsdfSamples,
             bounce,
             maxBounces,
             rayIn,
             scn,
-            intsc,
-            totalSamples
+            intsc
         );
     }
 
-    nLightSamples = SampleLightDistribution(
-        surfSamples,
-        bounce,
-        maxBounces,
-        rayIn,
-        scn,
-        intsc,
-        totalSamples
-    );
+    dvec3 out = { 0.0, 0.0, 0.0 };
 
-    dvec3 out = ApplyBalanceHeuristic(surfSamples, nBSDFSamples, nLightSamples);
-
-    if (InvalidColor(out))
+    if (bounce == maxBounces)
     {
-        DumpPath();
-        __debugbreak();
+        uint32_t sampleAttempts = 0;
+
+        while (InvalidColor(out))
+        {
+            if (sampleAttempts == maxSampleAttempts)
+            {
+                break;
+            }
+
+            SampleLightDistribution(
+                lightSamples,
+                bounce,
+                maxBounces,
+                rayIn,
+                scn,
+                intsc
+            );
+
+            out = ApplyBalanceHeuristic(bsdfSamples, lightSamples);
+            sampleAttempts++;
+        }
     }
+    else
+    {
+        SampleLightDistribution(
+            lightSamples,
+            bounce,
+            maxBounces,
+            rayIn,
+            scn,
+            intsc
+        );
 
-    tls_pathDbgData.stackPtr--;
-
+        out = ApplyBalanceHeuristic(bsdfSamples, lightSamples);
+    }
+    
     return out;
 }
 
@@ -114,87 +175,91 @@ dvec3 SurfaceIntegrator::SampleSurface(
  * rendering equation samples obtained from different distributions (e.g., BSDF and
  * light distributions).
  *
- * @param  surfSamples   A list of samples.
- * @param  nBSDFSamples  Number of samples from BSDF.
- * @param  nLightSamples Number of samples from lights.
+ * @param  bsdfSamples   A list of BSDF samples.
+ * @param  lightSamples  A list of light samples.
  *
  * @return               Color obtained by weighting samples from different distributions.
  */
 
 dvec3 SurfaceIntegrator::ApplyBalanceHeuristic(
-    vector<SurfSample> &surfSamples,
-    uint32_t nBSDFSamples,
-    uint32_t nLightSamples
+    vector<SurfSample> &bsdfSamples,
+    vector<SurfSample> &lightSamples
 )
 {
     dvec3 bsdfTerm = dvec3(0.0);
     dvec3 lightTerm = dvec3(0.0);
 
-    for (uint32_t i = 0; i < (nBSDFSamples + nLightSamples); i++)
+    uint32_t nBSDFSamples   = (uint32_t)bsdfSamples.size();
+    uint32_t nLightSamples  = (uint32_t)lightSamples.size();
+
+    // Weight BSDF samples.
+
+    for (uint32_t i = 0; i < nBSDFSamples; i++)
     {
-        SurfSample &sample = surfSamples[i];
+        SurfSample &sample = bsdfSamples[i];
 
-        switch (sample.distType)
+        if (sample.BSDFPDF == 0.0)
         {
-        case BSDF_TYPE:
+            bsdfTerm += sample.BSDF;
+        }
+        else
+        {
+            double w = (double)nBSDFSamples * sample.BSDFPDF /
+                ((double)nBSDFSamples * sample.BSDFPDF + (double)nLightSamples * sample.LightPDF);
 
-            if (sample.BSDFPDF == 0.0)
-            {
-                bsdfTerm += sample.BSDF;
-            }
-            else
-            {
-                double w = (double)nBSDFSamples * sample.BSDFPDF /
-                    ((double)nBSDFSamples * sample.BSDFPDF + (double)nLightSamples * sample.LightPDF);
-
-                bsdfTerm += sample.BSDF * w / sample.BSDFPDF;
-            }
-            break;
-
-        case LIGHT_TYPE:
-
-            if (sample.BSDFPDF == 0.0)
-            {
-                continue;
-            }
-            else
-            {
-                double w = (double)nLightSamples * sample.LightPDF /
-                    ((double)nBSDFSamples * sample.BSDFPDF + (double)nLightSamples * sample.LightPDF);
-
-                lightTerm += sample.BSDF * w / sample.LightPDF;
-            }
-            break;
-
-        default:
-            break;
+            bsdfTerm += sample.BSDF * w / sample.BSDFPDF;
         }
     }
 
+    // Weight light samples.
+
+    for (uint32_t i = 0; i < nLightSamples; i++)
+    {
+        SurfSample &sample = lightSamples[i];
+
+        if (sample.BSDFPDF == 0.0)
+        {
+            continue;
+        }
+        else
+        {
+            double w = (double)nLightSamples * sample.LightPDF /
+                ((double)nBSDFSamples * sample.BSDFPDF + (double)nLightSamples * sample.LightPDF);
+
+            lightTerm += sample.BSDF * w / sample.LightPDF;
+        }
+    }
+
+    // Combine terms.
+
     double nBSDFInv = nBSDFSamples > 0 ? 1.0 / ((double)nBSDFSamples) : 0.0;
     double nLightInv = nLightSamples > 0 ? 1.0 / ((double)nLightSamples) : 0.0;
-    return nBSDFInv * bsdfTerm + nLightInv * lightTerm;
+    
+    dvec3 out = nBSDFInv * bsdfTerm + nLightInv * lightTerm;
+
+    return out;
 }
 
 /**
- * [SurfaceIntegrator::SampleBSDF description]
- * @param  surfSamples [description]
- * @param  bounce      [description]
- * @param  maxBounces  [description]
- * @param  rayIn       [description]
- * @param  scn         [description]
- * @param  intsc       [description]
- * @return             [description]
+ * SurfaceIntegrator::SampleBSDF Given a surface intersection, generate sample rays based on
+ * its material BSDF, cast them into the scene, and collect the samples for use in a
+ * Monte Carlo estimator.
+ *
+ * @param  surfSamples Array to hold collected samples.
+ * @param  bounce      Number of bounces so far from camera.
+ * @param  maxBounces  Max number of bounces for current ray path.
+ * @param  rayIn       Ray coming from camera.
+ * @param  scn         Ray tracing scene (into which samples rays are cast).
+ * @param  intsc       Surface intersection data.
  */
 
-uint32_t SurfaceIntegrator::SampleBSDF(
+void SurfaceIntegrator::SampleBSDF(
     vector<SurfSample> &surfSamples,
     uint32_t bounce,
     uint32_t maxBounces,
     Ray rayIn,
     RTScene &scn,
-    Intersection intsc,
-    uint32_t &totalSamples
+    Intersection intsc
 )
 {
     const uint32_t requestedBSDFSamples = 4;
@@ -202,17 +267,23 @@ uint32_t SurfaceIntegrator::SampleBSDF(
     vector<Ray> bsdfRays(requestedBSDFSamples);
     auto &mat = *scn.mats[intsc.mat];
     uint32_t numSamples = mat.GetBSDFSamples(requestedBSDFSamples, rayIn, intsc, bsdfRays);
-    uint32_t nBSDFSamples = (uint32_t)bsdfRays.size();
+    uint32_t sampleCnt = 0;
+    surfSamples.resize(numSamples);
 
     for (uint32_t i = 0; i < numSamples; i++)
     {
         Ray &ray = bsdfRays[i];
-
         Intersection nextIntsc;
-        SurfSample curSample = { dvec3(0.0), 0.0, 0.0, BSDF_TYPE };
-        curSample.BSDFPDF = mat.BSDFPDF(rayIn, ray, intsc);
-
         ray.org += bias * ray.dir;
+        scn.Intersect(ray, nextIntsc);
+
+        if ((nextIntsc.t > bias) && nextIntsc.mat == LIGHT)
+        {
+            continue;
+        }
+
+        SurfSample curSample = { dvec3(0.0), 0.0, 0.0 };
+        curSample.BSDFPDF = mat.BSDFPDF(rayIn, ray, intsc);
 
         for (auto &lightKV : scn.lights)
         {
@@ -228,74 +299,73 @@ uint32_t SurfaceIntegrator::SampleBSDF(
             }
         }
 
-        scn.Intersect(ray, nextIntsc);
-
         if ((nextIntsc.t > bias))
         {
-            dvec3 colorIn;
-
-            if (nextIntsc.mat != 6)
-            {
-                colorIn = SampleSurface(
-                    ray,
-                    scn,
-                    nextIntsc,
-                    bounce + 1,
-                    maxBounces
-                );
-            }
+            dvec3 colorIn = SampleSurface(
+                ray,
+                scn,
+                nextIntsc,
+                bounce + 1,
+                maxBounces
+            );
 
             curSample.BSDF = mat.EvalBSDF(ray, colorIn, intsc, rayIn);
+            
+            if (InvalidColor(curSample.BSDF))
+            {
+                __debugbreak();
+            }
         }
 
-        surfSamples[totalSamples++] = curSample;
+        surfSamples[sampleCnt++] = curSample;
         ray.org -= bias * ray.dir;
     }
 
-    return nBSDFSamples;
+    surfSamples.resize(sampleCnt);
 }
 
 /**
- * [SurfaceIntegrator::SampleLightDistribution description]
- * @param  surfSamples [description]
- * @param  bounce      [description]
- * @param  maxBounces  [description]
- * @param  rayIn       [description]
- * @param  scn         [description]
- * @param  intsc       [description]
- * @return             [description]
+ * SurfaceIntegrator::SampleLightDistribution For a given surface intersection,
+ * generate sample rays toward light sources, cast sample rays into scene, and collect
+ * samples for use in a Monte Carlo estimator.
+ *
+ * @param  surfSamples Array to hold light samples.
+ * @param  bounce      Current bounce number along ray path.
+ * @param  maxBounces  Maximum number of allowed bounces along this ray path.
+ * @param  rayIn       Ray coming from camera.
+ * @param  scn         Ray-tracing scene (into which samples rays are cast).
+ * @param  intsc       Surface intersection data.
  */
 
-uint32_t SurfaceIntegrator::SampleLightDistribution(
+void SurfaceIntegrator::SampleLightDistribution(
     vector<SurfSample> &surfSamples,
     uint32_t bounce,
     uint32_t maxBounces,
     Ray rayIn,
     RTScene &scn,
-    Intersection intsc,
-    uint32_t &totalSamples
+    Intersection intsc
 )
 {
-    uint32_t nLightSamples = 0;
+    const uint32_t samplesPerLight = 8;
     auto &mat = *scn.mats[intsc.mat];
+    uint32_t curLightSample = 0;
+
+    surfSamples.resize(samplesPerLight * scn.lights.size());
 
     for (auto &lightKV : scn.lights)
     {
-        const uint32_t numLightSamples = 8;
-
-        vector<Ray> lightRays(numLightSamples);
+        vector<Ray> lightRays(samplesPerLight);
         auto &light = *lightKV.second;
 
         light.GetLightSamples(8, rayIn, intsc, lightRays);
-        nLightSamples += (uint32_t)lightRays.size();
 
-        for (uint32_t i = 0; i < numLightSamples; i++)
+        for (uint32_t i = 0; i < samplesPerLight; i++)
         {
             Ray &ray = lightRays[i];
 
             Intersection nextIntsc;
             Intersection lightIntsc;
-            SurfSample curSample = { dvec3(0.0), 0.0, 0.0, LIGHT_TYPE };
+            SurfSample curSample = { dvec3(0.0), 0.0, 0.0 };
 
             ray.org += bias * ray.dir;
 
@@ -311,19 +381,24 @@ uint32_t SurfaceIntegrator::SampleLightDistribution(
                 dvec3 color = light.EvalEmission(ray, lightIntsc) / (t * t);
                 curSample.BSDF = mat.EvalBSDF(ray, color, intsc, rayIn);
             }
+            else
+            {
+                continue;
+            }
 
-            surfSamples[totalSamples++] = curSample;
+            if (InvalidColor(curSample.BSDF)) __debugbreak();
 
+            surfSamples[curLightSample++] = curSample;
             ray.org -= bias * ray.dir;
         }
     }
 
-    return nLightSamples;
+    surfSamples.resize(curLightSample++);
 }
 
 /**
- * [SurfaceIntegrator::NextVLightSet description]
- * @return [description]
+ * SurfaceIntegrator::NextVLightSet For bidirectional path tracing, get light nodes
+ * set deposited during preprocess when casting rays from light sources.
  */
 
 void SurfaceIntegrator::NextVLightSet()
@@ -337,13 +412,15 @@ void SurfaceIntegrator::NextVLightSet()
 }
 
 /**
- * [SurfaceIntegrator::SampleVirtualLights description]
- * @param  rayIn      [description]
- * @param  scn        [description]
- * @param  intsc      [description]
- * @param  bounce     [description]
- * @param  maxBounces [description]
- * @return            [description]
+ * SurfaceIntegrator::SampleVirtualLights For bidirectional path tracing, sample
+ * virtual lights deposited from rays shot from light sources.
+ *
+ * @param  rayIn      Ray coming from camera.
+ * @param  scn        Scene to casts rays into.
+ * @param  intsc      Surface intersection data.
+ * @param  bounce     Current bounce number along camera path.
+ * @param  maxBounces Max number of bounces allowed along this path.
+ * @return            Illumination at current intersection from indirect/virtual lights.
  */
 
 dvec3 SurfaceIntegrator::SampleVirtualLights(

@@ -1,6 +1,16 @@
 #include "rtrenderer.h"
 
+// Globals.
+
 CRITICAL_SECTION imageBlockCS;
+_declspec(thread) PathDebugData tls_pathDbgData = {};
+
+RTRenderSettings gSettings = {};
+RTScene gScn;
+vector<vector<Sample>> gImageSamples;
+vector<Rect> gImageBlocks;
+Sampler gSampler;
+SurfaceIntegrator gIntegrator;
 
 /**
  * GetMilliseconds Get timestamp in milliseconds since beginning of clock epoch.
@@ -40,23 +50,23 @@ void RTRenderer::Init()
 {
     LoadSettings("settings.txt");
 
-    imageW = settings.imageW;
-    imageH = settings.imageH;
+    uint32_t imageW = gSettings.imageW;
+    uint32_t imageH = gSettings.imageH;
 
-    imageSamples.resize(imageW * imageH);
+    gImageSamples.resize(imageW * imageH);
     outImage.resize(imageW * imageH);
 
-    integrator.numVLightSets = settings.vLightSets;
-    integrator.vLightSetSize = settings.vLightSetSize;
-    integrator.curVLightSet  = 0;
-    sampler.numSamples = settings.pixelSamples;
+    integrator.numVLightSets    = gSettings.vLightSets;
+    integrator.vLightSetSize    = gSettings.vLightSetSize;
+    integrator.curVLightSet     = 0;
+    sampler.numSamples          = gSettings.pixelSamples;
     
-    filter.b = 0.33;
-    filter.c = 0.33;
-    filter.xw = 2.0;
-    filter.yw = 2.0;
+    filter.b    = 0.33;
+    filter.c    = 0.33;
+    filter.xw   = 2.0;
+    filter.yw   = 2.0;
 
-    scn.LoadDefaultScene(imageW, imageH);
+    gScn.LoadDefaultScene(imageW, imageH);
     Preprocess();
     InitThreads();
 }
@@ -71,15 +81,18 @@ void RTRenderer::GenerateImageBlocks()
     uint32_t xBlocks;
     uint32_t yBlocks;
 
+    uint32_t imageW = gSettings.imageW;
+    uint32_t imageH = gSettings.imageH;
+
     if (imageW > imageH)
     {
-        xBlocks = settings.xBlocks;
-        yBlocks = settings.yBlocks;
+        xBlocks = gSettings.xBlocks;
+        yBlocks = gSettings.yBlocks;
     }
     else
     {
-        xBlocks = settings.yBlocks;
-        yBlocks = settings.xBlocks;
+        xBlocks = gSettings.yBlocks;
+        yBlocks = gSettings.xBlocks;
     }
 
     uint32_t blockSizeX = imageW / xBlocks;
@@ -112,7 +125,7 @@ void RTRenderer::GenerateImageBlocks()
                 rect.ymax = (j + 1) * blockSizeY - 1;
             }
 
-            imageBlocks.push_back(rect);
+            gImageBlocks.push_back(rect);
         }
     }
 }
@@ -131,21 +144,12 @@ void RTRenderer::InitThreads()
 
 #else
 
-    numThreads = settings.numThreads;
+    numThreads = gSettings.numThreads;
 
 #endif
     for (uint32_t i = 0; i < numThreads; i++)
     {
         threadData[i].threadID      = i;
-        threadData[i].pScn          = &scn;
-        threadData[i].pImgSamples   = &imageSamples;
-        threadData[i].pSampler      = &sampler;
-        threadData[i].imageW        = imageW;
-        threadData[i].imageH        = imageH;
-        threadData[i].pImageBlocks  = &imageBlocks;
-        threadData[i].pIntegrator   = &integrator;
-        threadData[i].camPathDepth  = settings.camPathDepth;
-        threadData[i].dofSamples    = settings.dofSamples;
     }
 }
 
@@ -208,8 +212,6 @@ void RTRenderer::GenerateVirtualLights()
     //}
 }
 
-_declspec(thread) PathDebugData tls_pathDbgData = {};
-
 /**
  * RenderThreadFunc Render thread routine. Grab image tiles from queue
  * and ray trace pixels in that tile until no more tiles.
@@ -221,23 +223,25 @@ _declspec(thread) PathDebugData tls_pathDbgData = {};
 
 DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
 {
-    // Unpack thread params.
+    // Unpack thread ID/global for this worker thread.
 
-    ThreadData &data                = *((ThreadData*)(lpParam)); 
-    uint32_t imageW                 = data.imageW;
-    uint32_t imageH                 = data.imageH;
-    uint32_t camPathDepth           = data.camPathDepth;
-    RTScene &scn                    = *(data.pScn);
-    vector<Rect> &imageBlocks       = *(data.pImageBlocks);
-    Sampler &sampler                = *(data.pSampler);
-    SurfaceIntegrator integrator    = *(data.pIntegrator);
-    uint32_t dofSamples             = (data.dofSamples);
+    ThreadData &data                    = *((ThreadData*)(lpParam));   
+    Sampler &sampler                    = gSampler;
+    SurfaceIntegrator integrator        = gIntegrator;
+    uint32_t imageW                     = gSettings.imageW;
+    uint32_t imageH                     = gSettings.imageH;
+    vector<Rect> &imageBlocks           = gImageBlocks;
+    uint32_t dofSamples                 = gSettings.dofSamples;
+    uint32_t camPathDepth               = gSettings.camPathDepth;
+    vector<vector<Sample>> &imgSamples  = gImageSamples;
+    RTScene &scn                        = gScn;
+
     double dofSamplesInv            = 1.0 / (double)(dofSamples + 1);
 
-    vector<vector<Sample>> &imgSamples = *(data.pImgSamples);
     long long start = GetMilliseconds();
 
     memset(&tls_pathDbgData, 0, sizeof(PathDebugData));
+    tls_pathDbgData.intscMaterials[0] = CAMERA;
 
     while (1)
     {
@@ -327,13 +331,13 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
 void RTRenderer::Render()
 {
     long long start = GetMilliseconds();
-    double curAnimTime = scn.tl.curTime;
+    double curAnimTime = gScn.tl.curTime;
     uint32_t frameNum = 0;
 
-    while (curAnimTime <= scn.tl.tf)
+    while (curAnimTime <= gScn.tl.tf)
     {
         GenerateImageBlocks();
-        scn.UpdateAnimations(curAnimTime);
+        gScn.UpdateAnimations(curAnimTime);
 
         for (uint32_t i = 0; i < numThreads; i++)
         {
@@ -359,7 +363,7 @@ void RTRenderer::Render()
 
         frameNum++;
         ResetImageSamples();
-        curAnimTime = scn.tl.Next();
+        curAnimTime = gScn.tl.Next();
     }
 
     long long stop = GetMilliseconds();
@@ -375,12 +379,15 @@ void RTRenderer::Render()
 
 void RTRenderer::FilterSamples()
 {
+    uint32_t imageW = gSettings.imageW;
+    uint32_t imageH = gSettings.imageH;
+
     for (uint32_t y = 0; y < imageH; y++)
     {
         for (uint32_t x = 0; x < imageW; x++)
         {
             vector<uvec2> filterBox;
-            GetFilterBox((int)x, (int)y, settings.filterSize, filterBox);
+            GetFilterBox((int)x, (int)y, gSettings.filterSize, filterBox);
 
             dvec3 weightedSamples = dvec3(0.0, 0.0, 0.0);
             double weightSum = 0.0;
@@ -388,15 +395,15 @@ void RTRenderer::FilterSamples()
             for (uint32_t k = 0; k < filterBox.size(); k++)
             {
                 uint32_t pixelIdx = filterBox[k].y * imageW + filterBox[k].x;
-                uint32_t numSamples = (uint32_t)imageSamples[pixelIdx].size();
+                uint32_t numSamples = (uint32_t)gImageSamples[pixelIdx].size();
 
                 for (uint32_t l = 0; l < numSamples; l++)
                 {
-                    double evalX = imageSamples[pixelIdx][l].pos.x - (double)x;
-                    double evalY = imageSamples[pixelIdx][l].pos.y - (double)y;
+                    double evalX = gImageSamples[pixelIdx][l].pos.x - (double)x;
+                    double evalY = gImageSamples[pixelIdx][l].pos.y - (double)y;
                     double weight = filter.Evaluate(evalX, evalY);
 
-                    weightedSamples += weight * imageSamples[pixelIdx][l].color;
+                    weightedSamples += weight * gImageSamples[pixelIdx][l].color;
                     weightSum += weight;
                 }
             }
@@ -417,6 +424,9 @@ void RTRenderer::FilterSamples()
 
 void RTRenderer::GetFilterBox(int x, int y, int w, vector<uvec2> &filterBox)
 {
+    uint32_t imageW = gSettings.imageW;
+    uint32_t imageH = gSettings.imageH;
+
     for (int i = -w; i <= w; i++)
     {
         for (int j = -w; j <= w; j++)
@@ -448,6 +458,9 @@ void RTRenderer::GetFilterBox(int x, int y, int w, vector<uvec2> &filterBox)
 
 void RTRenderer::SaveImage(string fileName)
 {
+    uint32_t imageW = gSettings.imageW;
+    uint32_t imageH = gSettings.imageH;
+
     ilInit();
     ilEnable(IL_FILE_OVERWRITE);
 
@@ -472,10 +485,13 @@ void RTRenderer::SaveImage(string fileName)
 
 void RTRenderer::ResetImageSamples()
 {
+    uint32_t imageW = gSettings.imageW;
+    uint32_t imageH = gSettings.imageH;
+
     uint32_t numPixels = imageW * imageH;
     for (uint32_t pixel = 0; pixel < numPixels; pixel++)
     {
-        imageSamples[pixel].resize(0);
+        gImageSamples[pixel].resize(0);
     }
 }
 
@@ -583,21 +599,21 @@ void RTRenderer::LoadSettings(string file)
     iss >> scnFilePath;
     iss.clear();
 
-    settings.imageW         = imageW;
-    settings.imageH         = imageH;
-    settings.sphereSamples  = sphereSamples;
-    settings.vLightSets     = vLightSets;
-    settings.vLightSetSize  = vLightSetSize;
-    settings.camPathDepth   = camPathDepth;
-    settings.lightPathDepth = lightPathDepth;
-    settings.pixelSamples   = pixelSamples;
-    settings.filterSize     = filterSize;
-    settings.dofSamples     = dofSamples;
-    settings.numThreads     = numThreads;
-    settings.xBlocks        = xBlocks;
-    settings.yBlocks        = yBlocks;
-    settings.scnFromFile    = scnFromFile;
-    settings.scnFilePath    = scnFilePath;
+    gSettings.imageW         = imageW;
+    gSettings.imageH         = imageH;
+    gSettings.sphereSamples  = sphereSamples;
+    gSettings.vLightSets     = vLightSets;
+    gSettings.vLightSetSize  = vLightSetSize;
+    gSettings.camPathDepth   = camPathDepth;
+    gSettings.lightPathDepth = lightPathDepth;
+    gSettings.pixelSamples   = pixelSamples;
+    gSettings.filterSize     = filterSize;
+    gSettings.dofSamples     = dofSamples;
+    gSettings.numThreads     = numThreads;
+    gSettings.xBlocks        = xBlocks;
+    gSettings.yBlocks        = yBlocks;
+    gSettings.scnFromFile    = scnFromFile;
+    gSettings.scnFilePath    = scnFilePath;
 
     fin.close();
 }

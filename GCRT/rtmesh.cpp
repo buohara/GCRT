@@ -753,7 +753,7 @@ void SkeletalMesh::LoadPLYModel(string &file)
 
             for (int j = 0; j < num_elems; j++) 
             {
-                if (j >= vertPctCnt)
+                if (j >= (int)vertPctCnt)
                 {
                     cout << vertPct << "%" << endl;
                     vertPct += 10;
@@ -794,7 +794,7 @@ void SkeletalMesh::LoadPLYModel(string &file)
 
             for (int j = 0; j < num_elems; j++) 
             {
-                if (j >= facePctCnt)
+                if (j >= (int)facePctCnt)
                 {
                     cout << facePct << "%" << endl;
                     facePct += 10;

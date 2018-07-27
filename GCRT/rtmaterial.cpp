@@ -52,6 +52,8 @@ string RTMaterial::GetName(Material mat)
         return string("WHITE_MATTE");
     case METAL:
         return string("METAL");
+    case CAMERA:
+        return string("CAMERA");
     default:
         return string("UNKNOWN");
     }

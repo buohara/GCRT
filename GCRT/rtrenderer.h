@@ -18,63 +18,21 @@ struct Rect
 struct ThreadData
 {
     uint32_t threadID;
-    uint32_t imageW;
-    uint32_t imageH;
-    uint32_t camPathDepth;
-    uint32_t numVLightSets;
-    uint32_t vLightSetSize;
-    uint32_t dofSamples;
-
-    RTScene *pScn;
-    Sampler *pSampler;
-    SurfaceIntegrator *pIntegrator;
-
-    vector<vector<Sample>> *pImgSamples;
-    vector<Rect> *pImageBlocks;
 };
 
 DWORD WINAPI RenderThreadFunc(LPVOID lpParam);
 long long GetMilliseconds();
-
-struct RTRenderSettings
-{
-    uint32_t imageW;
-    uint32_t imageH;
-    uint32_t sphereSamples;
-    uint32_t vLightSets;
-    uint32_t vLightSetSize;
-    uint32_t camPathDepth;
-    uint32_t lightPathDepth;
-    uint32_t pixelSamples;
-    uint32_t filterSize;
-    uint32_t dofSamples;
-    uint32_t numThreads;
-    uint32_t xBlocks;
-    uint32_t yBlocks;
-    bool scnFromFile;
-    string scnFilePath;
-};
 
 struct RTRenderer
 {
     uint32_t numThreads;
     ThreadData threadData[16];
     HANDLE hThreadArray[16];
-
-    RTScene scn;
-    vector<vector<Sample>> imageSamples;
     vector<dvec3> outImage;
-
-    vector<Rect> imageBlocks;
 
     Sampler sampler;
     SurfaceIntegrator integrator;
     Filter filter;
-
-    uint32_t imageW;
-    uint32_t imageH;
-
-    RTRenderSettings settings;
 
     void Render();
     void FilterSamples();

@@ -14,7 +14,9 @@ enum Material
     GREEN_MATTE = 2,
     RED_MATTE   = 3,
     WHITE_MATTE = 4,
-    METAL       = 5
+    METAL       = 5,
+    LIGHT       = 6,
+    CAMERA      = 7
 };
 
 struct RTMaterial

@@ -5,7 +5,7 @@
 16              // virtual light set size
 3               // depth of camera rays to shoot
 0               // depth of light rays to shoot (bi-directional path tracing)
-16              // ray samples to shoot per pixel
+2              // ray samples to shoot per pixel
 3               // filter radius after image has been sampled
 1               // number of depth-of-field samples
 8               // number of threads for ray tracing

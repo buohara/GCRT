@@ -37,3 +37,22 @@
 #include "IL/il.h"
 #include "IL/ilu.h"
 #include "IL/ilut.h"
+
+struct RTRenderSettings
+{
+    uint32_t imageW;
+    uint32_t imageH;
+    uint32_t sphereSamples;
+    uint32_t vLightSets;
+    uint32_t vLightSetSize;
+    uint32_t camPathDepth;
+    uint32_t lightPathDepth;
+    uint32_t pixelSamples;
+    uint32_t filterSize;
+    uint32_t dofSamples;
+    uint32_t numThreads;
+    uint32_t xBlocks;
+    uint32_t yBlocks;
+    bool scnFromFile;
+    std::string scnFilePath;
+};

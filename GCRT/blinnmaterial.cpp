@@ -1,12 +1,14 @@
 #include "BlinnMaterial.h"
 
 /**
- * [BlinnMaterial::EvalBSDF description]
- * @param  rayIn   [description]
- * @param  colorIn [description]
- * @param  intsc   [description]
- * @param  rayOut  [description]
- * @return         [description]
+ * BlinnMaterial::EvalBSDF Evaluate surface BSDF for given input and
+ * output rays.
+ *
+ * @param  rayOut  Outgoing ray (going away from camera).
+ * @param  colorIn Color returned along outgoing ray.
+ * @param  intsc   Surface intersection data.
+ * @param  rayIn   Incoming ray (coming from camera).
+ * @return         BSDF value.
  */
 
 dvec3 BlinnMaterial::EvalBSDF(
@@ -23,11 +25,15 @@ dvec3 BlinnMaterial::EvalBSDF(
 }
 
 /**
- * [BlinnMaterial::GetBSDFSamples description]
- * @param numSamples [description]
- * @param rayIn      [description]
- * @param intsc      [description]
- * @param raysOut    [description]
+ * BlinnMaterial::GetBSDFSamples Generate rays samples for MC estimator.
+ *
+ * @param numSamples Number of samples requested.
+ * @param rayIn      Ray coming from camera.
+ * @param intsc      Surface intersection data.
+ * @param raysOut    Out sample rays (going away from camera).
+ *
+ * @return           Number of samples generated (some materials, like perfect mirrors,
+ *                   only generate one output ray).
  */
 
 uint32_t BlinnMaterial::GetBSDFSamples(
@@ -71,11 +77,13 @@ uint32_t BlinnMaterial::GetBSDFSamples(
 }
 
 /**
- * [BlinnMaterial::BSDFPDF description]
- * @param  rayIn  [description]
- * @param  rayOut [description]
- * @param  intsc  [description]
- * @return        [description]
+ * BlinnMaterial::BSDFPDF Return PDF for given sample ray. Used for weighting
+ * samples in MC estimator.
+ *
+ * @param  rayIn  Ray coming from camera.
+ * @param  rayOut Sample ray to get PDF for.
+ * @param  intsc  Surface intersection data.
+ * @return        PDF for sample ray.
  */
 
 double BlinnMaterial::BSDFPDF(Ray rayIn, Ray rayOut, Intersection intsc)

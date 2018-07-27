@@ -1,11 +1,13 @@
 #include "fresnelglassmaterial.h"
 
 /**
-* [FresnelGlassMaterial::GetReflectance description]
-* @param  ray   [description]
-* @param  intsc [description]
-* @return       [description]
-*/
+ * FresnelGlassMaterial::GetReflectance Get amount of incoming ray reflected off
+ * surface based on indices of refraction.
+ *
+ * @param  ray   Incoming ray.
+ * @param  intsc Surface intersection data.
+ * @return       Percent of incoming ray reflected.
+ */
 
 double FresnelGlassMaterial::GetReflectance(Ray ray, Intersection intsc)
 {
@@ -50,11 +52,13 @@ double FresnelGlassMaterial::GetReflectance(Ray ray, Intersection intsc)
 }
 
 /**
-* [FresnelGlassMaterial::GetReflectedRay description]
-* @param rayIn  [description]
-* @param intsc  [description]
-* @param rayOut [description]
-*/
+ * FresnelGlassMaterial::GetReflectedRay Get ray reflected off surface for a given
+ * input ray (reflected about the surface normal).
+ *
+ * @param rayIn  Incoming ray.
+ * @param intsc  Surface intersection data.
+ * @param rayOut Reflected ray.
+ */
 
 void FresnelGlassMaterial::GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut)
 {
@@ -71,11 +75,13 @@ void FresnelGlassMaterial::GetReflectedRay(Ray rayIn, Intersection intsc, Ray &r
 }
 
 /**
-* [FresnelGlassMaterial::GetTransmittedRay description]
-* @param ray    [description]
-* @param intsc  [description]
-* @param rayOut [description]
-*/
+ * FresnelGlassMaterial::GetTransmittedRay Get ray transmitted through surface
+ * for given incoming ray using Snell's law.
+ *
+ * @param ray    Incoming ray.
+ * @param intsc  Surface intersection data.
+ * @param rayOut Transmitted ray.
+ */
 
 void FresnelGlassMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &rayOut)
 {
@@ -92,11 +98,14 @@ void FresnelGlassMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &r
 }
 
 /**
- * [FresnelGlassMaterial::EvalBDRF description]
- * @param  rayIn   [description]
- * @param  colorIn [description]
- * @param  rayOut  [description]
- * @return         [description]
+ * FresnelGlassMaterial::EvalBSDF Evaluate surface BSDF for given input and
+ * output rays.
+ *
+ * @param  rayOut  Outgoing ray (going away from camera).
+ * @param  colorIn Color returned along outgoing ray.
+ * @param  intsc   Surface intersection data.
+ * @param  rayIn   Incoming ray (coming from camera).
+ * @return         BSDF value.
  */
 
 dvec3 FresnelGlassMaterial::EvalBSDF(
@@ -120,11 +129,15 @@ dvec3 FresnelGlassMaterial::EvalBSDF(
 }
 
 /**
- * [FresnelGlassMaterial::GetSamples description]
- * @param rayIn   [description]
- * @param intsc   [description]
- * @param raysOut [description]
- * @param weights [description]
+ * FresnelGlassMaterial::GetBSDFSamples Generate rays samples for MC estimator.
+ *
+ * @param numSamples Number of samples requested.
+ * @param rayIn      Ray coming from camera.
+ * @param intsc      Surface intersection data.
+ * @param raysOut    Out sample rays (going away from camera).
+ *
+ * @return           Number of samples generated (some materials, like perfect mirrors,
+ *                   only generate one output ray).
  */
 
 uint32_t FresnelGlassMaterial::GetBSDFSamples(

@@ -1,32 +1,37 @@
 #include "lambertmaterial.h"
 
 /**
- * [LambertMaterial::EvalBSDF description]
- * @param  rayIn   [description]
- * @param  colorIn [description]
- * @param  intsc   [description]
- * @param  rayOut  [description]
- * @return         [description]
+ * LambertMaterial::EvalBSDF Evaluate surface BSDF for given input and
+ * output rays.
+ *
+ * @param  rayOut  Outgoing ray (going away from camera).
+ * @param  colorIn Color returned along outgoing ray.
+ * @param  intsc   Surface intersection data.
+ * @param  rayIn   Incoming ray (coming from camera).
+ * @return         BSDF value.
  */
 
 dvec3 LambertMaterial::EvalBSDF(
-    Ray rayIn, 
+    Ray rayOut, 
     dvec3 colorIn, 
     Intersection intsc,
-    Ray rayOut
+    Ray rayIn
 )
 {
-    dvec3 out = 0.3 * colorIn * kd * dot(rayIn.dir, intsc.normal);
+    dvec3 out = 0.3 * colorIn * kd * dot(rayOut.dir, intsc.normal);
     return out;
 }
 
 /**
- * [LambertMaterial::GetBSDFSamples description]
- * @param numSamples [description]
- * @param rayIn      [description]
- * @param intsc      [description]
- * @param raysOut    [description]
- * @param weights    [description]
+ * LambertMaterial::GetBSDFSamples Generate rays samples for Monte Carlo estimator.
+ *
+ * @param numSamples Number of samples requested.
+ * @param rayIn      Ray coming from camera.
+ * @param intsc      Surface intersection data.
+ * @param raysOut    Out sample rays (going away from camera).
+ *
+ * @return           Number of samples generated (some materials, like perfect mirrors,
+ *                   only generate one output ray).
  */
 
 uint32_t LambertMaterial::GetBSDFSamples(
@@ -52,11 +57,13 @@ uint32_t LambertMaterial::GetBSDFSamples(
 }
 
 /**
- * [BSDFPDF description]
- * @param  rayIn  [description]
- * @param  rayOut [description]
- * @param  intsc  [description]
- * @return        [description]
+ * LambertMaterial::BSDFPDF Return PDF for given sample ray. Used for weighting
+ * samples in Monte Carlo estimator.
+ *
+ * @param  rayIn  Ray coming from camera.
+ * @param  rayOut Sample ray to get PDF for.
+ * @param  intsc  Surface intersection data.
+ * @return        PDF for sample ray.
  */
 
 double LambertMaterial::BSDFPDF(Ray rayIn, Ray rayOut, Intersection intsc)
@@ -67,9 +74,11 @@ double LambertMaterial::BSDFPDF(Ray rayIn, Ray rayOut, Intersection intsc)
 }
 
 /**
- * [LambertMaterial::Init description]
- * @param sampleSets [description]
- * @param setSize    [description]
+ * LambertMaterial::Init Initialize the material. Statically generate sample
+ * rays from material distribution for subsequent sample ray requests.
+ *
+ * @param sampleSets Number of sample sets to generate.
+ * @param setSize    Number of rays in each sample set.
  */
 
 void LambertMaterial::Init(uint32_t sampleSets, uint32_t setSize)
