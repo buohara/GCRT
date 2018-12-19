@@ -3,9 +3,10 @@
 mat4 globalInverse;
 
 /**
- * [aiMatrix4x4ToGlm description]
- * @param  from [description]
- * @return      [description]
+ * aiMatrix4x4ToGlm Convert an Assimp matrix to GLM matrix.
+ *
+ * @param  from Assimp matrix to convert.
+ * @return      Equivalent GLM matrix.
  */
 
 inline mat4 aiMatrix4x4ToGlm(aiMatrix4x4& from)
@@ -33,8 +34,9 @@ inline mat4 aiMatrix4x4ToGlm(aiMatrix4x4& from)
 }
 
 /**
- * [SkeletalMesh::Create description]
- * @param file [description]
+ * SkeletalMesh::Create Load an Assimp mesh, including animations, from file.
+ *
+ * @param file Assimp mesh file.
  */
 
 void SkeletalMesh::Create(string file)
@@ -61,8 +63,9 @@ void SkeletalMesh::Create(string file)
 }
 
 /**
- * [SkeletalMesh::LoadAnimations description]
- * @param scene [description]
+ * SkeletalMesh::LoadAnimations Load animations from an Assimp scene.
+ *
+ * @param scene Assimp scene.
  */
 
 void SkeletalMesh::LoadAnimations(const aiScene &scene)
@@ -86,36 +89,17 @@ bool BoneTreeNode::LoadAnimation(aiNodeAnim &anim)
         for (uint32_t i = 0; i < anim.mNumPositionKeys; i++)
         {
             aiVectorKey posKey = anim.mPositionKeys[i];
-            float t = (float)posKey.mTime;
-
-            vec3 pos;
-            pos.x = posKey.mValue.x;
-            pos.y = posKey.mValue.y;
-            pos.z = posKey.mValue.z;
-            mat4 trans = translate(pos);
+            vec3 pos(posKey.mValue.x, posKey.mValue.y, posKey.mValue.z);
 
             aiQuatKey rotKey = anim.mRotationKeys[i];
-            aiMatrix3x3t<float> aiMat = rotKey.mValue.GetMatrix();
-            mat4 rot = mat4(1.0);
-
-            rot[0][0] = aiMat.a1;
-            rot[0][1] = aiMat.b1;
-            rot[0][2] = aiMat.c1;
-            rot[1][0] = aiMat.a2;
-            rot[1][1] = aiMat.b2;
-            rot[1][2] = aiMat.c2;
-            rot[2][0] = aiMat.a3;
-            rot[2][1] = aiMat.b3;
-            rot[2][2] = aiMat.c3;
+            quat rot(rotKey.mValue.w, rotKey.mValue.x, rotKey.mValue.y, rotKey.mValue.z);
 
             aiVectorKey scaleKey = anim.mScalingKeys[0];
-            vec3 scalev;
-            scalev.x = scaleKey.mValue.x;
-            scalev.y = scaleKey.mValue.y;
-            scalev.z = scaleKey.mValue.z;
-            mat4 scal = scale(scalev);
+            vec3 scale(scaleKey.mValue.x, scaleKey.mValue.y, scaleKey.mValue.z);
 
-            KeyFrame kf(t, trans * rot * scal);
+            float t = (float)posKey.mTime;
+
+            KeyFrame kf(t, rot, pos, scale);
             animation.AddKF(kf);
         }
 

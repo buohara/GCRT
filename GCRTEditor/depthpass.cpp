@@ -1,5 +1,7 @@
 #include "depthpass.h"
 
+extern Scene g_scn;
+
 /**
  * [DepthPass::Init description]
  */
@@ -11,8 +13,8 @@ void DepthPass::Init()
     Shader depthShader;
     depthShader.Create(
         string("DepthPass"),
-        string("DepthPassShaderAnim.vs"),
-        string("DepthPassShaderAnim.fs")
+        string("DepthPassShaderAnim.vert"),
+        string("DepthPassShaderAnim.frag")
     );
 
     // Create a depth FBO and associated texture.
@@ -60,10 +62,10 @@ void DepthPass::Init()
  * @param scn Scene to render.
  */
 
-void DepthPass::Render(Scene &scn)
+void DepthPass::Render()
 {
-    map<string, Model> &models = scn.models;
-    vector<DirectionalLight> &dirLights = scn.dirLights;
+    map<string, Model> &models = g_scn.models;
+    vector<DirectionalLight> &dirLights = g_scn.dirLights;
 
     glBindFramebuffer(GL_FRAMEBUFFER, dbFbo);
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -87,7 +89,7 @@ void DepthPass::Render(Scene &scn)
 
     for (it = models.begin(); it != models.end(); it++)
     {
-        shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
+        shared_ptr<Mesh> pMesh = g_scn.meshes[(*it).second.meshName];
         (*it).second.SetAnimMatrices(depthProgram);
         pMesh->Draw();
     }

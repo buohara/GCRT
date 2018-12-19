@@ -5,12 +5,20 @@
 
 #include "animationscene.h"
 #include "terrainscene.h"
+#include "envmapscene.h"
 
 using namespace std;
 
 typedef void(*PFNLAUNCH)(HINSTANCE);
 
+struct SceneData
+{
+	string desc;
+	PFNLAUNCH pfnLaunch;
+};
+
 void Launch(
-    string &sceneName, 
+	int argc,
+    char** argv, 
     HINSTANCE hInstance
 );

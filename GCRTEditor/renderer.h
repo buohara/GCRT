@@ -7,23 +7,8 @@
 #include "imgui_impl_gcrt.h"
 #include "input.h"
 
-struct RenderSettings
-{
-    uint32_t winW;
-    uint32_t winH;
-    bool wireFrame;
-    bool useDOF;
-    bool useBloom;
-    uint32_t msaaSamples;
-    bool loadSceneFromFile;
-    string sceneName;
-};
-
 struct Renderer
 {
-    RenderSettings settings;
-    Scene scn;
-
     HWND hWnd;
     HDC hDC;
 
@@ -45,16 +30,8 @@ struct Renderer
     void CreateGLContext();
     void CreateRenderWindow(
         HINSTANCE hInstance,
-        uint32_t width,
-        uint32_t height,
         string title
     );
-
-    void LoadDefaultScene();
-    void LoadDefaultTextures();
-    void InitDefaultMaterials();
-    void InitDefaultModels();
-    void InitDefaultLights();
     
     void Render();
     void DoPick(LPARAM mouseCoord);
@@ -62,7 +39,7 @@ struct Renderer
     void RenderSceneWindow();
     void RenderSelectionWindow();
     void RenderRendererWindow();
-    void UpdateViewPorts(uint32_t w, uint32_t h);
+    void UpdateViewPorts();
 
     float nextPickClr[3];
     uint32_t nextPickIdx;

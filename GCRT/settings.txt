@@ -1,15 +1,17 @@
-1920            // image width
-1080            // image height 
+1920             // image width
+1080             // image height 
 16              // numbers of sphere samples
 16              // number of virtual light sets
 16              // virtual light set size
-3               // depth of camera rays to shoot
+1               // depth of camera rays to shoot
 0               // depth of light rays to shoot (bi-directional path tracing)
-2              // ray samples to shoot per pixel
+1               // ray samples to shoot per pixel
 3               // filter radius after image has been sampled
 1               // number of depth-of-field samples
-8               // number of threads for ray tracing
+12               // number of threads for ray tracing
 8               // for multithread, number of x tiles
 8               // for multithread, number of y tiles
 0               // load scene from file?
 C:\null.txt     // scene file if loading from file
+0               // For MIS, number of BSDF samples per intersection.
+4               // For MIS, number of light samples per intersection.

@@ -2,6 +2,9 @@
 
 #define GLEW_STATIC
 
+RenderSettings g_settings = { 0 };
+Scene g_scn = {};
+
 /**
  * Renderer::CreateGLContext Create OpenGL context and swapchain.
  *
@@ -64,8 +67,6 @@ void Renderer::CreateGLContext()
 
 void Renderer::CreateRenderWindow(
     HINSTANCE hInstance,
-    uint32_t width,
-    uint32_t height,
     string title
 )
 {
@@ -89,8 +90,8 @@ void Renderer::CreateRenderWindow(
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         0,
         0,
-        width,
-        height,
+        g_settings.winW,
+        g_settings.winH,
         0,
         0,
         hInstance,
@@ -128,42 +129,12 @@ void Renderer::Init()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClearDepth(1.0f);
 
-    scn.cam.Init(
-        vec3(15.0, 15.0, 15.0),
-        vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 0.0, 1.0),
-        4.0f / 3.0f,
-        75.0f,
-        1.0f,
-        100.f
-    );
-
     CreateNoiseTexture();
 
-    if (settings.loadSceneFromFile)
+    for (auto &model : g_scn.models)
     {
-        scn.Load(settings.sceneName);
-        for (auto &model : scn.models)
-        {
-            nextPickerColor();
-        }
+        nextPickerColor();
     }
-    else
-    {
-        LoadDefaultScene();
-    }
-}
-
-/**
- * Renderer::LoadDefaultScene Load default scene (a plane with knight character).
- */
-
-void Renderer::LoadDefaultScene()
-{
-    LoadDefaultTextures();
-    InitDefaultMaterials();
-    InitDefaultModels();
-    InitDefaultLights();
 }
 
 /**
@@ -198,11 +169,11 @@ vec3 Renderer::nextPickerColor()
  * @param h New window height.
  */
 
-void Renderer::UpdateViewPorts(uint32_t w, uint32_t h)
+void Renderer::UpdateViewPorts()
 {
-    scn.cam.aspect = (float)w / (float)h;
-    settings.winW = w;
-    settings.winH = h;
+    uint32_t w = g_settings.winW;
+    uint32_t h = g_settings.winH;
+    g_scn.cam.aspect = (float)w / (float)h;
 }
 
 /**
@@ -218,89 +189,6 @@ void Renderer::ResizeRenderFbo()
 }
 
 /**
- * Renderer::LoadTextures Load default scene textures.
- */
-
-void Renderer::LoadDefaultTextures()
-{
-    scn.AddDiffTexture(
-        "DirtDiffuse",
-        string("../asset/dirtdiffuse.jpg"),
-        ImgLoader::LoadTexture(string("../asset/dirtdiffuse.jpg"))
-    );
-
-    scn.AddNormTexture(
-        "DirtNormal",
-        string("../asset/dirtnormal.jpg"),
-        ImgLoader::LoadTexture(string("../asset/dirtnormal.jpg"))
-    );
-}
-
-/**
- * Renderer::InitLights Create default scene lights.
- */
-
-void Renderer::InitDefaultLights()
-{
-    DirectionalLight dirLight;
-    dirLight.pos    = vec3(0.0, -25.0, 25.0);
-    dirLight.look   = vec3(0.0, 0.0, 0.0);
-    scn.dirLights.push_back(dirLight);
-
-    PointLight ptLight;
-    ptLight.pos = vec3(0.0, 15.0, 15.0);
-    scn.ptLights.push_back(ptLight);
-}
-
-/**
- * Renderer::InitMaterials Create default scene materials.
- */
-
-void Renderer::InitDefaultMaterials()
-{
-    RMaterial defaultMat;
-    defaultMat.name     = "Default";
-    defaultMat.kd       = vec3(0.8, 0.8, 0.8);
-    
-    defaultMat.UseShadows(true);
-    defaultMat.spec     = 1.0;
-    defaultMat.useSSS   = true;
-    scn.AddMaterial("Default", defaultMat);
-}
-
-/**
- * Renderer::InitModels Create default scene models.
- */
-
-void Renderer::InitDefaultModels()
-{
-    Plane pln;
-    pln.Create(10, 10);
-    pln.name            = "Plane";
-    pln.loadFromFile    = false;
-    pln.filePath        = "NA";
-
-    scn.AddMesh("Plane", make_shared<Plane>(pln));
-
-    Model plane;
-    plane.InitModelMatrices();
-    plane.Scale(vec3(10.0, 10.0, 1.0));
-    plane.meshName  = string("Plane");
-    plane.matName   = string("Default");
-    plane.pickerColor = nextPickerColor();
-    scn.AddModel("Plane0", plane);
-
-    scn.LoadModelFromFile(
-        "LampGuy",
-        "../asset/models/boblampclean/boblampclean.md5mesh",
-        "",
-        "",
-        nextPickerColor(),
-        false
-    );
-}
-
-/**
  * Renderer::Render Main rendering routine. Update camera, model animations,
  * and execute each render pass.
  *
@@ -309,17 +197,17 @@ void Renderer::InitDefaultModels()
 
 void Renderer::Render()
 {
-    scn.cam.Update();
+    g_scn.cam.Update();
     
-    for (auto &model : scn.models)
+    for (auto &model : g_scn.models)
     {
-        auto pMesh = scn.meshes[model.second.meshName];
+        auto pMesh = g_scn.meshes[model.second.meshName];
         model.second.UpdateAnimation(t, pMesh);
     }
 
     for (auto &pass : passes)
     {
-        pass.second->Render(scn);
+        pass.second->Render();
     }
 
     SwapBuffers(hDC);
@@ -345,27 +233,27 @@ void Renderer::HandleInputs(MSG &msg)
 
         if (msg.wParam == 0x46) // 'f' key for wireframe.
         {
-            settings.wireFrame = !settings.wireFrame;
+            g_settings.wireFrame = !g_settings.wireFrame;
             //renderPass.wireFrame = settings.wireFrame;
         }
 
-        scn.cam.HandleKeyDown(msg.wParam);
+        g_scn.cam.HandleKeyDown(msg.wParam);
 
     case WM_KEYUP:
 
-        scn.cam.HandleKeyUp(msg.wParam);
+        g_scn.cam.HandleKeyUp(msg.wParam);
         break;
 
     case WM_MOUSEMOVE:
 
-        scn.cam.HandleMouseMove(msg.lParam);
+        g_scn.cam.HandleMouseMove(msg.lParam);
         mousePos[0] = (double)GET_X_LPARAM(msg.lParam);
         mousePos[1] = (double)GET_Y_LPARAM(msg.lParam) + 40.0;
         break;
 
     case WM_LBUTTONDOWN:
 
-        scn.cam.HandleMouseDown(msg.lParam);
+        g_scn.cam.HandleMouseDown(msg.lParam);
         DoPick(msg.lParam);
         mouseDown[0] = true;
         mousePos[0] = (double)GET_X_LPARAM(msg.lParam);
@@ -374,7 +262,7 @@ void Renderer::HandleInputs(MSG &msg)
 
     case WM_LBUTTONUP:
 
-        scn.cam.HandleMouseUp();
+        g_scn.cam.HandleMouseUp();
         mouseDown[0] = false;
         break;
 
@@ -395,7 +283,7 @@ void Renderer::DoPick(LPARAM mouseCoord)
     if (passes.count("PickerPass") > 0)
     {
         uint32_t x = GET_X_LPARAM(mouseCoord);
-        uint32_t y = settings.winH - (GET_Y_LPARAM(mouseCoord) + 40);
+        uint32_t y = g_settings.winH - (GET_Y_LPARAM(mouseCoord) + 40);
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, pickerFbo);
 
@@ -405,7 +293,7 @@ void Renderer::DoPick(LPARAM mouseCoord)
 
         static bool firstHit = true;
 
-        for (auto &model : scn.models)
+        for (auto &model : g_scn.models)
         {
             vec3 pickerColor = model.second.pickerColor;
             if (abs(pickerColor.x - pixel.x) < 0.05 &&
@@ -422,7 +310,7 @@ void Renderer::DoPick(LPARAM mouseCoord)
                 {
                     if (model.first != selected)
                     {
-                        scn.models[selected].selected = false;
+                        g_scn.models[selected].selected = false;
                     }
                 }
 
@@ -460,5 +348,5 @@ void Renderer::CreateNoiseTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    scn.AddDiffTexture("NoiseTex", "", noiseTexID);
+    g_scn.AddDiffTexture("NoiseTex", "", noiseTexID);
 }

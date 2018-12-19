@@ -1,5 +1,7 @@
 #include "bloompass.h"
 
+extern RenderSettings g_settings;
+
 /**
 * [BloomPass::LoadQuadVerts description]
 */
@@ -56,16 +58,12 @@ void BloomPass::LoadQuadVerts()
 
 void BloomPass::Init(
     GLuint colorTexInput,
-    uint32_t screenW,
-    uint32_t screenH,
     bool renderToScreen
 )
 {
     // Compile bright, blur, and compose shaders.
 
     colorTexIn  = colorTexInput;
-    fboWidth    = screenW;
-    fboHeight   = screenH;
 
     Shader brightShader;
     Shader blurShader;
@@ -73,24 +71,24 @@ void BloomPass::Init(
 
     brightShader.Create(
         string("BrightShader"),
-        string("BrightShader.vs"),
-        string("BrightShader.fs")
+        string("BrightShader.vert"),
+        string("BrightShader.frag")
     );
 
     brightProgram = brightShader.program;
 
     blurShader.Create(
         string("GaussBlur"),
-        string("GaussBlur.vs"),
-        string("GaussBlur.fs")
+        string("GaussBlur.vert"),
+        string("GaussBlur.frag")
     );
 
     blurProgram = blurShader.program;
 
     composeShader.Create(
         string("ComposeShader"),
-        string("Compose.vs"),
-        string("Compose.fs")
+        string("Compose.vert"),
+        string("Compose.frag")
     );
 
     composeProgram = composeShader.program;
@@ -114,7 +112,9 @@ void BloomPass::GenFrameBuffers()
     glGenTextures(1, &brightTexOut);
     glBindTexture(GL_TEXTURE_2D, brightTexOut);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, fboWidth, fboHeight, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, g_settings.winW, g_settings.winH,
+        0, GL_RGBA, GL_FLOAT, 0);
+    
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -139,7 +139,9 @@ void BloomPass::GenFrameBuffers()
     glGenTextures(1, &hBlurTexOut);
     glBindTexture(GL_TEXTURE_2D, hBlurTexOut);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, fboWidth, fboHeight, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, g_settings.winW, g_settings.winH,
+        0, GL_RGBA, GL_FLOAT, 0);
+    
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -156,14 +158,18 @@ void BloomPass::GenFrameBuffers()
     glGenTextures(1, &vBlurTexOut);
     glBindTexture(GL_TEXTURE_2D, vBlurTexOut);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, fboWidth, fboHeight, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, g_settings.winW, 
+        g_settings.winH, 0, GL_RGBA, GL_FLOAT, 0);
+    
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glBindFramebuffer(GL_FRAMEBUFFER, vBlurFbo);
-    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, vBlurTexOut, 0);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 
+        vBlurTexOut, 0);
+    
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -173,13 +179,10 @@ void BloomPass::GenFrameBuffers()
 * @param h [description]
 */
 
-void BloomPass::Resize(uint32_t w, uint32_t h)
+void BloomPass::Resize()
 {
     GLuint framebuffers[3] = { brightFbo, hBlurFbo, vBlurFbo };
     GLuint fbTextures[3] = { brightTexOut, hBlurTexOut, vBlurTexOut };
-
-    fboWidth = w;
-    fboHeight = h;
 
     glDeleteFramebuffers(3, framebuffers);
     glDeleteTextures(3, fbTextures);
@@ -191,13 +194,13 @@ void BloomPass::Resize(uint32_t w, uint32_t h)
 * [BloomPass::Render description]
 */
 
-void BloomPass::Render(Scene &scn)
+void BloomPass::Render()
 {
     // Bright pass.
 
     glBindFramebuffer(GL_FRAMEBUFFER, brightFbo);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, fboWidth, fboHeight);
+    glViewport(0, 0, g_settings.winW, g_settings.winH);
     glUseProgram(brightProgram);
 
     glActiveTexture(GL_TEXTURE0);
@@ -212,7 +215,7 @@ void BloomPass::Render(Scene &scn)
 
     glBindFramebuffer(GL_FRAMEBUFFER, hBlurFbo);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, fboWidth, fboHeight);
+    glViewport(0, 0, g_settings.winW, g_settings.winH);
     glUseProgram(blurProgram);
 
     glActiveTexture(GL_TEXTURE0);
@@ -227,7 +230,7 @@ void BloomPass::Render(Scene &scn)
 
     glBindFramebuffer(GL_FRAMEBUFFER, vBlurFbo);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, fboWidth, fboHeight);
+    glViewport(0, 0, g_settings.winW, g_settings.winH);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, hBlurTexOut);
@@ -243,7 +246,7 @@ void BloomPass::Render(Scene &scn)
 
     glBindFramebuffer(GL_FRAMEBUFFER, renderFbo);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, fboWidth, fboHeight);
+    glViewport(0, 0, g_settings.winW, g_settings.winH);
     glUseProgram(composeProgram);
 
     glActiveTexture(GL_TEXTURE0);
@@ -277,8 +280,8 @@ void BloomPass::CreateRenderFbo()
     glTexImage2D(
         GL_TEXTURE_2D,
         0, GL_RGBA32F,
-        fboWidth,
-        fboHeight,
+        g_settings.winW,
+        g_settings.winH,
         0,
         GL_RGBA,
         GL_FLOAT,

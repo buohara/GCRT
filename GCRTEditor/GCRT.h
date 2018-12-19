@@ -45,3 +45,15 @@
 #include "IL/il.h"
 #include "IL/ilu.h"
 #include "IL/ilut.h"
+
+struct RenderSettings
+{
+    uint32_t winW;
+    uint32_t winH;
+    bool wireFrame;
+    bool useDOF;
+    bool useBloom;
+    uint32_t msaaSamples;
+    bool loadSceneFromFile;
+    std::string sceneName;
+};

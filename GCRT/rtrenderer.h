@@ -30,7 +30,6 @@ struct RTRenderer
     HANDLE hThreadArray[16];
     vector<dvec3> outImage;
 
-    Sampler sampler;
     SurfaceIntegrator integrator;
     Filter filter;
 

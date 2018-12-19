@@ -1,5 +1,8 @@
 #include "pickerpass.h"
 
+extern RenderSettings g_settings;
+extern Scene g_scn;
+
 /**
  * [PickerPass::GenFrameBuffers description]
  */
@@ -13,12 +16,12 @@ void PickerPass::GenFrameBuffers()
     GLuint pickerRenderBuffer;
     glGenRenderbuffers(1, &pickerRenderBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, pickerRenderBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, fboWidth, fboHeight);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, g_settings.winW, g_settings.winH);
 
     GLuint depthRenderBuffer;
     glGenRenderbuffers(1, &depthRenderBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, fboWidth, fboHeight);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, g_settings.winW, g_settings.winH);
 
     glBindFramebuffer(GL_FRAMEBUFFER, pickerFbo);
 
@@ -45,11 +48,9 @@ void PickerPass::GenFrameBuffers()
  * @param h [description]
  */
 
-void PickerPass::Resize(uint32_t w, uint32_t h)
+void PickerPass::Resize()
 {
     glDeleteFramebuffers(1, &pickerFbo);
-    fboWidth = w;
-    fboHeight = h;
     GenFrameBuffers();
 }
 
@@ -59,16 +60,13 @@ void PickerPass::Resize(uint32_t w, uint32_t h)
  * @param screenH [description]
  */
 
-void PickerPass::Init(uint32_t screenW, uint32_t screenH)
+void PickerPass::Init()
 {
-    fboWidth = screenW;
-    fboHeight = screenH;
-
     Shader pickerShader;
     pickerShader.Create(
         string("PickerPass"),
-        string("PickerShaderAnim.vs"),
-        string("PickerShaderAnim.fs")
+        string("PickerShaderAnim.vert"),
+        string("PickerShaderAnim.frag")
     );
 
     pickerProgram = pickerShader.program;
@@ -80,14 +78,14 @@ void PickerPass::Init(uint32_t screenW, uint32_t screenH)
  * @param scn [description]
  */
 
-void PickerPass::Render(Scene &scn)
+void PickerPass::Render()
 {
-    map<string, Model> models = scn.models;
-    Camera cam = scn.cam;
+    map<string, Model> models = g_scn.models;
+    Camera cam = g_scn.cam;
 
     glBindFramebuffer(GL_FRAMEBUFFER, pickerFbo);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, fboWidth, fboHeight);
+    glViewport(0, 0, g_settings.winW, g_settings.winH);
     glUseProgram(pickerProgram);
 
     mat4 view = cam.GetView();
@@ -118,7 +116,7 @@ void PickerPass::Render(Scene &scn)
         GLuint pickerID     = glGetUniformLocation(pickerProgram, "pickerColor");
         glUniform3fv(pickerID, 1, &pickerColor[0]);
 
-        shared_ptr<Mesh> pMesh = scn.meshes[model.meshName];
+        shared_ptr<Mesh> pMesh = g_scn.meshes[model.meshName];
         model.SetAnimMatrices(pickerProgram);
         pMesh->Draw();
     }

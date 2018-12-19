@@ -9,8 +9,10 @@ RTRenderSettings gSettings = {};
 RTScene gScn;
 vector<vector<Sample>> gImageSamples;
 vector<Rect> gImageBlocks;
-Sampler gSampler;
 SurfaceIntegrator gIntegrator;
+Sampler gPixelSampler;
+uint32_t gTotalSamples;
+uint32_t gSamplesProcessed = 0;
 
 /**
  * GetMilliseconds Get timestamp in milliseconds since beginning of clock epoch.
@@ -53,13 +55,15 @@ void RTRenderer::Init()
     uint32_t imageW = gSettings.imageW;
     uint32_t imageH = gSettings.imageH;
 
+    gTotalSamples = gSettings.pixelSamples * imageW * imageH;
+
     gImageSamples.resize(imageW * imageH);
     outImage.resize(imageW * imageH);
 
     integrator.numVLightSets    = gSettings.vLightSets;
     integrator.vLightSetSize    = gSettings.vLightSetSize;
     integrator.curVLightSet     = 0;
-    sampler.numSamples          = gSettings.pixelSamples;
+    gPixelSampler.numSamples    = gSettings.pixelSamples;
     
     filter.b    = 0.33;
     filter.c    = 0.33;
@@ -138,15 +142,8 @@ void RTRenderer::InitThreads()
 {
     InitializeCriticalSection(&imageBlockCS);
 
-#ifdef _DEBUG
-
-    numThreads = 1;
-
-#else
-
     numThreads = gSettings.numThreads;
 
-#endif
     for (uint32_t i = 0; i < numThreads; i++)
     {
         threadData[i].threadID      = i;
@@ -226,7 +223,7 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
     // Unpack thread ID/global for this worker thread.
 
     ThreadData &data                    = *((ThreadData*)(lpParam));   
-    Sampler &sampler                    = gSampler;
+    Sampler &sampler                    = gPixelSampler;
     SurfaceIntegrator integrator        = gIntegrator;
     uint32_t imageW                     = gSettings.imageW;
     uint32_t imageH                     = gSettings.imageH;
@@ -313,6 +310,11 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
                     imgSamples[y * imageW + x].push_back(sample);
                 }
             }
+
+            EnterCriticalSection(&imageBlockCS);
+            gSamplesProcessed += (rect.xmax - rect.xmin) * gSettings.pixelSamples;
+            cout << "\r" << gSamplesProcessed << " / " << gTotalSamples << " samples processed ...";
+            LeaveCriticalSection(&imageBlockCS);
         }
     }
 
@@ -333,6 +335,8 @@ void RTRenderer::Render()
     long long start = GetMilliseconds();
     double curAnimTime = gScn.tl.curTime;
     uint32_t frameNum = 0;
+
+    cout << "\n\nBeginning trace\n" << endl;
 
     while (curAnimTime <= gScn.tl.tf)
     {
@@ -523,6 +527,8 @@ void RTRenderer::LoadSettings(string file)
     uint32_t yBlocks;
     bool scnFromFile;
     string scnFilePath;
+    uint32_t numBSDFSamples;
+    uint32_t numLightSamples;
 
     getline(fin, line);
     iss.str(line);
@@ -599,6 +605,16 @@ void RTRenderer::LoadSettings(string file)
     iss >> scnFilePath;
     iss.clear();
 
+    getline(fin, line);
+    iss.str(line);
+    iss >> numBSDFSamples;
+    iss.clear();
+
+    getline(fin, line);
+    iss.str(line);
+    iss >> numLightSamples;
+    iss.clear();
+
     gSettings.imageW         = imageW;
     gSettings.imageH         = imageH;
     gSettings.sphereSamples  = sphereSamples;
@@ -614,6 +630,8 @@ void RTRenderer::LoadSettings(string file)
     gSettings.yBlocks        = yBlocks;
     gSettings.scnFromFile    = scnFromFile;
     gSettings.scnFilePath    = scnFilePath;
+    gSettings.numBSDFSamples    = numBSDFSamples;
+    gSettings.numLightSamples   = numLightSamples;
 
     fin.close();
 }

@@ -13,9 +13,6 @@ struct BloomPass : RenderPass
     GLuint renderFbo;
     GLuint renderTexOut;
 
-    uint32_t fboWidth;
-    uint32_t fboHeight;
-
     GLuint brightTexOut;
     GLuint brightFbo;
 
@@ -31,15 +28,13 @@ struct BloomPass : RenderPass
 
     void GenFrameBuffers();
     void CreateRenderFbo();
-    void Resize(uint32_t w, uint32_t h);
+    void Resize();
 
     void Init(
         GLuint colorTexIn,
-        uint32_t screenW,
-        uint32_t screenH,
         bool renderToScreen
     );
 
-    void Render(Scene &scn);
+    void Render();
     void LoadQuadVerts();
 };

@@ -2,6 +2,8 @@
 
 #include "input.h"
 
+bool gResized;
+
 /**
  * WndProc Windows message handler.
  * @param  hWnd    Application window handle.

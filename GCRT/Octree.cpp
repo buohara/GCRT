@@ -198,7 +198,7 @@ void Octree::Insert(dvec3 p0, dvec3 p1, dvec3 p2, uint32_t face)
                     childBox.max.y = box.min.y + ((double)(y + 1)) * hy;
                     childBox.max.z = box.min.z + ((double)(z + 1)) * hz;
 
-                    if (childBox.Overlaps(p0, p1, p2) == true)
+                    if (childBox.Contains(p0, p1, p2) == true)
                     {
                         children[child] = make_shared<Octree>();
                         children[child]->box = childBox;
@@ -212,7 +212,7 @@ void Octree::Insert(dvec3 p0, dvec3 p1, dvec3 p2, uint32_t face)
                 }
                 else
                 {
-                    if (children[child]->box.Overlaps(p0, p1, p2) == true)
+                    if (children[child]->box.Contains(p0, p1, p2) == true)
                     {
                         children[child]->Insert(p0, p1, p2, face);
                         childContainsFace = true;
@@ -260,5 +260,54 @@ void Octree::Intersect(Ray ray, uint32_t faceIdcs[], uint32_t &faceCnt)
                 child->Intersect(ray, faceIdcs, faceCnt);
             }
         }
+    }
+}
+
+void Octree::Intersect2(Ray ray, uint32_t faceIdcs[], uint32_t &faceCnt)
+{
+    uint32_t numChildrenHit = 0;
+    uint32_t numChildrenVisited = 0;
+
+    struct ChildIntsc
+    {
+        float t;
+        uint32_t childIdx;
+        bool visited;
+    };
+
+    ChildIntsc childIntscs[8];
+
+    for (auto &face : faces)
+    {
+        faceIdcs[faceCnt++] = face;
+    }
+
+    for (uint32_t i = 0; i < 8; i++)
+    {
+        Intersection intsc;
+        children[i]->box.Intersect(ray, intsc);
+
+        if (intsc.t > 0.0)
+        {
+            childIntscs[numChildrenHit++] = { intsc.t, i, false };
+        }
+    }
+
+    while (numChildrenVisited < numChildrenHit)
+    {
+        double minT = FLT_MAX;
+        uint32_t closestChild = 8;
+
+        for (uint32_t i = 0; i < numChildrenHit; i++)
+        {
+            if (childIntscs[i].visited == false && childIntscs[i].t < minT)
+            {
+                minT = childIntscs[i].t;
+                closestChild = i;
+            }
+        }
+
+        children[closestChild]->Intersect(ray, faceIdcs, faceCnt);
+        childIntscs[closestChild].visited = true;
     }
 }

@@ -136,7 +136,7 @@ void Submesh::Intersect(Ray ray, Intersection &intsc)
     intsc.t = DBL_MAX;
     uint32_t faceCnt = 0;
 
-    uint32_t faceIdcs[1024];
+    uint32_t faceIdcs[65384];
 
     root.Intersect(ray, faceIdcs, faceCnt);
 
@@ -749,13 +749,13 @@ void SkeletalMesh::LoadPLYModel(string &file)
             ply_get_property(ply, elem_name, &vert_props[1]);
             ply_get_property(ply, elem_name, &vert_props[2]);
 
-            cout << "Loading vertices...\n" << endl;
+            cout << "\nLoading vertices...\n" << endl;
 
             for (int j = 0; j < num_elems; j++) 
             {
                 if (j >= (int)vertPctCnt)
                 {
-                    cout << vertPct << "%" << endl;
+                    cout << "\r" << vertPct << "%";
                     vertPct += 10;
                     vertPctCnt += tenPct;
                 }
@@ -790,29 +790,38 @@ void SkeletalMesh::LoadPLYModel(string &file)
             vector<Face> flist(num_elems);
             ply_get_property(ply, elem_name, &face_props[0]);
 
-            cout << "Loading faces...\n" << endl;
+            cout << "\n\nLoading faces...\n" << endl;
+
+            uint32_t faceIdx = 0;
 
             for (int j = 0; j < num_elems; j++) 
             {
                 if (j >= (int)facePctCnt)
                 {
-                    cout << facePct << "%" << endl;
+                    cout << "\r" << facePct << "%";
                     facePct += 10;
                     facePctCnt += tenPct;
                 }
 
                 ply_get_element(ply, (void*)&flist[j]);
-                
-                submeshes[0].faces.push_back(
-                    uvec3((uint32_t)flist[j].verts[0], 
-                    (uint32_t)flist[j].verts[1], 
-                    (uint32_t)flist[j].verts[2])
-                );
 
                 dvec3 t1 = submeshes[0].pos[flist[j].verts[1]] - submeshes[0].pos[flist[j].verts[0]];
                 dvec3 t2 = submeshes[0].pos[flist[j].verts[2]] - submeshes[0].pos[flist[j].verts[0]];
-
                 dvec3 n = -normalize(cross(t2, t1));
+
+                // Sometimes there are degenerate faces where all three vertices are the same.
+                // Exclude here.
+
+                if (isnan(n.x) || isnan(n.y) || isnan(n.z))
+                {
+                    continue;
+                }
+
+                submeshes[0].faces.push_back(
+                    uvec3((uint32_t)flist[j].verts[0],
+                    (uint32_t)flist[j].verts[1],
+                    (uint32_t)flist[j].verts[2])
+                );
 
                 submeshes[0].norm[flist[j].verts[0]] = n;
                 submeshes[0].norm[flist[j].verts[1]] = n;
@@ -826,8 +835,10 @@ void SkeletalMesh::LoadPLYModel(string &file)
                     submeshes[0].pos[flist[j].verts[0]],
                     submeshes[0].pos[flist[j].verts[1]],
                     submeshes[0].pos[flist[j].verts[2]],
-                    j
+                    faceIdx
                 );
+
+                faceIdx++;
             }
         }
     }

@@ -1,5 +1,7 @@
 #include "gcrt.h"
 #include "sceneselector.h"
+#include <io.h>
+#include <fcntl.h>
 
 /**
  * [WinMain description]
@@ -10,20 +12,8 @@
  * @return               Error code.
  */
 
-int CALLBACK WinMain(
-    __in HINSTANCE hInstance,
-    __in HINSTANCE hPrevInstance, 
-    __in LPSTR lpCmdLine,
-    __in int nShowCmd
-)
+int main(int argc, char** argv)
 {
-    LPWSTR *argv;
-    int argc;
-    argv = CommandLineToArgvW(GetCommandLineW(), &argc);
-
-    char name[256];
-    wcstombs(name, argv[1], 256);
-    Launch(string(name), hInstance);
-
+    Launch(argc, argv, GetModuleHandle(NULL));
     return 0;
 }

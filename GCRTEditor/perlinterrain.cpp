@@ -13,7 +13,7 @@ void PerlinTerrain::Create(uint32_t ndiv)
     vector<vec3> norms;
     vector<vec2> uvs;
 
-    spacing = 1.0 / (float)ndiv;
+    spacing = 1.0f / (float)ndiv;
 }
 
 /**
@@ -31,7 +31,8 @@ void PerlinTerrain::GenPositions(vector<vec3> &pos)
         while (dy <= 1.0)
         {
             dy += spacing;
-            pos.push_back(vec3(dx, dy, Perlin2D(dx, dy)));
+            //pos.push_back(vec3(dx, dy, Perlin2D(dx, dy)));
+			pos.push_back(vec3(dx, dy, 1.0));
         }
 
         dx += spacing;

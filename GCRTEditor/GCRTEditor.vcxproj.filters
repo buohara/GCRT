@@ -5,9 +5,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="GA">
-      <UniqueIdentifier>{115262be-9ddc-4fc1-a9b7-7f59439006b6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{fc42fa7f-4a3c-44bf-8669-8940e4d757b5}</UniqueIdentifier>
     </Filter>
@@ -27,18 +24,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\libgasandbox\c3ga.h">
-      <Filter>GA</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libgasandbox\c3ga_util.h">
-      <Filter>GA</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libgasandbox\e3ga.h">
-      <Filter>GA</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libgasandbox\e3ga_util.h">
-      <Filter>GA</Filter>
-    </ClInclude>
     <ClInclude Include="animation.h">
       <Filter>CommonInclude</Filter>
     </ClInclude>
@@ -123,20 +108,11 @@
     <ClInclude Include="perlinterrain.h">
       <Filter>CommonInclude</Filter>
     </ClInclude>
+    <ClInclude Include="envmapscene.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\libgasandbox\c3ga.cpp">
-      <Filter>GA</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libgasandbox\c3ga_util.cpp">
-      <Filter>GA</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libgasandbox\e3ga.cpp">
-      <Filter>GA</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libgasandbox\e3ga_util.cpp">
-      <Filter>GA</Filter>
-    </ClCompile>
     <ClCompile Include="animation.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -216,72 +192,81 @@
     <ClCompile Include="perlinterrain.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="envmapscene.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="BrightShader.fs">
+    <None Include="BrightShader.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Compose.fs">
+    <None Include="BrightShader.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="DepthPassShader.fs">
+    <None Include="Compose.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="DepthPassShaderAnim.fs">
+    <None Include="Compose.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="DOFPassShader.fs">
+    <None Include="DepthPassShader.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="DOFShader.fs">
+    <None Include="DepthPassShaderAnim.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="GaussBlur.fs">
+    <None Include="DOFPassShader.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="PickerShader.fs">
+    <None Include="DOFShader.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="PickerShaderAnim.fs">
+    <None Include="GaussBlur.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="RenderShader.fs">
+    <None Include="PickerShader.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="RenderShaderAnim.fs">
+    <None Include="PickerShaderAnim.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="BrightShader.vs">
+    <None Include="RenderShader.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Compose.vs">
+    <None Include="RenderShaderAnim.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="DepthPassShader.vs">
+    <None Include="DepthPassShader.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="DepthPassShaderAnim.vs">
+    <None Include="DepthPassShaderAnim.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="DOFPassShader.vs">
+    <None Include="DOFPassShader.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="DOFShader.vs">
+    <None Include="DOFShader.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="GaussBlur.vs">
+    <None Include="GaussBlur.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="PickerShader.vs">
+    <None Include="PickerShader.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="PickerShaderAnim.vs">
+    <None Include="PickerShaderAnim.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="RenderShader.vs">
+    <None Include="RenderShader.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="RenderShaderAnim.vs">
+    <None Include="RenderShaderAnim.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="RenderShaderEnv.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="RenderShaderEnv.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

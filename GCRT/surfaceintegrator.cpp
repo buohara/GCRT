@@ -262,7 +262,7 @@ void SurfaceIntegrator::SampleBSDF(
     Intersection intsc
 )
 {
-    const uint32_t requestedBSDFSamples = 4;
+    const uint32_t requestedBSDFSamples = gSettings.numBSDFSamples;
 
     vector<Ray> bsdfRays(requestedBSDFSamples);
     auto &mat = *scn.mats[intsc.mat];
@@ -310,11 +310,6 @@ void SurfaceIntegrator::SampleBSDF(
             );
 
             curSample.BSDF = mat.EvalBSDF(ray, colorIn, intsc, rayIn);
-            
-            if (InvalidColor(curSample.BSDF))
-            {
-                __debugbreak();
-            }
         }
 
         surfSamples[sampleCnt++] = curSample;
@@ -346,7 +341,7 @@ void SurfaceIntegrator::SampleLightDistribution(
     Intersection intsc
 )
 {
-    const uint32_t samplesPerLight = 8;
+    const uint32_t samplesPerLight = gSettings.numLightSamples;
     auto &mat = *scn.mats[intsc.mat];
     uint32_t curLightSample = 0;
 
@@ -357,7 +352,7 @@ void SurfaceIntegrator::SampleLightDistribution(
         vector<Ray> lightRays(samplesPerLight);
         auto &light = *lightKV.second;
 
-        light.GetLightSamples(8, rayIn, intsc, lightRays);
+        light.GetLightSamples(samplesPerLight, rayIn, intsc, lightRays);
 
         for (uint32_t i = 0; i < samplesPerLight; i++)
         {
@@ -385,8 +380,6 @@ void SurfaceIntegrator::SampleLightDistribution(
             {
                 continue;
             }
-
-            if (InvalidColor(curSample.BSDF)) __debugbreak();
 
             surfSamples[curLightSample++] = curSample;
             ray.org -= bias * ray.dir;

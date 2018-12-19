@@ -1,5 +1,8 @@
 #include "mainpass.h"
 
+extern RenderSettings g_settings;
+extern Scene g_scn;
+
 /**
  * MainPass::Init Initialize main render pass.
  *
@@ -12,37 +15,27 @@
 
 void MainPass::Init(
     GLuint depthTexInput,
-    uint32_t screenW,
-    uint32_t screenH,
     bool useDOFIn,
-    uint32_t msaaSamples,
     bool renderToScreen
 )
 {
     Shader renderShader;
     wireFrame   = false;
-    useMSAA     = false;
-
-    if (msaaSamples > 1)
-    {
-        useMSAA = true;
-    }
+    useMSAA     = g_settings.msaaSamples > 1;
 
     renderShader.Create(
         string("RenderPass"),
-        string("RenderShaderAnim.vs"),
-        string("RenderShaderAnim.fs")
+        string("RenderShaderAnim.vert"),
+        string("RenderShaderAnim.frag")
     );
 
     renderProgram   = renderShader.program;
-    depthTexIn      = depthTexInput;
-    fboWidth        = screenW;
-    fboHeight       = screenH;
     useDOF          = useDOFIn;
+    depthTexIn      = depthTexInput;
 
     if (useMSAA)
     {
-        CreateMSAAFbo(msaaSamples);
+        CreateMSAAFbo();
     }
 
     renderToScreen ? renderFbo = 0 : CreateRenderFbo();
@@ -54,17 +47,17 @@ void MainPass::Init(
  * @param msaaSamples Number of MSAA samples.
  */
 
-void MainPass::CreateMSAAFbo(uint32_t msaaSamples)
+void MainPass::CreateMSAAFbo()
 {
     glGenTextures(1, &multisampleTexID);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, multisampleTexID);
 
     glTexImage2DMultisample(
         GL_TEXTURE_2D_MULTISAMPLE,
-        msaaSamples,
+        g_settings.msaaSamples,
         GL_RGBA,
-        fboWidth,
-        fboHeight,
+        g_settings.winW,
+        g_settings.winH,
         true
     );
 
@@ -77,10 +70,10 @@ void MainPass::CreateMSAAFbo(uint32_t msaaSamples)
 
     glRenderbufferStorageMultisample(
         GL_RENDERBUFFER,
-        msaaSamples,
+        g_settings.msaaSamples,
         GL_DEPTH_COMPONENT,
-        fboWidth,
-        fboHeight
+        g_settings.winW,
+        g_settings.winH
     );
 
     glGenFramebuffers(1, &multisampleFboID);
@@ -121,8 +114,8 @@ void MainPass::CreateRenderFbo()
     glTexImage2D(
         GL_TEXTURE_2D,
         0, GL_RGBA32F,
-        fboWidth,
-        fboHeight,
+        g_settings.winW,
+        g_settings.winH,
         0,
         GL_RGBA,
         GL_FLOAT,
@@ -139,7 +132,7 @@ void MainPass::CreateRenderFbo()
     GLuint depthRenderBuffer;
     glGenRenderbuffers(1, &depthRenderBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, fboWidth, fboHeight);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, g_settings.winW, g_settings.winH);
 
     // Attach 
 
@@ -168,17 +161,17 @@ void MainPass::CreateRenderFbo()
  * @param scn [description]
  */
 
-void MainPass::Render(Scene &scn)
+void MainPass::Render()
 {
-    map<string, Model> &models = scn.models;
-    Camera cam = scn.cam;
-    vector<DirectionalLight> dirLights = scn.dirLights;
+    map<string, Model> &models = g_scn.models;
+    Camera cam = g_scn.cam;
+    vector<DirectionalLight> dirLights = g_scn.dirLights;
 
     glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
     glBindFramebuffer(GL_FRAMEBUFFER, useMSAA ? multisampleFboID : renderFbo);
 
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glViewport(0, 0, fboWidth, fboHeight);
+    glViewport(0, 0, g_settings.winW, g_settings.winH);
     glUseProgram(renderProgram);
 
     // Set depth map (on texture unit 2).
@@ -247,13 +240,13 @@ void MainPass::Render(Scene &scn)
 
     for (it = models.begin(); it != models.end(); it++)
     {
-        RMaterial mat = scn.materials[(*it).second.matName];
+        RMaterial mat = g_scn.materials[(*it).second.matName];
         mat.ApplyMaterial(renderProgram);
 
         GLuint selectedID = glGetUniformLocation(renderProgram, "selected");
         glUniform1i(selectedID, (*it).second.selected);
 
-        shared_ptr<Mesh> pMesh = scn.meshes[(*it).second.meshName];
+        shared_ptr<Mesh> pMesh = g_scn.meshes[(*it).second.meshName];
         (*it).second.SetAnimMatrices(renderProgram);
         pMesh->Draw();
     }
@@ -268,12 +261,12 @@ void MainPass::Render(Scene &scn)
         glBlitFramebuffer(
             0,
             0,
-            fboWidth,
-            fboHeight,
+            g_settings.winW,
+            g_settings.winH,
             0,
             0,
-            fboWidth,
-            fboHeight,
+            g_settings.winW,
+            g_settings.winH,
             GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
             GL_NEAREST
         );

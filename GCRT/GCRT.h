@@ -3,6 +3,7 @@
 // STD/STL headers
 
 #include <stdio.h>
+#include <stdarg.h>
 #include <iostream>
 #include <vector>
 #include <math.h>
@@ -55,4 +56,6 @@ struct RTRenderSettings
     uint32_t yBlocks;
     bool scnFromFile;
     std::string scnFilePath;
+    uint32_t numBSDFSamples;
+    uint32_t numLightSamples;
 };

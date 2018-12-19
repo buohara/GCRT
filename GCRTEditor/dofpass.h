@@ -15,20 +15,15 @@ struct DOFPass : RenderPass
     GLuint posVbo;
     GLuint uvVbo;
 
-    uint32_t fboWidth;
-    uint32_t fboHeight;
-
     float samplePts[64];
 
     void Init(
         GLuint colorTexInput,
         GLuint noiseTexInput,
-        uint32_t screenW,
-        uint32_t screenH,
         bool renderToScreen
     );
 
-    void Render(Scene &scn);
+    void Render();
     void LoadQuadVerts();
     void GenerateSamplePoints();
     void CreateRenderFbo();

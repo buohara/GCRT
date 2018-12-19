@@ -1,5 +1,7 @@
 #include "dofpass.h"
 
+extern RenderSettings g_settings;
+
 /**
  * DOFPass::LoadQuadVerts Load quad verts for DOF texture render.
  */
@@ -77,15 +79,11 @@ void DOFPass::GenerateSamplePoints()
 void DOFPass::Init(
     GLuint colorTexInput,
     GLuint noiseTexInput,
-    uint32_t screenW,
-    uint32_t screenH,
     bool renderToScreen
 )
 {
     colorTexIn  = colorTexInput;
     noiseTexIn  = noiseTexInput;
-    fboHeight   = screenH;
-    fboWidth    = screenW;
 
     LoadQuadVerts();
     GenerateSamplePoints();
@@ -93,8 +91,8 @@ void DOFPass::Init(
     Shader dofShader;
     dofShader.Create(
         string("DOFShader"),
-        string("DOFShader.vs"),
-        string("DOFShader.fs")
+        string("DOFShader.vert"),
+        string("DOFShader.frag")
     );
 
     dofProgram = dofShader.program;
@@ -106,10 +104,10 @@ void DOFPass::Init(
  * DOFPass::Render Process DOF.
  */
 
-void DOFPass::Render(Scene &scn)
+void DOFPass::Render()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, renderFbo);
-    glViewport(0, 0, fboWidth, fboHeight);
+    glViewport(0, 0, g_settings.winW, g_settings.winH);
     glUseProgram(dofProgram);
 
     glActiveTexture(GL_TEXTURE0);
@@ -147,8 +145,8 @@ void DOFPass::CreateRenderFbo()
     glTexImage2D(
         GL_TEXTURE_2D,
         0, GL_RGBA32F,
-        fboWidth,
-        fboHeight,
+        g_settings.winW,
+        g_settings.winH,
         0,
         GL_RGBA,
         GL_FLOAT,

@@ -1,12 +1,7 @@
 #include "animationscene.h"
 
-/**
- * Externs updated from WinProc. See input.cpp.
- */
-
-bool gResized;
-uint32_t gWindowHeight;
-uint32_t gWindowWidth;
+extern RenderSettings g_settings;
+extern bool gResized;
 
 /**
  * AnimationScene::LaunchAnimationScene Create scene instance and launch it.
@@ -27,22 +22,20 @@ void AnimationScene::LaunchAnimationScene(HINSTANCE hInstance)
 
 void AnimationScene::Init(HINSTANCE hInstance)
 {
+    g_settings.loadSceneFromFile    = false;
+    g_settings.msaaSamples          = 4;
+    g_settings.useBloom             = false;
+    g_settings.useDOF               = false;
+    g_settings.winH                 = 1080;
+    g_settings.winW                 = 1920;
+    g_settings.wireFrame            = false;
+
     rndr.CreateRenderWindow(
         hInstance,
-        1920,
-        1080,
         "AnimationScene"
     );
 
     rndr.CreateGLContext();
-
-    rndr.settings.loadSceneFromFile = false;
-    rndr.settings.msaaSamples       = 4;
-    rndr.settings.useBloom          = false;
-    rndr.settings.useDOF            = false;
-    rndr.settings.winH              = 1080;
-    rndr.settings.winW              = 1920;
-    rndr.settings.wireFrame         = false;
 
     rndr.Init();
 
@@ -50,7 +43,7 @@ void AnimationScene::Init(HINSTANCE hInstance)
     depthPass.Init();
 
     MainPass mainPass;
-    mainPass.Init(depthPass.depthTexOut, 1920, 1080, false, 4, true);
+    mainPass.Init(depthPass.depthTexOut, false, true);
 
     rndr.passes["DepthPass"]    = make_shared<DepthPass>(depthPass);
     rndr.passes["MainPass"]     = make_shared<MainPass>(mainPass);
@@ -72,10 +65,11 @@ void AnimationScene::Render()
         {
             RECT rect;
             GetWindowRect(rndr.hWnd, &rect);
-            gWindowWidth = rect.right - rect.left;
-            gWindowHeight = rect.bottom - rect.top;
+            
+            g_settings.winW = rect.right - rect.left;
+            g_settings.winH = rect.bottom - rect.top;
 
-            rndr.UpdateViewPorts(gWindowWidth, gWindowHeight);
+            rndr.UpdateViewPorts();
             gResized = false;
         }
 
