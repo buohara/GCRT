@@ -24,11 +24,11 @@ mat4 Animation::GetAnimationMatrix(float t)
     {
         if (t < kfs[i].t)
         {
-            float alpha = (t - kfs[i - 1].t) / (kfs[i].t - kfs[i - 1].t);
+            float alpha = 1.0f - (t - kfs[i - 1].t) / (kfs[i].t - kfs[i - 1].t);
 
-            vec3 pos    = slerp(kfs[i].trans, kfs[i - 1].trans, alpha);
-            quat rot    = slerp(kfs[i].rot, kfs[i - 1].rot, alpha);
-            vec3 scale  = slerp(kfs[i].scale, kfs[i - 1].scale, alpha);
+            vec3 pos    = mix(kfs[i].trans, kfs[i - 1].trans, alpha);
+            quat rot    = mix(kfs[i].rot, kfs[i - 1].rot, alpha);
+            vec3 scale  = mix(kfs[i].scale, kfs[i - 1].scale, alpha);
 
             out = translate(pos) * mat4(rot) * glm::scale(scale);
             break;

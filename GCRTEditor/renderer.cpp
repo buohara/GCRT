@@ -5,6 +5,23 @@
 RenderSettings g_settings = { 0 };
 Scene g_scn = {};
 
+static long long GetMilliseconds()
+{
+    static LARGE_INTEGER frequency;
+    static BOOL useQpc = QueryPerformanceFrequency(&frequency);
+
+    if (useQpc)
+    {
+        LARGE_INTEGER now;
+        QueryPerformanceCounter(&now);
+        return (1000LL * now.QuadPart) / frequency.QuadPart;
+    }
+    else
+    {
+        return GetTickCount();
+    }
+}
+
 /**
  * Renderer::CreateGLContext Create OpenGL context and swapchain.
  *
@@ -118,7 +135,8 @@ void Renderer::Init()
     nextPickClr[1]  = 0.0f;
     nextPickClr[2]  = 0.1f;
     nextPickIdx     = 2;
-    t               = 0.0;
+    t1              = (float)GetMilliseconds() / 1000.f;
+    t2              = t1;
 
     mousePos[0]     = 0.0;
     mousePos[1]     = 0.0;
@@ -130,11 +148,6 @@ void Renderer::Init()
     glClearDepth(1.0f);
 
     CreateNoiseTexture();
-
-    for (auto &model : g_scn.models)
-    {
-        nextPickerColor();
-    }
 }
 
 /**
@@ -198,11 +211,12 @@ void Renderer::ResizeRenderFbo()
 void Renderer::Render()
 {
     g_scn.cam.Update();
+    float dt = 20.0 * (t2 - t1);
     
     for (auto &model : g_scn.models)
     {
         auto pMesh = g_scn.meshes[model.second.meshName];
-        model.second.UpdateAnimation(t, pMesh);
+        model.second.UpdateAnimation(dt, pMesh);
     }
 
     for (auto &pass : passes)
@@ -212,10 +226,11 @@ void Renderer::Render()
 
     SwapBuffers(hDC);
 
-    t += 0.25f;
-    if (t > 150.0)
+    t2 = (float)GetMilliseconds() / 1000.0f;
+
+    if (dt > 150.0)
     {
-        t = 0.0;
+        t1 = t2;
     }
 }
 
@@ -231,13 +246,13 @@ void Renderer::HandleInputs(MSG &msg)
 
     case WM_KEYDOWN:
 
-        if (msg.wParam == 0x46) // 'f' key for wireframe.
+        if (msg.wParam == 0x46)
         {
             g_settings.wireFrame = !g_settings.wireFrame;
-            //renderPass.wireFrame = settings.wireFrame;
         }
 
         g_scn.cam.HandleKeyDown(msg.wParam);
+        break;
 
     case WM_KEYUP:
 

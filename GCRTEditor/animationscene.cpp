@@ -2,6 +2,7 @@
 
 extern RenderSettings g_settings;
 extern bool gResized;
+extern Scene g_scn;
 
 /**
  * AnimationScene::LaunchAnimationScene Create scene instance and launch it.
@@ -36,7 +37,6 @@ void AnimationScene::Init(HINSTANCE hInstance)
     );
 
     rndr.CreateGLContext();
-
     rndr.Init();
 
     DepthPass depthPass;
@@ -47,6 +47,8 @@ void AnimationScene::Init(HINSTANCE hInstance)
 
     rndr.passes["DepthPass"]    = make_shared<DepthPass>(depthPass);
     rndr.passes["MainPass"]     = make_shared<MainPass>(mainPass);
+
+    LoadScene();
 }
 
 /**
@@ -80,4 +82,87 @@ void AnimationScene::Render()
             DispatchMessage(&msg);
         }
     }
+}
+
+/**
+ * AnimationScene::LoadScene Initialize scene with lamp guy.
+ */
+
+void AnimationScene::LoadScene()
+{
+    // Textures.
+
+    g_scn.AddDiffTexture(
+        "DirtDiffuse",
+        string("../../asset/dirtdiffuse.jpg"),
+        ImgLoader::LoadTexture(string("../../asset/dirtdiffuse.jpg"))
+    );
+
+    g_scn.AddNormTexture(
+        "DirtNormal",
+        string("../../asset/dirtnormal.jpg"),
+        ImgLoader::LoadTexture(string("../../asset/dirtnormal.jpg"))
+    );
+
+    // Lights
+
+    DirectionalLight dirLight;
+    dirLight.pos            = vec3(0.0, -25.0, 25.0);
+    dirLight.look           = vec3(0.0, 0.0, 0.0);
+    g_scn.dirLights.push_back(dirLight);
+
+    PointLight ptLight;
+    ptLight.pos             = vec3(0.0, 15.0, 15.0);
+    g_scn.ptLights.push_back(ptLight);
+
+    // Materials
+
+    RMaterial defaultMat;
+    defaultMat.name         = "Default";
+    defaultMat.kd           = vec3(0.8, 0.8, 0.8);
+
+    defaultMat.UseShadows(true);
+    defaultMat.spec         = 1.0;
+    defaultMat.useSSS       = true;
+    
+    g_scn.AddMaterial("Default", defaultMat);
+
+    // Meshes
+
+    Plane pln;
+    pln.Create(10, 10);
+    pln.name                = "Plane";
+    pln.loadFromFile        = false;
+    pln.filePath            = "NA";
+
+    g_scn.AddMesh("Plane", make_shared<Plane>(pln));
+
+    Model plane;
+    plane.InitModelMatrices();
+    plane.Scale(vec3(10.0, 10.0, 1.0));
+    plane.meshName          = string("Plane");
+    plane.matName           = string("Default");
+    plane.pickerColor       = rndr.nextPickerColor();
+    g_scn.AddModel("Plane0", plane);
+
+    g_scn.LoadModelFromFile(
+        "LampGuy",
+        "../asset/models/boblampclean/boblampclean.md5mesh",
+        "",
+        "",
+        rndr.nextPickerColor(),
+        false
+    );
+
+    // Camera
+
+    g_scn.cam.Init(
+        vec3(5.0, 5.0, 5.0),
+        vec3(0.0, 0.0, 0.0),
+        vec3(0.0, 0.0, 1.0),
+        (float)g_settings.winW / (float)g_settings.winH,
+        90.0f,
+        1.0f,
+        100.0f
+    );
 }

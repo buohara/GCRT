@@ -11,4 +11,5 @@ struct AnimationScene
     static void LaunchAnimationScene(HINSTANCE hInstance);
     void Init(HINSTANCE hInstance);
     void Render();
+    void LoadScene();
 };

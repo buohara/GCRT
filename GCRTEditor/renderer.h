@@ -20,7 +20,8 @@ struct Renderer
     bool mouseDown[3];
     double mousePos[2];
 
-    float t;
+    float t1;
+    float t2;
 
     static const uint32_t RENDER_TO_SCREEN = 0;
     
@@ -35,10 +36,6 @@ struct Renderer
     
     void Render();
     void DoPick(LPARAM mouseCoord);
-    void UpdateImGui();
-    void RenderSceneWindow();
-    void RenderSelectionWindow();
-    void RenderRendererWindow();
     void UpdateViewPorts();
 
     float nextPickClr[3];

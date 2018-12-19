@@ -5,7 +5,7 @@ mat4 globalInverse;
 /**
  * aiMatrix4x4ToGlm Convert an Assimp matrix to GLM matrix.
  *
- * @param  from Assimp matrix to convert.
+ * @param  from Assimp matrix to convert (in).
  * @return      Equivalent GLM matrix.
  */
 
@@ -36,7 +36,7 @@ inline mat4 aiMatrix4x4ToGlm(aiMatrix4x4& from)
 /**
  * SkeletalMesh::Create Load an Assimp mesh, including animations, from file.
  *
- * @param file Assimp mesh file.
+ * @param file Assimp mesh file (in).
  */
 
 void SkeletalMesh::Create(string file)
@@ -63,7 +63,12 @@ void SkeletalMesh::Create(string file)
 }
 
 /**
- * SkeletalMesh::LoadAnimations Load animations from an Assimp scene.
+ * SkeletalMesh::LoadAnimations Top-level call into skeleton tree to load a bone's
+ * keyframes. Load first animation in file only.
+ 
+ * Each Assimp animation has a list of "channels", each of which is a sequence of keyframes 
+ * assigned to a bone in the mesh skelton. Loop through each bone channel and pass it to the 
+ * skeleton root, which will recursively find the appropriate bone and load its keyframes.
  *
  * @param scene Assimp scene.
  */
@@ -77,9 +82,11 @@ void SkeletalMesh::LoadAnimations(const aiScene &scene)
 }
 
 /**
- * [BoneTreeNode::LoadAnimation description]
- * @param  anim [description]
- * @return      [description]
+ * BoneTreeNode::LoadAnimation Recurse through mesh skeleton and find bone associated with
+ * given set of keyframes. When match is found, load up the keyframes.
+ *
+ * @param  anim Set of keyframes for a given animation for a particular bone (in).
+ * @return      True if matching bone was found and keyframes loaded.
  */
 
 bool BoneTreeNode::LoadAnimation(aiNodeAnim &anim)
@@ -120,10 +127,13 @@ bool BoneTreeNode::LoadAnimation(aiNodeAnim &anim)
 }
 
 /**
- * [SkeletalMesh::CreateBoneHierarchy description]
- * @param aiNode      [description]
- * @param btNode      [description]
- * @param boneOffsets [description]
+ * SkeletalMesh::CreateBoneHierarchy Recursively generate the bone tree structure for
+ * given input mesh. For each input node, add all its child nodes and offset from parent
+ * node. Then recurse into each child node and pass its child information.
+ *
+ * @param aiNode      Current Assimp node in skeleton hierarchy (in).
+ * @param btNode      Current node in GCRT skeleton (in).
+ * @param boneOffsets List of each bone's offset from mesh space to its local one space (in).
  */
 
 void SkeletalMesh::CreateBoneHierarchy(
@@ -159,9 +169,10 @@ void SkeletalMesh::CreateBoneHierarchy(
 }
 
 /**
- * [SkeletalMesh::LoadVertexAndBoneData description]
- * @param scene       [description]
- * @param boneOffsets [description]
+ * SkeletalMesh::LoadVertexAndBoneData Load vertex and bone data from an Assimp mesh.
+ *
+ * @param scene       Input Assimp mesh to load (in)
+ * @param boneOffsets List of local bone offsets from mesh space to local space (out).
  */
 
 void SkeletalMesh::LoadVertexAndBoneData(
@@ -202,12 +213,14 @@ void SkeletalMesh::LoadVertexAndBoneData(
 }
 
 /**
- * [SkeletalMesh::LoadVertexData description]
- * @param mesh [description]
- * @param pos  [description]
- * @param norm [description]
- * @param UV   [description]
- * @param idcs [description]
+ * SkeletalMesh::LoadVertexData Load an Assimp mesh's vertex data (positions,
+ * normals, UVs, and triangle indices).
+ *
+ * @param mesh Input assimp mesh (in)
+ * @param pos  Vertex positions (out).
+ * @param norm Vertex normals (out).
+ * @param UV   Vertex UVs (out).
+ * @param idcs Triangle vertex indices (out).
  */
 
 void SkeletalMesh::LoadVertexData(
@@ -250,11 +263,14 @@ void SkeletalMesh::LoadVertexData(
 }
 
 /**
- * [SkeletalMesh::LoadBoneData description]
- * @param mesh        [description]
- * @param boneIDs     [description]
- * @param boneWts     [description]
- * @param boneOffsets [description]
+ * SkeletalMesh::LoadBoneData Every vertex in the mesh is influenced by a
+ * collection of bones. Loop through each bone in the matrix and load data about
+ * which vertices it influences.
+ *
+ * @param mesh        Assimp mesh (in).
+ * @param boneIDs     For each vertex, a list of bone IDs that influence it (out).
+ * @param boneWts     For each vertex, the strength of each influencing bone (out).
+ * @param boneOffsets Offset of bone from mesh space to local bone space (out).
  */
 
 void SkeletalMesh::LoadBoneData(
@@ -321,8 +337,12 @@ void SkeletalMesh::LoadBoneData(
 }
 
 /**
- * [SkeletalMesh::UpdateAnimation description]
- * @param t             [description]
+ * SkeletalMesh::UpdateAnimation Get a list of bone animation matrices interpolated
+ * at input time t.
+ *
+ * @param t             Requested animation time (in).
+ * @param rootTrans     Global offset in world space of whole mesh (in).
+ * @param bones         List of bone animation matrices at time t (out).
  */
 
 void SkeletalMesh::GetAnimation(float t, mat4 rootTrans, vector<mat4> &bones)
@@ -348,11 +368,13 @@ void SkeletalMesh::GetAnimation(float t, mat4 rootTrans, vector<mat4> &bones)
 }
 
 /**
- * [BoneTreeNode::GetBoneMatrices description]
- * @param t        [description]
- * @param matrices [description]
- * @param parent   [description]
- * @param boneMap  [description]
+ * BoneTreeNode::GetBoneMatrices Recursively build bone animation matrices at input
+ * time t using overall bone mesh offset and parent offset.
+ *
+ * @param t        Animation time to interpolate (in).
+ * @param matrices List of bone matrices at time t (out).
+ * @param parent   Current bone's parent bone matrix at time t (in).
+ * @param boneMap  Map of bone names/indices into output list of bone matrices (in).
  */
 
 void BoneTreeNode::GetBoneMatrices(
@@ -386,7 +408,7 @@ void BoneTreeNode::GetBoneMatrices(
 }
 
 /**
- * [SkeletalMesh::Draw description]
+ * SkeletalMesh::Draw Bind this mesh's vertex objects and issue draws.
  */
 
 void SkeletalMesh::Draw()
