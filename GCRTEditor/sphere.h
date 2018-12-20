@@ -10,8 +10,9 @@ struct Sphere : Mesh
     uint32_t bottomOffset = 0;
 
     void Create(
-        uint32_t numSectors, 
-        uint32_t numRings
+        uint32_t numSectors,
+        uint32_t numRings,
+        bool invertIn = false
     );
 
     void Draw();

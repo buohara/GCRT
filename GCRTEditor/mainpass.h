@@ -17,12 +17,10 @@ struct MainPass : RenderPass
     GLuint multisampleTexID;
     GLuint multisampleDepthID;
 
-    bool useDOF;
     GLuint depthTexIn;
 
     void Init(
         GLuint depthTexInput,
-        bool useDOFIn,
         bool renderToScreen
     );
 

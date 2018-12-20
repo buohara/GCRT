@@ -53,6 +53,7 @@ struct RenderSettings
     bool wireFrame;
     bool useDOF;
     bool useBloom;
+    bool useSkyBox;
     uint32_t msaaSamples;
     bool loadSceneFromFile;
     std::string sceneName;

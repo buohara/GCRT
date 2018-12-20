@@ -2,6 +2,7 @@
 
 extern RenderSettings g_settings;
 extern bool gResized;
+extern Scene g_scn;
 
 /**
  * EnvMapScene::LaunchEnvMapScene Create scene instance and launch it.
@@ -40,9 +41,11 @@ void EnvMapScene::Init(HINSTANCE hInstance)
 	rndr.Init();
 
 	MainPass mainPass;
-	mainPass.Init(0, false, true);
+	mainPass.Init(0, true);
 
 	rndr.passes["MainPass"] = make_shared<MainPass>(mainPass);
+
+    LoadScene();
 }
 
 /**
@@ -75,4 +78,70 @@ void EnvMapScene::Render()
 			DispatchMessage(&msg);
 		}
 	}
+}
+
+/**
+ * AnimationScene::LoadScene Initialize scene with lamp guy.
+ */
+
+void EnvMapScene::LoadScene()
+{
+    // Textures.
+
+    g_scn.AddDiffTexture(
+        "SkyPano",
+        string("F:/GCRT/asset/skypano.jpg"),
+        ImgLoader::LoadTexture(string("F:/GCRT/asset/skypano.jpg"))
+    );
+
+    // Lights
+
+    DirectionalLight dirLight;
+    dirLight.pos = vec3(0.0, -25.0, 25.0);
+    dirLight.look = vec3(0.0, 0.0, 0.0);
+    g_scn.dirLights.push_back(dirLight);
+
+    PointLight ptLight;
+    ptLight.pos = vec3(0.0, 15.0, 15.0);
+    g_scn.ptLights.push_back(ptLight);
+
+    // Materials
+
+    RMaterial skyMat;
+    skyMat.name = "SkyMat";
+    skyMat.SetDiffuseTex(g_scn.diffTextures["SkyPano"].texID, "SkyPano");
+
+    skyMat.UseShadows(false);
+    skyMat.UsePhong(false);
+
+    g_scn.AddMaterial("SkyMat", skyMat);
+
+    // Meshes
+
+    Sphere sph;
+    sph.Create(100, 100, true);
+    sph.name = "SkySphere";
+    
+    g_scn.AddMesh("SkySphere", make_shared<Sphere>(sph));
+
+    Model skySphere;
+    skySphere.InitModelMatrices();
+    skySphere.Scale(vec3(100.0, 100.0, 100.0));
+    skySphere.meshName = string("SkySphere");
+    skySphere.matName = string("SkyMat");
+    skySphere.pickerColor = rndr.nextPickerColor();
+    
+    g_scn.AddModel("SkySphere0", skySphere);
+
+    // Camera
+
+    g_scn.cam.Init(
+        vec3(5.0, 5.0, 5.0),
+        vec3(0.0, 0.0, 0.0),
+        vec3(0.0, 0.0, 1.0),
+        (float)g_settings.winW / (float)g_settings.winH,
+        75.0f,
+        1.0f,
+        1000.0f
+    );
 }

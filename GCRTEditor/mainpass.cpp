@@ -15,7 +15,6 @@ extern Scene g_scn;
 
 void MainPass::Init(
     GLuint depthTexInput,
-    bool useDOFIn,
     bool renderToScreen
 )
 {
@@ -27,10 +26,11 @@ void MainPass::Init(
         string("RenderPass"),
         string("RenderShaderAnim.vert"),
         string("RenderShaderAnim.frag")
+        //string("RenderShader.vert"),
+        //string("RenderShader.frag")
     );
 
     renderProgram   = renderShader.program;
-    useDOF          = useDOFIn;
     depthTexIn      = depthTexInput;
 
     if (useMSAA)
@@ -187,7 +187,7 @@ void MainPass::Render()
 
     // Set DOF parameters if enabled.
 
-    if (useDOF == true)
+    if (g_settings.useDOF == true)
     {
         GLuint useDOFID = glGetUniformLocation(renderProgram, "useDOF");
         glUniform1i(useDOFID, 1);
@@ -248,7 +248,18 @@ void MainPass::Render()
 
         shared_ptr<Mesh> pMesh = g_scn.meshes[(*it).second.meshName];
         (*it).second.SetAnimMatrices(renderProgram);
+
+        if (pMesh->invert)
+        {
+            glCullFace(GL_FRONT);
+        }
+
         pMesh->Draw();
+
+        if (pMesh->invert)
+        {
+            glCullFace(GL_BACK);
+        }
     }
 
     // Resolve MSAA buffer.

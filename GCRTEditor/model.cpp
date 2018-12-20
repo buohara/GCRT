@@ -17,6 +17,7 @@ void Model::InitModelMatrices()
 
 /**
  * Model::Translate Translate a model.
+ *
  * @param tx Model's new position.
  */
 
@@ -30,6 +31,7 @@ void Model::Translate(vec3 tx)
 
 /**
  * Model::Scale Scale a model up/down.
+ *
  * @param dimsIn Model's new (x,y,z) dimensions.
  */
 
@@ -43,6 +45,7 @@ void Model::Scale(vec3 dimsIn)
 
 /**
  * Model::Rotate rotate a model about (x, y, z) axes.
+ *
  * @param thetas Amount of rotation (in radians) to rotate model around each
  * axis.
  */
@@ -61,6 +64,7 @@ void Model::Rotate(vec3 thetas)
 
 /**
  * Model::UpdateAnimation Update a model's animation at time t.
+ *
  * @param t     Current animation time.
  * @param pMesh Mesh to update.
  */
@@ -72,6 +76,7 @@ void Model::UpdateAnimation(float t, shared_ptr<Mesh> pMesh)
 
 /**
  * Model::SetAnimMatrices After updating animation, load bone matrices to GPU.
+ *
  * @param renderProgram Shader program to set bones for.
  */
 

@@ -43,7 +43,7 @@ void AnimationScene::Init(HINSTANCE hInstance)
     depthPass.Init();
 
     MainPass mainPass;
-    mainPass.Init(depthPass.depthTexOut, false, true);
+    mainPass.Init(depthPass.depthTexOut, true);
 
     rndr.passes["DepthPass"]    = make_shared<DepthPass>(depthPass);
     rndr.passes["MainPass"]     = make_shared<MainPass>(mainPass);
@@ -122,8 +122,8 @@ void AnimationScene::LoadScene()
     defaultMat.kd           = vec3(0.8, 0.8, 0.8);
 
     defaultMat.UseShadows(true);
+    defaultMat.UsePhong(true);
     defaultMat.spec         = 1.0;
-    defaultMat.useSSS       = true;
     
     g_scn.AddMaterial("Default", defaultMat);
 

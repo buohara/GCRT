@@ -11,4 +11,5 @@ struct EnvMapScene
 	static void LaunchEnvMapScene(HINSTANCE hInstance);
 	void Init(HINSTANCE hInstance);
 	void Render();
+    void LoadScene();
 };

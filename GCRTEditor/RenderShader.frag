@@ -39,6 +39,7 @@ uniform float shininess;
 uniform int useNormalMap;
 uniform int useDiffuseMap;
 uniform int useSSS;
+uniform int usePhong;
 uniform int useShadows;
 uniform int useDOF;
 uniform int selected;
@@ -49,23 +50,32 @@ uniform int selected;
 
 vec4 getDiffuse()
 {
-    vec4 pos        = model * passPos;
-    vec3 lightVec   = normalize(lightPos - pos.xyz);
-    float dist      = length(lightVec);
-    vec3 norm;
+    float theta = 0.0;
 
-    if (useNormalMap == 1)
+    if (usePhong == 1)
     {
-        mat3 tbn    = mat3(passTan.xyz, passBitan.xyz, passNorm.xyz);
-        vec3 nmNorm = tbn * (2 * texture2D(normalTex, passUV).rgb - 1);
-        norm        = normalize(modelInv * vec4(nmNorm, 1)).xyz;
+        vec4 pos        = model * passPos;
+        vec3 lightVec   = normalize(lightPos - pos.xyz);
+        float dist      = length(lightVec);
+        vec3 norm;
+
+        if (useNormalMap == 1)
+        {
+            mat3 tbn    = mat3(passTan.xyz, passBitan.xyz, passNorm.xyz);
+            vec3 nmNorm = tbn * (2 * texture2D(normalTex, passUV).rgb - 1);
+            norm        = normalize(modelInv * vec4(nmNorm, 1)).xyz;
+        }
+        else
+        {
+            norm = normalize((modelInv * passNorm).xyz);
+        }
+
+        theta = max(dot(norm, lightVec), 0) / (dist * dist);
     }
     else
     {
-        norm = normalize((modelInv * passNorm).xyz);
+        theta = 1.0;
     }
-
-    float theta = max(dot(norm, lightVec), 0) / (dist * dist);
 
     if (useDiffuseMap == 1)
     {
@@ -83,28 +93,32 @@ vec4 getDiffuse()
 
 vec4 getSpecular()
 {
-    vec4 pos        = model * passPos;
-    vec3 lightVec   = normalize(lightPos - pos.xyz);
-    vec3 norm;
-
-    if (useNormalMap == 1)
-    {
-        mat3 tbn    = mat3(passTan.xyz, passBitan.xyz, passNorm.xyz);
-        vec3 nmNorm = tbn * (2 * texture2D(normalTex, passUV).rgb - 1);
-        norm        = normalize(modelInv * vec4(nmNorm, 1)).xyz;
-    }
-    else
-    {
-        norm = normalize((modelInv * passNorm).xyz);
-    }
-
-    vec3 camVec = normalize(camPos - pos.xyz);
-    vec3 rflc   = reflect(-camVec, norm);
     float spec  = 0.0;
 
-    if (dot(lightVec, norm) > 0)
+    if (usePhong == 1)
     {
-        spec = pow(max(dot(camVec, rflc), 0), shininess) * dot(lightVec, norm); 
+        vec4 pos        = model * passPos;
+        vec3 lightVec   = normalize(lightPos - pos.xyz);
+        vec3 norm;
+
+        if (useNormalMap == 1)
+        {
+            mat3 tbn    = mat3(passTan.xyz, passBitan.xyz, passNorm.xyz);
+            vec3 nmNorm = tbn * (2 * texture2D(normalTex, passUV).rgb - 1);
+            norm        = normalize(modelInv * vec4(nmNorm, 1)).xyz;
+        }
+        else
+        {
+            norm = normalize((modelInv * passNorm).xyz);
+        }
+
+        vec3 camVec = normalize(camPos - pos.xyz);
+        vec3 rflc   = reflect(-camVec, norm);
+
+        if (dot(lightVec, norm) > 0)
+        {
+            spec = pow(max(dot(camVec, rflc), 0), shininess) * dot(lightVec, norm); 
+        }
     }
 
     if (useDiffuseMap == 1)

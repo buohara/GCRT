@@ -14,7 +14,9 @@ GLuint ImgLoader::LoadTexture(string &fileName)
     ilGenImages(1, &imgID);
     ilBindImage(imgID);
 
-    if (!ilLoadImage(fileName.c_str()))
+    ILboolean res;
+
+    if (!(res = ilLoadImage(fileName.c_str())))
     {
         return 0;
     }

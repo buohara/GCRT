@@ -64,6 +64,9 @@ void RMaterial::ApplyMaterial(GLuint program)
     GLuint specID = glGetUniformLocation(program, "shininess");
     glUniform1f(specID, spec);
 
+    GLuint phongID = glGetUniformLocation(program, "usePhong");
+    glUniform1f(specID, usePhong);
+
     // Texture or diffuse color.
 
     if (useDiffuseMap == 1)

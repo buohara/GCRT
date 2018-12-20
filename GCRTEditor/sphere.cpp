@@ -8,7 +8,8 @@
 
 void Sphere::Create(
     uint32_t numSectors,
-    uint32_t numRings
+    uint32_t numRings,
+    bool invertIn
 )
 {
     vector<vec3> pos;
@@ -19,6 +20,7 @@ void Sphere::Create(
     vector<vec4> boneWts;
 
     animated = false;
+    invert = invertIn;
 
     GenPositions(pos, numSectors, numRings);
     GenNormals(norms, numSectors, numRings);
