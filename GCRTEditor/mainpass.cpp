@@ -26,8 +26,6 @@ void MainPass::Init(
         string("RenderPass"),
         string("RenderShaderAnim.vert"),
         string("RenderShaderAnim.frag")
-        //string("RenderShader.vert"),
-        //string("RenderShader.frag")
     );
 
     renderProgram   = renderShader.program;
@@ -36,6 +34,12 @@ void MainPass::Init(
     if (useMSAA)
     {
         CreateMSAAFbo();
+    }
+
+    if (g_settings.useSkyBox)
+    {
+        GLuint envMapID = glGetUniformLocation(renderProgram, "envMapTex");
+        glUniform1i(envMapID, g_scn.skyTex.texID);
     }
 
     renderToScreen ? renderFbo = 0 : CreateRenderFbo();

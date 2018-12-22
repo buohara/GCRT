@@ -137,6 +137,8 @@ void AnimationScene::LoadScene()
 
     g_scn.AddMesh("Plane", make_shared<Plane>(pln));
 
+    // Models
+
     Model plane;
     plane.InitModelMatrices();
     plane.Scale(vec3(10.0, 10.0, 1.0));

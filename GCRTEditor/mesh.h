@@ -28,7 +28,7 @@ struct Mesh
     bool loadFromFile;
     bool animated;
     string filePath;
-    bool invert;
+    bool invert = false;
 
     virtual void Draw() = 0;
     

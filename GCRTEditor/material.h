@@ -24,6 +24,7 @@ struct RMaterial
     GLuint useSSS;
     GLuint useShadows;
     GLuint usePhong;
+    GLuint useEnvMap;
 
     string diffTexName;
     string normalTexName;
@@ -40,6 +41,7 @@ struct RMaterial
     void UseSSS(bool bUse) { bUse ? useSSS = 1 : useShadows = 0; }
     void UseShadows(bool bUse) { bUse ? useShadows = 1 : useShadows = 0; }
     void UsePhong(bool bUse) { bUse ? usePhong = 1 : usePhong = 0; }
+    void UseEnvMap(bool bUse) { bUse ? useEnvMap = 1 : useEnvMap = 0; }
 
     void SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights, GLuint program);
 };

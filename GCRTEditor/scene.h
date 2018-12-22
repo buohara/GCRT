@@ -28,10 +28,13 @@ struct Scene
     vector<const char*> materialNames;
     vector<const char*> meshNames;
 
+    Tex skyTex;
+
     Scene();
 
     void AddDiffTexture(string name, string path, GLuint id);
     void AddNormTexture(string name, string path, GLuint id);
+    void SetSkyTex(string path, GLuint id);
 
     void Save(string file);
     void Load(string file);

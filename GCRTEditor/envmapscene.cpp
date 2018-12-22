@@ -30,6 +30,7 @@ void EnvMapScene::Init(HINSTANCE hInstance)
     g_settings.winH                 = 1080;
     g_settings.winW                 = 1920;
     g_settings.wireFrame            = false;
+    g_settings.useSkyBox            = true;
 
 	rndr.CreateRenderWindow(
 		hInstance,
@@ -37,8 +38,10 @@ void EnvMapScene::Init(HINSTANCE hInstance)
 	);
 
 	rndr.CreateGLContext();
-
 	rndr.Init();
+
+    g_scn.SetSkyTex(string("F:/GCRT/asset/skypano.jpg"),
+        ImgLoader::LoadTexture(string("F:/GCRT/asset/skypano.jpg")));
 
 	MainPass mainPass;
 	mainPass.Init(0, true);
@@ -113,8 +116,29 @@ void EnvMapScene::LoadScene()
 
     skyMat.UseShadows(false);
     skyMat.UsePhong(false);
+    skyMat.UseEnvMap(false);
 
     g_scn.AddMaterial("SkyMat", skyMat);
+
+    RMaterial defaultMat;
+    defaultMat.name = "Default";
+    defaultMat.kd = vec3(0.8, 0.8, 0.8);
+
+    defaultMat.UseShadows(true);
+    defaultMat.UsePhong(true);
+    defaultMat.UseEnvMap(false);
+    defaultMat.spec = 1.0;
+
+    g_scn.AddMaterial("Default", defaultMat);
+
+    RMaterial mirrorMat;
+    mirrorMat.name = "Mirror";
+
+    mirrorMat.UseShadows(false);
+    mirrorMat.UsePhong(false);
+    mirrorMat.UseEnvMap(true);
+
+    g_scn.AddMaterial("Mirror", mirrorMat);
 
     // Meshes
 
@@ -124,14 +148,31 @@ void EnvMapScene::LoadScene()
     
     g_scn.AddMesh("SkySphere", make_shared<Sphere>(sph));
 
+    Box box;
+    box.Create();
+    box.name = "Box";
+
+    g_scn.AddMesh("Box", make_shared<Box>(box));
+
+    // Models
+
     Model skySphere;
     skySphere.InitModelMatrices();
-    skySphere.Scale(vec3(100.0, 100.0, 100.0));
+    skySphere.Scale(vec3(500.0, 500.0, 500.0));
     skySphere.meshName = string("SkySphere");
     skySphere.matName = string("SkyMat");
     skySphere.pickerColor = rndr.nextPickerColor();
     
     g_scn.AddModel("SkySphere0", skySphere);
+
+    Model boxModel;
+    boxModel.InitModelMatrices();
+    boxModel.Scale(vec3(1.0, 1.0, 1.0));
+    boxModel.meshName = string("Box");
+    boxModel.matName = string("Mirror");
+    boxModel.pickerColor = rndr.nextPickerColor();
+
+    g_scn.AddModel("Box0", boxModel);
 
     // Camera
 

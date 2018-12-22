@@ -30,6 +30,7 @@ uniform vec3 ka;
 uniform sampler2D depthTex;
 uniform sampler2D normalTex;
 uniform sampler2D diffuseTex;
+uniform sampler2D envMapTex;
 
 uniform vec3 kd;
 uniform float shininess;
@@ -41,6 +42,7 @@ uniform int usePhong;
 uniform int useShadows;
 uniform int useDOF;
 uniform int selected;
+uniform int useEnvMap;
 
 /**
  * Compute diffuse lighting color.
@@ -74,6 +76,8 @@ vec4 getDiffuse()
     {
         theta = 1.0;
     }
+
+    theta = min(1.0, theta + 0.3);
 
     if (useDiffuseMap == 1)
     {
@@ -201,6 +205,39 @@ float getSSSFactor()
 }
 
 /**
+ * SampleEnvMap - Reflect camera ray about normal. Intersect reflected ray with sphere to get UV
+ * coordinate of sphere map. Sample sphere map with this UV.
+ */
+
+vec4 SampleEnvMap()
+{
+    vec4 pos    = passModel * passPos;
+    vec3 norm   = normalize((passModelInv * passNorm).xyz);
+    vec3 camVec = normalize(camPos - pos.xyz);
+    vec3 rflc   = normalize(reflect(-camVec, norm));
+
+    float b = 2 * dot(rflc, pos.xyz);
+    float c = dot(pos.xyz, pos.xyz) - 500.0 * 500.0;
+    float t = (-b + sqrt(b * b - 4.0 *  c)) * 0.5;
+
+    if (t < 0.0)
+    {
+        t = (-b - sqrt(b * b - 4.0 * c)) * 0.5;
+    }
+
+    vec3 intsc = pos.xyz + t * rflc;
+
+    float phi     = atan(intsc.y / intsc.x) + 0.5;
+    float theta   = acos(intsc.z / 500.0);
+
+    //vec4 envSample = texture2D(envMapTex, vec2(theta, phi));
+
+    vec4 envSample = phi * vec4(1.0, 0.0, 0.0, 1.0);
+
+    return envSample;
+}
+
+/**
  * Main fragment shader routine (main render pass).
  */
 
@@ -209,6 +246,12 @@ void main()
     vec4 diffuseColor = getDiffuse();
     vec4 specColor    = getSpecular();    
     float visibility  = getVisibility();
+    vec4 envMap       = vec4(0.0, 0.0, 0.0, 0.0);
+
+    if (useEnvMap == 1)
+    {
+        envMap = SampleEnvMap();
+    }
 
     if (selected == 1)
     {
@@ -220,7 +263,14 @@ void main()
         diffuseColor += getSSSFactor();
     }
 
-    color = (diffuseColor + specColor);
+    if (useEnvMap == 1)
+    {
+        color = envMap;
+    }
+    else
+    {
+        color = (diffuseColor + specColor);
+    }
 
     if (useDOF == 1)
     {
