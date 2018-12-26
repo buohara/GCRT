@@ -24,8 +24,8 @@ void MainPass::Init(
 
     renderShader.Create(
         string("RenderPass"),
-        string("RenderShaderAnim.vert"),
-        string("RenderShaderAnim.frag")
+        string("shaders/RenderShaderAnim.vert"),
+        string("shaders/RenderShaderAnim.frag")
     );
 
     renderProgram   = renderShader.program;

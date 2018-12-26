@@ -65,8 +65,8 @@ void PickerPass::Init()
     Shader pickerShader;
     pickerShader.Create(
         string("PickerPass"),
-        string("PickerShaderAnim.vert"),
-        string("PickerShaderAnim.frag")
+        string("shaders/PickerShaderAnim.vert"),
+        string("shaders/PickerShaderAnim.frag")
     );
 
     pickerProgram = pickerShader.program;

@@ -71,24 +71,24 @@ void BloomPass::Init(
 
     brightShader.Create(
         string("BrightShader"),
-        string("BrightShader.vert"),
-        string("BrightShader.frag")
+        string("shaders/BrightShader.vert"),
+        string("shaders/BrightShader.frag")
     );
 
     brightProgram = brightShader.program;
 
     blurShader.Create(
         string("GaussBlur"),
-        string("GaussBlur.vert"),
-        string("GaussBlur.frag")
+        string("shaders/GaussBlur.vert"),
+        string("shaders/GaussBlur.frag")
     );
 
     blurProgram = blurShader.program;
 
     composeShader.Create(
         string("ComposeShader"),
-        string("Compose.vert"),
-        string("Compose.frag")
+        string("shaders/Compose.vert"),
+        string("shaders/Compose.frag")
     );
 
     composeProgram = composeShader.program;

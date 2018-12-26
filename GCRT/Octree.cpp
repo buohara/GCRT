@@ -263,51 +263,52 @@ void Octree::Intersect(Ray ray, uint32_t faceIdcs[], uint32_t &faceCnt)
     }
 }
 
-void Octree::Intersect2(Ray ray, uint32_t faceIdcs[], uint32_t &faceCnt)
-{
-    uint32_t numChildrenHit = 0;
-    uint32_t numChildrenVisited = 0;
-
-    struct ChildIntsc
-    {
-        float t;
-        uint32_t childIdx;
-        bool visited;
-    };
-
-    ChildIntsc childIntscs[8];
-
-    for (auto &face : faces)
-    {
-        faceIdcs[faceCnt++] = face;
-    }
-
-    for (uint32_t i = 0; i < 8; i++)
-    {
-        Intersection intsc;
-        children[i]->box.Intersect(ray, intsc);
-
-        if (intsc.t > 0.0)
-        {
-            childIntscs[numChildrenHit++] = { intsc.t, i, false };
-        }
-    }
-
-    while (numChildrenVisited < numChildrenHit)
-    {
-        double minT = FLT_MAX;
-        uint32_t closestChild = 8;
-
-        for (uint32_t i = 0; i < numChildrenHit; i++)
-        {
-            if (childIntscs[i].visited == false && childIntscs[i].t < minT)
-            {
-                minT = childIntscs[i].t;
-                closestChild = i;
-            }
-        }
-
-        children[closestChild]->Intersect(ray, faceIdcs, faceCnt);
-        childIntscs[closestChild].visited = true;
-    }
-}
+//
+//void Octree::Intersect2(Ray ray, uint32_t faceIdcs[], uint32_t &faceCnt)
+//{
+//    uint32_t numChildrenHit = 0;
+//    uint32_t numChildrenVisited = 0;
+//
+//    struct ChildIntsc
+//    {
+//        float t;
+//        uint32_t childIdx;
+//        bool visited;
+//    };
+//
+//    ChildIntsc childIntscs[8];
+//
+//    for (auto &face : faces)
+//    {
+//        faceIdcs[faceCnt++] = face;
+//    }
+//
+//    for (uint32_t i = 0; i < 8; i++)
+//    {
+//        Intersection intsc;
+//        children[i]->box.Intersect(ray, intsc);
+//
+//        if (intsc.t > 0.0)
+//        {
+//            childIntscs[numChildrenHit++] = { intsc.t, i, false };
+//        }
+//    }
+//
+//    while (numChildrenVisited < numChildrenHit)
+//    {
+//        double minT = FLT_MAX;
+//        uint32_t closestChild = 8;
+//
+//        for (uint32_t i = 0; i < numChildrenHit; i++)
+//        {
+//            if (childIntscs[i].visited == false && childIntscs[i].t < minT)
+//            {
+//                minT = childIntscs[i].t;
+//                closestChild = i;
+//            }
+//        }
+//
+//        children[closestChild]->Intersect(ray, faceIdcs, faceCnt);
+//        childIntscs[closestChild].visited = true;
+//    }
+//}

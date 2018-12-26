@@ -87,13 +87,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\libgasandbox;..\assimp-3.3.1\include;..\imgui;..\glm;..\glew\glew\include\GL;..\DevIL\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\glew\glew\include\GL;..\external\devil\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>assimp-vc140-mt.lib;DevIL.lib;glew32s.lib;OpenGL32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\assimp-3.3.1\out\code\Release;..\glew\glew\lib\Release\x64;..\DevIL\lib\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\external\assimp\out\code\Release;..\external\glew\glew\lib\Release\x64;..\external\devil\lib\x64\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -102,13 +102,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\libgasandbox;..\assimp-3.3.1\include;..\imgui;..\glm;..\glew\glew\include\GL;..\DevIL\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\glew\glew\include\GL;..\external\devil\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>assimp-vc140-mt.lib;DevIL.lib;glew32s.lib;OpenGL32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\assimp-3.3.1\out\code\Release;..\glew\glew\lib\Release\x64;..\DevIL\lib\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\external\assimp\out\code\Release;..\external\glew\glew\lib\Release\x64;..\external\devil\lib\x64\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -119,7 +119,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\libgasandbox;..\assimp-3.3.1\include;..\imgui;..\glm;..\glew\glew\include\GL;..\DevIL\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\glew\glew\include\GL;..\external\devil\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -127,7 +127,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>assimp-vc140-mt.lib;DevIL.lib;glew32s.lib;OpenGL32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\assimp-3.3.1\out\code\Release;..\glew\glew\lib\Release\x64;..\DevIL\lib\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\external\assimp\out\code\Release;..\external\glew\glew\lib\Release\x64;..\external\devil\lib\x64\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -138,7 +138,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\libgasandbox;..\assimp-3.3.1\include;..\imgui;..\glm;..\glew\glew\include\GL;..\DevIL\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\glew\glew\include\GL;..\external\devil\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,7 +146,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>assimp-vc140-mt.lib;DevIL.lib;glew32s.lib;OpenGL32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\assimp-3.3.1\out\code\Release;..\glew\glew\lib\Release\x64;..\DevIL\lib\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\external\assimp\out\code\Release;..\external\glew\glew\lib\Release\x64;..\external\devil\lib\x64\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

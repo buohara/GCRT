@@ -91,8 +91,8 @@ void DOFPass::Init(
     Shader dofShader;
     dofShader.Create(
         string("DOFShader"),
-        string("DOFShader.vert"),
-        string("DOFShader.frag")
+        string("shaders/DOFShader.vert"),
+        string("shaders/DOFShader.frag")
     );
 
     dofProgram = dofShader.program;

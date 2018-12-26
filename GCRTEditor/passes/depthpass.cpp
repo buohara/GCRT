@@ -13,8 +13,8 @@ void DepthPass::Init()
     Shader depthShader;
     depthShader.Create(
         string("DepthPass"),
-        string("DepthPassShaderAnim.vert"),
-        string("DepthPassShaderAnim.frag")
+        string("shaders/DepthPassShaderAnim.vert"),
+        string("shaders/DepthPassShaderAnim.frag")
     );
 
     // Create a depth FBO and associated texture.
