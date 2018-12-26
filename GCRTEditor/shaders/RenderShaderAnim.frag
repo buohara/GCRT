@@ -227,12 +227,12 @@ vec4 SampleEnvMap()
 
     vec3 intsc = pos.xyz + t * rflc;
 
-    float phi     = atan(intsc.y / intsc.x) + 0.5;
-    float theta   = acos(intsc.z / 500.0);
+    float phi     = atan(intsc.y, intsc.x) / 6.18312;
+    float theta   = acos(intsc.z / 500.0) / 3.14156;
 
-    //vec4 envSample = texture2D(envMapTex, vec2(theta, phi));
+    vec4 envSample = texture2D(envMapTex, vec2(phi, theta));
 
-    vec4 envSample = phi * vec4(1.0, 0.0, 0.0, 1.0);
+    //vec4 envSample = phi * vec4(1.0, 0.0, 0.0, 1.0);
 
     return envSample;
 }
