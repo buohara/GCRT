@@ -1,273 +1,271 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{fc42fa7f-4a3c-44bf-8669-8940e4d757b5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scenes">
-      <UniqueIdentifier>{35931b40-2703-42ad-9490-72251f9afcc7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common">
+    <Filter Include="common">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="CommonInclude">
+    <Filter Include="commoninclude">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Passes">
+    <Filter Include="passes">
       <UniqueIdentifier>{214586eb-6995-4a5b-a2d9-40ea342be382}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scenes">
+      <UniqueIdentifier>{35931b40-2703-42ad-9490-72251f9afcc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{fc42fa7f-4a3c-44bf-8669-8940e4d757b5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="animation.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\animation.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="box.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\box.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\camera.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="cylinder.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\cylinder.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="imgloader.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\gcrt.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="light.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\imgloader.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="material.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\input.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="mesh.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\light.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="model.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\material.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="plane.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\mesh.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="scene.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\model.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="shader.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\noise.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="skeletalmesh.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\perlinterrain.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="sphere.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\plane.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="renderer.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\scene.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="input.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\sceneselector.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="gcrt.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\shader.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="sceneselector.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="commoninclude\skeletalmesh.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="animationscene.h">
-      <Filter>Scenes</Filter>
+    <ClInclude Include="commoninclude\sphere.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
-    <ClInclude Include="mainpass.h">
-      <Filter>Passes</Filter>
+    <ClInclude Include="passes\bloompass.h">
+      <Filter>passes</Filter>
     </ClInclude>
-    <ClInclude Include="renderpass.h">
-      <Filter>Passes</Filter>
+    <ClInclude Include="passes\depthpass.h">
+      <Filter>passes</Filter>
     </ClInclude>
-    <ClInclude Include="depthpass.h">
-      <Filter>Passes</Filter>
+    <ClInclude Include="passes\dofpass.h">
+      <Filter>passes</Filter>
     </ClInclude>
-    <ClInclude Include="dofpass.h">
-      <Filter>Passes</Filter>
+    <ClInclude Include="passes\mainpass.h">
+      <Filter>passes</Filter>
     </ClInclude>
-    <ClInclude Include="bloompass.h">
-      <Filter>Passes</Filter>
+    <ClInclude Include="passes\pickerpass.h">
+      <Filter>passes</Filter>
     </ClInclude>
-    <ClInclude Include="pickerpass.h">
-      <Filter>Passes</Filter>
+    <ClInclude Include="passes\renderpass.h">
+      <Filter>passes</Filter>
     </ClInclude>
-    <ClInclude Include="noise.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="scenes\animationscene.h">
+      <Filter>scenes</Filter>
     </ClInclude>
-    <ClInclude Include="terrainscene.h">
-      <Filter>Scenes</Filter>
+    <ClInclude Include="scenes\envmapscene.h">
+      <Filter>scenes</Filter>
     </ClInclude>
-    <ClInclude Include="perlinterrain.h">
-      <Filter>CommonInclude</Filter>
+    <ClInclude Include="scenes\terrainscene.h">
+      <Filter>scenes</Filter>
     </ClInclude>
-    <ClInclude Include="envmapscene.h">
-      <Filter>Scenes</Filter>
+    <ClInclude Include="commoninclude\renderer.h">
+      <Filter>commoninclude</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="animation.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\animation.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="box.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\box.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="camera.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\camera.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="cylinder.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\cylinder.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="imgloader.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\imgloader.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="material.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\input.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="mesh.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\material.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="model.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\mesh.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="plane.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\model.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="renderer.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\noise.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="scene.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\perlinterrain.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="skeletalmesh.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\plane.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="sphere.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\renderer.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="shader.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\scene.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="input.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\sceneselector.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="sceneselector.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="common\shader.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="animationscene.cpp">
-      <Filter>Scenes</Filter>
+    <ClCompile Include="common\skeletalmesh.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="gcrtmain.cpp" />
-    <ClCompile Include="bloompass.cpp">
-      <Filter>Passes</Filter>
+    <ClCompile Include="common\sphere.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="depthpass.cpp">
-      <Filter>Passes</Filter>
+    <ClCompile Include="passes\bloompass.cpp">
+      <Filter>passes</Filter>
     </ClCompile>
-    <ClCompile Include="dofpass.cpp">
-      <Filter>Passes</Filter>
+    <ClCompile Include="passes\depthpass.cpp">
+      <Filter>passes</Filter>
     </ClCompile>
-    <ClCompile Include="mainpass.cpp">
-      <Filter>Passes</Filter>
+    <ClCompile Include="passes\dofpass.cpp">
+      <Filter>passes</Filter>
     </ClCompile>
-    <ClCompile Include="pickerpass.cpp">
-      <Filter>Passes</Filter>
+    <ClCompile Include="passes\mainpass.cpp">
+      <Filter>passes</Filter>
     </ClCompile>
-    <ClCompile Include="renderpass.cpp">
-      <Filter>Passes</Filter>
+    <ClCompile Include="passes\pickerpass.cpp">
+      <Filter>passes</Filter>
     </ClCompile>
-    <ClCompile Include="noise.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="passes\renderpass.cpp">
+      <Filter>passes</Filter>
     </ClCompile>
-    <ClCompile Include="terrainscene.cpp">
-      <Filter>Scenes</Filter>
+    <ClCompile Include="scenes\animationscene.cpp">
+      <Filter>scenes</Filter>
     </ClCompile>
-    <ClCompile Include="perlinterrain.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="scenes\envmapscene.cpp">
+      <Filter>scenes</Filter>
     </ClCompile>
-    <ClCompile Include="envmapscene.cpp">
-      <Filter>Scenes</Filter>
+    <ClCompile Include="scenes\terrainscene.cpp">
+      <Filter>scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="common\gcrtmain.cpp">
+      <Filter>common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="BrightShader.frag">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\BrightShader.frag">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="BrightShader.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\BrightShader.vert">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="Compose.frag">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\Compose.frag">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="Compose.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\Compose.vert">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="DepthPassShader.frag">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\DepthPassShader.frag">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="DepthPassShaderAnim.frag">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\DepthPassShader.vert">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="DOFPassShader.frag">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\DepthPassShaderAnim.frag">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="DOFShader.frag">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\DepthPassShaderAnim.vert">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="GaussBlur.frag">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\DOFPassShader.frag">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="PickerShader.frag">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\DOFPassShader.vert">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="PickerShaderAnim.frag">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\DOFShader.frag">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="RenderShader.frag">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\DOFShader.vert">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="RenderShaderAnim.frag">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\GaussBlur.frag">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="DepthPassShader.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\GaussBlur.vert">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="DepthPassShaderAnim.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\PickerShader.frag">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="DOFPassShader.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\PickerShader.vert">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="DOFShader.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\PickerShaderAnim.frag">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="GaussBlur.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\PickerShaderAnim.vert">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="PickerShader.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\RenderShader.frag">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="PickerShaderAnim.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\RenderShader.vert">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="RenderShader.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\RenderShaderAnim.frag">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="RenderShaderAnim.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\RenderShaderAnim.vert">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="RenderShaderEnv.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\RenderShaderEnv.frag">
+      <Filter>shaders</Filter>
     </None>
-    <None Include="RenderShaderEnv.frag">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\RenderShaderEnv.vert">
+      <Filter>shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -87,7 +87,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\libgasandbox;..\assimp-3.3.1\include;..\imgui;..\glm;..\glew\glew\include\GL;..\DevIL\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\libgasandbox;..\assimp-3.3.1\include;..\imgui;..\glm;..\glew\glew\include\GL;..\DevIL\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -102,7 +102,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\libgasandbox;..\assimp-3.3.1\include;..\imgui;..\glm;..\glew\glew\include\GL;..\DevIL\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\libgasandbox;..\assimp-3.3.1\include;..\imgui;..\glm;..\glew\glew\include\GL;..\DevIL\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,7 +119,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\libgasandbox;..\assimp-3.3.1\include;..\imgui;..\glm;..\glew\glew\include\GL;..\DevIL\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\libgasandbox;..\assimp-3.3.1\include;..\imgui;..\glm;..\glew\glew\include\GL;..\DevIL\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -138,7 +138,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\libgasandbox;..\assimp-3.3.1\include;..\imgui;..\glm;..\glew\glew\include\GL;..\DevIL\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\libgasandbox;..\assimp-3.3.1\include;..\imgui;..\glm;..\glew\glew\include\GL;..\DevIL\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,91 +150,91 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="animation.h" />
-    <ClInclude Include="animationscene.h" />
-    <ClInclude Include="bloompass.h" />
-    <ClInclude Include="box.h" />
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="cylinder.h" />
-    <ClInclude Include="depthpass.h" />
-    <ClInclude Include="dofpass.h" />
-    <ClInclude Include="envmapscene.h" />
-    <ClInclude Include="gcrt.h" />
-    <ClInclude Include="imgloader.h" />
-    <ClInclude Include="input.h" />
-    <ClInclude Include="light.h" />
-    <ClInclude Include="mainpass.h" />
-    <ClInclude Include="material.h" />
-    <ClInclude Include="mesh.h" />
-    <ClInclude Include="model.h" />
-    <ClInclude Include="noise.h" />
-    <ClInclude Include="perlinterrain.h" />
-    <ClInclude Include="pickerpass.h" />
-    <ClInclude Include="plane.h" />
-    <ClInclude Include="renderer.h" />
-    <ClInclude Include="renderpass.h" />
-    <ClInclude Include="scene.h" />
-    <ClInclude Include="sceneselector.h" />
-    <ClInclude Include="shader.h" />
-    <ClInclude Include="skeletalmesh.h" />
-    <ClInclude Include="sphere.h" />
-    <ClInclude Include="terrainscene.h" />
+    <ClInclude Include="commoninclude\animation.h" />
+    <ClInclude Include="commoninclude\box.h" />
+    <ClInclude Include="commoninclude\camera.h" />
+    <ClInclude Include="commoninclude\cylinder.h" />
+    <ClInclude Include="commoninclude\gcrt.h" />
+    <ClInclude Include="commoninclude\imgloader.h" />
+    <ClInclude Include="commoninclude\input.h" />
+    <ClInclude Include="commoninclude\light.h" />
+    <ClInclude Include="commoninclude\material.h" />
+    <ClInclude Include="commoninclude\mesh.h" />
+    <ClInclude Include="commoninclude\model.h" />
+    <ClInclude Include="commoninclude\noise.h" />
+    <ClInclude Include="commoninclude\perlinterrain.h" />
+    <ClInclude Include="commoninclude\plane.h" />
+    <ClInclude Include="commoninclude\renderer.h" />
+    <ClInclude Include="commoninclude\scene.h" />
+    <ClInclude Include="commoninclude\sceneselector.h" />
+    <ClInclude Include="commoninclude\shader.h" />
+    <ClInclude Include="commoninclude\skeletalmesh.h" />
+    <ClInclude Include="commoninclude\sphere.h" />
+    <ClInclude Include="passes\bloompass.h" />
+    <ClInclude Include="passes\depthpass.h" />
+    <ClInclude Include="passes\dofpass.h" />
+    <ClInclude Include="passes\mainpass.h" />
+    <ClInclude Include="passes\pickerpass.h" />
+    <ClInclude Include="passes\renderpass.h" />
+    <ClInclude Include="scenes\animationscene.h" />
+    <ClInclude Include="scenes\envmapscene.h" />
+    <ClInclude Include="scenes\terrainscene.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="animation.cpp" />
-    <ClCompile Include="animationscene.cpp" />
-    <ClCompile Include="bloompass.cpp" />
-    <ClCompile Include="box.cpp" />
-    <ClCompile Include="camera.cpp" />
-    <ClCompile Include="cylinder.cpp" />
-    <ClCompile Include="depthpass.cpp" />
-    <ClCompile Include="dofpass.cpp" />
-    <ClCompile Include="envmapscene.cpp" />
-    <ClCompile Include="gcrtmain.cpp" />
-    <ClCompile Include="imgloader.cpp" />
-    <ClCompile Include="input.cpp" />
-    <ClCompile Include="mainpass.cpp" />
-    <ClCompile Include="material.cpp" />
-    <ClCompile Include="mesh.cpp" />
-    <ClCompile Include="model.cpp" />
-    <ClCompile Include="noise.cpp" />
-    <ClCompile Include="perlinterrain.cpp" />
-    <ClCompile Include="pickerpass.cpp" />
-    <ClCompile Include="plane.cpp" />
-    <ClCompile Include="renderer.cpp" />
-    <ClCompile Include="renderpass.cpp" />
-    <ClCompile Include="scene.cpp" />
-    <ClCompile Include="sceneselector.cpp" />
-    <ClCompile Include="shader.cpp" />
-    <ClCompile Include="skeletalmesh.cpp" />
-    <ClCompile Include="sphere.cpp" />
-    <ClCompile Include="terrainscene.cpp" />
+    <ClCompile Include="common\animation.cpp" />
+    <ClCompile Include="common\box.cpp" />
+    <ClCompile Include="common\camera.cpp" />
+    <ClCompile Include="common\cylinder.cpp" />
+    <ClCompile Include="common\gcrtmain.cpp" />
+    <ClCompile Include="common\imgloader.cpp" />
+    <ClCompile Include="common\input.cpp" />
+    <ClCompile Include="common\material.cpp" />
+    <ClCompile Include="common\mesh.cpp" />
+    <ClCompile Include="common\model.cpp" />
+    <ClCompile Include="common\noise.cpp" />
+    <ClCompile Include="common\perlinterrain.cpp" />
+    <ClCompile Include="common\plane.cpp" />
+    <ClCompile Include="common\renderer.cpp" />
+    <ClCompile Include="common\scene.cpp" />
+    <ClCompile Include="common\sceneselector.cpp" />
+    <ClCompile Include="common\shader.cpp" />
+    <ClCompile Include="common\skeletalmesh.cpp" />
+    <ClCompile Include="common\sphere.cpp" />
+    <ClCompile Include="passes\bloompass.cpp" />
+    <ClCompile Include="passes\depthpass.cpp" />
+    <ClCompile Include="passes\dofpass.cpp" />
+    <ClCompile Include="passes\mainpass.cpp" />
+    <ClCompile Include="passes\pickerpass.cpp" />
+    <ClCompile Include="passes\renderpass.cpp" />
+    <ClCompile Include="scenes\animationscene.cpp" />
+    <ClCompile Include="scenes\envmapscene.cpp" />
+    <ClCompile Include="scenes\terrainscene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BrightShader.frag" />
-    <None Include="BrightShader.vert" />
-    <None Include="Compose.frag" />
-    <None Include="Compose.vert" />
-    <None Include="DepthPassShader.frag" />
-    <None Include="DepthPassShader.vert" />
-    <None Include="DepthPassShaderAnim.frag" />
-    <None Include="DepthPassShaderAnim.vert" />
-    <None Include="DOFPassShader.frag" />
-    <None Include="DOFPassShader.vert" />
-    <None Include="DOFShader.frag" />
-    <None Include="DOFShader.vert" />
-    <None Include="GaussBlur.frag" />
-    <None Include="GaussBlur.vert" />
-    <None Include="PickerShader.frag" />
-    <None Include="PickerShader.vert" />
-    <None Include="PickerShaderAnim.frag" />
-    <None Include="PickerShaderAnim.vert" />
-    <None Include="RenderShader.frag" />
-    <None Include="RenderShader.vert" />
-    <None Include="RenderShaderAnim.frag" />
-    <None Include="RenderShaderAnim.vert" />
-    <None Include="RenderShaderEnv.frag" />
-    <None Include="RenderShaderEnv.vert" />
+    <None Include="shaders\BrightShader.frag" />
+    <None Include="shaders\BrightShader.vert" />
+    <None Include="shaders\Compose.frag" />
+    <None Include="shaders\Compose.vert" />
+    <None Include="shaders\DepthPassShader.frag" />
+    <None Include="shaders\DepthPassShader.vert" />
+    <None Include="shaders\DepthPassShaderAnim.frag" />
+    <None Include="shaders\DepthPassShaderAnim.vert" />
+    <None Include="shaders\DOFPassShader.frag" />
+    <None Include="shaders\DOFPassShader.vert" />
+    <None Include="shaders\DOFShader.frag" />
+    <None Include="shaders\DOFShader.vert" />
+    <None Include="shaders\GaussBlur.frag" />
+    <None Include="shaders\GaussBlur.vert" />
+    <None Include="shaders\PickerShader.frag" />
+    <None Include="shaders\PickerShader.vert" />
+    <None Include="shaders\PickerShaderAnim.frag" />
+    <None Include="shaders\PickerShaderAnim.vert" />
+    <None Include="shaders\RenderShader.frag" />
+    <None Include="shaders\RenderShader.vert" />
+    <None Include="shaders\RenderShaderAnim.frag" />
+    <None Include="shaders\RenderShaderAnim.vert" />
+    <None Include="shaders\RenderShaderEnv.frag" />
+    <None Include="shaders\RenderShaderEnv.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
