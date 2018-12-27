@@ -165,14 +165,23 @@ void EnvMapScene::LoadScene()
     
     g_scn.AddModel("SkySphere0", skySphere);
 
-    Model boxModel;
+    /*Model boxModel;
     boxModel.InitModelMatrices();
     boxModel.Scale(vec3(1.0, 1.0, 1.0));
     boxModel.meshName = string("Box");
     boxModel.matName = string("Mirror");
     boxModel.pickerColor = rndr.nextPickerColor();
 
-    g_scn.AddModel("Box0", boxModel);
+    g_scn.AddModel("Box0", boxModel);*/
+
+    g_scn.LoadModelFromFile(
+        "Table",
+        "F:/GCRT/asset/models/table/table.obj",
+        "",
+        "",
+        rndr.nextPickerColor(),
+        false
+    );
 
     // Camera
 

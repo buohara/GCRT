@@ -54,12 +54,15 @@ void SkeletalMesh::Create(string file)
 
     LoadVertexAndBoneData(scene, boneOffsets);
 
-    aiNode &scnRoot = *(scene.mRootNode);
-    root.name = scnRoot.mName.C_Str();
+    if (animated == true)
+    {
+        aiNode &scnRoot = *(scene.mRootNode);
+        root.name = scnRoot.mName.C_Str();
 
-    globalInverse = aiMatrix4x4ToGlm(scnRoot.mTransformation.Inverse());
-    CreateBoneHierarchy(scnRoot, root, boneOffsets);
-    LoadAnimations(scene);
+        globalInverse = aiMatrix4x4ToGlm(scnRoot.mTransformation.Inverse());
+        CreateBoneHierarchy(scnRoot, root, boneOffsets);
+        LoadAnimations(scene);
+    }
 }
 
 /**
@@ -195,11 +198,16 @@ void SkeletalMesh::LoadVertexAndBoneData(
         subMeshes[i].numIdcs = 3 * mesh.mNumFaces;
 
         LoadVertexData(mesh, pos, norm, uv, idcs);
+        LoadMaterials(scene);
+
+        // If this is a static mesh, default all vertices to point at bone 0 with
+        // weight 1.0. This bone will just be MV matrix of overall mesh (matrix to scale, rotate, 
+        // translate overall mesh into world space).
 
         if (animated == false)
         {
-            boneIDs.push_back(ivec4(0));
-            boneIDs.push_back(vec4(1.0f, 0.0f, 0.0f, 0.0f));
+            boneIDs.resize(pos.size(), ivec4(0));
+            boneWeights.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
 
             InitVertexObjects(i, pos, norm, uv, idcs, boneIDs, boneWeights);
             continue;
@@ -234,7 +242,7 @@ void SkeletalMesh::LoadVertexData(
     pos.resize(mesh.mNumVertices);
     norm.resize(mesh.mNumVertices);
     UV.resize(mesh.mNumVertices);
-    idcs.resize(mesh.mNumVertices);
+    idcs.resize(3 * mesh.mNumFaces);
 
     // Vertex attributes.
 
@@ -248,8 +256,11 @@ void SkeletalMesh::LoadVertexData(
         norm[j].y = mesh.mNormals[j].y;
         norm[j].z = mesh.mNormals[j].z;
 
-        UV[j].x = mesh.mTextureCoords[0][j].x;
-        UV[j].y = 1.0f - mesh.mTextureCoords[0][j].y;
+        if (mesh.mNumUVComponents[0] > 0)
+        {
+            UV[j].x = mesh.mTextureCoords[0][j].x;
+            UV[j].y = 1.0f - mesh.mTextureCoords[0][j].y;
+        }
     }
 
     // Triangle indices.
@@ -260,6 +271,55 @@ void SkeletalMesh::LoadVertexData(
         idcs[3 * j + 1] = mesh.mFaces[j].mIndices[1];
         idcs[3 * j + 2] = mesh.mFaces[j].mIndices[2];
     }
+}
+
+/**
+ * SkeletalMesh::LoadMaterials
+ *
+ * @param mesh        Assimp mesh (in).
+ */
+
+void SkeletalMesh::LoadMaterials(const aiScene &scene)
+{
+    for (uint32_t i = 0; i < scene.mNumMaterials; i++)
+    {
+        aiMaterial &mat = *scene.mMaterials[i];
+        aiString name;
+        aiColor4D kd;
+        aiColor4D ka;
+        aiColor4D ks;
+        uint32_t numTextures;
+        float shininess;
+
+        if (mat.Get(AI_MATKEY_NAME, name) == aiReturn_SUCCESS)
+        {
+        }
+
+        if (mat.Get(AI_MATKEY_COLOR_DIFFUSE, kd) == aiReturn_SUCCESS)
+        {
+        }
+
+        if (mat.Get(AI_MATKEY_COLOR_AMBIENT, ka) == aiReturn_SUCCESS)
+        {
+        }
+
+        if (mat.Get(AI_MATKEY_COLOR_SPECULAR, ks) == aiReturn_SUCCESS)
+        {
+        }
+        
+        if (mat.Get(AI_MATKEY_SHININESS, shininess) == aiReturn_SUCCESS)
+        {
+        }
+
+        if ((numTextures = mat.GetTextureCount(aiTextureType_DIFFUSE)) > 0)
+        {
+
+        }
+
+        __debugbreak();
+    }
+
+    return;
 }
 
 /**

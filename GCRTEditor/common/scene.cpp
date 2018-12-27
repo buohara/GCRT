@@ -68,8 +68,10 @@ void Scene::SetSkyTex(string path, GLuint id)
 }
 
 /**
- * [Scene::Save description]
- * @param file [description]
+ * Scene::Save Save scene to file. Loop through all meshes, textures, materials, lights,
+ * etc, and write object descriptions to file.
+ *
+ * @param file Output scene file name (in).
  */
 
 void Scene::Save(string file)
@@ -229,8 +231,10 @@ void Scene::Save(string file)
 }
 
 /**
- * [Scene::Load description]
- * @param file [description]
+ * Scene::Load Parse a scene file and load all the meshes, materials, lights, etc
+ * described in that file.
+ *
+ * @param file Scene file to load (in).
  */
 
 void Scene::Load(string file)
@@ -665,9 +669,11 @@ void Scene::Load(string file)
 }
 
 /**
- * [Scene::AddMaterial description]
- * @param name [description]
- * @param mat  [description]
+ * Scene::AddMaterial Add a material to the scene's list of available
+ * materials.
+ * 
+ * @param name Material's name (in).
+ * @param mat  Actual material data - textures, attributes, etc (in).
  */
 
 void Scene::AddMaterial(string name, RMaterial mat)
@@ -757,9 +763,9 @@ void Scene::LoadModelFromFile(
     Model model;
     model.InitModelMatrices();
     model.Scale(vec3(0.05, 0.05, 0.05));
-    model.Translate(vec3(-2.0, -2.0, 5.0));
+    model.Rotate(vec3(1.56, 0, 0));
     model.meshName = name;
-    model.matName = string("Default");
+    model.matName = string("Mirror");
     model.pickerColor = pickerColor;
 
     //model.Rotate(vec3(0.0, pi<float>(), 0.0));

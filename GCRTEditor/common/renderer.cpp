@@ -211,7 +211,7 @@ void Renderer::ResizeRenderFbo()
 void Renderer::Render()
 {
     g_scn.cam.Update();
-    float dt = 20.0 * (t2 - t1);
+    float dt = 20.0f * (t2 - t1);
     
     for (auto &model : g_scn.models)
     {

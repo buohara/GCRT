@@ -59,6 +59,8 @@ struct SkeletalMesh : Mesh
         map<string, mat4> &boneOffsets
     );
 
+    void LoadMaterials(const aiScene &scene);
+
     void LoadAnimations(const aiScene &scene);
     void GetAnimation(float t, mat4 rootTrans, vector<mat4> &bones);
 
