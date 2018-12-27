@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="scenes">
+      <UniqueIdentifier>{3ee7930c-a617-4862-b31e-3f69eb492eaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="passes">
+      <UniqueIdentifier>{515ab6c8-9795-4f95-aeaa-e229d3d0eec9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\gcrtvk.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderervk.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sceneselectorvk.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="scenes\basicscene.h">
+      <Filter>scenes</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\gcrtvkmain.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderervk.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sceneselectorvk.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="scenes\basicscene.cpp">
+      <Filter>scenes</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

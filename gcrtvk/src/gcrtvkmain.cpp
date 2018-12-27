@@ -1,7 +1,5 @@
-#include "gcrt.h"
-#include "sceneselector.h"
-#include <io.h>
-#include <fcntl.h>
+#include "gcrtvk.h"
+#include "sceneselectorvk.h"
 
 /**
  * [WinMain description]

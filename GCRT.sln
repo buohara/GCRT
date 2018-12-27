@@ -1,16 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GCRT", "GCRT\GCRT.vcxproj", "{5E284DCF-ACAC-4E73-898D-D613D9FE4FF8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GCRTEditor", "GCRTEditor\GCRTEditor.vcxproj", "{BCB75918-0A12-4EF5-85AD-8592391FB021}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GCRTGL", "GCRTGL\GCRTGL.vcxproj", "{BCB75918-0A12-4EF5-85AD-8592391FB021}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GCRTVK", "GCRTVK\GCRTVK.vcxproj", "{3D0225FE-072F-45B6-B7DD-A3BAA72B8226}"
 EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
@@ -34,8 +33,22 @@ Global
 		{BCB75918-0A12-4EF5-85AD-8592391FB021}.Release|x64.Build.0 = Release|x64
 		{BCB75918-0A12-4EF5-85AD-8592391FB021}.Release|x86.ActiveCfg = Release|Win32
 		{BCB75918-0A12-4EF5-85AD-8592391FB021}.Release|x86.Build.0 = Release|Win32
+		{3D0225FE-072F-45B6-B7DD-A3BAA72B8226}.Debug|x64.ActiveCfg = Debug|x64
+		{3D0225FE-072F-45B6-B7DD-A3BAA72B8226}.Debug|x64.Build.0 = Debug|x64
+		{3D0225FE-072F-45B6-B7DD-A3BAA72B8226}.Debug|x86.ActiveCfg = Debug|Win32
+		{3D0225FE-072F-45B6-B7DD-A3BAA72B8226}.Debug|x86.Build.0 = Debug|Win32
+		{3D0225FE-072F-45B6-B7DD-A3BAA72B8226}.Release|x64.ActiveCfg = Release|x64
+		{3D0225FE-072F-45B6-B7DD-A3BAA72B8226}.Release|x64.Build.0 = Release|x64
+		{3D0225FE-072F-45B6-B7DD-A3BAA72B8226}.Release|x86.ActiveCfg = Release|Win32
+		{3D0225FE-072F-45B6-B7DD-A3BAA72B8226}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {78C28C01-A84F-40A7-AA71-1A0275A2641E}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal
