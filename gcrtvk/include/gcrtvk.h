@@ -1,3 +1,5 @@
+#pragma once
+
 // STD/STL headers
 
 #include <stdio.h>
@@ -6,6 +8,7 @@
 #include <math.h>
 #include <string>
 #include <map>
+#include <array>
 
 // GLM headers
 
