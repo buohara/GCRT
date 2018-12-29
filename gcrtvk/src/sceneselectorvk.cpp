@@ -11,7 +11,7 @@ map<string, SceneData> launchTable =
 
 static void DisplayHelpAndExit()
 {
-    printf("GCRT Editor\n\n");
+    printf("GCRTVK\n\n");
     printf("Usage:\n\n");
     printf("%-32s %s\n", "GCRTEditr.exe", "No options scecified. Show this menu.");
     printf("%-32s %s\n\n", "GCRTEditr.exe <Scene>", "Render a named scene. See options below");

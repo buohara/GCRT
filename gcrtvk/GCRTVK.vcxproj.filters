@@ -15,6 +15,9 @@
     <Filter Include="passes">
       <UniqueIdentifier>{515ab6c8-9795-4f95-aeaa-e229d3d0eec9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{45442ace-e253-4a45-8207-2af3edaf45ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\gcrtvk.h">
@@ -28,6 +31,9 @@
     </ClInclude>
     <ClInclude Include="scenes\basicscene.h">
       <Filter>scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -43,5 +49,16 @@
     <ClCompile Include="scenes\basicscene.cpp">
       <Filter>scenes</Filter>
     </ClCompile>
+    <ClCompile Include="src\utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\simple.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\simple.frag">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

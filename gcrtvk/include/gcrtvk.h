@@ -9,6 +9,7 @@
 #include <string>
 #include <map>
 #include <array>
+#include <fstream>
 
 // GLM headers
 

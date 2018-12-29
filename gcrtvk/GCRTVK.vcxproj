@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClInclude Include="include\gcrtvk.h" />
     <ClInclude Include="include\renderervk.h" />
+    <ClInclude Include="include\utils.h" />
     <ClInclude Include="scenes\basicscene.h" />
     <ClInclude Include="src\sceneselectorvk.h" />
   </ItemGroup>
@@ -141,6 +142,11 @@
     <ClCompile Include="src\gcrtvkmain.cpp" />
     <ClCompile Include="src\renderervk.cpp" />
     <ClCompile Include="src\sceneselectorvk.cpp" />
+    <ClCompile Include="src\utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\simple.frag" />
+    <None Include="shaders\simple.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

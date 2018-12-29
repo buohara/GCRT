@@ -198,7 +198,7 @@ void SkeletalMesh::LoadVertexAndBoneData(
         subMeshes[i].numIdcs = 3 * mesh.mNumFaces;
 
         LoadVertexData(mesh, pos, norm, uv, idcs);
-        LoadMaterials(scene);
+        //LoadMaterials(scene);
 
         // If this is a static mesh, default all vertices to point at bone 0 with
         // weight 1.0. This bone will just be MV matrix of overall mesh (matrix to scale, rotate, 
