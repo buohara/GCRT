@@ -6,9 +6,9 @@ using namespace glm;
 
 struct TriangleUniforms
 {
+    mat4 proj;
     mat4 model;
     mat4 view;
-    mat4 proj;
 };
 
 struct RendererVK
@@ -28,7 +28,7 @@ struct RendererVK
     HWND hWnd;
 
     VkRenderPass renderPass;
-    VkSwapchainKHR swapChain;
+    VkSwapchainKHR swapChain    = VK_NULL_HANDLE;
     VkSurfaceKHR surface;
     VkDevice logicalDevice;
     VkPhysicalDevice physicalDevice;

@@ -26,7 +26,6 @@ void BasicScene::Init(HINSTANCE hInstance)
     rndr.SetupFrameBuffer();
     rndr.CreateGeometry();
     rndr.CreateUniformBuffers();
-    rndr.UpdateUniforms();
     rndr.SetupDescriptorPool();
     rndr.SetupDescriptorSetLayout();
     rndr.SetupDescriptorSet();
