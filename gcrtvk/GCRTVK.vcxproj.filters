@@ -35,6 +35,12 @@
     <ClInclude Include="include\utils.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="passes\mainpass.h">
+      <Filter>passes</Filter>
+    </ClInclude>
+    <ClInclude Include="passes\renderpass.h">
+      <Filter>passes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gcrtvkmain.cpp">
@@ -51,6 +57,12 @@
     </ClCompile>
     <ClCompile Include="src\utils.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="passes\mainpass.cpp">
+      <Filter>passes</Filter>
+    </ClCompile>
+    <ClCompile Include="passes\renderpass.cpp">
+      <Filter>passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

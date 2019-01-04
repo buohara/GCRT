@@ -4,13 +4,6 @@
 using namespace std;
 using namespace glm;
 
-struct TriangleUniforms
-{
-    mat4 proj;
-    mat4 model;
-    mat4 view;
-};
-
 struct RendererVK
 {
     VkInstance instance;
@@ -27,7 +20,6 @@ struct RendererVK
 
     HWND hWnd;
 
-    VkRenderPass renderPass;
     VkSwapchainKHR swapChain    = VK_NULL_HANDLE;
     VkSurfaceKHR surface;
     VkDevice logicalDevice;
@@ -37,7 +29,6 @@ struct RendererVK
     VkSemaphore presentComplete;
     VkSemaphore submitComplete;
     VkQueue queue;
-    VkPipelineCache pipelineCache;
 
     VkFormat colorFormat;
     VkFormat depthFormat;
@@ -63,42 +54,6 @@ struct RendererVK
         uint32_t memoryTypeBitsRequirement,
         VkMemoryPropertyFlags requiredProperties
     );
-
-    /**
-     * Get rid of this.
-     */
-
-    VkDeviceMemory idxMem;
-    VkBuffer idxBuf;
-    uint32_t idxCnt;
-
-    VkDeviceMemory vertMem;
-    VkBuffer vertBuf;
-
-    VkDeviceMemory vertStgMem;
-    VkBuffer vertStgBuf;
-
-    VkDeviceMemory idxStgMem;
-    VkBuffer idxStgBuf;
-
-    mat4 proj;
-    mat4 model;
-    mat4 view;
-
-    VkDeviceMemory ufmMem;
-    VkBuffer ufmBuf;
-    VkDescriptorBufferInfo ufmDesc;
-
-    TriangleUniforms uniforms;
-    VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
-    VkDescriptorSetLayout descriptorSetLayout;
-    VkDescriptorSet descriptorSet;
-    VkPipelineLayout pipelineLayout;
-    VkPipeline pipeline;
-
-    /**
-     * Get rid of this.
-     */
     
     void Init();
     
@@ -116,20 +71,7 @@ struct RendererVK
     void CreateSwapChain();
     void CreateCommandBuffers();
     void CreateFenceObjects();
-    void CreateRenderPass();
-    void CreateDepth();
-    void CreatePipelineCache();
-    void SetupFrameBuffer();
-    void CreateGeometry();
-    void CreateUniformBuffers();
-    void UpdateUniforms();
-
-    void SetupDescriptorPool();
-    void SetupDescriptorSetLayout();
-    void SetupDescriptorSet();
-    void SetupPipelineState();
-    VkShaderModule LoadShader(string file);
-    void BuildCommandBuffers();
+    
     void Render();
 
     VkCommandBuffer GetCommandBuffer(bool begin);

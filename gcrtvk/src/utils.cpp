@@ -50,3 +50,29 @@ void CHECK_RESULT(VkResult res)
     }
 #endif
 }
+
+VkShaderModule LoadShader(VkDevice &logicalDevice, string file)
+{
+	size_t shaderSize;
+	char* shaderCode = NULL;
+
+	ifstream is(file, ios::binary | ios::in | ios::ate);
+
+	shaderSize = is.tellg();
+	is.seekg(0, std::ios::beg);
+	shaderCode = new char[shaderSize];
+	is.read(shaderCode, shaderSize);
+	is.close();
+
+	VkShaderModuleCreateInfo moduleCreateInfo{};
+	moduleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	moduleCreateInfo.codeSize = shaderSize;
+	moduleCreateInfo.pCode = (uint32_t*)shaderCode;
+
+	VkShaderModule shaderModule;
+	vkCreateShaderModule(logicalDevice, &moduleCreateInfo, NULL, &shaderModule);
+
+	delete[] shaderCode;
+
+	return shaderModule;
+}

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\vulkan;..\external\devil\include;include;scenes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\vulkan;..\external\devil\include;include;passes;scenes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -89,7 +89,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\vulkan;..\external\devil\include;include;scenes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\vulkan;..\external\devil\include;include;passes;scenes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -104,7 +104,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\vulkan;..\external\devil\include;include;scenes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\vulkan;..\external\devil\include;include;passes;scenes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -121,7 +121,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\vulkan;..\external\devil\include;include;scenes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\vulkan;..\external\devil\include;include;passes;scenes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -134,10 +134,14 @@
     <ClInclude Include="include\gcrtvk.h" />
     <ClInclude Include="include\renderervk.h" />
     <ClInclude Include="include\utils.h" />
+    <ClInclude Include="passes\mainpass.h" />
+    <ClInclude Include="passes\renderpass.h" />
     <ClInclude Include="scenes\basicscene.h" />
     <ClInclude Include="src\sceneselectorvk.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="passes\mainpass.cpp" />
+    <ClCompile Include="passes\renderpass.cpp" />
     <ClCompile Include="scenes\basicscene.cpp" />
     <ClCompile Include="src\gcrtvkmain.cpp" />
     <ClCompile Include="src\renderervk.cpp" />
