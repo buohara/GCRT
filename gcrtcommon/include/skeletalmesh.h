@@ -1,10 +1,16 @@
 #pragma once
 
 #include "mesh.h"
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 #include "animation.h"
+
+// Don't want to include assimp headers here, as other files that include this
+// one will pick them up, even though they don't use assimp. Include actual 
+// assimp headers in cpp file, and just forward declare structs here.
+
+struct aiNode;
+struct aiScene;
+struct aiNodeAnim;
+struct aiMesh;
 
 struct BoneTreeNode
 {

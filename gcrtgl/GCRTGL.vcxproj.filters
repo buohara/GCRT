@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="common">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="commoninclude">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="passes">
       <UniqueIdentifier>{214586eb-6995-4a5b-a2d9-40ea342be382}</UniqueIdentifier>
     </Filter>
@@ -18,65 +10,16 @@
     <Filter Include="shaders">
       <UniqueIdentifier>{fc42fa7f-4a3c-44bf-8669-8940e4d757b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="commoninclude\animation.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\box.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\camera.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\cylinder.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\gcrt.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\imgloader.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\input.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\light.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\material.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\mesh.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\model.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\noise.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\perlinterrain.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\plane.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\scene.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\sceneselector.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\shader.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\skeletalmesh.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
-    <ClInclude Include="commoninclude\sphere.h">
-      <Filter>commoninclude</Filter>
-    </ClInclude>
     <ClInclude Include="passes\bloompass.h">
       <Filter>passes</Filter>
     </ClInclude>
@@ -104,65 +47,26 @@
     <ClInclude Include="scenes\terrainscene.h">
       <Filter>scenes</Filter>
     </ClInclude>
-    <ClInclude Include="commoninclude\renderer.h">
-      <Filter>commoninclude</Filter>
+    <ClInclude Include="include\input.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\noise.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\perlinterrain.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sceneselector.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\shader.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="common\animation.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\box.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\camera.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\cylinder.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\imgloader.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\input.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\material.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\mesh.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\model.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\noise.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\perlinterrain.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\plane.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\renderer.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\scene.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\sceneselector.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\shader.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\skeletalmesh.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\sphere.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
     <ClCompile Include="passes\bloompass.cpp">
       <Filter>passes</Filter>
     </ClCompile>
@@ -190,8 +94,26 @@
     <ClCompile Include="scenes\terrainscene.cpp">
       <Filter>scenes</Filter>
     </ClCompile>
-    <ClCompile Include="common\gcrtmain.cpp">
-      <Filter>common</Filter>
+    <ClCompile Include="src\gcrtmain.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\noise.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\perlinterrain.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sceneselector.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shader.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,9 @@
 #include "imgloader.h"
 
+#include "IL/il.h"
+#include "IL/ilu.h"
+#include "IL/ilut.h"
+
 /**
  * [ImgLoader::LoadTexture description]
  * @param  fileName [description]

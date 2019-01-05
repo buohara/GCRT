@@ -40,12 +40,6 @@
 #include "glm/gtx/quaternion.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
-// DevIL libraries
-
-#include "IL/il.h"
-#include "IL/ilu.h"
-#include "IL/ilut.h"
-
 struct RenderSettings
 {
     uint32_t winW;

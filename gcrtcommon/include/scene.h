@@ -7,7 +7,7 @@
 #include "skeletalmesh.h"
 #include "sphere.h"
 #include "model.h"
-#include "shader.h"
+//#include "shader.h"
 #include "light.h"
 
 struct Scene

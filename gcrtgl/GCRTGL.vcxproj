@@ -88,13 +88,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\glew\glew\include\GL;..\external\devil\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\gcrtcommon\include;..\external\glm;..\external\glew\glew\include\GL;include;passes;scenes;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc140-mt.lib;DevIL.lib;glew32s.lib;OpenGL32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\external\assimp\out\code\Release;..\external\glew\glew\lib\Release\x64;..\external\devil\lib\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DevIL.lib;assimp-vc140-mt.lib;glew32s.lib;OpenGL32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\external\glew\glew\lib\Release\x64;..\external\assimp\out\code\Release;..\external\devil\lib\x64\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -103,13 +103,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\glew\glew\include\GL;..\external\devil\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\gcrtcommon\include;..\external\glm;..\external\glew\glew\include\GL;include;passes;scenes;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc140-mt.lib;DevIL.lib;glew32s.lib;OpenGL32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\external\assimp\out\code\Release;..\external\glew\glew\lib\Release\x64;..\external\devil\lib\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DevIL.lib;assimp-vc140-mt.lib;glew32s.lib;OpenGL32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\external\glew\glew\lib\Release\x64;..\external\assimp\out\code\Release;..\external\devil\lib\x64\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -120,15 +120,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\glew\glew\include\GL;..\external\devil\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\gcrtcommon\include;..\external\glm;..\external\glew\glew\include\GL;include;passes;scenes;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc140-mt.lib;DevIL.lib;glew32s.lib;OpenGL32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\external\assimp\out\code\Release;..\external\glew\glew\lib\Release\x64;..\external\devil\lib\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>GCRTCommon.lib;DevIL.lib;assimp-vc140-mt.lib;glew32s.lib;OpenGL32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\external\glew\glew\lib\Release\x64;..\external\assimp\out\code\Release;..\external\devil\lib\x64\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,38 +139,24 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\glew\glew\include\GL;..\external\devil\include;commoninclude;passes;scenes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\gcrtcommon\include;..\external\glm;..\external\glew\glew\include\GL;include;passes;scenes;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc140-mt.lib;DevIL.lib;glew32s.lib;OpenGL32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\external\assimp\out\code\Release;..\external\glew\glew\lib\Release\x64;..\external\devil\lib\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>GCRTCommon.lib;DevIL.lib;assimp-vc140-mt.lib;glew32s.lib;OpenGL32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\external\glew\glew\lib\Release\x64;..\external\assimp\out\code\Release;..\external\devil\lib\x64\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="commoninclude\animation.h" />
-    <ClInclude Include="commoninclude\box.h" />
-    <ClInclude Include="commoninclude\camera.h" />
-    <ClInclude Include="commoninclude\cylinder.h" />
-    <ClInclude Include="commoninclude\gcrt.h" />
-    <ClInclude Include="commoninclude\imgloader.h" />
-    <ClInclude Include="commoninclude\input.h" />
-    <ClInclude Include="commoninclude\light.h" />
-    <ClInclude Include="commoninclude\material.h" />
-    <ClInclude Include="commoninclude\mesh.h" />
-    <ClInclude Include="commoninclude\model.h" />
-    <ClInclude Include="commoninclude\noise.h" />
-    <ClInclude Include="commoninclude\perlinterrain.h" />
-    <ClInclude Include="commoninclude\plane.h" />
-    <ClInclude Include="commoninclude\renderer.h" />
-    <ClInclude Include="commoninclude\scene.h" />
-    <ClInclude Include="commoninclude\sceneselector.h" />
-    <ClInclude Include="commoninclude\shader.h" />
-    <ClInclude Include="commoninclude\skeletalmesh.h" />
-    <ClInclude Include="commoninclude\sphere.h" />
+    <ClInclude Include="include\input.h" />
+    <ClInclude Include="include\noise.h" />
+    <ClInclude Include="include\perlinterrain.h" />
+    <ClInclude Include="include\renderer.h" />
+    <ClInclude Include="include\sceneselector.h" />
+    <ClInclude Include="include\shader.h" />
     <ClInclude Include="passes\bloompass.h" />
     <ClInclude Include="passes\depthpass.h" />
     <ClInclude Include="passes\dofpass.h" />
@@ -182,25 +168,6 @@
     <ClInclude Include="scenes\terrainscene.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="common\animation.cpp" />
-    <ClCompile Include="common\box.cpp" />
-    <ClCompile Include="common\camera.cpp" />
-    <ClCompile Include="common\cylinder.cpp" />
-    <ClCompile Include="common\gcrtmain.cpp" />
-    <ClCompile Include="common\imgloader.cpp" />
-    <ClCompile Include="common\input.cpp" />
-    <ClCompile Include="common\material.cpp" />
-    <ClCompile Include="common\mesh.cpp" />
-    <ClCompile Include="common\model.cpp" />
-    <ClCompile Include="common\noise.cpp" />
-    <ClCompile Include="common\perlinterrain.cpp" />
-    <ClCompile Include="common\plane.cpp" />
-    <ClCompile Include="common\renderer.cpp" />
-    <ClCompile Include="common\scene.cpp" />
-    <ClCompile Include="common\sceneselector.cpp" />
-    <ClCompile Include="common\shader.cpp" />
-    <ClCompile Include="common\skeletalmesh.cpp" />
-    <ClCompile Include="common\sphere.cpp" />
     <ClCompile Include="passes\bloompass.cpp" />
     <ClCompile Include="passes\depthpass.cpp" />
     <ClCompile Include="passes\dofpass.cpp" />
@@ -210,6 +177,13 @@
     <ClCompile Include="scenes\animationscene.cpp" />
     <ClCompile Include="scenes\envmapscene.cpp" />
     <ClCompile Include="scenes\terrainscene.cpp" />
+    <ClCompile Include="src\gcrtmain.cpp" />
+    <ClCompile Include="src\input.cpp" />
+    <ClCompile Include="src\noise.cpp" />
+    <ClCompile Include="src\perlinterrain.cpp" />
+    <ClCompile Include="src\renderer.cpp" />
+    <ClCompile Include="src\sceneselector.cpp" />
+    <ClCompile Include="src\shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\BrightShader.frag" />
@@ -236,6 +210,11 @@
     <None Include="shaders\RenderShaderAnim.vert" />
     <None Include="shaders\RenderShaderEnv.frag" />
     <None Include="shaders\RenderShaderEnv.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GCRTCommon\GCRTCommon.vcxproj">
+      <Project>{68c9b5a1-7b95-4eee-b5a1-8f541d943935}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
