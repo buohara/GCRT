@@ -6,6 +6,13 @@ struct Box : Mesh
 {
     uint32_t numVerts;
     void Create();
+    
+    void CreateVk(
+        VkDevice &logicalDevice,
+        VkCommandBuffer &cmdBuf,
+        VkPhysicalDeviceMemoryProperties &deviceMemoryProperties
+    );
+    
     void Draw();
 
     void GenPositions(vector<vec3> &pos);

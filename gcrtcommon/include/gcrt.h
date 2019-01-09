@@ -21,6 +21,10 @@
 #include <wglew.h>
 #include <gl/GL.h>
 
+// Vulkan headers.
+
+#include "vulkan.h"
+
 // Windows headers
 
 #include <Windows.h>

@@ -3,41 +3,6 @@
 RenderSettingsVK g_settings = { 0 };
 
 /**
- * [findProperties description]
- * @param  pMemoryProperties         [description]
- * @param  memoryTypeBitsRequirement [description]
- * @param  requiredProperties        [description]
- * @return                           [description]
- */
-
-uint32_t RendererVK::FindProperties(
-    uint32_t memoryTypeBitsRequirement,
-    VkMemoryPropertyFlags requiredProperties
-) 
-{
-    const uint32_t memoryCount = deviceMemoryProperties.memoryTypeCount;
-    
-    for (uint32_t memoryIndex = 0; memoryIndex < memoryCount; ++memoryIndex) 
-    {
-        const uint32_t memoryTypeBits = (1 << memoryIndex);
-        const bool isRequiredMemoryType = memoryTypeBitsRequirement & memoryTypeBits;
-
-        const VkMemoryPropertyFlags properties =
-            deviceMemoryProperties.memoryTypes[memoryIndex].propertyFlags;
-        
-        const bool hasRequiredProperties =
-            (properties & requiredProperties) == requiredProperties;
-
-        if (isRequiredMemoryType && hasRequiredProperties)
-        {
-            return (uint32_t)memoryIndex;
-        }
-    }
-
-    return ~0;
-}
-
-/**
  * WndProc Windows message handler.
  * @param  hWnd    Application window handle.
  * @param  message Message to process.

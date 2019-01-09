@@ -1,13 +1,7 @@
 #include "box.h"
 
 /**
- * Create - Create a box.
- *
- * @param dims Box x, y, and z dimensions.
- * @param pos Initial box position.
- * @param color Box color when you shine white light on it.
- * @param progID Shader program handle for setting shader parameters
- * on on draw.
+ * Box::Create - Create a box.
  */
 
 void Box::Create()
@@ -33,6 +27,55 @@ void Box::Create()
 
     subMeshes.resize(1);
     InitVertexObjects(0, pos, norms, uvs, tans, boneIDs, boneWts);
+}
+
+/**
+ * Box::CreateVk Create a box using Vulkan.
+ *
+ * @param logicalDevice          Vk device to create box [in].
+ * @param cmdBuf                 Command buffer to record mesh uploads into [in].
+ * @param deviceMemoryProperties Available memory heaps for allocating mesh geometry [in].
+ */
+
+void Box::CreateVk(
+    VkDevice &logicalDevice,
+    VkCommandBuffer &cmdBuf,
+    VkPhysicalDeviceMemoryProperties &deviceMemoryProperties
+)
+{
+    vector<vec3> pos;
+    vector<vec3> norms;
+    vector<vec2> uvs;
+    vector<vec3> tans;
+    vector<ivec4> boneIDs;
+    vector<vec4> boneWts;
+
+    animated = false;
+
+    GenPositions(pos);
+    GenNormals(norms);
+    GenUVs(uvs);
+    GenTans(tans);
+
+    boneIDs.resize(pos.size(), ivec4(0));
+    boneWts.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
+
+    numVerts = (uint32_t)pos.size();
+
+    subMeshes.resize(1);
+    
+    InitVertexObjectsVk(
+        0, 
+        pos, 
+        norms, 
+        uvs, 
+        tans, 
+        boneIDs, 
+        boneWts,
+        logicalDevice,
+        deviceMemoryProperties,
+        cmdBuf
+    );
 }
 
 /**

@@ -49,11 +49,6 @@ struct RendererVK
 
     vector<VkCommandBuffer> drawCmdBuffers;
     vector<VkFence> fences;
-
-    uint32_t FindProperties(
-        uint32_t memoryTypeBitsRequirement,
-        VkMemoryPropertyFlags requiredProperties
-    );
     
     void Init();
     
