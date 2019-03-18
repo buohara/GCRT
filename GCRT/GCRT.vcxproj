@@ -18,6 +18,52 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\animation.h" />
+    <ClInclude Include="include\filter.h" />
+    <ClInclude Include="include\gcrt.h" />
+    <ClInclude Include="include\octree.h" />
+    <ClInclude Include="include\ply.h" />
+    <ClInclude Include="include\ray.h" />
+    <ClInclude Include="include\rtmesh.h" />
+    <ClInclude Include="include\rtrenderer.h" />
+    <ClInclude Include="include\rtscene.h" />
+    <ClInclude Include="include\sampler.h" />
+    <ClInclude Include="include\surfaceintegrator.h" />
+    <ClInclude Include="include\texture.h" />
+    <ClInclude Include="include\timeline.h" />
+    <ClInclude Include="light\light.h" />
+    <ClInclude Include="light\spherelight.h" />
+    <ClInclude Include="material\blinnmaterial.h" />
+    <ClInclude Include="material\fresnelglassmaterial.h" />
+    <ClInclude Include="material\lambertmaterial.h" />
+    <ClInclude Include="material\mirrormaterial.h" />
+    <ClInclude Include="material\rtmaterial.h" />
+    <ClInclude Include="sampler\coshemisampler.h" />
+    <ClInclude Include="sampler\spheresampler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="light\spherelight.cpp" />
+    <ClCompile Include="material\blinnmaterial.cpp" />
+    <ClCompile Include="material\fresnelglassmaterial.cpp" />
+    <ClCompile Include="material\lambertmaterial.cpp" />
+    <ClCompile Include="material\mirrormaterial.cpp" />
+    <ClCompile Include="material\rtmaterial.cpp" />
+    <ClCompile Include="sampler\coshemisampler.cpp" />
+    <ClCompile Include="sampler\spheresampler.cpp" />
+    <ClCompile Include="src\animation.cpp" />
+    <ClCompile Include="src\filter.cpp" />
+    <ClCompile Include="src\octree.cpp" />
+    <ClCompile Include="src\plyfile.c" />
+    <ClCompile Include="src\raytrace.cpp" />
+    <ClCompile Include="src\rtmesh.cpp" />
+    <ClCompile Include="src\rtrenderer.cpp" />
+    <ClCompile Include="src\rtscene.cpp" />
+    <ClCompile Include="src\sampler.cpp" />
+    <ClCompile Include="src\surfaceintegrator.cpp" />
+    <ClCompile Include="src\texture.cpp" />
+    <ClCompile Include="src\timeline.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5E284DCF-ACAC-4E73-898D-D613D9FE4FF8}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -89,7 +135,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>
       </PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include;include;light;material;sampler</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -106,7 +152,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>
       </PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include;include;light;material;sampler</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,7 +173,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>
       </PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include;include;light;material;sampler</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,7 +195,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>
       </PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include;include;light;material;sampler</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -161,55 +207,6 @@
       <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="animation.cpp" />
-    <ClCompile Include="blinnmaterial.cpp" />
-    <ClCompile Include="coshemisampler.cpp" />
-    <ClCompile Include="filter.cpp" />
-    <ClCompile Include="fresnelglassmaterial.cpp" />
-    <ClCompile Include="lambertmaterial.cpp" />
-    <ClCompile Include="mirrormaterial.cpp" />
-    <ClCompile Include="Octree.cpp" />
-    <ClCompile Include="plyfile.c" />
-    <ClCompile Include="rtmaterial.cpp" />
-    <ClCompile Include="rtmesh.cpp" />
-    <ClCompile Include="rtrenderer.cpp" />
-    <ClCompile Include="rtscene.cpp" />
-    <ClCompile Include="sampler.cpp" />
-    <ClCompile Include="raytrace.cpp" />
-    <ClCompile Include="spherelight.cpp" />
-    <ClCompile Include="spheresampler.cpp" />
-    <ClCompile Include="surfaceintegrator.cpp" />
-    <ClCompile Include="texture.cpp" />
-    <ClCompile Include="timeline.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="animation.h" />
-    <ClInclude Include="blinnmaterial.h" />
-    <ClInclude Include="coshemisampler.h" />
-    <ClInclude Include="filter.h" />
-    <ClInclude Include="fresnelglassmaterial.h" />
-    <ClInclude Include="light.h" />
-    <ClInclude Include="lambertmaterial.h" />
-    <ClInclude Include="mirrormaterial.h" />
-    <ClInclude Include="Octree.h" />
-    <ClInclude Include="ply.h" />
-    <ClInclude Include="ray.h" />
-    <ClInclude Include="rtmaterial.h" />
-    <ClInclude Include="rtmesh.h" />
-    <ClInclude Include="rtrenderer.h" />
-    <ClInclude Include="rtscene.h" />
-    <ClInclude Include="sampler.h" />
-    <ClInclude Include="GCRT.h" />
-    <ClInclude Include="spherelight.h" />
-    <ClInclude Include="spheresampler.h" />
-    <ClInclude Include="surfaceintegrator.h" />
-    <ClInclude Include="texture.h" />
-    <ClInclude Include="timeline.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="settings.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

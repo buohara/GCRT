@@ -35,38 +35,25 @@ struct MainPassVk : RenderPassVk
 	* Get rid of this.
 	*/
 
-	VkDeviceMemory idxMem;
-	VkBuffer idxBuf;
-	uint32_t idxCnt;
-
-	VkDeviceMemory vertMem;
-	VkBuffer vertBuf;
-
-	VkDeviceMemory vertStgMem;
-	VkBuffer vertStgBuf;
-
-	VkDeviceMemory idxStgMem;
-	VkBuffer idxStgBuf;
-
 	mat4 proj;
 	mat4 model;
 	mat4 view;
-
-	void CreateGeometry(VkDevice &logicalDevice);
 
 	/**
 	* Get rid of this.
 	*/
 
+    void Init(VkDevice &logicalDevice, bool renderToOutput);
+
 	void CreateRenderPass(VkDevice &logicalDevice);
-	void CreateDepth(VkDevice &logicalDevice);
 	void CreatePipelineCache(VkDevice &logicalDevice);
-	void SetupFrameBuffer(VkDevice &logicalDevice);
 	void CreateUniformBuffers(VkDevice &logicalDevice);
 	void UpdateUniforms(VkDevice &logicalDevice);
 	void SetupDescriptorPool(VkDevice &logicalDevice);
 	void SetupDescriptorSetLayout(VkDevice &logicalDevice);
 	void SetupDescriptorSet(VkDevice &logicalDevice);
 	void SetupPipelineState(VkDevice &logicalDevice);
-	void BuildCommandBuffers(VkDevice &logicalDevice);
+	void BuildCommandBuffers(VkDevice &logicalDevice, VkCommandBuffer &cmdBuf);
+
+    VkRenderPass GetRenderPass();
 };

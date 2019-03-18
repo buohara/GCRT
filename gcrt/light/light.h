@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GCRT.h"
+#include "gcrt.h"
 #include "ray.h"
 #include "rtmaterial.h"
 

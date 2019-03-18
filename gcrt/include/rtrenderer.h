@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GCRT.h"
+#include "gcrt.h"
 #include "rtscene.h"
 #include "sampler.h"
 #include "surfaceintegrator.h"
@@ -44,5 +44,4 @@ struct RTRenderer
     void Preprocess();
     void GenerateVirtualLights();
     void SaveImage(string fileName);
-    void LoadSettings(string file);
 };

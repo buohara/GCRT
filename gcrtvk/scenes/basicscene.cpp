@@ -20,17 +20,8 @@ void BasicScene::Init(HINSTANCE hInstance)
     rndr.CreateSwapChain();
     rndr.CreateCommandBuffers();
     rndr.CreateFenceObjects();
-    rndr.CreateRenderPass();
     rndr.CreateDepth();
-    rndr.CreatePipelineCache();
     rndr.SetupFrameBuffer();
-    rndr.CreateGeometry();
-    rndr.CreateUniformBuffers();
-    rndr.SetupDescriptorPool();
-    rndr.SetupDescriptorSetLayout();
-    rndr.SetupDescriptorSet();
-    rndr.SetupPipelineState();
-    rndr.BuildCommandBuffers();
 }
 
 void BasicScene::Render()

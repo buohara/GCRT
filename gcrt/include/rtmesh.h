@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GCRT.h"
+#include "gcrt.h"
 #include "rtmaterial.h"
 #include "ray.h"
-#include "Octree.h"
+#include "octree.h"
 #include "animation.h"
 #include "ply.h"
 #include <assimp/Importer.hpp>

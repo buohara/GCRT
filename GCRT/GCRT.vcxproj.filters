@@ -1,164 +1,155 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Material">
-      <UniqueIdentifier>{0cc03ccb-9a85-4141-a53a-fa0aa9a5e08d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sampler">
-      <UniqueIdentifier>{d45f857c-4e18-4f0d-b085-d750ef26dcce}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Light">
-      <UniqueIdentifier>{75ce671b-285c-4dcf-9326-fbc1c1cab163}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Test">
       <UniqueIdentifier>{c5cc50fb-edc3-4cd9-8ba3-327795d4c5ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="light">
+      <UniqueIdentifier>{75ce671b-285c-4dcf-9326-fbc1c1cab163}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="material">
+      <UniqueIdentifier>{0cc03ccb-9a85-4141-a53a-fa0aa9a5e08d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sampler">
+      <UniqueIdentifier>{d45f857c-4e18-4f0d-b085-d750ef26dcce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Octree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="raytrace.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="rtmesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="rtrenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="rtscene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sampler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="surfaceintegrator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="filter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="rtmaterial.cpp">
-      <Filter>Material</Filter>
-    </ClCompile>
-    <ClCompile Include="mirrormaterial.cpp">
-      <Filter>Material</Filter>
-    </ClCompile>
-    <ClCompile Include="coshemisampler.cpp">
-      <Filter>Sampler</Filter>
-    </ClCompile>
-    <ClCompile Include="spheresampler.cpp">
-      <Filter>Sampler</Filter>
-    </ClCompile>
-    <ClCompile Include="spherelight.cpp">
-      <Filter>Light</Filter>
-    </ClCompile>
-    <ClCompile Include="lambertmaterial.cpp">
-      <Filter>Material</Filter>
-    </ClCompile>
-    <ClCompile Include="fresnelglassmaterial.cpp">
-      <Filter>Material</Filter>
-    </ClCompile>
-    <ClCompile Include="blinnmaterial.cpp">
-      <Filter>Material</Filter>
-    </ClCompile>
-    <ClCompile Include="timeline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="animation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="plyfile.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GCRT.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\animation.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="Octree.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\filter.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="ray.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\ply.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="rtmesh.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\ray.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="rtrenderer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\rtmesh.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="rtscene.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\rtrenderer.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="sampler.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\rtscene.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="surfaceintegrator.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\sampler.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="filter.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\surfaceintegrator.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="texture.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\texture.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="rtmaterial.h">
-      <Filter>Material</Filter>
+    <ClInclude Include="include\timeline.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="mirrormaterial.h">
-      <Filter>Material</Filter>
+    <ClInclude Include="light\light.h">
+      <Filter>light</Filter>
     </ClInclude>
-    <ClInclude Include="spheresampler.h">
-      <Filter>Sampler</Filter>
+    <ClInclude Include="light\spherelight.h">
+      <Filter>light</Filter>
     </ClInclude>
-    <ClInclude Include="coshemisampler.h">
-      <Filter>Sampler</Filter>
+    <ClInclude Include="material\blinnmaterial.h">
+      <Filter>material</Filter>
     </ClInclude>
-    <ClInclude Include="light.h">
-      <Filter>Light</Filter>
+    <ClInclude Include="material\fresnelglassmaterial.h">
+      <Filter>material</Filter>
     </ClInclude>
-    <ClInclude Include="spherelight.h">
-      <Filter>Light</Filter>
+    <ClInclude Include="material\lambertmaterial.h">
+      <Filter>material</Filter>
     </ClInclude>
-    <ClInclude Include="lambertmaterial.h">
-      <Filter>Material</Filter>
+    <ClInclude Include="material\mirrormaterial.h">
+      <Filter>material</Filter>
     </ClInclude>
-    <ClInclude Include="fresnelglassmaterial.h">
-      <Filter>Material</Filter>
+    <ClInclude Include="material\rtmaterial.h">
+      <Filter>material</Filter>
     </ClInclude>
-    <ClInclude Include="blinnmaterial.h">
-      <Filter>Material</Filter>
+    <ClInclude Include="sampler\coshemisampler.h">
+      <Filter>sampler</Filter>
     </ClInclude>
-    <ClInclude Include="timeline.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="sampler\spheresampler.h">
+      <Filter>sampler</Filter>
     </ClInclude>
-    <ClInclude Include="animation.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\octree.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="ply.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\gcrt.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="settings.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
+    <ClCompile Include="light\spherelight.cpp">
+      <Filter>light</Filter>
+    </ClCompile>
+    <ClCompile Include="material\blinnmaterial.cpp">
+      <Filter>material</Filter>
+    </ClCompile>
+    <ClCompile Include="material\fresnelglassmaterial.cpp">
+      <Filter>material</Filter>
+    </ClCompile>
+    <ClCompile Include="material\lambertmaterial.cpp">
+      <Filter>material</Filter>
+    </ClCompile>
+    <ClCompile Include="material\mirrormaterial.cpp">
+      <Filter>material</Filter>
+    </ClCompile>
+    <ClCompile Include="material\rtmaterial.cpp">
+      <Filter>material</Filter>
+    </ClCompile>
+    <ClCompile Include="sampler\coshemisampler.cpp">
+      <Filter>sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="sampler\spheresampler.cpp">
+      <Filter>sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\animation.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\filter.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\plyfile.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\raytrace.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rtmesh.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rtrenderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rtscene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sampler.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\surfaceintegrator.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\texture.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\timeline.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\octree.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

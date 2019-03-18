@@ -3,82 +3,51 @@
 extern RenderSettingsVK g_settings;
 
 /**
-* [MainPassVk::CreateDepth description]
-*/
+ * MainPassVk::Init Initialize the main render pass.
+ *
+ * @param renderToOutput True if this pass should render to the default
+ * (output shows up on screen).
+ */
 
-void MainPassVk::CreateDepth(VkDevice &logicalDevice)
+void MainPassVk::Init(VkDevice &logicalDevice, bool renderToOutput)
 {
-	VkImageCreateInfo image = {};
-	image.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-	image.pNext = NULL;
-	image.imageType = VK_IMAGE_TYPE_2D;
-	image.format = depthFormat;
-	image.extent = { g_settings.winW, g_settings.winH, 1 };
-	image.mipLevels = 1;
-	image.arrayLayers = 1;
-	image.samples = VK_SAMPLE_COUNT_1_BIT;
-	image.tiling = VK_IMAGE_TILING_OPTIMAL;
-	image.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-	image.flags = 0;
+    renderToFrameBuffer = renderToOutput;
 
-	VkMemoryAllocateInfo mem_alloc = {};
-	mem_alloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	mem_alloc.pNext = NULL;
-	mem_alloc.allocationSize = 0;
-	mem_alloc.memoryTypeIndex = 0;
-
-	VkImageViewCreateInfo depthStencilView = {};
-	depthStencilView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-	depthStencilView.pNext = NULL;
-	depthStencilView.viewType = VK_IMAGE_VIEW_TYPE_2D;
-	depthStencilView.format = depthFormat;
-	depthStencilView.flags = 0;
-	depthStencilView.subresourceRange = {};
-	depthStencilView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-	depthStencilView.subresourceRange.baseMipLevel = 0;
-	depthStencilView.subresourceRange.levelCount = 1;
-	depthStencilView.subresourceRange.baseArrayLayer = 0;
-	depthStencilView.subresourceRange.layerCount = 1;
-
-	VkMemoryRequirements memReqs;
-
-	vkCreateImage(logicalDevice, &image, nullptr, &zImage);
-	vkGetImageMemoryRequirements(logicalDevice, zImage, &memReqs);
-	mem_alloc.allocationSize = memReqs.size;
-	mem_alloc.memoryTypeIndex = FindProperties(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-	vkAllocateMemory(logicalDevice, &mem_alloc, nullptr, &zMem);
-	vkBindImageMemory(logicalDevice, zImage, zMem, 0);
-
-	depthStencilView.image = zImage;
-	vkCreateImageView(logicalDevice, &depthStencilView, nullptr, &zView);
+    CreateRenderPass(logicalDevice);
+    CreatePipelineCache(logicalDevice);
+    CreateUniformBuffers(logicalDevice);
+    SetupDescriptorPool(logicalDevice);
+    SetupDescriptorSetLayout(logicalDevice);
+    SetupDescriptorSet(logicalDevice);
+    SetupPipelineState(logicalDevice);
+    BuildCommandBuffers(logicalDevice);
 }
 
 /**
-* MainPassVk::CreateRenderPass Setup global renderpass for writing to frame buffer.
-*/
+ * MainPassVk::CreateRenderPass Setup global renderpass for writing to frame buffer.
+ */
 
 void MainPassVk::CreateRenderPass(VkDevice &logicalDevice)
 {
 	array<VkAttachmentDescription, 2> attachments = {};
 
-	attachments[0].format = colorFormat;
-	attachments[0].samples = VK_SAMPLE_COUNT_1_BIT;
-	attachments[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	attachments[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	attachments[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	attachments[0].finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	attachments[0].format           = colorFormat;
+	attachments[0].samples          = VK_SAMPLE_COUNT_1_BIT;
+	attachments[0].loadOp           = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachments[0].storeOp          = VK_ATTACHMENT_STORE_OP_STORE;
+	attachments[0].stencilLoadOp    = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachments[0].stencilStoreOp   = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachments[0].initialLayout    = VK_IMAGE_LAYOUT_UNDEFINED;
+	attachments[0].finalLayout      = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-	attachments[1].format = depthFormat;
-	attachments[1].samples = VK_SAMPLE_COUNT_1_BIT;
-	attachments[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	attachments[1].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	attachments[1].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	attachments[1].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachments[1].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	attachments[1].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	attachments[1].format           = depthFormat;
+	attachments[1].samples          = VK_SAMPLE_COUNT_1_BIT;
+	attachments[1].loadOp           = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachments[1].storeOp          = VK_ATTACHMENT_STORE_OP_STORE;
+	attachments[1].stencilLoadOp    = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachments[1].stencilStoreOp   = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachments[1].initialLayout    = VK_IMAGE_LAYOUT_UNDEFINED;
+	attachments[1].finalLayout      = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 	VkAttachmentReference colorReference = {};
 	colorReference.attachment = 0;
@@ -88,43 +57,44 @@ void MainPassVk::CreateRenderPass(VkDevice &logicalDevice)
 	depthReference.attachment = 1;
 	depthReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-	VkSubpassDescription subpassDescription = {};
-	subpassDescription.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpassDescription.colorAttachmentCount = 1;
-	subpassDescription.pColorAttachments = &colorReference;
-	subpassDescription.pDepthStencilAttachment = &depthReference;
-	subpassDescription.inputAttachmentCount = 0;
-	subpassDescription.pInputAttachments = nullptr;
-	subpassDescription.preserveAttachmentCount = 0;
-	subpassDescription.pPreserveAttachments = nullptr;
-	subpassDescription.pResolveAttachments = nullptr;
+	VkSubpassDescription subpassDescription     = {};
+	subpassDescription.pipelineBindPoint        = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpassDescription.colorAttachmentCount     = 1;
+	subpassDescription.pColorAttachments        = &colorReference;
+	subpassDescription.pDepthStencilAttachment  = &depthReference;
+	subpassDescription.inputAttachmentCount     = 0;
+	subpassDescription.pInputAttachments        = nullptr;
+	subpassDescription.preserveAttachmentCount  = 0;
+	subpassDescription.pPreserveAttachments     = nullptr;
+	subpassDescription.pResolveAttachments      = nullptr;
 
 	array<VkSubpassDependency, 2> dependencies;
 
-	dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-	dependencies[0].dstSubpass = 0;
-	dependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-	dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-	dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	dependencies[0].srcSubpass      = VK_SUBPASS_EXTERNAL;
+	dependencies[0].dstSubpass      = 0;
+	dependencies[0].srcStageMask    = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+	dependencies[0].dstStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependencies[0].srcAccessMask   = VK_ACCESS_MEMORY_READ_BIT;
+	dependencies[0].dstAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 	dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
-	dependencies[1].srcSubpass = 0;
-	dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-	dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-	dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	dependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+	dependencies[1].srcSubpass      = 0;
+	dependencies[1].dstSubpass      = VK_SUBPASS_EXTERNAL;
+	dependencies[1].srcStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependencies[1].dstStageMask    = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+	dependencies[1].srcAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	dependencies[1].dstAccessMask   = VK_ACCESS_MEMORY_READ_BIT;
 	dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 	VkRenderPassCreateInfo renderPassInfo = {};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-	renderPassInfo.pAttachments = attachments.data();
-	renderPassInfo.subpassCount = 1;
-	renderPassInfo.pSubpasses = &subpassDescription;
-	renderPassInfo.dependencyCount = static_cast<uint32_t>(dependencies.size());
-	renderPassInfo.pDependencies = dependencies.data();
+	
+    renderPassInfo.sType            = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	renderPassInfo.attachmentCount  = static_cast<uint32_t>(attachments.size());
+	renderPassInfo.pAttachments     = attachments.data();
+	renderPassInfo.subpassCount     = 1;
+	renderPassInfo.pSubpasses       = &subpassDescription;
+	renderPassInfo.dependencyCount  = static_cast<uint32_t>(dependencies.size());
+	renderPassInfo.pDependencies    = dependencies.data();
 
 	vkCreateRenderPass(logicalDevice, &renderPassInfo, nullptr, &renderPass);
 }
@@ -138,33 +108,6 @@ void MainPassVk::CreatePipelineCache(VkDevice &logicalDevice)
 	VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {};
 	pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
 	vkCreatePipelineCache(logicalDevice, &pipelineCacheCreateInfo, nullptr, &pipelineCache);
-}
-
-/**
-* [MainPassVk::SetupFrameBuffer description]
-*/
-
-void MainPassVk::SetupFrameBuffer(VkDevice &logicalDevice)
-{
-	VkImageView attachments[2];
-	attachments[1] = zView;
-
-	VkFramebufferCreateInfo frameBufferCreateInfo = {};
-	frameBufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-	frameBufferCreateInfo.pNext = NULL;
-	frameBufferCreateInfo.renderPass = renderPass;
-	frameBufferCreateInfo.attachmentCount = 2;
-	frameBufferCreateInfo.pAttachments = attachments;
-	frameBufferCreateInfo.width = g_settings.winW;
-	frameBufferCreateInfo.height = g_settings.winH;
-	frameBufferCreateInfo.layers = 1;
-
-	frameBuffers.resize(scSize);
-	for (uint32_t i = 0; i < frameBuffers.size(); i++)
-	{
-		attachments[0] = scImageViews[i];
-		vkCreateFramebuffer(logicalDevice, &frameBufferCreateInfo, nullptr, &frameBuffers[i]);
-	}
 }
 
 /**
@@ -393,28 +336,28 @@ void MainPassVk::SetupPipelineState(VkDevice &logicalDevice)
 
 	std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages{};
 
-	shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-	shaderStages[0].module = LoadShader(logicalDevice, "shaders/simple.vert.spv");
-	shaderStages[0].pName = "main";
+	shaderStages[0].sType           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	shaderStages[0].stage           = VK_SHADER_STAGE_VERTEX_BIT;
+	shaderStages[0].module          = LoadShader(logicalDevice, "shaders/simple.vert.spv");
+	shaderStages[0].pName           = "main";
 
-	shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	shaderStages[1].module = LoadShader(logicalDevice, "shaders/simple.frag.spv");
-	shaderStages[1].pName = "main";
+	shaderStages[1].sType           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	shaderStages[1].stage           = VK_SHADER_STAGE_FRAGMENT_BIT;
+	shaderStages[1].module          = LoadShader(logicalDevice, "shaders/simple.frag.spv");
+	shaderStages[1].pName           = "main";
 
-	pipelineCreateInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
-	pipelineCreateInfo.pStages = shaderStages.data();
+	pipelineCreateInfo.stageCount   = static_cast<uint32_t>(shaderStages.size());
+	pipelineCreateInfo.pStages      = shaderStages.data();
 
-	pipelineCreateInfo.pVertexInputState = &vertexInputState;
-	pipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;
-	pipelineCreateInfo.pRasterizationState = &rasterizationState;
-	pipelineCreateInfo.pColorBlendState = &colorBlendState;
-	pipelineCreateInfo.pMultisampleState = &multisampleState;
-	pipelineCreateInfo.pViewportState = &viewportState;
-	pipelineCreateInfo.pDepthStencilState = &depthStencilState;
-	pipelineCreateInfo.renderPass = renderPass;
-	pipelineCreateInfo.pDynamicState = &dynamicState;
+	pipelineCreateInfo.pVertexInputState    = &vertexInputState;
+	pipelineCreateInfo.pInputAssemblyState  = &inputAssemblyState;
+	pipelineCreateInfo.pRasterizationState  = &rasterizationState;
+	pipelineCreateInfo.pColorBlendState     = &colorBlendState;
+	pipelineCreateInfo.pMultisampleState    = &multisampleState;
+	pipelineCreateInfo.pViewportState       = &viewportState;
+	pipelineCreateInfo.pDepthStencilState   = &depthStencilState;
+	pipelineCreateInfo.renderPass           = renderPass;
+	pipelineCreateInfo.pDynamicState        = &dynamicState;
 
 	CHECK_RESULT(vkCreateGraphicsPipelines(logicalDevice, pipelineCache, 1, &pipelineCreateInfo, nullptr, &pipeline));
 	vkDestroyShaderModule(logicalDevice, shaderStages[0].module, nullptr);
@@ -425,7 +368,7 @@ void MainPassVk::SetupPipelineState(VkDevice &logicalDevice)
  * MainPassVk::BuildCommandBuffers
  */
 
-void MainPassVk::BuildCommandBuffers(VkDevice &logicalDevice)
+void MainPassVk::BuildCommandBuffers(VkDevice &logicalDevice, VkCommandBuffer &cmdBuf)
 {
 	VkCommandBufferBeginInfo cmdBufInfo = {};
 	cmdBufInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -480,4 +423,15 @@ void MainPassVk::BuildCommandBuffers(VkDevice &logicalDevice)
 
 		vkEndCommandBuffer(drawCmdBuffers[i]);
 	}
+}
+
+
+/**
+ * RenderPassVk::GetRenderPass - Get render pass info for this pass. Needed by the
+ * main VK renderer to attach default frame buffer to output of this pass.
+ */
+
+VkRenderPass MainPassVk::GetRenderPass()
+{
+    return renderPass;
 }

@@ -39,11 +39,26 @@
 #include "IL/ilu.h"
 #include "IL/ilut.h"
 
+enum RTSettingType
+{
+    GCRT_UINT,
+    GCRT_BOOL,
+    GCRT_STRING
+};
+
+struct RTCLArg
+{
+    std::string clName;
+    std::string desc;
+    std::string defaultVal;
+    RTSettingType type;
+    uint32_t settingsOffset;
+};
+
 struct RTRenderSettings
 {
     uint32_t imageW;
     uint32_t imageH;
-    uint32_t sphereSamples;
     uint32_t vLightSets;
     uint32_t vLightSetSize;
     uint32_t camPathDepth;

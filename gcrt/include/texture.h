@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GCRT.h"
+#include "gcrt.h"
 #include "IL/il.h"
 #include "IL/ilu.h"
 #include "IL/ilut.h"

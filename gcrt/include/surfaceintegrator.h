@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GCRT.h"
+#include "gcrt.h"
 #include "rtscene.h"
 
 using namespace glm;

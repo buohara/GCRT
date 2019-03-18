@@ -1,5 +1,7 @@
 #include "gcrtvk.h"
 #include "utils.h"
+#include "utilsvk.h"
+#include "renderpass.h"
 
 using namespace std;
 using namespace glm;
@@ -59,6 +61,8 @@ struct RendererVK
         VkQueueFlags requestedQueueTypes = VK_QUEUE_GRAPHICS_BIT
     );
     
+    map<string, shared_ptr<RenderPassVk>> passes;
+
     void CreateVkInstance();
     void CreateRenderWindow(HINSTANCE hInstance);
     void GetPresentSurface(HINSTANCE hInstance);
@@ -66,7 +70,9 @@ struct RendererVK
     void CreateSwapChain();
     void CreateCommandBuffers();
     void CreateFenceObjects();
-    
+    void CreateDepth();
+    void SetupFrameBuffer();
+
     void Render();
 
     VkCommandBuffer GetCommandBuffer(bool begin);

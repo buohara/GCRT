@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GCRT.h"
+#include "gcrt.h"
 
 using namespace std;
 using namespace glm;

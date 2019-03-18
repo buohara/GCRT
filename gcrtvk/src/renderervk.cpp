@@ -686,3 +686,105 @@ void RendererVK::Render()
     
     vkQueuePresentKHR(queue, &presentInfo);
 }
+
+/**
+ * RendererVK::SetupFrameBuffer Find final render pass from list of passes and attach
+ * default framebuffer to it.
+ *
+ * @param logicalDevice Device to create framebuffer with.
+ */
+
+void RendererVK::SetupFrameBuffer()
+{
+    VkRenderPass outputPass = VK_NULL_HANDLE;
+
+    for (auto &pass : passes)
+    {
+        if (pass.second->renderToFrameBuffer == true)
+        {
+            outputPass = pass.second->GetRenderPass();
+            break;
+        }
+    }
+
+    VkImageView attachments[2];
+    attachments[1] = zView;
+
+    VkFramebufferCreateInfo frameBufferCreateInfo = {};
+    
+    frameBufferCreateInfo.sType             = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+    frameBufferCreateInfo.pNext             = NULL;
+    frameBufferCreateInfo.renderPass        = outputPass;
+    frameBufferCreateInfo.attachmentCount   = 2;
+    frameBufferCreateInfo.pAttachments      = attachments;
+    frameBufferCreateInfo.width             = g_settings.winW;
+    frameBufferCreateInfo.height            = g_settings.winH;
+    frameBufferCreateInfo.layers            = 1;
+
+    frameBuffers.resize(scSize);
+    for (uint32_t i = 0; i < frameBuffers.size(); i++)
+    {
+        attachments[0] = scImageViews[i];
+        vkCreateFramebuffer(logicalDevice, &frameBufferCreateInfo, nullptr, &frameBuffers[i]);
+    }
+}
+
+/**
+ * RendererVK::CreateDepth Default frame buffer also has depth attachment. Create it here.
+ */
+
+void RendererVK::CreateDepth()
+{
+    VkImageCreateInfo image = {};
+
+    image.sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    image.pNext         = NULL;
+    image.imageType     = VK_IMAGE_TYPE_2D;
+    image.format        = depthFormat;
+    image.extent        = { g_settings.winW, g_settings.winH, 1 };
+    image.mipLevels     = 1;
+    image.arrayLayers   = 1;
+    image.samples       = VK_SAMPLE_COUNT_1_BIT;
+    image.tiling        = VK_IMAGE_TILING_OPTIMAL;
+    image.usage         = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+    image.flags         = 0;
+
+    VkMemoryAllocateInfo mem_alloc = {};
+
+    mem_alloc.sType             = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    mem_alloc.pNext             = NULL;
+    mem_alloc.allocationSize    = 0;
+    mem_alloc.memoryTypeIndex   = 0;
+
+    VkImageViewCreateInfo depthStencilView = {};
+
+    depthStencilView.sType                              = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    depthStencilView.pNext                              = NULL;
+    depthStencilView.viewType                           = VK_IMAGE_VIEW_TYPE_2D;
+    depthStencilView.format                             = depthFormat;
+    depthStencilView.flags                              = 0;
+    depthStencilView.subresourceRange                   = {};
+    depthStencilView.subresourceRange.aspectMask        = VK_IMAGE_ASPECT_DEPTH_BIT;
+    depthStencilView.subresourceRange.baseMipLevel      = 0;
+    depthStencilView.subresourceRange.levelCount        = 1;
+    depthStencilView.subresourceRange.baseArrayLayer    = 0;
+    depthStencilView.subresourceRange.layerCount        = 1;
+
+    VkMemoryRequirements memReqs;
+
+    vkCreateImage(logicalDevice, &image, nullptr, &zImage);
+    vkGetImageMemoryRequirements(logicalDevice, zImage, &memReqs);
+    mem_alloc.allocationSize = memReqs.size;
+    
+    mem_alloc.memoryTypeIndex = FindProperties(
+        memReqs.memoryTypeBits, 
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        deviceMemoryProperties
+    );
+
+    vkAllocateMemory(logicalDevice, &mem_alloc, nullptr, &zMem);
+    vkBindImageMemory(logicalDevice, zImage, zMem, 0);
+
+    depthStencilView.image = zImage;
+    vkCreateImageView(logicalDevice, &depthStencilView, nullptr, &zView);
+}

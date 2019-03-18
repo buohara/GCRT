@@ -50,6 +50,9 @@
     <ClInclude Include="include\gcrt.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\utils.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\animation.cpp">
@@ -86,6 +89,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\sphere.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
