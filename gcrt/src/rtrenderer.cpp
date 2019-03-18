@@ -39,7 +39,6 @@ long long GetMilliseconds()
 /**
  * RTRenderer::Init Initialize the raytrace renderer.
  *
- * - Load settings from file.
  * - Initialize output image.
  * - Configure filter parameters.
  * - Initialize render threads.
@@ -282,8 +281,7 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
 
                     for (uint32_t j = 0; j <= dofSamples; j++)
                     {
-                        Ray ray = (j == 0) ? primRay :
-                            scn.cam.GenerateSecondaryRay(primRay, samples[i]);
+                        Ray ray = (j == 0) ? primRay : scn.cam.GenerateSecondaryRay(primRay, samples[i]);
 
                         Intersection intsc;
                         scn.Intersect(ray, intsc);

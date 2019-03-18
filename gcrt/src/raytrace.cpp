@@ -1,4 +1,5 @@
 #include "rtrenderer.h"
+#include "testoctree.h"
 
 extern RTRenderSettings gSettings;
 
@@ -17,7 +18,8 @@ vector<RTCLArg> settings
     {"-xblocks", "Number of tiles in image x-direction when multithreading.", "4", GCRT_UINT, offsetof(RTRenderSettings, xBlocks)},
     {"-yblocks", "Number of tiles in image y-direction when multithreading.", "4", GCRT_UINT, offsetof(RTRenderSettings, yBlocks)},
     {"-bsdfsamples", "Number of samples to generate from a material's BSDF after a ray intersects it.", "16", GCRT_UINT, offsetof(RTRenderSettings, numBSDFSamples)},
-    {"-lightsamples", "Number of samples to generate toward each light source after a light intersects it.", "8", GCRT_UINT, offsetof(RTRenderSettings, numLightSamples)}
+    {"-lightsamples", "Number of samples to generate toward each light source after a light intersects it.", "8", GCRT_UINT, offsetof(RTRenderSettings, numLightSamples)},
+    {"-testoctree", "Test octree build and ray intersection performance.", "false", GCRT_BOOL, offsetof(RTRenderSettings, testOctree)}
 };
 
 /**
@@ -46,7 +48,7 @@ void InitDefaultSettings()
         case GCRT_UINT:
 
             val = atoi(s.defaultVal.c_str());
-            *((uint32_t*)&gSettings + s.settingsOffset) = val;
+            *((uint32_t*)((uint8_t*)&gSettings + s.settingsOffset)) = val;
             break;
 
         default:
@@ -85,7 +87,7 @@ void ParseCommandLine(vector<string> &args)
                     }
 
                     val = atoi(args[i + 1].c_str());
-                    *((uint32_t*)&gSettings + s.settingsOffset) = val;
+                    *((uint32_t*)((uint8_t*)&gSettings + s.settingsOffset)) = val;
                     i += 2;
 
                     break;
@@ -111,6 +113,12 @@ int main(int argc, char** argv)
     vector<string> args(argv + 1, argv + argc);
     InitDefaultSettings();
     ParseCommandLine(args);
+
+    if (gSettings.testOctree)
+    {
+        TestOctree();
+        return 0;
+    }
 
     RTRenderer rndr;
     rndr.Init();

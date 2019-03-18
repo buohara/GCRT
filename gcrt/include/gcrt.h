@@ -73,4 +73,5 @@ struct RTRenderSettings
     std::string scnFilePath;
     uint32_t numBSDFSamples;
     uint32_t numLightSamples;
+    bool testOctree;
 };

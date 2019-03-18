@@ -13,6 +13,16 @@
 using namespace std;
 using namespace glm;
 
+enum MeshType
+{
+    ASSIMP,
+    CORNELL,
+    SPHERE,
+    PLANE,
+    BOX,
+    PLY
+};
+
 struct Submesh
 {
     Octree root;

@@ -74,10 +74,12 @@ void RTCamera::Init(
 }
 
 /**
-* [RTCamera::GenerateRay description]
-* @param  pixel [description]
-* @return       [description]
-*/
+ * RTCamera::GenerateRay - Generate camera rays for a simple perspective camera.
+ *
+ * @param  pixel Pixel to generate primary ray through.
+ *
+ * @return       Primary ray from desired pixels.
+ */
 
 Ray RTCamera::GeneratePrimaryRay(dvec2 pixel)
 {
@@ -103,36 +105,36 @@ Ray RTCamera::GeneratePrimaryRay(dvec2 pixel)
 }
 
 /**
- * [RTCamera::GenerateSecondaryRay description]
- * @param  primRay [description]
- * @param  pixel [description]
- * @return       [description]
+ * RTCamera::GenerateSecondaryRay - Given a primary ray from an image pixel, generate a
+ * perturbed secondary ray (used for depth of field).
+ *
+ * @param  primRay Primary ray to perturb.
+ * @param  pixel   Pixel origin of primary ray.
+ * @return         Newly generated secondary ray.
  */
 
 Ray RTCamera::GenerateSecondaryRay(Ray primRay, dvec2 pixel)
 {
     Ray newRay;
-
     dvec3 dir;
-    dir.x = (2.0 * pixel.x / imageW - 1.0) * tanfov * aspect;
-    dir.y = (2.0 * pixel.y / imageH - 1.0) * tanfov;
-    dir.z = -1.0;
-    dir = normalize(dir);
 
-    double t = -focalDist / dir.z;
-
+    dir.x       = (2.0 * pixel.x / imageW - 1.0) * tanfov * aspect;
+    dir.y       = (2.0 * pixel.y / imageH - 1.0) * tanfov;
+    dir.z       = -1.0;
+    dir         = normalize(dir);
+    double t    = -focalDist / dir.z;
     dvec3 intsc = primRay.org + t * primRay.dir;
 
     dvec3 e1 = normalize(dvec3(lookDir.z, 0.0, -lookDir.x));
     dvec3 e2 = normalize(cross(lookDir, e1));
 
-    double theta = 2.0 * pi<double>() * (double)rand() / (double)RAND_MAX;
-    double r = aperture * (double)rand() / (double)RAND_MAX;
+    double theta    = 2.0 * pi<double>() * (double)rand() / (double)RAND_MAX;
+    double r        = aperture * (double)rand() / (double)RAND_MAX;
     
-    newRay.org = primRay.org;
-    newRay.org += r * cos(theta) * e1;
-    newRay.org += r * sin(theta) * e2;
-    newRay.dir = normalize(intsc - newRay.org);
+    newRay.org      = primRay.org;
+    newRay.org      += r * cos(theta) * e1;
+    newRay.org      += r * sin(theta) * e2;
+    newRay.dir      = normalize(intsc - newRay.org);
 
     return newRay;
 }

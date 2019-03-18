@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Test">
-      <UniqueIdentifier>{c5cc50fb-edc3-4cd9-8ba3-327795d4c5ab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
@@ -20,6 +17,15 @@
     </Filter>
     <Filter Include="sampler">
       <UniqueIdentifier>{d45f857c-4e18-4f0d-b085-d750ef26dcce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test">
+      <UniqueIdentifier>{c5cc50fb-edc3-4cd9-8ba3-327795d4c5ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="camera">
+      <UniqueIdentifier>{cca5cfd7-7800-4de3-bc54-fdac4770f8db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bvh">
+      <UniqueIdentifier>{cd2814e1-164c-431a-aeab-384adf9b4f04}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -83,11 +89,20 @@
     <ClInclude Include="sampler\spheresampler.h">
       <Filter>sampler</Filter>
     </ClInclude>
-    <ClInclude Include="include\octree.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\gcrt.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="test\testoctree.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="camera\rtcamera.h">
+      <Filter>camera</Filter>
+    </ClInclude>
+    <ClInclude Include="bvh\octree.h">
+      <Filter>bvh</Filter>
+    </ClInclude>
+    <ClInclude Include="test\testrenderer.h">
+      <Filter>test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -148,8 +163,17 @@
     <ClCompile Include="src\timeline.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\octree.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="test\testoctree.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="camera\rtcamera.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="bvh\octree.cpp">
+      <Filter>bvh</Filter>
+    </ClCompile>
+    <ClCompile Include="test\testrenderer.cpp">
+      <Filter>test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

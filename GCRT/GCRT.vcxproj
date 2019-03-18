@@ -19,10 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bvh\octree.h" />
+    <ClInclude Include="camera\rtcamera.h" />
     <ClInclude Include="include\animation.h" />
     <ClInclude Include="include\filter.h" />
     <ClInclude Include="include\gcrt.h" />
-    <ClInclude Include="include\octree.h" />
     <ClInclude Include="include\ply.h" />
     <ClInclude Include="include\ray.h" />
     <ClInclude Include="include\rtmesh.h" />
@@ -41,8 +42,12 @@
     <ClInclude Include="material\rtmaterial.h" />
     <ClInclude Include="sampler\coshemisampler.h" />
     <ClInclude Include="sampler\spheresampler.h" />
+    <ClInclude Include="test\testoctree.h" />
+    <ClInclude Include="test\testrenderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="bvh\octree.cpp" />
+    <ClCompile Include="camera\rtcamera.cpp" />
     <ClCompile Include="light\spherelight.cpp" />
     <ClCompile Include="material\blinnmaterial.cpp" />
     <ClCompile Include="material\fresnelglassmaterial.cpp" />
@@ -53,7 +58,6 @@
     <ClCompile Include="sampler\spheresampler.cpp" />
     <ClCompile Include="src\animation.cpp" />
     <ClCompile Include="src\filter.cpp" />
-    <ClCompile Include="src\octree.cpp" />
     <ClCompile Include="src\plyfile.c" />
     <ClCompile Include="src\raytrace.cpp" />
     <ClCompile Include="src\rtmesh.cpp" />
@@ -63,6 +67,8 @@
     <ClCompile Include="src\surfaceintegrator.cpp" />
     <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\timeline.cpp" />
+    <ClCompile Include="test\testoctree.cpp" />
+    <ClCompile Include="test\testrenderer.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5E284DCF-ACAC-4E73-898D-D613D9FE4FF8}</ProjectGuid>
@@ -135,7 +141,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>
       </PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include;include;light;material;sampler</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include;include;light;material;sampler;test;camera;bvh</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -152,7 +158,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>
       </PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include;include;light;material;sampler</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include;include;light;material;sampler;test;camera;bvh</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -173,7 +179,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>
       </PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include;include;light;material;sampler</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include;include;light;material;sampler;test;camera;bvh</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -195,7 +201,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>
       </PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include;include;light;material;sampler</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\devil\include;include;light;material;sampler;test;camera;bvh</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
