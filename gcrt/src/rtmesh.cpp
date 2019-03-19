@@ -1,12 +1,12 @@
 #include "RTMesh.h"
 
 /**
- * RTSphere::Intersect Find a ray sphere intersection.
- * @param  ray    Ray to intersect with this sphere.
- * @param  instsc Output intersection information.
+ * [RTMesh::SphereIntersect description]
+ * @param ray   [description]
+ * @param intsc [description]
  */
 
-void RTSphere::Intersect(Ray ray, Intersection &intsc)
+void RTMesh::SphereIntersect(Ray ray, Intersection &intsc)
 {
     intsc.t     = -1.0;
     dvec3 d     = ray.dir;
@@ -87,28 +87,12 @@ void RTSphere::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * RTSphere::UpdateAnimation Update this sphere's animation at a given time.
- * @param  t Time for this animation's pose.
+ * [RTMesh::PlaneIntersect description]
+ * @param ray   [description]
+ * @param intsc [description]
  */
 
-void RTSphere::UpdateAnimation(double t)
-{
-    dmat4 pose = animation.GetPose(t);
-    dvec4 orgn4 = dvec4(0.0, 0.0, 0.0, 1.0);
-    orgn4 = pose * orgn4;
-
-    orgn.x = orgn4.x;
-    orgn.y = orgn4.y;
-    orgn.z = orgn4.z;
-}
-
-/**
- * RTPlane::Intersect Intersect a ray with a plane.
- * @param  ray Ray to intersect with this plane.
- * @param  intsc Output intersection information.
- */
-
-void RTPlane::Intersect(Ray ray, Intersection &intsc)
+void RTMesh::PlaneIntersect(Ray ray, Intersection &intsc)
 {
     intsc.t = -1.0;
     intsc.normal = dvec3(normal.x, normal.y, normal.z);
@@ -185,12 +169,12 @@ void Submesh::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * SkeletalMesh::Intersect a ray with a skeletal mesh.
- * @param ray  Ray to intersect.
- * @param intc Intersection point information.
+ * [RTMesh::SkeletalMeshIntersect description]
+ * @param ray   [description]
+ * @param intsc [description]
  */
 
-void SkeletalMesh::Intersect(Ray ray, Intersection &intsc)
+void RTMesh::SkeletalMeshIntersect(Ray ray, Intersection &intsc)
 {
     double minDist = DBL_MAX;
     intsc.t = -1.0;
@@ -219,12 +203,12 @@ void SkeletalMesh::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * CornellBox::Intersect Intersect a ray with the Cornell box.
- * @param ray  Ray to intersect with.
- * @param intc Intersection point information.
+ * [RTMesh::CornellBoxIntersect description]
+ * @param ray   [description]
+ * @param intsc [description]
  */
 
-void CornellBox::Intersect(Ray ray, Intersection &intsc)
+void RTMesh::CornellBoxIntersect(Ray ray, Intersection &intsc)
 {
     double minDist = DBL_MAX;
     intsc.t = -1.0;
@@ -253,10 +237,10 @@ void CornellBox::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * CornellBox::Create Create the geometry/materials of a Cornell box.
+ * [RTMesh::CreateCornell description]
  */
 
-void CornellBox::Create()
+void RTMesh::CreateCornell()
 {
     submeshes.resize(5);
     
@@ -478,13 +462,11 @@ void CornellBox::Create()
 }
 
 /**
- * SkeletalMesh::LoadModel Load a model using different loaders based on file
- * extension.
- *
- * @param file Name of file to load.
+ * [RTMesh::LoadModel description]
+ * @param file [description]
  */
 
-void SkeletalMesh::LoadModel(string file)
+void RTMesh::LoadModel(string file)
 {
     if (file.rfind(".ply") != string::npos)
     {
@@ -497,11 +479,11 @@ void SkeletalMesh::LoadModel(string file)
 }
 
 /**
- * SkeletalMesh::LoadModel Load a given file using the Assimp loader.
- * @param file Name of file to load.
+ * [RTMesh::LoadAssimpModel description]
+ * @param file [description]
  */
 
-void SkeletalMesh::LoadAssimpModel(string file)
+void RTMesh::LoadAssimpModel(string file)
 {
     Assimp::Importer importer;
 
@@ -579,12 +561,12 @@ void SkeletalMesh::LoadAssimpModel(string file)
 }
 
 /**
- * RTBox::Intersect Intersect a ray with a generic box.
- * @param ray   Ray to intersect with.
- * @param intsc Information about ray intersection point.
+ * [RTMesh::BoxIntersect description]
+ * @param ray   [description]
+ * @param intsc [description]
  */
 
-void RTBox::Intersect(Ray ray, Intersection &intsc)
+void RTMesh::BoxIntersect(Ray ray, Intersection &intsc)
 {
     double t0 = 0.0;
     double t1 = 0.0;
@@ -680,12 +662,11 @@ void RTBox::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * SkeletalMesh::LoadPLYModel Load a model from PLY file format.
- *
- * @param file Name of file to load.
+ * [RTMesh::LoadPLYModel description]
+ * @param file [description]
  */
 
-void SkeletalMesh::LoadPLYModel(string &file)
+void RTMesh::LoadPLYModel(string &file)
 {
     int nElems;
     char **eList;
@@ -846,4 +827,82 @@ void SkeletalMesh::LoadPLYModel(string &file)
     comments = ply_get_comments(ply, &num_comments);
     obj_info = ply_get_obj_info(ply, &num_obj_info);
     ply_close(ply);
+}
+
+/**
+ * 
+ */
+
+RTMesh::RTMesh(MeshType type, string fileName)
+{
+    assert((type == ASSIMP) || (type == PLY));
+    if (type == ASSIMP) LoadAssimpModel(fileName);
+    if (type == PLY) LoadPLYModel(fileName);
+}
+
+/**
+ * 
+ */
+
+RTMesh::RTMesh(MeshType type, double r, dvec3 orgn) : r(r), orgn(orgn) 
+{
+    assert(type == SPHERE);
+}
+
+/**
+ * 
+ */
+
+RTMesh::RTMesh(MeshType type, dvec3 min, dvec3 max) : min(min), max(max)
+{
+    assert(type == BOX);
+}
+
+/**
+ * 
+ */
+
+RTMesh::RTMesh(MeshType type, dvec4 normal) : normal(normal)
+{
+    assert(type == PLANE);
+}
+
+/**
+ * [RTMesh::Intersect description]
+ * @param ray   [description]
+ * @param intsc [description]
+ */
+
+void RTMesh::Intersect(Ray ray, Intersection &intsc)
+{
+    switch (type)
+    {
+    case SPHERE:
+
+        SphereIntersect(ray, intsc);
+        break;
+
+    case PLANE:
+
+        PlaneIntersect(ray, intsc);
+        break;
+
+    case BOX:
+
+        BoxIntersect(ray, intsc);
+        break;
+    
+    case ASSIMP:
+
+        SkeletalMeshIntersect(ray, intsc);
+        break;
+
+    case CORNELL:
+
+        CornellBoxIntersect(ray, intsc);
+        break;
+
+    default:
+        break;
+    }
 }

@@ -30,8 +30,8 @@ struct Submesh
     vector<dvec3> norm;
     vector<dvec3> tan;
     vector<uvec3> faces;
-
     uint32_t mat;
+
     void Intersect(Ray ray, Intersection &intsc);
 };
 
@@ -39,48 +39,44 @@ struct RTMesh
 {
     BBox bbox;
     vector<Submesh> submeshes;
-    virtual void Intersect(Ray ray, Intersection &intsc) = 0;
-    virtual void UpdateAnimation(double t) { return; }
-};
+    MeshType type;
+    uint32_t mat;
 
-struct SkeletalMesh : RTMesh
-{
+    // Sphere parameters.
+
+    double r;
+    dvec3 orgn;
+
+    // Plane parameters.
+
+    dvec4 normal;
+
+    // Box parameters.
+
+    dvec3 min;
+    dvec3 max;
+
+    // Mesh loading routines.
+
     void LoadModel(string file);
     void LoadAssimpModel(string file);
     void LoadPLYModel(string &fileName);
-
+    
     void Intersect(Ray ray, Intersection &intsc);
-};
 
-struct CornellBox : RTMesh
-{
-    void Create();
-    void Intersect(Ray ray, Intersection &intsc);
-};
+    RTMesh(MeshType type, string fileName);
+    RTMesh(MeshType type, double r, dvec3 orgn);
+    RTMesh(MeshType type, dvec3 min, dvec3 max);
+    RTMesh(MeshType type, dvec4 normal);
 
-struct RTSphere : RTMesh
-{
-    double r;
-    dvec3 orgn;
-    uint32_t mat;
-    Animation animation;
-    void Intersect(Ray ray, Intersection &intsc);
-    void UpdateAnimation(double t);
-};
+private:
 
-struct RTPlane : RTMesh
-{
-    dvec4 normal;
-    uint32_t mat;
-    void Intersect(Ray ray, Intersection &intsc);
-};
-
-struct RTBox : RTMesh
-{
-    dvec3 min;
-    dvec3 max;
-    uint32_t mat;
-    void Intersect(Ray ray, Intersection &intsc);
+    void SphereIntersect(Ray ray, Intersection &intsc);
+    void PlaneIntersect(Ray ray, Intersection &intsc);
+    void BoxIntersect(Ray ray, Intersection &intsc);
+    void SkeletalMeshIntersect(Ray ray, Intersection &intsc);
+    void CornellBoxIntersect(Ray ray, Intersection &intsc);
+    void CreateCornell();
 };
 
 struct RTModel
