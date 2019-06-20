@@ -23,37 +23,6 @@ struct VirtualLight
     string material;
 };
 
-struct RTCamera
-{
-    double aperture;
-    double focalDist;
-    double fov;
-    double shutterSpeed;
-    double aspect;
-    double tanfov;
-
-    double imageW;
-    double imageH;
-
-    mat4 viewInv;
-    
-    dvec3 pos;
-    dvec3 lookDir;
-
-    void Init(
-        uint32_t w,
-        uint32_t h,
-        dvec3 posIn,
-        dvec3 look,
-        double fov,
-        double apertureIn,
-        double focalDistIn
-    );
-
-    Ray GeneratePrimaryRay(dvec2 pixel);
-    Ray GenerateSecondaryRay(Ray primRay, dvec2 pixel);
-};
-
 struct RTScene
 {
     RTCamera cam;
