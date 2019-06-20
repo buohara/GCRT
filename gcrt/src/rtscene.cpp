@@ -10,8 +10,8 @@
 
 void RTScene::Intersect(Ray ray, Intersection &intsc)
 {
-    intsc.t = -1.0;
-    double minDist = DBL_MAX;
+    intsc.t         = -1.0;
+    double minDist  = DBL_MAX;
 
     Intersection intsc2;
 
@@ -57,19 +57,6 @@ void RTScene::UpdateAnimations(double t)
 
 void RTScene::LoadDefaultScene(uint32_t w, uint32_t h)
 {
-    dvec3 camPos = dvec3(8.0, -2.0, 3.0);
-    dvec3 camLook = dvec3(0.0, 0.0, 2.0);
-
-    cam.Init(
-        w,
-        h,
-        camPos,
-        camLook,
-        45.0,
-        0.5,
-        12.7
-    );
-
     InitDefaultMaterials();
     InitDefaultModels();
     tl.Init(0.0, 0.0, 24.0);

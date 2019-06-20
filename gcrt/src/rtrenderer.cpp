@@ -15,28 +15,6 @@ uint32_t gTotalSamples;
 uint32_t gSamplesProcessed = 0;
 
 /**
- * GetMilliseconds Get timestamp in milliseconds since beginning of clock epoch.
- * @return Timestamp in milliseconds.
- */
-
-long long GetMilliseconds()
-{
-    static LARGE_INTEGER frequency;
-    static BOOL useQpc = QueryPerformanceFrequency(&frequency);
-    
-    if (useQpc) 
-    {
-        LARGE_INTEGER now;
-        QueryPerformanceCounter(&now);
-        return (1000LL * now.QuadPart) / frequency.QuadPart;
-    }
-    else 
-    {
-        return GetTickCount();
-    }
-}
-
-/**
  * RTRenderer::Init Initialize the raytrace renderer.
  *
  * - Initialize output image.
@@ -52,7 +30,7 @@ void RTRenderer::Init()
     uint32_t imageW = gSettings.imageW;
     uint32_t imageH = gSettings.imageH;
 
-    gTotalSamples = gSettings.pixelSamples * imageW * imageH;
+    gTotalSamples   = gSettings.pixelSamples * imageW * imageH;
 
     gImageSamples.resize(imageW * imageH);
     outImage.resize(imageW * imageH);
@@ -108,23 +86,8 @@ void RTRenderer::GenerateImageBlocks()
             rect.xmin = i * blockSizeX;
             rect.ymin = j * blockSizeY;
 
-            if (i == xBlocks - 1)
-            {
-                rect.xmax = imageW - 1;
-            }
-            else
-            {
-                rect.xmax = (i + 1) * blockSizeX - 1;
-            }
-
-            if (j == yBlocks - 1)
-            {
-                rect.ymax = imageH - 1;
-            }
-            else
-            {
-                rect.ymax = (j + 1) * blockSizeY - 1;
-            }
+            rect.xmax = (i == xBlocks - 1) ? rect.xmax = imageW - 1 : (i + 1) * blockSizeX - 1;
+            rect.ymax = (j == yBlocks - 1) ? rect.ymax = imageH - 1 : (j + 1) * blockSizeY - 1;
 
             gImageBlocks.push_back(rect);
         }
@@ -138,13 +101,9 @@ void RTRenderer::GenerateImageBlocks()
 void RTRenderer::InitThreads()
 {
     InitializeCriticalSection(&imageBlockCS);
-
     numThreads = gSettings.numThreads;
 
-    for (uint32_t i = 0; i < numThreads; i++)
-    {
-        threadData[i].threadID      = i;
-    }
+    for (uint32_t i = 0; i < numThreads; i++) threadData[i].threadID = i;
 }
 
 /**
@@ -230,8 +189,7 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
     vector<vector<Sample>> &imgSamples  = gImageSamples;
     RTScene &scn                        = gScn;
 
-    double dofSamplesInv            = 1.0 / (double)(dofSamples + 1);
-
+    double dofSamplesInv                = 1.0 / (double)(dofSamples + 1);
     long long start = GetMilliseconds();
 
     memset(&tls_pathDbgData, 0, sizeof(PathDebugData));
@@ -489,8 +447,5 @@ void RTRenderer::ResetImageSamples()
     uint32_t imageH = gSettings.imageH;
 
     uint32_t numPixels = imageW * imageH;
-    for (uint32_t pixel = 0; pixel < numPixels; pixel++)
-    {
-        gImageSamples[pixel].resize(0);
-    }
+    for (uint32_t pixel = 0; pixel < numPixels; pixel++) gImageSamples[pixel].resize(0);
 }

@@ -39,22 +39,6 @@
 #include "IL/ilu.h"
 #include "IL/ilut.h"
 
-enum RTSettingType
-{
-    GCRT_UINT,
-    GCRT_BOOL,
-    GCRT_STRING
-};
-
-struct RTCLArg
-{
-    std::string clName;
-    std::string desc;
-    std::string defaultVal;
-    RTSettingType type;
-    uint32_t settingsOffset;
-};
-
 struct RTRenderSettings
 {
     uint32_t imageW;
@@ -69,9 +53,25 @@ struct RTRenderSettings
     uint32_t numThreads;
     uint32_t xBlocks;
     uint32_t yBlocks;
-    bool scnFromFile;
-    std::string scnFilePath;
     uint32_t numBSDFSamples;
     uint32_t numLightSamples;
-    bool testOctree;
+    uint32_t camType;
+
+    RTRenderSettings() :
+        imageW(512),
+        imageH(512),
+        vLightSets(16),
+        vLightSetSize(16),
+        camPathDepth(1),
+        lightPathDepth(0),
+        pixelSamples(4),
+        filterSize(2),
+        dofSamples(0),
+        numThreads(8),
+        xBlocks(4),
+        yBlocks(4),
+        numBSDFSamples(16),
+        numLightSamples(8),
+        camType(1)
+    {}
 };

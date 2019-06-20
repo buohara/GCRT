@@ -42,8 +42,7 @@
     <ClInclude Include="material\rtmaterial.h" />
     <ClInclude Include="sampler\coshemisampler.h" />
     <ClInclude Include="sampler\spheresampler.h" />
-    <ClInclude Include="test\testoctree.h" />
-    <ClInclude Include="test\testrenderer.h" />
+    <ClInclude Include="test\testscene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bvh\octree.cpp" />

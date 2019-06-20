@@ -28,19 +28,10 @@ struct RTCamera
     dvec3 pos;
     dvec3 lookDir;
 
+    RTCamera();
+
     RTCamera(uint32_t w, uint32_t h, dvec3 posIn, dvec3 look, double fov,
         double apertureIn, double focalDistIn, CamType type);
-
-    void Init(
-        uint32_t w,
-        uint32_t h,
-        dvec3 posIn,
-        dvec3 look,
-        double fov,
-        double apertureIn,
-        double focalDistIn,
-        CamType type
-    );
 
     Ray GeneratePrimaryRay(dvec2 pixel);
     Ray GenerateSecondaryRay(Ray primRay, dvec2 pixel);

@@ -11,6 +11,7 @@
 #include "blinnmaterial.h"
 #include "timeline.h"
 #include "animation.h"
+#include "rtcamera.h"
 
 using namespace glm;
 using namespace std;

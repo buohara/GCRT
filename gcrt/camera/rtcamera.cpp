@@ -1,6 +1,26 @@
 #include "rtcamera.h"
 
 /**
+ * RTCamera::RTCamera - Camera default constructor.
+ */
+
+RTCamera::RTCamera() : 
+    imageW(512), 
+    imageH(512),
+    pos(dvec3(8.0, -2.0, 3.0)),
+    lookDir(dvec3(-8.0, 2.0, -3.0)),
+    fov(45.0),
+    aperture(0.5),
+    focalDist(12.7),
+    type(PERSPECTIVE) 
+{
+    aspect  = (double)imageW / (double)imageH;
+    tanfov  = tan(fov * pi<double>() / (360.0));
+    viewInv = lookAt(pos, lookDir, dvec3(0.0, 0.0, 1.0));
+    viewInv = inverse(viewInv);
+}
+
+/**
  * RTCamera::RTCamera - Camera constructor.
  *
  * @param w     Image width.
@@ -23,12 +43,21 @@ RTCamera::RTCamera(
 ) 
     : imageW(w), imageH(h), pos(pos), fov(fov), aperture(aperture), focalDist(focalDist), type(type)
 {
-    aspect      = (double)w / (double)h;
+    aspect      = (double)imageW / (double)imageH;
     tanfov      = tan(fov * pi<double>() / (360.0));
     viewInv     = lookAt(pos, look, dvec3(0.0, 0.0, 1.0));
     viewInv     = inverse(viewInv);
     lookDir     = look - pos;
 }
+
+/**
+ * RTCamera::GeneratePrimaryRay - Generic routine for getting primary rays from camera.
+ * Redirects to appropriate specialized function depending on camera type.
+ *
+ * @param pixel Image pixel to get primary ray for.
+ *
+ * @retrn Primary ray for input pixel.
+ */
 
 Ray RTCamera::GeneratePrimaryRay(dvec2 pixel)
 {
@@ -49,15 +78,28 @@ Ray RTCamera::GeneratePrimaryRay(dvec2 pixel)
     default:
 
         break;
-
     }
 
     return ray;
 }
 
+/**
+ * RTCamera::GeneratePrimaryRay - Generate camera rays for a simple ortho camera.
+ *
+ * @param pixel Image pixel to get primary ray for.
+ *
+ * @retrn Primary ray for input pixel.
+ */
+
 Ray RTCamera::GeneratePrimaryRayOrtho(dvec2 pixel)
 {
+    Ray ray;
+    ray.dir = lookDir;
 
+    ray.org.x = pos.x + 2.0 * (pixel.x) / (double)imageW - 1.0;
+    ray.org.y = pos.y + 2.0 * (pixel.y) / (double)imageH - 1.0;
+
+    return ray;
 }
 
 /**
@@ -102,6 +144,8 @@ Ray RTCamera::GeneratePrimaryRayPersp(dvec2 pixel)
 
 Ray RTCamera::GenerateSecondaryRay(Ray primRay, dvec2 pixel)
 {
+    assert(type == ORTHO);
+
     Ray newRay;
     dvec3 dir;
 

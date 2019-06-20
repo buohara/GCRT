@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gcrt.h"
+#include "rtcamera.h"
 #include "rtscene.h"
 #include "sampler.h"
 #include "surfaceintegrator.h"

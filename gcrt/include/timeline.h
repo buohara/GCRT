@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Windows.h>
+
 struct Timeline
 {
     double ti;
@@ -10,3 +12,5 @@ struct Timeline
     double Next();
     void Init(double tiIn, double tfIn, double fps);
 };
+
+long long GetMilliseconds();
