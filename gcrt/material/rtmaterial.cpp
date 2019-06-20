@@ -36,7 +36,7 @@ void TexMaterial::PerturbNormal(Intersection &intsc)
     intsc.normal    = tbn * nPerturb;
 }
 
-string RTMaterial::GetName(Material mat)
+string RTMaterial::GetName(MaterialType mat)
 {
     switch (mat)
     {

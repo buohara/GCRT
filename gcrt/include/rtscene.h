@@ -62,9 +62,8 @@ struct RTScene
     map<string, shared_ptr<Light>> lights;
     vector<vector<VirtualLight>> vLights;
 
-    map<string, shared_ptr<RTMesh>> meshes;
-    map<uint32_t, shared_ptr<RTMaterial>> mats;
-    map<string, RTModel> models;
+    vector<RTMesh> meshes;
+    vector<RTMaterial> mats;
 
     void LoadDefaultScene(uint32_t w, uint32_t h);
     void InitDefaultMaterials();

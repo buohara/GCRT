@@ -63,11 +63,13 @@ struct RTMesh
     void LoadPLYModel(string &fileName);
     
     void Intersect(Ray ray, Intersection &intsc);
+    void UpdateAnimation(double t) {};
 
-    RTMesh(MeshType type, string fileName);
-    RTMesh(MeshType type, double r, dvec3 orgn);
-    RTMesh(MeshType type, dvec3 min, dvec3 max);
-    RTMesh(MeshType type, dvec4 normal);
+    RTMesh(MeshType type);
+    RTMesh(MeshType type, MaterialType mat, string fileName);
+    RTMesh(MeshType type, MaterialType mat, double r, dvec3 orgn);
+    RTMesh(MeshType type, MaterialType mat, dvec3 min, dvec3 max);
+    RTMesh(MeshType type, MaterialType mat, dvec4 normal);
 
 private:
 

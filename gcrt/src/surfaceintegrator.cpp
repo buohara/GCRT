@@ -81,7 +81,7 @@ void SurfaceIntegrator::DumpPath()
             tls_pathDbgData.rayOrigins[i].x,
             tls_pathDbgData.rayOrigins[i].y,
             tls_pathDbgData.rayOrigins[i].z,
-            RTMaterial::GetName((Material)tls_pathDbgData.intscMaterials[i]).c_str()
+            RTMaterial::GetName((MaterialType)tls_pathDbgData.intscMaterials[i]).c_str()
         );
     }
 }
@@ -110,7 +110,7 @@ dvec3 SurfaceIntegrator::SampleSurface(
     vector<SurfSample> lightSamples;
     const uint32_t maxSampleAttempts = 10;
     
-    auto &mat = *scn.mats[intsc.mat];
+    auto &mat = scn.mats[intsc.mat];
 
     tls_pathDbgData.rayOrigins[tls_pathDbgData.stackPtr++] = rayIn.org;
     tls_pathDbgData.intscMaterials[tls_pathDbgData.stackPtr] = intsc.mat;
@@ -265,7 +265,7 @@ void SurfaceIntegrator::SampleBSDF(
     const uint32_t requestedBSDFSamples = gSettings.numBSDFSamples;
 
     vector<Ray> bsdfRays(requestedBSDFSamples);
-    auto &mat = *scn.mats[intsc.mat];
+    auto &mat = scn.mats[intsc.mat];
     uint32_t numSamples = mat.GetBSDFSamples(requestedBSDFSamples, rayIn, intsc, bsdfRays);
     uint32_t sampleCnt = 0;
     surfSamples.resize(numSamples);
@@ -342,7 +342,7 @@ void SurfaceIntegrator::SampleLightDistribution(
 )
 {
     const uint32_t samplesPerLight = gSettings.numLightSamples;
-    auto &mat = *scn.mats[intsc.mat];
+    auto &mat = scn.mats[intsc.mat];
     uint32_t curLightSample = 0;
 
     surfSamples.resize(samplesPerLight * scn.lights.size());

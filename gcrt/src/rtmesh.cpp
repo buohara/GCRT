@@ -830,10 +830,21 @@ void RTMesh::LoadPLYModel(string &file)
 }
 
 /**
- * 
+ * RTMesh::RTMesh - Constructor to initialize a Cornell box. If only a type parameters is 
+ * specified, assumed to be a Cornell box.
  */
 
-RTMesh::RTMesh(MeshType type, string fileName)
+RTMesh::RTMesh(MeshType type)
+{
+    assert(type == CORNELL);
+    CreateCornell();
+}
+
+/**
+ * RTMesh::RTMesh - Constructor to initilize a mesh from Assimp file.
+ */
+
+RTMesh::RTMesh(MeshType type, MaterialType mat, string fileName)
 {
     assert((type == ASSIMP) || (type == PLY));
     if (type == ASSIMP) LoadAssimpModel(fileName);
@@ -841,36 +852,38 @@ RTMesh::RTMesh(MeshType type, string fileName)
 }
 
 /**
- * 
+ * RTMesh::RTMesh - Constructor to initialize a sphere.
  */
 
-RTMesh::RTMesh(MeshType type, double r, dvec3 orgn) : r(r), orgn(orgn) 
+RTMesh::RTMesh(MeshType type, MaterialType mat, double r, dvec3 orgn) : r(r), orgn(orgn)
 {
     assert(type == SPHERE);
 }
 
 /**
- * 
+ * RTMesh::RTMesh - Constructor to initizlie a box.
  */
 
-RTMesh::RTMesh(MeshType type, dvec3 min, dvec3 max) : min(min), max(max)
+RTMesh::RTMesh(MeshType type, MaterialType mat, dvec3 min, dvec3 max) : min(min), max(max)
 {
     assert(type == BOX);
 }
 
 /**
- * 
+ * RTMesh::RTMesh - Constructor to initizlie a plane.
  */
 
-RTMesh::RTMesh(MeshType type, dvec4 normal) : normal(normal)
+RTMesh::RTMesh(MeshType type, MaterialType mat, dvec4 normal) : normal(normal)
 {
     assert(type == PLANE);
 }
 
 /**
- * [RTMesh::Intersect description]
- * @param ray   [description]
- * @param intsc [description]
+ * RTMesh::Intersect - Intersect a ray with this mesh. Intersection method depends on type
+ * of mesh.
+ *
+ * @param ray   Input ray.
+ * @param intsc Intersection information of ray with this mesh.
  */
 
 void RTMesh::Intersect(Ray ray, Intersection &intsc)

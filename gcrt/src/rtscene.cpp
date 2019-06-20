@@ -17,7 +17,7 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
 
     for (auto &mesh : meshes)
     {
-        mesh.second->Intersect(ray, intsc2);
+        mesh.Intersect(ray, intsc2);
         if ((intsc2.t < minDist) && (intsc2.t > 0.001))
         {
             intsc = intsc2;
@@ -147,7 +147,7 @@ void RTScene::UpdateAnimations(double t)
 {
     for (auto& mesh : meshes)
     {
-        mesh.second->UpdateAnimation(t);
+        mesh.UpdateAnimation(t);
     }
 }
 
@@ -208,12 +208,12 @@ void RTScene::InitDefaultMaterials()
     metalMat.name = "Metal";
     metalMat.ks = 15.0;
 
-    mats[0]  = make_shared<MirrorMaterial>(mirrorMat);
+   /* mats[0]  = make_shared<MirrorMaterial>(mirrorMat);
     mats[1]  = make_shared<FresnelGlassMaterial>(glassMat);
     mats[2]  = make_shared<LambertMaterial>(greenMat);
     mats[3]  = make_shared<LambertMaterial>(redMat);
     mats[4]  = make_shared<LambertMaterial>(whiteMat);
-    mats[5]  = make_shared<BlinnMaterial>(metalMat);
+    mats[5]  = make_shared<BlinnMaterial>(metalMat);*/
 }
 
 /**
@@ -222,72 +222,40 @@ void RTScene::InitDefaultMaterials()
 
 void RTScene::InitDefaultModels()
 {
-    Keyframe k1;
-    Keyframe k2;
-    k1.t = 0.0;
-    k2.t = 5.0;
-
     // Mirror sphere
 
-    RTSphere mirrSph;
-    mirrSph.orgn    = dvec3(-3.0, -3.0, 2.0);
-    mirrSph.r       = 1.0;
-    mirrSph.mat     = MIRROR;
-    
-    k1.pos = dvec3(-3.0, -3.0, 2.0);
-    k2.pos = dvec3(0.0, -3.0, 2.0);
-
-    mirrSph.animation.kfs.push_back(k1);
-    mirrSph.animation.kfs.push_back(k2);
-
-    //meshes["MirrorSphere"] = make_shared<RTSphere>(mirrSph);
+    RTMesh mirrSph(SPHERE, MIRROR, 1.0, dvec3(-3.0, -3.0, 2.0));
+    meshes.push_back(mirrSph);
 
     // White Lambert sphere
 
-    RTSphere matteSph;
-    matteSph.orgn   = dvec3(-3.0, 0.0, 2.0);
-    matteSph.r      = 1.0;
-    matteSph.mat    = WHITE_MATTE;
-
-    k1.pos = dvec3(-3.0, 0.0, 2.0);
-    k2.pos = dvec3(1.0, 0.0, 2.0);
-
-    matteSph.animation.kfs.push_back(k1);
-    matteSph.animation.kfs.push_back(k2);
-
-   // meshes["MatteSphere"] = make_shared<RTSphere>(matteSph);
+    RTMesh matteSphere(SPHERE, WHITE_MATTE, 1.0, dvec3(-3.0, 0.0, 2.0));
+    meshes.push_back(matteSphere);
 
     // Burshed metal sphere
 
-    RTSphere metalSph;
-    metalSph.orgn   = dvec3(-3.0, 3.0, 2.0);
-    metalSph.r      = 1.0;
-    metalSph.mat    = METAL;
+    RTMesh metalSphere(SPHERE, METAL, 1.0, dvec3(-3.0, 3.0, 2.0));
+    meshes.push_back(metalSphere);
 
-    k1.pos = dvec3(-3.0, 3.0, 2.0);
-    k2.pos = dvec3(2.0, 3.0, 2.0);
+    // Cornell box
 
-    metalSph.animation.kfs.push_back(k1);
-    metalSph.animation.kfs.push_back(k2);
+    RTMesh cornell(CORNELL);
+    meshes.push_back(cornell);
 
-    //meshes["MetalSphere"] = make_shared<RTSphere>(metalSph);
+    // Dragon
+
+    RTMesh dragon(PLY, WHITE_MATTE, "../asset/models/dragon/dragon_vrip.ply");
+    meshes.push_back(dragon);
 
     // Light source
 
     SphereLight lightSphWhite;
     lightSphWhite.Init(256, 16);
-    lightSphWhite.pos   = { 0.0, 0.0, 3.5 };
-    lightSphWhite.r     = 0.4;
-    lightSphWhite.pwr   = { 20.0, 19.0, 18.0 };
-    lights["WhiteSphere"] = make_shared<SphereLight>(lightSphWhite);
-
-    auto pCornellBox = make_shared<CornellBox>();
-    pCornellBox->Create();
-    meshes["CornellBox"] = pCornellBox;
-
-    SkeletalMesh mesh;
-    mesh.LoadModel(string("../asset/models/dragon/dragon_vrip.ply"));
-    meshes["Dragon"] = make_shared<SkeletalMesh>(mesh);
+    
+    lightSphWhite.pos       = { 0.0, 0.0, 3.5 };
+    lightSphWhite.r         = 0.4;
+    lightSphWhite.pwr       = { 20.0, 19.0, 18.0 };
+    lights["WhiteSphere"]   = make_shared<SphereLight>(lightSphWhite);
 }
 
 /**

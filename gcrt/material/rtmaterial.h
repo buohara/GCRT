@@ -7,7 +7,7 @@
 using namespace std;
 using namespace glm;
 
-enum Material
+enum MaterialType
 {
     MIRROR      = 0,
     GLASS       = 1,
@@ -53,7 +53,7 @@ struct RTMaterial
         return; 
     }
 
-    static string GetName(Material mat);
+    static string GetName(MaterialType mat);
 };
 
 struct TexMaterial : RTMaterial
