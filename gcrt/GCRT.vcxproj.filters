@@ -92,16 +92,13 @@
     <ClInclude Include="include\gcrt.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="test\testoctree.h">
-      <Filter>test</Filter>
-    </ClInclude>
     <ClInclude Include="camera\rtcamera.h">
       <Filter>camera</Filter>
     </ClInclude>
     <ClInclude Include="bvh\octree.h">
       <Filter>bvh</Filter>
     </ClInclude>
-    <ClInclude Include="test\testrenderer.h">
+    <ClInclude Include="test\testscene.h">
       <Filter>test</Filter>
     </ClInclude>
   </ItemGroup>

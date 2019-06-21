@@ -40,109 +40,14 @@ void RTScene::Intersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * [RTScene::UpdateAnimations description]
+ * RTScene::UpdateAnimations - Update scene object animations to specified time.
+ *
+ * @param t Time to advance to.
  */
 
 void RTScene::UpdateAnimations(double t)
 {
-    for (auto& mesh : meshes)
-    {
-        mesh.UpdateAnimation(t);
-    }
-}
-
-/**
- * [RTScene::Init description]
- */
-
-void RTScene::LoadDefaultScene(uint32_t w, uint32_t h)
-{
-    InitDefaultMaterials();
-    InitDefaultModels();
-    tl.Init(0.0, 0.0, 24.0);
-}
-
-/**
- * [RTScene::InitDefaultMaterials description]
- */
-
-void RTScene::InitDefaultMaterials()
-{
-    MirrorMaterial mirrorMat;
-    mirrorMat.name = "Mirror";
-
-    FresnelGlassMaterial glassMat;
-    glassMat.name = "Glass";
-    glassMat.etai = 1.0;
-    glassMat.etat = 1.4;
-
-    LambertMaterial greenMat;
-    greenMat.name = "GreenMatte";
-    greenMat.kd = { 0.1, 0.7, 0.2 };
-    greenMat.Init(256, 16);
-
-    LambertMaterial whiteMat;
-    whiteMat.name = "WhiteMatte";
-    whiteMat.kd = { 0.9, 0.8, 0.7 };
-    whiteMat.Init(256, 16);
-
-    LambertMaterial redMat;
-    redMat.name = "RedMatte";
-    redMat.kd = { 0.7, 0.1, 0.2 };
-    redMat.Init(256, 16);
-
-    BlinnMaterial metalMat;
-    metalMat.name = "Metal";
-    metalMat.ks = 15.0;
-
-   /* mats[0]  = make_shared<MirrorMaterial>(mirrorMat);
-    mats[1]  = make_shared<FresnelGlassMaterial>(glassMat);
-    mats[2]  = make_shared<LambertMaterial>(greenMat);
-    mats[3]  = make_shared<LambertMaterial>(redMat);
-    mats[4]  = make_shared<LambertMaterial>(whiteMat);
-    mats[5]  = make_shared<BlinnMaterial>(metalMat);*/
-}
-
-/**
- * [RTScene::InitDefaultModels description]
- */
-
-void RTScene::InitDefaultModels()
-{
-    // Mirror sphere
-
-    RTMesh mirrSph(SPHERE, MIRROR, 1.0, dvec3(-3.0, -3.0, 2.0));
-    meshes.push_back(mirrSph);
-
-    // White Lambert sphere
-
-    RTMesh matteSphere(SPHERE, WHITE_MATTE, 1.0, dvec3(-3.0, 0.0, 2.0));
-    meshes.push_back(matteSphere);
-
-    // Burshed metal sphere
-
-    RTMesh metalSphere(SPHERE, METAL, 1.0, dvec3(-3.0, 3.0, 2.0));
-    meshes.push_back(metalSphere);
-
-    // Cornell box
-
-    RTMesh cornell(CORNELL);
-    meshes.push_back(cornell);
-
-    // Dragon
-
-    RTMesh dragon(PLY, WHITE_MATTE, "../asset/models/dragon/dragon_vrip.ply");
-    meshes.push_back(dragon);
-
-    // Light source
-
-    SphereLight lightSphWhite;
-    lightSphWhite.Init(256, 16);
-    
-    lightSphWhite.pos       = { 0.0, 0.0, 3.5 };
-    lightSphWhite.r         = 0.4;
-    lightSphWhite.pwr       = { 20.0, 19.0, 18.0 };
-    lights["WhiteSphere"]   = make_shared<SphereLight>(lightSphWhite);
+    for (auto& mesh : meshes) mesh.UpdateAnimation(t);
 }
 
 /**

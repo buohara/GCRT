@@ -16,19 +16,10 @@ struct Rect
     uint32_t ymax;
 };
 
-struct ThreadData
-{
-    uint32_t threadID;
-};
-
-DWORD WINAPI RenderThreadFunc(LPVOID lpParam);
-long long GetMilliseconds();
-
 struct RTRenderer
 {
     uint32_t numThreads;
-    ThreadData threadData[16];
-    HANDLE hThreadArray[16];
+    thread threads[16];
     vector<dvec3> outImage;
 
     SurfaceIntegrator integrator;
@@ -41,7 +32,6 @@ struct RTRenderer
     void GenerateImageBlocks();
 
     void Init();
-    void InitThreads();
     void Preprocess();
     void GenerateVirtualLights();
     void SaveImage(string fileName);

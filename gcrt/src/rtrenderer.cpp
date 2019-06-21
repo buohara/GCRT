@@ -2,7 +2,7 @@
 
 // Globals.
 
-CRITICAL_SECTION imageBlockCS;
+mutex imageBlockMtx;
 _declspec(thread) PathDebugData tls_pathDbgData = {};
 
 RTRenderSettings gSettings = {};
@@ -45,9 +45,7 @@ void RTRenderer::Init()
     filter.xw   = 2.0;
     filter.yw   = 2.0;
 
-    gScn.LoadDefaultScene(imageW, imageH);
     Preprocess();
-    InitThreads();
 }
 
 /**
@@ -92,18 +90,6 @@ void RTRenderer::GenerateImageBlocks()
             gImageBlocks.push_back(rect);
         }
     }
-}
-
-/**
- * RTRenderer::InitThreads Prepare data for render threads.
- */
-
-void RTRenderer::InitThreads()
-{
-    InitializeCriticalSection(&imageBlockCS);
-    numThreads = gSettings.numThreads;
-
-    for (uint32_t i = 0; i < numThreads; i++) threadData[i].threadID = i;
 }
 
 /**
@@ -174,11 +160,10 @@ void RTRenderer::GenerateVirtualLights()
  * @return         Zero when no more thread work to consume.
  */
 
-DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
+void RenderThreadFunc()
 {
     // Unpack thread ID/global for this worker thread.
-
-    ThreadData &data                    = *((ThreadData*)(lpParam));   
+   
     Sampler &sampler                    = gPixelSampler;
     SurfaceIntegrator integrator        = gIntegrator;
     uint32_t imageW                     = gSettings.imageW;
@@ -199,29 +184,19 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
     {
         // Grab an image tile, exit if no more work left.
 
-        EnterCriticalSection(&imageBlockCS);
+        imageBlockMtx.lock();
 
         if (imageBlocks.size() == 0)
         {
-            LeaveCriticalSection(&imageBlockCS);
-
+            imageBlockMtx.unlock();
             long long stop = GetMilliseconds();
-            char str[512];
-            
-            sprintf_s(
-                str, 
-                "Thread %u render time: %3.2fs\n", 
-                data.threadID, 
-                ((double)(stop - start) / 1000.0)
-            );
-            
-            OutputDebugString(str);
-            return 0;
+            printf("Thread %u render time: %3.2fs\n", this_thread::get_id(),((double)(stop - start) / 1000.0));
+            return;
         }
 
         Rect rect = imageBlocks.back();
         imageBlocks.pop_back();
-        LeaveCriticalSection(&imageBlockCS);
+        imageBlockMtx.unlock();
 
         // Sample (ray trace) pixels in current tile.
 
@@ -265,14 +240,14 @@ DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
                 }
             }
 
-            EnterCriticalSection(&imageBlockCS);
+            imageBlockMtx.unlock();
             gSamplesProcessed += (rect.xmax - rect.xmin) * gSettings.pixelSamples;
             cout << "\r" << gSamplesProcessed << " / " << gTotalSamples << " samples processed ...";
-            LeaveCriticalSection(&imageBlockCS);
+            imageBlockMtx.unlock();
         }
     }
 
-    return 0;
+    return;
 }
 
 /**
@@ -290,26 +265,16 @@ void RTRenderer::Render()
     double curAnimTime = gScn.tl.curTime;
     uint32_t frameNum = 0;
 
-    cout << "\n\nBeginning trace\n" << endl;
+    printf("\n\nBeginning trace\n\n");
 
     while (curAnimTime <= gScn.tl.tf)
     {
         GenerateImageBlocks();
         gScn.UpdateAnimations(curAnimTime);
 
-        for (uint32_t i = 0; i < numThreads; i++)
-        {
-            hThreadArray[i] = CreateThread(
-                NULL,
-                0,
-                RenderThreadFunc,
-                &threadData[i],
-                0,
-                NULL
-            );
-        }
+        for (uint32_t i = 0; i < numThreads; i++) threads[i] = thread(RenderThreadFunc);
+        for (uint32_t i = 0; i < numThreads; i++) threads[i].join();
 
-        WaitForMultipleObjects(numThreads, hThreadArray, TRUE, INFINITE);
         FilterSamples();
 
         stringstream ss;
@@ -325,10 +290,7 @@ void RTRenderer::Render()
     }
 
     long long stop = GetMilliseconds();
-
-    char str[512];
-    sprintf_s(str, "Total render time: %3.2fs\n", ((double)(stop - start) / 1000.0));
-    OutputDebugString(str);
+    printf("Total render time: %3.2fs\n", ((double)(stop - start) / 1000.0));
 }
 
 /**
