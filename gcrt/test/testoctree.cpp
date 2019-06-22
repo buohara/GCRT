@@ -7,18 +7,23 @@
 void TestOctree()
 {
     RTRenderSettings settings;
-    settings.camType = ORTHO;
+    settings.camType            = ORTHO;
+    settings.outputPath         = "../../gcrt/renders/octreetest/";
+    settings.frameFilePrefix    = "OctreeFrame";
 
-    RTRenderer rndr;
-    rndr.Init();
-    rndr.Render();
-    
+    RTScene scn;
+
     LambertMaterial whiteMat;
     whiteMat.name   = "WhiteMatte";
     whiteMat.kd     = { 0.9, 0.8, 0.7 };
     whiteMat.Init(256, 16);
 
-    RTMesh dragon(PLY, WHITE_MATTE, "../asset/models/dragon/dragon_vrip.ply");
+    scn.Add(whiteMat);
 
-    rndr.SaveImage("../../gcrt/renders/octreetest.jpg");
+    RTMesh dragon(PLY, scn.GetMaterialIndex("WhiteMatte"), "../asset/models/dragon/dragon_vrip.ply");
+    scn.Add(dragon);
+
+    RTRenderer rndr;
+    rndr.Init();
+    rndr.Render(scn);
 }

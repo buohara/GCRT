@@ -51,6 +51,43 @@ void RTScene::UpdateAnimations(double t)
 }
 
 /**
+ * RTScene::AddMaterial - Add a material to the scene's material list and map
+ * its name to its index in the list.
+ *
+ * @param mat Material to add to scene.
+ */
+
+void RTScene::Add(RTMaterial mat)
+{
+    assert(matIdcs.count(mat.name) == 0);
+    mats.push_back(mat);
+    matIdcs[mat.name] = mats.size() - 1;
+}
+
+/**
+ * RTScene::AddMesh - Add a mesh to the scene.
+ *
+ * @param mesh Mesh to add to scene.
+ */
+
+void RTScene::Add(RTMesh mesh)
+{
+    meshes.push_back(mesh);
+}
+
+/**
+ * RTScene::GetMaterialIndex - Look up a material's index 
+ *
+ * @param matName Name of material index to look up.
+ */
+
+uint32_t RTScene::GetMaterialIndex(string matName)
+{
+    assert(matIdcs.count(matName) > 0);
+    return matIdcs[matName];
+}
+
+/**
  * [RTScene::GenerateLightPath description]
  * @param ray        [description]
  * @param maxDepth   [description]

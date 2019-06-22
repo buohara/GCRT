@@ -65,11 +65,11 @@ struct RTMesh
     void Intersect(Ray ray, Intersection &intsc);
     void UpdateAnimation(double t) {};
 
-    RTMesh(MeshType type);
-    RTMesh(MeshType type, MaterialType mat, string fileName);
-    RTMesh(MeshType type, MaterialType mat, double r, dvec3 orgn);
-    RTMesh(MeshType type, MaterialType mat, dvec3 min, dvec3 max);
-    RTMesh(MeshType type, MaterialType mat, dvec4 normal);
+    RTMesh(MeshType type, uint32_t r, uint32_t g, uint32_t w);
+    RTMesh(MeshType type, uint32_t mat, string fileName);
+    RTMesh(MeshType type, uint32_t mat, double r, dvec3 orgn);
+    RTMesh(MeshType type, uint32_t mat, dvec3 min, dvec3 max);
+    RTMesh(MeshType type, uint32_t mat, dvec4 normal);
 
 private:
 
@@ -78,7 +78,7 @@ private:
     void BoxIntersect(Ray ray, Intersection &intsc);
     void SkeletalMeshIntersect(Ray ray, Intersection &intsc);
     void CornellBoxIntersect(Ray ray, Intersection &intsc);
-    void CreateCornell();
+    void CreateCornell(uint32_t r, uint32_t g, uint32_t w);
 };
 
 struct RTModel

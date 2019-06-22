@@ -1,9 +1,10 @@
 #include "RTMesh.h"
 
 /**
- * [RTMesh::SphereIntersect description]
- * @param ray   [description]
- * @param intsc [description]
+ * RTMesh::SphereIntersect - Intersect a ray with a sphere by solving quadratic equation.
+ *
+ * @param ray   Ray to intersect with this sphere.
+ * @param intsc Closest intersection point of ray, if it hits.
  */
 
 void RTMesh::SphereIntersect(Ray ray, Intersection &intsc)
@@ -38,18 +39,9 @@ void RTMesh::SphereIntersect(Ray ray, Intersection &intsc)
         intsc.uv.x      = acos(n.z / r) / glm::pi<double>();
         intsc.uv.y      = atan2(n.y, n.x);
 
-        if (n.y < 0.0 && n.x < 0.0)
-        {
-            intsc.uv.y += glm::pi<double>();
-        }
-        else if (n.y < 0.0)
-        {
-            intsc.uv.y += glm::pi<double>() / 2.0;
-        }
-        else if (n.x < 0.0)
-        {
-            intsc.uv.y -= glm::pi<double>() / 2.0;
-        }
+        if (n.y < 0.0 && n.x < 0.0) intsc.uv.y += glm::pi<double>();
+        else if (n.y < 0.0) intsc.uv.y += glm::pi<double>() / 2.0;
+        else if (n.x < 0.0) intsc.uv.y -= glm::pi<double>() / 2.0;
 
         intsc.uv.y /= (2.0 * glm::pi<double>());
 
@@ -67,18 +59,9 @@ void RTMesh::SphereIntersect(Ray ray, Intersection &intsc)
         intsc.uv.x      = acos(n.z / r) / glm::pi<double>();
         intsc.uv.y      = atan2(n.y, n.x);
 
-        if (n.y < 0.0 && n.x < 0.0)
-        {
-            intsc.uv.y += glm::pi<double>();
-        }
-        else if (n.y < 0.0)
-        {
-            intsc.uv.y += glm::pi<double>() / 2.0;
-        }
-        else if (n.x < 0.0)
-        {
-            intsc.uv.y -= glm::pi<double>() / 2.0;
-        }
+        if (n.y < 0.0 && n.x < 0.0) intsc.uv.y += glm::pi<double>();
+        else if (n.y < 0.0) intsc.uv.y += glm::pi<double>() / 2.0;
+        else if (n.x < 0.0) intsc.uv.y -= glm::pi<double>() / 2.0;
 
         intsc.uv.y /= (2.0 * glm::pi<double>());
 
@@ -145,10 +128,7 @@ void Submesh::Intersect(Ray ray, Intersection &intsc)
         double b1 = a * dot(s1, s);
         double b2 = a * dot(s2, ray.dir);
 
-        if (b1 < 0.0 || b2 < 0.0 || (b1 + b2 > 1.0))
-        {
-            continue;
-        }
+        if (b1 < 0.0 || b2 < 0.0 || (b1 + b2 > 1.0)) continue;
 
         if (t > 0.0 && t < intsc.t)
         {
@@ -204,6 +184,7 @@ void RTMesh::SkeletalMeshIntersect(Ray ray, Intersection &intsc)
 
 /**
  * [RTMesh::CornellBoxIntersect description]
+ *
  * @param ray   [description]
  * @param intsc [description]
  */
@@ -237,10 +218,14 @@ void RTMesh::CornellBoxIntersect(Ray ray, Intersection &intsc)
 }
 
 /**
- * [RTMesh::CreateCornell description]
+ * RTMesh::CreateCornell - Create a Cornell box mesh.
+ *
+ * @param r Red matte material index.
+ * @param g Green matte material index.
+ * @param w White matte material index.
  */
 
-void RTMesh::CreateCornell()
+void RTMesh::CreateCornell(uint32_t r, uint32_t g, uint32_t w)
 {
     submeshes.resize(5);
     
@@ -290,7 +275,7 @@ void RTMesh::CreateCornell()
         1
     );
 
-    submeshes[0].mat = WHITE_MATTE;
+    submeshes[0].mat = w;
 
     // floor
 
@@ -332,7 +317,7 @@ void RTMesh::CreateCornell()
         1
     );
 
-    submeshes[1].mat = WHITE_MATTE;
+    submeshes[1].mat = w;
 
     // left wall
 
@@ -374,7 +359,7 @@ void RTMesh::CreateCornell()
         1
     );
 
-    submeshes[2].mat = RED_MATTE;
+    submeshes[2].mat = r;
 
     // right wall
 
@@ -416,7 +401,7 @@ void RTMesh::CreateCornell()
         1
     );
 
-    submeshes[3].mat = GREEN_MATTE;
+    submeshes[3].mat = g;
 
     // back wall
 
@@ -458,7 +443,7 @@ void RTMesh::CreateCornell()
         1
     );
 
-    submeshes[4].mat = WHITE_MATTE;
+    submeshes[4].mat = w;
 }
 
 /**
@@ -834,17 +819,17 @@ void RTMesh::LoadPLYModel(string &file)
  * specified, assumed to be a Cornell box.
  */
 
-RTMesh::RTMesh(MeshType type)
+RTMesh::RTMesh(MeshType type, uint32_t r, uint32_t g, uint32_t w)
 {
     assert(type == CORNELL);
-    CreateCornell();
+    CreateCornell(r, g, w);
 }
 
 /**
  * RTMesh::RTMesh - Constructor to initilize a mesh from Assimp file.
  */
 
-RTMesh::RTMesh(MeshType type, MaterialType mat, string fileName)
+RTMesh::RTMesh(MeshType type, uint32_t mat, string fileName)
 {
     assert((type == ASSIMP) || (type == PLY));
     if (type == ASSIMP) LoadAssimpModel(fileName);
@@ -855,7 +840,7 @@ RTMesh::RTMesh(MeshType type, MaterialType mat, string fileName)
  * RTMesh::RTMesh - Constructor to initialize a sphere.
  */
 
-RTMesh::RTMesh(MeshType type, MaterialType mat, double r, dvec3 orgn) : r(r), orgn(orgn)
+RTMesh::RTMesh(MeshType type, uint32_t mat, double r, dvec3 orgn) : r(r), orgn(orgn)
 {
     assert(type == SPHERE);
 }
@@ -864,7 +849,7 @@ RTMesh::RTMesh(MeshType type, MaterialType mat, double r, dvec3 orgn) : r(r), or
  * RTMesh::RTMesh - Constructor to initizlie a box.
  */
 
-RTMesh::RTMesh(MeshType type, MaterialType mat, dvec3 min, dvec3 max) : min(min), max(max)
+RTMesh::RTMesh(MeshType type, uint32_t mat, dvec3 min, dvec3 max) : min(min), max(max)
 {
     assert(type == BOX);
 }
@@ -873,7 +858,7 @@ RTMesh::RTMesh(MeshType type, MaterialType mat, dvec3 min, dvec3 max) : min(min)
  * RTMesh::RTMesh - Constructor to initizlie a plane.
  */
 
-RTMesh::RTMesh(MeshType type, MaterialType mat, dvec4 normal) : normal(normal)
+RTMesh::RTMesh(MeshType type, uint32_t mat, dvec4 normal) : normal(normal)
 {
     assert(type == PLANE);
 }

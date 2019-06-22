@@ -42,10 +42,7 @@ int main(int argc, char** argv)
 {
     vector<string> args(argv + 1, argv + argc);
     
-    if (scenes.count(args[0]) == 0)
-    {
-        DisplayScenesAndExit();
-    }
+    if (scenes.count(args[0]) == 0) DisplayScenesAndExit();
 
     pfnTestScene pfnScene = scenes[args[0]].testScene;
     pfnScene();

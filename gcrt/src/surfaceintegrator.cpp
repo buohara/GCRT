@@ -1,7 +1,6 @@
 #include "surfaceintegrator.h"
 
 extern _declspec(thread) PathDebugData tls_pathDbgData;
-extern RTRenderSettings gSettings;
 
 /**
  * InvalidColor Check if a color has any Nan values.
@@ -19,10 +18,7 @@ bool InvalidColor(dvec3 color)
         return true;
     }
 
-    if (color.x == 0.0 && color.y == 0.0 && color.z == 0.0)
-    {
-        return true;
-    }
+    if (color.x == 0.0 && color.y == 0.0 && color.z == 0.0) return true;
 
     return false;
 }
@@ -81,7 +77,7 @@ void SurfaceIntegrator::DumpPath()
             tls_pathDbgData.rayOrigins[i].x,
             tls_pathDbgData.rayOrigins[i].y,
             tls_pathDbgData.rayOrigins[i].z,
-            RTMaterial::GetName((MaterialType)tls_pathDbgData.intscMaterials[i]).c_str()
+            "TODO: Fix SurfaceIntegrator::DumpPath"
         );
     }
 }
@@ -135,10 +131,7 @@ dvec3 SurfaceIntegrator::SampleSurface(
 
         while (InvalidColor(out))
         {
-            if (sampleAttempts == maxSampleAttempts)
-            {
-                break;
-            }
+            if (sampleAttempts == maxSampleAttempts) break;
 
             SampleLightDistribution(
                 lightSamples,
@@ -198,10 +191,7 @@ dvec3 SurfaceIntegrator::ApplyBalanceHeuristic(
     {
         SurfSample &sample = bsdfSamples[i];
 
-        if (sample.BSDFPDF == 0.0)
-        {
-            bsdfTerm += sample.BSDF;
-        }
+        if (sample.BSDFPDF == 0.0) bsdfTerm += sample.BSDF;
         else
         {
             double w = (double)nBSDFSamples * sample.BSDFPDF /
@@ -217,10 +207,7 @@ dvec3 SurfaceIntegrator::ApplyBalanceHeuristic(
     {
         SurfSample &sample = lightSamples[i];
 
-        if (sample.BSDFPDF == 0.0)
-        {
-            continue;
-        }
+        if (sample.BSDFPDF == 0.0) continue;
         else
         {
             double w = (double)nLightSamples * sample.LightPDF /
@@ -277,10 +264,7 @@ void SurfaceIntegrator::SampleBSDF(
         ray.org += bias * ray.dir;
         scn.Intersect(ray, nextIntsc);
 
-        if ((nextIntsc.t > bias) && nextIntsc.mat == LIGHT)
-        {
-            continue;
-        }
+        if ((nextIntsc.t > bias) && nextIntsc.mat == LIGHT) continue;
 
         SurfSample curSample = { dvec3(0.0), 0.0, 0.0 };
         curSample.BSDFPDF = mat.BSDFPDF(rayIn, ray, intsc);
@@ -376,10 +360,7 @@ void SurfaceIntegrator::SampleLightDistribution(
                 dvec3 color = light.EvalEmission(ray, lightIntsc) / (t * t);
                 curSample.BSDF = mat.EvalBSDF(ray, color, intsc, rayIn);
             }
-            else
-            {
-                continue;
-            }
+            else continue;
 
             surfSamples[curLightSample++] = curSample;
             ray.org -= bias * ray.dir;
@@ -397,11 +378,7 @@ void SurfaceIntegrator::SampleLightDistribution(
 void SurfaceIntegrator::NextVLightSet()
 {
     curVLightSet++;
-
-    if (curVLightSet >= numVLightSets)
-    {
-        curVLightSet = 0;
-    }
+    if (curVLightSet >= numVLightSets) curVLightSet = 0;
 }
 
 /**
@@ -452,10 +429,7 @@ dvec3 SurfaceIntegrator::SampleVirtualLights(
                     double theta2 = dot(-newRay.dir, scn.vLights[curVLightSet][i].normal);
                     double g = theta1 * theta2 / (t * t);
 
-                    if (g < 5.0)
-                    {
-                        virtColor += g * scn.vLights[curVLightSet][i].color;
-                    }
+                    if (g < 5.0) virtColor += g * scn.vLights[curVLightSet][i].color;
                     else
                     {
                         double g2 = (g - 5.0) * t * t / theta2;

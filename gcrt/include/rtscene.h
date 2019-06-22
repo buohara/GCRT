@@ -35,9 +35,11 @@ struct RTScene
     vector<RTMesh> meshes;
     vector<RTMaterial> mats;
 
-    void LoadDefaultScene(uint32_t w, uint32_t h);
-    void InitDefaultMaterials();
-    void InitDefaultModels();
+    void Add(RTMaterial mat);
+    void Add(RTMesh mesh);
+    uint32_t GetMaterialIndex(string matName);
+
+    map<string, uint32_t> matIdcs;
 
     void Intersect(Ray ray, Intersection &intsc);
     void UpdateAnimations(double t);

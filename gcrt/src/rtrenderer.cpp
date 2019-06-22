@@ -5,8 +5,6 @@
 mutex imageBlockMtx;
 _declspec(thread) PathDebugData tls_pathDbgData = {};
 
-RTRenderSettings gSettings = {};
-RTScene gScn;
 vector<vector<Sample>> gImageSamples;
 vector<Rect> gImageBlocks;
 SurfaceIntegrator gIntegrator;
@@ -27,18 +25,18 @@ uint32_t gSamplesProcessed = 0;
 
 void RTRenderer::Init()
 {
-    uint32_t imageW = gSettings.imageW;
-    uint32_t imageH = gSettings.imageH;
+    uint32_t imageW = settings.imageW;
+    uint32_t imageH = settings.imageH;
 
-    gTotalSamples   = gSettings.pixelSamples * imageW * imageH;
+    gTotalSamples   = settings.pixelSamples * imageW * imageH;
 
     gImageSamples.resize(imageW * imageH);
     outImage.resize(imageW * imageH);
 
-    integrator.numVLightSets    = gSettings.vLightSets;
-    integrator.vLightSetSize    = gSettings.vLightSetSize;
+    integrator.numVLightSets    = settings.vLightSets;
+    integrator.vLightSetSize    = settings.vLightSetSize;
     integrator.curVLightSet     = 0;
-    gPixelSampler.numSamples    = gSettings.pixelSamples;
+    gPixelSampler.numSamples    = settings.pixelSamples;
     
     filter.b    = 0.33;
     filter.c    = 0.33;
@@ -58,18 +56,18 @@ void RTRenderer::GenerateImageBlocks()
     uint32_t xBlocks;
     uint32_t yBlocks;
 
-    uint32_t imageW = gSettings.imageW;
-    uint32_t imageH = gSettings.imageH;
+    uint32_t imageW = settings.imageW;
+    uint32_t imageH = settings.imageH;
 
     if (imageW > imageH)
     {
-        xBlocks = gSettings.xBlocks;
-        yBlocks = gSettings.yBlocks;
+        xBlocks = settings.xBlocks;
+        yBlocks = settings.yBlocks;
     }
     else
     {
-        xBlocks = gSettings.yBlocks;
-        yBlocks = gSettings.xBlocks;
+        xBlocks = settings.yBlocks;
+        yBlocks = settings.xBlocks;
     }
 
     uint32_t blockSizeX = imageW / xBlocks;
@@ -155,30 +153,29 @@ void RTRenderer::GenerateVirtualLights()
  * RenderThreadFunc Render thread routine. Grab image tiles from queue
  * and ray trace pixels in that tile until no more tiles.
  *
- * @param  lpParam Render thread data.
+ * @param  settings Renderer settings.
+ * @paran  scn      Scene to be rendered.
  *
  * @return         Zero when no more thread work to consume.
  */
 
-void RenderThreadFunc()
+void RenderThreadFunc(RTRenderSettings &settings, RTScene &scn)
 {
     // Unpack thread ID/global for this worker thread.
    
     Sampler &sampler                    = gPixelSampler;
     SurfaceIntegrator integrator        = gIntegrator;
-    uint32_t imageW                     = gSettings.imageW;
-    uint32_t imageH                     = gSettings.imageH;
+    uint32_t imageW                     = settings.imageW;
+    uint32_t imageH                     = settings.imageH;
     vector<Rect> &imageBlocks           = gImageBlocks;
-    uint32_t dofSamples                 = gSettings.dofSamples;
-    uint32_t camPathDepth               = gSettings.camPathDepth;
+    uint32_t dofSamples                 = settings.dofSamples;
+    uint32_t camPathDepth               = settings.camPathDepth;
     vector<vector<Sample>> &imgSamples  = gImageSamples;
-    RTScene &scn                        = gScn;
 
     double dofSamplesInv                = 1.0 / (double)(dofSamples + 1);
     long long start = GetMilliseconds();
 
     memset(&tls_pathDbgData, 0, sizeof(PathDebugData));
-    tls_pathDbgData.intscMaterials[0] = CAMERA;
 
     while (1)
     {
@@ -240,8 +237,8 @@ void RenderThreadFunc()
                 }
             }
 
-            imageBlockMtx.unlock();
-            gSamplesProcessed += (rect.xmax - rect.xmin) * gSettings.pixelSamples;
+            imageBlockMtx.lock();
+            gSamplesProcessed += (rect.xmax - rect.xmin) * settings.pixelSamples;
             cout << "\r" << gSamplesProcessed << " / " << gTotalSamples << " samples processed ...";
             imageBlockMtx.unlock();
         }
@@ -259,34 +256,32 @@ void RenderThreadFunc()
  * - Save final image to file.
  */
 
-void RTRenderer::Render()
+void RTRenderer::Render(RTScene &scn)
 {
     long long start = GetMilliseconds();
-    double curAnimTime = gScn.tl.curTime;
+    double curAnimTime = scn.tl.curTime;
     uint32_t frameNum = 0;
 
     printf("\n\nBeginning trace\n\n");
 
-    while (curAnimTime <= gScn.tl.tf)
+    while (curAnimTime <= scn.tl.tf)
     {
         GenerateImageBlocks();
-        gScn.UpdateAnimations(curAnimTime);
+        scn.UpdateAnimations(curAnimTime);
 
-        for (uint32_t i = 0; i < numThreads; i++) threads[i] = thread(RenderThreadFunc);
+        for (uint32_t i = 0; i < numThreads; i++) threads[i] = thread(RenderThreadFunc, settings, scn);
         for (uint32_t i = 0; i < numThreads; i++) threads[i].join();
 
         FilterSamples();
 
-        stringstream ss;
-        ss << "C:/Users/beno.NVIDIA.COM/Desktop/Frames/Frame" << std::setfill('0')
-            << std::setw(5) << frameNum << ".jpg";
+        char frameSuffix[16];
+        sprintf(frameSuffix, "%05d", frameNum);
 
-        string fileName = ss.str();
-        SaveImage(fileName);
+        SaveImage(settings.outputPath + settings.frameFilePrefix + string(frameSuffix));
 
         frameNum++;
         ResetImageSamples();
-        curAnimTime = gScn.tl.Next();
+        curAnimTime = scn.tl.Next();
     }
 
     long long stop = GetMilliseconds();
@@ -299,15 +294,15 @@ void RTRenderer::Render()
 
 void RTRenderer::FilterSamples()
 {
-    uint32_t imageW = gSettings.imageW;
-    uint32_t imageH = gSettings.imageH;
+    uint32_t imageW = settings.imageW;
+    uint32_t imageH = settings.imageH;
 
     for (uint32_t y = 0; y < imageH; y++)
     {
         for (uint32_t x = 0; x < imageW; x++)
         {
             vector<uvec2> filterBox;
-            GetFilterBox((int)x, (int)y, gSettings.filterSize, filterBox);
+            GetFilterBox((int)x, (int)y, settings.filterSize, filterBox);
 
             dvec3 weightedSamples = dvec3(0.0, 0.0, 0.0);
             double weightSum = 0.0;
@@ -344,8 +339,8 @@ void RTRenderer::FilterSamples()
 
 void RTRenderer::GetFilterBox(int x, int y, int w, vector<uvec2> &filterBox)
 {
-    uint32_t imageW = gSettings.imageW;
-    uint32_t imageH = gSettings.imageH;
+    uint32_t imageW = settings.imageW;
+    uint32_t imageH = settings.imageH;
 
     for (int i = -w; i <= w; i++)
     {
@@ -378,8 +373,8 @@ void RTRenderer::GetFilterBox(int x, int y, int w, vector<uvec2> &filterBox)
 
 void RTRenderer::SaveImage(string fileName)
 {
-    uint32_t imageW = gSettings.imageW;
-    uint32_t imageH = gSettings.imageH;
+    uint32_t imageW = settings.imageW;
+    uint32_t imageH = settings.imageH;
 
     ilInit();
     ilEnable(IL_FILE_OVERWRITE);
@@ -405,8 +400,8 @@ void RTRenderer::SaveImage(string fileName)
 
 void RTRenderer::ResetImageSamples()
 {
-    uint32_t imageW = gSettings.imageW;
-    uint32_t imageH = gSettings.imageH;
+    uint32_t imageW = settings.imageW;
+    uint32_t imageH = settings.imageH;
 
     uint32_t numPixels = imageW * imageH;
     for (uint32_t pixel = 0; pixel < numPixels; pixel++) gImageSamples[pixel].resize(0);
