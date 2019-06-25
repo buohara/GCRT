@@ -1,7 +1,13 @@
-#include "fresnelglassmaterial.h"
+#include "rtmaterial.h"
+
+RTMaterial::RTMaterial(MatType type, string name, double etai, double etat) :
+    type(type), name(name), etai(etai), etat(etat)
+{
+    assert(type == FRESNEL);
+}
 
 /**
- * FresnelGlassMaterial::GetReflectance Get amount of incoming ray reflected off
+ * RTMaterial::GetReflectance Get amount of incoming ray reflected off
  * surface based on indices of refraction.
  *
  * @param  ray   Incoming ray.
@@ -9,7 +15,7 @@
  * @return       Percent of incoming ray reflected.
  */
 
-double FresnelGlassMaterial::GetReflectance(Ray ray, Intersection intsc)
+double RTMaterial::GetReflectance(Ray ray, Intersection intsc)
 {
     double etaIn;
     double etaTr;
@@ -52,7 +58,7 @@ double FresnelGlassMaterial::GetReflectance(Ray ray, Intersection intsc)
 }
 
 /**
- * FresnelGlassMaterial::GetReflectedRay Get ray reflected off surface for a given
+ * RTMaterial::GetReflectedRay Get ray reflected off surface for a given
  * input ray (reflected about the surface normal).
  *
  * @param rayIn  Incoming ray.
@@ -60,7 +66,7 @@ double FresnelGlassMaterial::GetReflectance(Ray ray, Intersection intsc)
  * @param rayOut Reflected ray.
  */
 
-void FresnelGlassMaterial::GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut)
+void RTMaterial::GetReflectedRay(Ray rayIn, Intersection intsc, Ray &rayOut)
 {
     rayOut.org = rayIn.org + (intsc.t * rayIn.dir);
 
@@ -75,7 +81,7 @@ void FresnelGlassMaterial::GetReflectedRay(Ray rayIn, Intersection intsc, Ray &r
 }
 
 /**
- * FresnelGlassMaterial::GetTransmittedRay Get ray transmitted through surface
+ * RTMaterial::GetTransmittedRay Get ray transmitted through surface
  * for given incoming ray using Snell's law.
  *
  * @param ray    Incoming ray.
@@ -83,7 +89,7 @@ void FresnelGlassMaterial::GetReflectedRay(Ray rayIn, Intersection intsc, Ray &r
  * @param rayOut Transmitted ray.
  */
 
-void FresnelGlassMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &rayOut)
+void RTMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &rayOut)
 {
     rayOut.org = ray.org + (intsc.t * ray.dir);
 
@@ -98,7 +104,7 @@ void FresnelGlassMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &r
 }
 
 /**
- * FresnelGlassMaterial::EvalBSDF Evaluate surface BSDF for given input and
+ * RTMaterial::EvalBSDF Evaluate surface BSDF for given input and
  * output rays.
  *
  * @param  rayOut  Outgoing ray (going away from camera).
@@ -108,7 +114,7 @@ void FresnelGlassMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &r
  * @return         BSDF value.
  */
 
-dvec3 FresnelGlassMaterial::EvalBSDF(
+dvec3 RTMaterial::FresnelEvalBSDF(
     Ray rayIn,
     dvec3 colorIn,
     Intersection intsc,
@@ -129,7 +135,7 @@ dvec3 FresnelGlassMaterial::EvalBSDF(
 }
 
 /**
- * FresnelGlassMaterial::GetBSDFSamples Generate rays samples for MC estimator.
+ * RTMaterial::GetBSDFSamples Generate rays samples for MC estimator.
  *
  * @param numSamples Number of samples requested.
  * @param rayIn      Ray coming from camera.
@@ -140,7 +146,7 @@ dvec3 FresnelGlassMaterial::EvalBSDF(
  *                   only generate one output ray).
  */
 
-uint32_t FresnelGlassMaterial::GetBSDFSamples(
+uint32_t RTMaterial::FresnelGetBSDFSamples(
     uint32_t numSamples,
     Ray rayIn,
     Intersection intsc,

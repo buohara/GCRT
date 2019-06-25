@@ -35,10 +35,6 @@
     <ClInclude Include="include\timeline.h" />
     <ClInclude Include="light\light.h" />
     <ClInclude Include="light\spherelight.h" />
-    <ClInclude Include="material\blinnmaterial.h" />
-    <ClInclude Include="material\fresnelglassmaterial.h" />
-    <ClInclude Include="material\lambertmaterial.h" />
-    <ClInclude Include="material\mirrormaterial.h" />
     <ClInclude Include="material\rtmaterial.h" />
     <ClInclude Include="sampler\coshemisampler.h" />
     <ClInclude Include="sampler\spheresampler.h" />

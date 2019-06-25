@@ -101,6 +101,7 @@ void RTMesh::PlaneIntersect(Ray ray, Intersection &intsc)
 void Submesh::Intersect(Ray ray, Intersection &intsc)
 {
     root.Intersect(ray, pos, norm, tan, faces, intsc);
+    intsc.mat = mat;
 }
 
 /**

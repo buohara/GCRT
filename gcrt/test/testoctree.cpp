@@ -12,11 +12,7 @@ void TestOctree()
 
     RTScene scn;
 
-    LambertMaterial whiteMat;
-    whiteMat.name   = "WhiteMatte";
-    whiteMat.kd     = { 0.9, 0.8, 0.7 };
-    whiteMat.Init(256, 16);
-
+    RTMaterial whiteMat(LAMBERT, "WhiteMatte", { 0.9, 0.8, 0.7 }, 256, 16);
     scn.Add(whiteMat);
     
     SphereLight lightSphWhite;

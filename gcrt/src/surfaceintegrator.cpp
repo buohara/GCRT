@@ -250,52 +250,53 @@ void SurfaceIntegrator::SampleBSDF(
 )
 {
     vector<Ray> bsdfRays(numBSDFSamples);
-    auto &mat = scn.mats[intsc.mat];
-    uint32_t numSamples = mat.GetBSDFSamples(numBSDFSamples, rayIn, intsc, bsdfRays);
-    uint32_t sampleCnt = 0;
+
+    auto &mat               = scn.mats[intsc.mat];
+    uint32_t numSamples     = mat.GetBSDFSamples(numBSDFSamples, rayIn, intsc, bsdfRays);
+    uint32_t sampleCnt      = 0;
     surfSamples.resize(numSamples);
 
     for (uint32_t i = 0; i < numSamples; i++)
     {
-        Ray &ray = bsdfRays[i];
+        Ray &sampleRay = bsdfRays[i];
         Intersection nextIntsc;
-        ray.org += bias * ray.dir;
-        scn.Intersect(ray, nextIntsc);
+        sampleRay.org += bias * sampleRay.dir;
+        scn.Intersect(sampleRay, nextIntsc);
 
         if ((nextIntsc.t > bias) && nextIntsc.isLight) continue;
 
         SurfSample curSample = { dvec3(0.0), 0.0, 0.0 };
-        curSample.BSDFPDF = mat.BSDFPDF(rayIn, ray, intsc);
+        curSample.BSDFPDF = mat.BSDFPDF(rayIn, sampleRay, intsc);
 
         for (auto &lightKV : scn.lights)
         {
             Intersection lightIntsc;
             auto &light = *lightKV.second;
 
-            light.Intersect(ray, lightIntsc);
+            light.Intersect(sampleRay, lightIntsc);
 
             if (lightIntsc.t > 0.0)
             {
-                curSample.LightPDF = light.GetLightPDF(ray, lightIntsc);
+                curSample.LightPDF = light.GetLightPDF(sampleRay, lightIntsc);
                 break;
             }
         }
 
         if ((nextIntsc.t > bias))
         {
-            dvec3 colorIn = SampleSurface(
-                ray,
+            dvec3 sampleRayColor = SampleSurface(
+                sampleRay,
                 scn,
                 nextIntsc,
                 bounce + 1,
                 maxBounces
             );
 
-            curSample.BSDF = mat.EvalBSDF(ray, colorIn, intsc, rayIn);
+            curSample.BSDF = mat.EvalBSDF(sampleRay, sampleRayColor, intsc, rayIn);
         }
 
         surfSamples[sampleCnt++] = curSample;
-        ray.org -= bias * ray.dir;
+        sampleRay.org -= bias * sampleRay.dir;
     }
 
     surfSamples.resize(sampleCnt);

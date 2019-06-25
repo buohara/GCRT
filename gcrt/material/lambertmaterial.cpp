@@ -1,7 +1,18 @@
-#include "lambertmaterial.h"
+#include "rtmaterial.h"
 
 /**
- * LambertMaterial::EvalBSDF Evaluate surface BSDF for given input and
+ * RTMaterial::RTMaterial - Initialize a Lambert material.
+ */
+
+RTMaterial::RTMaterial(MatType type, string name, dvec3 kd, uint32_t sampleSetSize, uint32_t numSampleSets) :
+    type(type), name(name), kd(kd)
+{
+    assert(type == LAMBERT);
+    sampler.GenerateSamples(numSampleSets, sampleSetSize);
+}
+
+/**
+ * RTMaterial::LambertEvalBSDF Evaluate surface BSDF for given input and
  * output rays.
  *
  * @param  rayOut  Outgoing ray (going away from camera).
@@ -11,7 +22,7 @@
  * @return         BSDF value.
  */
 
-dvec3 LambertMaterial::EvalBSDF(
+dvec3 RTMaterial::LambertEvalBSDF(
     Ray rayOut, 
     dvec3 colorIn, 
     Intersection intsc,
@@ -23,7 +34,7 @@ dvec3 LambertMaterial::EvalBSDF(
 }
 
 /**
- * LambertMaterial::GetBSDFSamples Generate rays samples for Monte Carlo estimator.
+ * RTMaterial::LambertGetBSDFSamples Generate rays samples for Monte Carlo estimator.
  *
  * @param numSamples Number of samples requested.
  * @param rayIn      Ray coming from camera.
@@ -34,7 +45,7 @@ dvec3 LambertMaterial::EvalBSDF(
  *                   only generate one output ray).
  */
 
-uint32_t LambertMaterial::GetBSDFSamples(
+uint32_t RTMaterial::LambertGetBSDFSamples(
     uint32_t numSamples,
     Ray rayIn,
     Intersection intsc,
@@ -57,7 +68,7 @@ uint32_t LambertMaterial::GetBSDFSamples(
 }
 
 /**
- * LambertMaterial::BSDFPDF Return PDF for given sample ray. Used for weighting
+ * RTMaterial::LambertBSDFPDF Return PDF for given sample ray. Used for weighting
  * samples in Monte Carlo estimator.
  *
  * @param  rayIn  Ray coming from camera.
@@ -66,22 +77,9 @@ uint32_t LambertMaterial::GetBSDFSamples(
  * @return        PDF for sample ray.
  */
 
-double LambertMaterial::BSDFPDF(Ray rayIn, Ray rayOut, Intersection intsc)
+double RTMaterial::LambertBSDFPDF(Ray rayIn, Ray rayOut, Intersection intsc)
 {
     dvec3 n = intsc.normal;
     double costheta = dot(rayOut.dir, n);
     return costheta / glm::pi<double>();
-}
-
-/**
- * LambertMaterial::Init Initialize the material. Statically generate sample
- * rays from material distribution for subsequent sample ray requests.
- *
- * @param sampleSets Number of sample sets to generate.
- * @param setSize    Number of rays in each sample set.
- */
-
-void LambertMaterial::Init(uint32_t sampleSets, uint32_t setSize)
-{
-    sampler.GenerateSamples(sampleSets, setSize);
 }
