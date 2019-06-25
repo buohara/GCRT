@@ -32,6 +32,7 @@ void SphereLight::Intersect(Ray ray, Intersection &intsc)
         dvec3 n         = normalize(o + t1 * d - pos);
         intsc.t         = t1;
         intsc.normal    = n;
+        intsc.isLight   = true;
         return;
     }
 
@@ -40,6 +41,7 @@ void SphereLight::Intersect(Ray ray, Intersection &intsc)
         dvec3 n         = normalize(o + t1 * d - pos);
         intsc.t         = t2;
         intsc.normal    = n;
+        intsc.isLight   = true;
         return;
     }
 }

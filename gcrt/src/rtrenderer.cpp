@@ -7,7 +7,6 @@ _declspec(thread) PathDebugData tls_pathDbgData = {};
 
 vector<vector<Sample>> gImageSamples;
 vector<Rect> gImageBlocks;
-SurfaceIntegrator gIntegrator;
 Sampler gPixelSampler;
 uint32_t gTotalSamples;
 uint32_t gSamplesProcessed = 0;
@@ -33,9 +32,6 @@ void RTRenderer::Init()
     gImageSamples.resize(imageW * imageH);
     outImage.resize(imageW * imageH);
 
-    integrator.numVLightSets    = settings.vLightSets;
-    integrator.vLightSetSize    = settings.vLightSetSize;
-    integrator.curVLightSet     = 0;
     gPixelSampler.numSamples    = settings.pixelSamples;
     
     filter.b    = 0.33;
@@ -159,12 +155,11 @@ void RTRenderer::GenerateVirtualLights()
  * @return         Zero when no more thread work to consume.
  */
 
-void RenderThreadFunc(RTRenderSettings &settings, RTScene &scn)
+void RenderThreadFunc(RTRenderSettings &settings, RTScene &scn, uint32_t threadId, SurfaceIntegrator &integrator)
 {
     // Unpack thread ID/global for this worker thread.
    
     Sampler &sampler                    = gPixelSampler;
-    SurfaceIntegrator integrator        = gIntegrator;
     uint32_t imageW                     = settings.imageW;
     uint32_t imageH                     = settings.imageH;
     vector<Rect> &imageBlocks           = gImageBlocks;
@@ -187,7 +182,7 @@ void RenderThreadFunc(RTRenderSettings &settings, RTScene &scn)
         {
             imageBlockMtx.unlock();
             long long stop = GetMilliseconds();
-            printf("Thread %u render time: %3.2fs\n", this_thread::get_id(),((double)(stop - start) / 1000.0));
+            printf("Thread %d render time: %3.2fs\n", threadId,((double)(stop - start) / 1000.0));
             return;
         }
 
@@ -217,7 +212,7 @@ void RenderThreadFunc(RTRenderSettings &settings, RTScene &scn)
                         scn.Intersect(ray, intsc);
                         double t = intsc.t;
 
-                        if (t > 0.0 && intsc.mat != 6)
+                        if (t > 0.0 && !intsc.isLight)
                         {
                             color += integrator.SampleSurface(
                                 ray,
@@ -264,18 +259,21 @@ void RTRenderer::Render(RTScene &scn)
 
     printf("\n\nBeginning trace\n\n");
 
+    SurfaceIntegrator integrator(settings.vLightSets, settings.vLightSetSize,
+        settings.numLightSamples, settings.numBSDFSamples);
+
     while (curAnimTime <= scn.tl.tf)
     {
         GenerateImageBlocks();
         scn.UpdateAnimations(curAnimTime);
 
-        for (uint32_t i = 0; i < numThreads; i++) threads[i] = thread(RenderThreadFunc, settings, scn);
-        for (uint32_t i = 0; i < numThreads; i++) threads[i].join();
+        for (uint32_t i = 0; i < settings.numThreads; i++) threads[i] = thread(RenderThreadFunc, settings, scn, i, integrator);
+        for (uint32_t i = 0; i < settings.numThreads; i++) threads[i].join();
 
         FilterSamples();
 
         char frameSuffix[16];
-        sprintf(frameSuffix, "%05d", frameNum);
+        sprintf(frameSuffix, "%05d.jpg", frameNum);
 
         SaveImage(settings.outputPath + settings.frameFilePrefix + string(frameSuffix));
 

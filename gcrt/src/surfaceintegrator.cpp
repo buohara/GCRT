@@ -249,11 +249,9 @@ void SurfaceIntegrator::SampleBSDF(
     Intersection intsc
 )
 {
-    const uint32_t requestedBSDFSamples = gSettings.numBSDFSamples;
-
-    vector<Ray> bsdfRays(requestedBSDFSamples);
+    vector<Ray> bsdfRays(numBSDFSamples);
     auto &mat = scn.mats[intsc.mat];
-    uint32_t numSamples = mat.GetBSDFSamples(requestedBSDFSamples, rayIn, intsc, bsdfRays);
+    uint32_t numSamples = mat.GetBSDFSamples(numBSDFSamples, rayIn, intsc, bsdfRays);
     uint32_t sampleCnt = 0;
     surfSamples.resize(numSamples);
 
@@ -264,7 +262,7 @@ void SurfaceIntegrator::SampleBSDF(
         ray.org += bias * ray.dir;
         scn.Intersect(ray, nextIntsc);
 
-        if ((nextIntsc.t > bias) && nextIntsc.mat == LIGHT) continue;
+        if ((nextIntsc.t > bias) && nextIntsc.isLight) continue;
 
         SurfSample curSample = { dvec3(0.0), 0.0, 0.0 };
         curSample.BSDFPDF = mat.BSDFPDF(rayIn, ray, intsc);
@@ -325,20 +323,19 @@ void SurfaceIntegrator::SampleLightDistribution(
     Intersection intsc
 )
 {
-    const uint32_t samplesPerLight = gSettings.numLightSamples;
     auto &mat = scn.mats[intsc.mat];
     uint32_t curLightSample = 0;
 
-    surfSamples.resize(samplesPerLight * scn.lights.size());
+    surfSamples.resize(numLightSamples * scn.lights.size());
 
     for (auto &lightKV : scn.lights)
     {
-        vector<Ray> lightRays(samplesPerLight);
+        vector<Ray> lightRays(numLightSamples);
         auto &light = *lightKV.second;
 
-        light.GetLightSamples(samplesPerLight, rayIn, intsc, lightRays);
+        light.GetLightSamples(numLightSamples, rayIn, intsc, lightRays);
 
-        for (uint32_t i = 0; i < samplesPerLight; i++)
+        for (uint32_t i = 0; i < numLightSamples; i++)
         {
             Ray &ray = lightRays[i];
 

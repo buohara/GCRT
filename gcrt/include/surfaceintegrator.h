@@ -31,11 +31,19 @@ struct SurfaceIntegrator
 {   
     const double bias = 0.01;
     
-    uint32_t idx;
     uint32_t curVLightSet;
     uint32_t numVLightSets;
     uint32_t vLightSetSize;
+
     uint32_t numLightSamples;
+    uint32_t numBSDFSamples;
+
+    SurfaceIntegrator() : curVLightSet(0), numVLightSets(0), vLightSetSize(0), numLightSamples(1),
+        numBSDFSamples(1) {}
+    
+    SurfaceIntegrator(uint32_t numVLightSets, uint32_t vLightSetSize, uint32_t numLightSamples, uint32_t numBSDFSamples) : 
+        curVLightSet(0), numVLightSets(numVLightSets), vLightSetSize(vLightSetSize), numLightSamples(numLightSamples),
+        numBSDFSamples(numBSDFSamples) {}
 
     void NextVLightSet();
 

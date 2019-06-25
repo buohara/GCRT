@@ -14,8 +14,11 @@ struct Ray
 struct Intersection
 {
     double t;
+    bool isLight;
     dvec3 normal;
     dvec2 uv;
     dvec3 tan;
     uint32_t mat;
+
+    Intersection() : t(-1.0), isLight(false), normal(dvec3(0.0)), uv(dvec2(0.0)), tan(dvec3(0.0)), mat(0xFFFFFFFF) {}
 };

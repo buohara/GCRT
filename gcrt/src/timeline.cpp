@@ -6,14 +6,6 @@ double Timeline::Next()
     return curTime;
 }
 
-void Timeline::Init(double tiIn, double tfIn, double fps)
-{
-    ti = tiIn;
-    tf = tfIn;
-    dt = 1.0 / fps;
-    curTime = tiIn;
-}
-
 /**
  * GetMilliseconds Get timestamp in milliseconds since beginning of clock epoch.
  * @return Timestamp in milliseconds.

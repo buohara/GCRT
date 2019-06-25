@@ -447,23 +447,6 @@ void RTMesh::CreateCornell(uint32_t r, uint32_t g, uint32_t w)
 }
 
 /**
- * [RTMesh::LoadModel description]
- * @param file [description]
- */
-
-void RTMesh::LoadModel(string file)
-{
-    if (file.rfind(".ply") != string::npos)
-    {
-        LoadPLYModel(file);
-    }
-    else
-    {
-        LoadAssimpModel(file);
-    }
-}
-
-/**
  * [RTMesh::LoadAssimpModel description]
  * @param file [description]
  */
@@ -651,7 +634,7 @@ void RTMesh::BoxIntersect(Ray ray, Intersection &intsc)
  * @param file [description]
  */
 
-void RTMesh::LoadPLYModel(string &file)
+void RTMesh::LoadPLYModel(string &file, uint32_t mat)
 {
     int nElems;
     char **eList;
@@ -686,7 +669,7 @@ void RTMesh::LoadPLYModel(string &file)
     submeshes.resize(1);
     submeshes[0].root.depth = 0;
     submeshes[0].root.maxDepth = 10;
-    submeshes[0].mat = 4;
+    submeshes[0].mat = mat;
 
     mat4 scl    = scale(dvec3(15.0));
     mat4 roty   = rotate(pi<double>() / 2.0, dvec3(0.0, 1.0, 0.0));
@@ -819,7 +802,7 @@ void RTMesh::LoadPLYModel(string &file)
  * specified, assumed to be a Cornell box.
  */
 
-RTMesh::RTMesh(MeshType type, uint32_t r, uint32_t g, uint32_t w)
+RTMesh::RTMesh(MeshType type, uint32_t r, uint32_t g, uint32_t w) : type(type)
 {
     assert(type == CORNELL);
     CreateCornell(r, g, w);
@@ -829,18 +812,18 @@ RTMesh::RTMesh(MeshType type, uint32_t r, uint32_t g, uint32_t w)
  * RTMesh::RTMesh - Constructor to initilize a mesh from Assimp file.
  */
 
-RTMesh::RTMesh(MeshType type, uint32_t mat, string fileName)
+RTMesh::RTMesh(MeshType type, uint32_t mat, string fileName) : type(type), mat(mat)
 {
     assert((type == ASSIMP) || (type == PLY));
     if (type == ASSIMP) LoadAssimpModel(fileName);
-    if (type == PLY) LoadPLYModel(fileName);
+    if (type == PLY) LoadPLYModel(fileName, mat);
 }
 
 /**
  * RTMesh::RTMesh - Constructor to initialize a sphere.
  */
 
-RTMesh::RTMesh(MeshType type, uint32_t mat, double r, dvec3 orgn) : r(r), orgn(orgn)
+RTMesh::RTMesh(MeshType type, uint32_t mat, double r, dvec3 orgn) : r(r), orgn(orgn), mat(mat), type(type)
 {
     assert(type == SPHERE);
 }
@@ -849,7 +832,7 @@ RTMesh::RTMesh(MeshType type, uint32_t mat, double r, dvec3 orgn) : r(r), orgn(o
  * RTMesh::RTMesh - Constructor to initizlie a box.
  */
 
-RTMesh::RTMesh(MeshType type, uint32_t mat, dvec3 min, dvec3 max) : min(min), max(max)
+RTMesh::RTMesh(MeshType type, uint32_t mat, dvec3 min, dvec3 max) : min(min), max(max), type(type), mat(mat)
 {
     assert(type == BOX);
 }
@@ -858,7 +841,7 @@ RTMesh::RTMesh(MeshType type, uint32_t mat, dvec3 min, dvec3 max) : min(min), ma
  * RTMesh::RTMesh - Constructor to initizlie a plane.
  */
 
-RTMesh::RTMesh(MeshType type, uint32_t mat, dvec4 normal) : normal(normal)
+RTMesh::RTMesh(MeshType type, uint32_t mat, dvec4 normal) : normal(normal), type(type), mat(mat)
 {
     assert(type == PLANE);
 }
@@ -890,6 +873,7 @@ void RTMesh::Intersect(Ray ray, Intersection &intsc)
         BoxIntersect(ray, intsc);
         break;
     
+    case PLY:
     case ASSIMP:
 
         SkeletalMeshIntersect(ray, intsc);

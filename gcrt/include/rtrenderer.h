@@ -8,6 +8,8 @@
 #include "filter.h"
 #include <iomanip>
 
+const uint32_t maxWorkThreads = 15;
+
 struct RTRenderSettings
 {
     uint32_t imageW;
@@ -59,12 +61,13 @@ struct Rect
 
 struct RTRenderer
 {
-    uint32_t numThreads;
-    thread threads[16];
+    thread threads[maxWorkThreads];
     vector<dvec3> outImage;
 
-    SurfaceIntegrator integrator;
     Filter filter;
+
+    RTRenderer() {};
+    RTRenderer(RTRenderSettings settings) : settings(settings) {}
 
     RTRenderSettings settings;
 

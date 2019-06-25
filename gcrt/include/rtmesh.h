@@ -60,7 +60,7 @@ struct RTMesh
 
     void LoadModel(string file);
     void LoadAssimpModel(string file);
-    void LoadPLYModel(string &fileName);
+    void LoadPLYModel(string &fileName, uint32_t mat);
     
     void Intersect(Ray ray, Intersection &intsc);
     void UpdateAnimation(double t) {};

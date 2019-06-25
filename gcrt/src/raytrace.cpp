@@ -10,7 +10,7 @@ struct TestScene
 
 map<string, TestScene> scenes =
 {
-    { "TestOcree", { TestOctree, "Scene for testing octree ray intersection performance." } }
+    { "TestOctree", { TestOctree, "Scene for testing octree ray intersection performance." } }
 };
 
 /**

@@ -7,8 +7,7 @@
 void TestOctree()
 {
     RTRenderSettings settings;
-    settings.camType            = ORTHO;
-    settings.outputPath         = "../../gcrt/renders/octreetest/";
+    settings.outputPath         = "F:/GCRT/gcrt/renders/octreetest/";
     settings.frameFilePrefix    = "OctreeFrame";
 
     RTScene scn;
@@ -19,11 +18,19 @@ void TestOctree()
     whiteMat.Init(256, 16);
 
     scn.Add(whiteMat);
+    
+    SphereLight lightSphWhite;
+    lightSphWhite.Init(256, 16);
+
+    lightSphWhite.pos           = { 0.0, 0.0, 3.5 };
+    lightSphWhite.r             = 0.4;
+    lightSphWhite.pwr           = { 20.0, 19.0, 18.0 };
+    scn.lights["WhiteSphere"]   = make_shared<SphereLight>(lightSphWhite);
 
     RTMesh dragon(PLY, scn.GetMaterialIndex("WhiteMatte"), "../asset/models/dragon/dragon_vrip.ply");
     scn.Add(dragon);
 
-    RTRenderer rndr;
+    RTRenderer rndr(settings);
     rndr.Init();
     rndr.Render(scn);
 }
