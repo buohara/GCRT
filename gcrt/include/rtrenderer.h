@@ -40,7 +40,7 @@ struct RTRenderSettings
         pixelSamples(4),
         filterSize(2),
         dofSamples(0),
-        numThreads(8),
+        numThreads(4),
         xBlocks(4),
         yBlocks(4),
         numBSDFSamples(16),

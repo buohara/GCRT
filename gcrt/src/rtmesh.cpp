@@ -100,52 +100,7 @@ void RTMesh::PlaneIntersect(Ray ray, Intersection &intsc)
 
 void Submesh::Intersect(Ray ray, Intersection &intsc)
 {
-    intsc.t = DBL_MAX;
-    uint32_t faceCnt = 0;
-
-    uint32_t faceIdcs[65384];
-
-    root.Intersect(ray, faceIdcs, faceCnt);
-
-    for (uint32_t i = 0; i < faceCnt; i++)
-    {
-        uvec3 curFace = faces[faceIdcs[i]];
-
-        dvec3 p0 = pos[curFace.x];
-        dvec3 p1 = pos[curFace.y];
-        dvec3 p2 = pos[curFace.z];
-
-        dvec3 e1 = p1 - p0;
-        dvec3 e2 = p2 - p0;
-        dvec3 s = ray.org - p0;
-
-        dvec3 s1 = cross(ray.dir, e2);
-        dvec3 s2 = cross(s, e1);
-
-        double a = 1.0 / dot(s1, e1);
-
-        double t = a * dot(s2, e2);
-        double b1 = a * dot(s1, s);
-        double b2 = a * dot(s2, ray.dir);
-
-        if (b1 < 0.0 || b2 < 0.0 || (b1 + b2 > 1.0)) continue;
-
-        if (t > 0.0 && t < intsc.t)
-        {
-            intsc.t = t;
-            intsc.mat = mat;
-            
-            intsc.normal =
-                (1.0 - b1 - b2) * norm[curFace.x] +
-                b1 * norm[curFace.y] +
-                b2 * norm[curFace.z];
-
-            intsc.tan =
-                (1.0 - b1 - b2) * tan[curFace.x] +
-                b1 * tan[curFace.y] +
-                b2 * tan[curFace.z];
-        }
-    }
+    root.Intersect(ray, pos, norm, tan, faces, intsc);
 }
 
 /**
@@ -161,10 +116,7 @@ void RTMesh::SkeletalMeshIntersect(Ray ray, Intersection &intsc)
     Intersection subMeshIntsc;
 
     bbox.Intersect(ray, subMeshIntsc);
-    if (subMeshIntsc.t <= 0.0)
-    {
-        return;
-    }
+    if (subMeshIntsc.t <= 0.0) return;
 
     for (uint32_t i = 0; i < submeshes.size(); i++)
     {
@@ -196,10 +148,7 @@ void RTMesh::CornellBoxIntersect(Ray ray, Intersection &intsc)
     Intersection subMeshIntsc;
 
     bbox.Intersect(ray, subMeshIntsc);
-    if (subMeshIntsc.t <= 0.0)
-    {
-        return;
-    }
+    if (subMeshIntsc.t <= 0.0) return;
 
     for (uint32_t i = 0; i < submeshes.size(); i++)
     {

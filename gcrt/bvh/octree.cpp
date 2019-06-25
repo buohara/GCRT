@@ -168,7 +168,7 @@ void Octree::Insert(dvec3 p0, dvec3 p1, dvec3 p2, uint32_t face)
 {
     if (depth == maxDepth - 1)
     {
-        faces.push_back(face);
+        faceIdcs.push_back(face);
         return;
     }
 
@@ -227,7 +227,53 @@ exit:
 
     if (childContainsFace == false)
     {
-        faces.push_back(face);
+        faceIdcs.push_back(face);
+    }
+}
+
+void IntersectFaces(Ray ray, const vector<uint32_t>& faceIdcs, const vector<dvec3>& pos, 
+    const vector<dvec3>& norm, const vector<dvec3>& tan, const vector<uvec3>& faces,
+    Intersection &intsc)
+{
+    intsc.t = DBL_MAX;
+
+    for (uint32_t i = 0; i < faceIdcs.size(); i++)
+    {
+        uvec3 curFace = faces[faceIdcs[i]];
+
+        dvec3 p0 = pos[curFace.x];
+        dvec3 p1 = pos[curFace.y];
+        dvec3 p2 = pos[curFace.z];
+
+        dvec3 e1 = p1 - p0;
+        dvec3 e2 = p2 - p0;
+        dvec3 s = ray.org - p0;
+
+        dvec3 s1 = cross(ray.dir, e2);
+        dvec3 s2 = cross(s, e1);
+
+        double a = 1.0 / dot(s1, e1);
+
+        double t = a * dot(s2, e2);
+        double b1 = a * dot(s1, s);
+        double b2 = a * dot(s2, ray.dir);
+
+        if (b1 < 0.0 || b2 < 0.0 || (b1 + b2 > 1.0)) continue;
+
+        if (t > 0.0 && t < intsc.t)
+        {
+            intsc.t = t;
+
+            intsc.normal =
+                (1.0 - b1 - b2) * norm[curFace.x] +
+                b1 * norm[curFace.y] +
+                b2 * norm[curFace.z];
+
+            intsc.tan =
+                (1.0 - b1 - b2) * tan[curFace.x] +
+                b1 * tan[curFace.y] +
+                b2 * tan[curFace.z];
+        }
     }
 }
 
@@ -235,80 +281,54 @@ exit:
  * Intersect Intersect a ray with this octree and get list of potentially hit triangles.
  *
  * @param ray      Ray to intersect with this octree.
- * @param faceIdcs Output list of potentially hit triangles.
- * @param faceCnt  Number of potentially hit triangles.
+ * @param pos      Vertex positions for this mesh.
+ * @param norm     Vertex normals for this mesh.
+ * @param tan      Vertex tangets for this mesh.
+ * 
  */
 
-void Octree::Intersect(Ray ray, uint32_t faceIdcs[], uint32_t &faceCnt)
+void Octree::Intersect(const Ray ray, const vector<dvec3>& pos, const vector<dvec3>& norm,
+    const vector<dvec3>& tan, const vector<uvec3>& faces, Intersection &intsc)
 {
-    for (auto &face : faces)
+    double tMin = DBL_MAX;
+    Intersection intscFaces;
+    IntersectFaces(ray, faceIdcs, pos, norm, tan, faces, intscFaces);
+
+    if (intscFaces.t > 0.0)
     {
-        faceIdcs[faceCnt++] = face;
+        tMin = intscFaces.t;
+        intsc = intscFaces;
     }
 
-    double minT = 10000.0;
-
-    for (auto &child : children)
+    priority_queue<pair<uint32_t, double>> childDist;
+    
+    for (uint32_t i = 0; i < maxOctreeChildren; i++)
     {
+        auto child = children[i];
+
         if (child)
         {
-            Intersection intsc;
             child->box.Intersect(ray, intsc);
+            if (intsc.t > 0.0 && intsc.t < tMin) childDist.push({ i, intsc.t });
+        }
+    }
 
-            if (intsc.t > 0.0 && intsc.t < minT)
-            {
-                child->Intersect(ray, faceIdcs, faceCnt);
-            }
+    while (!childDist.empty())
+    {
+        Intersection childIntsc;
+        auto child = childDist.top();
+        childDist.pop();
+        children[child.first]->Intersect(ray, pos, norm, tan, faces, childIntsc);
+
+        if (childIntsc.t < tMin)
+        {
+            tMin = childIntsc.t;
+            intsc = childIntsc;
+        }
+
+        if (!childDist.empty())
+        {
+            if (childIntsc.t < childDist.top().second) break;
         }
     }
 }
-
-//
-//void Octree::Intersect2(Ray ray, uint32_t faceIdcs[], uint32_t &faceCnt)
-//{
-//    uint32_t numChildrenHit = 0;
-//    uint32_t numChildrenVisited = 0;
-//
-//    struct ChildIntsc
-//    {
-//        float t;
-//        uint32_t childIdx;
-//        bool visited;
-//    };
-//
-//    ChildIntsc childIntscs[8];
-//
-//    for (auto &face : faces)
-//    {
-//        faceIdcs[faceCnt++] = face;
-//    }
-//
-//    for (uint32_t i = 0; i < 8; i++)
-//    {
-//        Intersection intsc;
-//        children[i]->box.Intersect(ray, intsc);
-//
-//        if (intsc.t > 0.0)
-//        {
-//            childIntscs[numChildrenHit++] = { intsc.t, i, false };
-//        }
-//    }
-//
-//    while (numChildrenVisited < numChildrenHit)
-//    {
-//        double minT = FLT_MAX;
-//        uint32_t closestChild = 8;
-//
-//        for (uint32_t i = 0; i < numChildrenHit; i++)
-//        {
-//            if (childIntscs[i].visited == false && childIntscs[i].t < minT)
-//            {
-//                minT = childIntscs[i].t;
-//                closestChild = i;
-//            }
-//        }
-//
-//        children[closestChild]->Intersect(ray, faceIdcs, faceCnt);
-//        childIntscs[closestChild].visited = true;
-//    }
-//}

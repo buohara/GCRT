@@ -14,6 +14,7 @@
 #include <map>
 #include <chrono>
 #include <mutex>
+#include <queue>
 
 // Windows headers
 

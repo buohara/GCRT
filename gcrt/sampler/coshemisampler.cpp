@@ -22,7 +22,7 @@ void CosHemiSampler::GenerateSamples(uint32_t numSets, uint32_t setSize)
 
             sample.x = r * cos(phi);
             sample.y = r * sin(phi);
-            sample.z = max(0.0, sqrt(1.0 - sample.x * sample.x - sample.y * sample.y));
+            sample.z = std::max(0.0, sqrt(1.0 - sample.x * sample.x - sample.y * sample.y));
             sample.w = 1.0;
             samples[i].push_back(sample);
         }
