@@ -18,9 +18,9 @@ void TestOctree()
     SphereLight lightSphWhite;
     lightSphWhite.Init(256, 16);
 
-    lightSphWhite.pos           = { 0.0, 0.0, 3.5 };
+    lightSphWhite.pos           = { 0.0, 0.0, 2.0 };
     lightSphWhite.r             = 0.4;
-    lightSphWhite.pwr           = { 20.0, 19.0, 18.0 };
+    lightSphWhite.pwr           = { 50.0, 48.0, 42.0 };
     scn.lights["WhiteSphere"]   = make_shared<SphereLight>(lightSphWhite);
 
     RTMesh dragon(PLY, scn.GetMaterialIndex("WhiteMatte"), "../asset/models/dragon/dragon_vrip.ply");

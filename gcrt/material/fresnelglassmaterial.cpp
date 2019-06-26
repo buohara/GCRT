@@ -115,22 +115,19 @@ void RTMaterial::GetTransmittedRay(Ray ray, Intersection intsc, Ray &rayOut)
  */
 
 dvec3 RTMaterial::FresnelEvalBSDF(
-    Ray rayIn,
-    dvec3 colorIn,
+    Ray sampleRay,
+    dvec3 sampleColor,
     Intersection intsc,
-    Ray rayOut
+    Ray camRay
 )
 {
-    double reflectWt = GetReflectance(rayOut, intsc);
+    double reflectWt = GetReflectance(camRay, intsc);
 
-    if (dot(rayIn.dir, intsc.normal) > 0.0)
-    {
-        return 2.0 * reflectWt * colorIn;
-    }
+    if (dot(sampleRay.dir, intsc.normal) > 0.0) return 2.0 * reflectWt * sampleColor;
     else
     {
         double transWt = 1.0 - reflectWt;
-        return 2.0 * transWt * colorIn;
+        return 2.0 * transWt * sampleColor;
     }
 }
 
@@ -148,19 +145,19 @@ dvec3 RTMaterial::FresnelEvalBSDF(
 
 uint32_t RTMaterial::FresnelGetBSDFSamples(
     uint32_t numSamples,
-    Ray rayIn,
+    Ray camRay,
     Intersection intsc,
-    vector<Ray> &raysOut
+    vector<Ray> & sampleRays
 )
 {
     Ray rayReflect;
     Ray rayTransmit;
     
-    GetReflectedRay(rayIn, intsc, rayReflect);
-    GetTransmittedRay(rayIn, intsc, rayTransmit);
+    GetReflectedRay(camRay, intsc, rayReflect);
+    GetTransmittedRay(camRay, intsc, rayTransmit);
 
-    raysOut[0] = rayReflect;
-    raysOut[0] = rayTransmit;
+    sampleRays[0] = rayReflect;
+    sampleRays[0] = rayTransmit;
 
     return 1;
 }

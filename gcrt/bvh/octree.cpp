@@ -308,8 +308,9 @@ void Octree::Intersect(const Ray ray, const vector<dvec3>& pos, const vector<dve
 
         if (child)
         {
-            child->box.Intersect(ray, intsc);
-            if (intsc.t > 0.0 && intsc.t < tMin) childDist.push({ i, intsc.t });
+            Intersection childIntsc;
+            child->box.Intersect(ray, childIntsc);
+            if (childIntsc.t > 0.0 && childIntsc.t < tMin) childDist.push({ i, childIntsc.t });
         }
     }
 
@@ -328,7 +329,7 @@ void Octree::Intersect(const Ray ray, const vector<dvec3>& pos, const vector<dve
 
         if (!childDist.empty())
         {
-            if (childIntsc.t < childDist.top().second) break;
+            if (tMin < childDist.top().second) break;
         }
     }
 }

@@ -18,9 +18,9 @@ RTMaterial::RTMaterial(MatType type, string name) : type(type), name(name)
  * @return         [description]
  */
 
-dvec3 RTMaterial::MirrorEvalBSDF(Ray rayIn, dvec3 colorIn, Intersection intsc, Ray rayOut)
+dvec3 RTMaterial::MirrorEvalBSDF(Ray sampleRay, dvec3 sampleColor, Intersection intsc, Ray camRay)
 {
-    return colorIn;
+    return sampleColor;
 }
 
 /**
@@ -32,9 +32,9 @@ dvec3 RTMaterial::MirrorEvalBSDF(Ray rayIn, dvec3 colorIn, Intersection intsc, R
  * @param weights    [description]
  */
 
-uint32_t RTMaterial::MirrorGetBSDFSamples(uint32_t numSamples, Ray rayIn, Intersection intsc, vector<Ray> &raysOut)
+uint32_t RTMaterial::MirrorGetBSDFSamples(uint32_t numSamples, Ray camRay, Intersection intsc, vector<Ray> &sampleRays)
 {
-    raysOut[0].org = rayIn.org + (intsc.t * rayIn.dir);
-    raysOut[0].dir = normalize(reflect(rayIn.dir, intsc.normal));
+    sampleRays[0].org = camRay.org + (intsc.t * camRay.dir);
+    sampleRays[0].dir = normalize(reflect(camRay.dir, intsc.normal));
     return 1;
 }

@@ -68,18 +68,6 @@
     <ClInclude Include="light\spherelight.h">
       <Filter>light</Filter>
     </ClInclude>
-    <ClInclude Include="material\blinnmaterial.h">
-      <Filter>material</Filter>
-    </ClInclude>
-    <ClInclude Include="material\fresnelglassmaterial.h">
-      <Filter>material</Filter>
-    </ClInclude>
-    <ClInclude Include="material\lambertmaterial.h">
-      <Filter>material</Filter>
-    </ClInclude>
-    <ClInclude Include="material\mirrormaterial.h">
-      <Filter>material</Filter>
-    </ClInclude>
     <ClInclude Include="material\rtmaterial.h">
       <Filter>material</Filter>
     </ClInclude>

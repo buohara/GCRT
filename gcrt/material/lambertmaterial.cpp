@@ -23,13 +23,13 @@ RTMaterial::RTMaterial(MatType type, string name, dvec3 kd, uint32_t sampleSetSi
  */
 
 dvec3 RTMaterial::LambertEvalBSDF(
-    Ray rayOut, 
-    dvec3 colorIn, 
+    Ray sampleRay,
+    dvec3 sampleColor,
     Intersection intsc,
-    Ray rayIn
+    Ray camRay
 )
 {
-    dvec3 out = 0.3 * colorIn * kd * dot(rayOut.dir, intsc.normal);
+    dvec3 out = 0.3 * sampleColor * kd * dot(sampleRay.dir, intsc.normal);
     return out;
 }
 
@@ -47,12 +47,12 @@ dvec3 RTMaterial::LambertEvalBSDF(
 
 uint32_t RTMaterial::LambertGetBSDFSamples(
     uint32_t numSamples,
-    Ray rayIn,
+    Ray camRay,
     Intersection intsc,
-    vector<Ray> &raysOut
+    vector<Ray> & sampleRays
 )
 {
-    dvec3 org = rayIn.org + intsc.t * rayIn.dir;
+    dvec3 org = camRay.org + intsc.t * camRay.dir;
     uint32_t sampleSet = sampler.NextSet();
 
     dvec3 bitan = cross(intsc.normal, intsc.tan);
@@ -60,8 +60,8 @@ uint32_t RTMaterial::LambertGetBSDFSamples(
 
     for (uint32_t i = 0; i < numSamples; i++)
     {
-        raysOut[i].org = org;
-        raysOut[i].dir = normalize(tbn * sampler.samples[sampleSet][i]);
+        sampleRays[i].org = org;
+        sampleRays[i].dir = normalize(tbn * sampler.samples[sampleSet][i]);
     }
 
     return numSamples;
@@ -77,9 +77,9 @@ uint32_t RTMaterial::LambertGetBSDFSamples(
  * @return        PDF for sample ray.
  */
 
-double RTMaterial::LambertBSDFPDF(Ray rayIn, Ray rayOut, Intersection intsc)
+double RTMaterial::LambertBSDFPDF(Ray sampleRay, Ray camRay, Intersection intsc)
 {
     dvec3 n = intsc.normal;
-    double costheta = dot(rayOut.dir, n);
-    return costheta / glm::pi<double>();
+    double costheta = dot(sampleRay.dir, n);
+    return std::max(0.0, costheta / glm::pi<double>());
 }

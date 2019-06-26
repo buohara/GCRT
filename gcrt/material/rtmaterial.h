@@ -52,19 +52,19 @@ private:
     CosHemiSampler sampler;
 
     double LambertBSDFPDF(Ray sampleRay, Ray camRay, Intersection intsc);
-    dvec3 LambertEvalBSDF(Ray sampleRay, dvec3 colorIn, Intersection intsc, Ray camRay);
+    dvec3 LambertEvalBSDF(Ray sampleRay, dvec3 sampleColor, Intersection intsc, Ray camRay);
     uint32_t LambertGetBSDFSamples(uint32_t numSamples, Ray camRay, Intersection intsc, vector<Ray>& sampleRays);
 
     // mirror
 
-    dvec3 MirrorEvalBSDF(Ray sampleRay, dvec3 colorIn, Intersection intsc, Ray camRay);
+    dvec3 MirrorEvalBSDF(Ray sampleRay, dvec3 sampleColor, Intersection intsc, Ray camRay);
     uint32_t MirrorGetBSDFSamples(uint32_t numSamples, Ray camRay, Intersection intsc, vector<Ray>& sampleRays);
 
     // Blinn
 
     double ks;
 
-    dvec3 BlinnEvalBSDF(Ray sampleRay, dvec3 colorIn, Intersection intsc, Ray camRay);
+    dvec3 BlinnEvalBSDF(Ray sampleRay, dvec3 sampleColor, Intersection intsc, Ray camRay);
     uint32_t BlinnGetBSDFSamples(uint32_t numSamples, Ray camRay, Intersection intsc, vector<Ray>& sampleRays);
     double BlinnBSDFPDF(Ray sampleRay, Ray camRay, Intersection intsc);
 
@@ -77,7 +77,7 @@ private:
     void GetTransmittedRay(Ray ray, Intersection intsc, Ray& rayOut);
     void GetReflectedRay(Ray ray, Intersection intsc, Ray& rayOut);
 
-    dvec3 FresnelEvalBSDF(Ray sampleRay, dvec3 colorIn, Intersection intsc, Ray camRay);
+    dvec3 FresnelEvalBSDF(Ray sampleRay, dvec3 sampleColor, Intersection intsc, Ray camRay);
     uint32_t FresnelGetBSDFSamples(uint32_t numSamples, Ray camRay, Intersection intsc, vector<Ray>& sampleRays);
 };
 

@@ -244,7 +244,7 @@ void SurfaceIntegrator::SampleBSDF(
     vector<SurfSample> &surfSamples,
     uint32_t bounce,
     uint32_t maxBounces,
-    Ray rayIn,
+    Ray camRay,
     RTScene &scn,
     Intersection intsc
 )
@@ -252,7 +252,7 @@ void SurfaceIntegrator::SampleBSDF(
     vector<Ray> bsdfRays(numBSDFSamples);
 
     auto &mat               = scn.mats[intsc.mat];
-    uint32_t numSamples     = mat.GetBSDFSamples(numBSDFSamples, rayIn, intsc, bsdfRays);
+    uint32_t numSamples     = mat.GetBSDFSamples(numBSDFSamples, camRay, intsc, bsdfRays);
     uint32_t sampleCnt      = 0;
     surfSamples.resize(numSamples);
 
@@ -266,7 +266,7 @@ void SurfaceIntegrator::SampleBSDF(
         if ((nextIntsc.t > bias) && nextIntsc.isLight) continue;
 
         SurfSample curSample = { dvec3(0.0), 0.0, 0.0 };
-        curSample.BSDFPDF = mat.BSDFPDF(rayIn, sampleRay, intsc);
+        curSample.BSDFPDF = mat.BSDFPDF(camRay, sampleRay, intsc);
 
         for (auto &lightKV : scn.lights)
         {
@@ -292,7 +292,7 @@ void SurfaceIntegrator::SampleBSDF(
                 maxBounces
             );
 
-            curSample.BSDF = mat.EvalBSDF(sampleRay, sampleRayColor, intsc, rayIn);
+            curSample.BSDF = mat.EvalBSDF(sampleRay, sampleRayColor, intsc, camRay);
         }
 
         surfSamples[sampleCnt++] = curSample;
@@ -319,7 +319,7 @@ void SurfaceIntegrator::SampleLightDistribution(
     vector<SurfSample> &surfSamples,
     uint32_t bounce,
     uint32_t maxBounces,
-    Ray rayIn,
+    Ray camRay,
     RTScene &scn,
     Intersection intsc
 )
@@ -334,34 +334,34 @@ void SurfaceIntegrator::SampleLightDistribution(
         vector<Ray> lightRays(numLightSamples);
         auto &light = *lightKV.second;
 
-        light.GetLightSamples(numLightSamples, rayIn, intsc, lightRays);
+        light.GetLightSamples(numLightSamples, camRay, intsc, lightRays);
 
         for (uint32_t i = 0; i < numLightSamples; i++)
         {
-            Ray &ray = lightRays[i];
+            Ray &sampleRay = lightRays[i];
 
             Intersection nextIntsc;
             Intersection lightIntsc;
             SurfSample curSample = { dvec3(0.0), 0.0, 0.0 };
 
-            ray.org += bias * ray.dir;
+            sampleRay.org += bias * sampleRay.dir;
 
-            light.Intersect(ray, lightIntsc);
-            scn.Intersect(ray, nextIntsc);
+            light.Intersect(sampleRay, lightIntsc);
+            scn.Intersect(sampleRay, nextIntsc);
 
-            curSample.BSDFPDF = mat.BSDFPDF(rayIn, ray, intsc);
-            curSample.LightPDF = light.GetLightPDF(ray, lightIntsc);
+            curSample.BSDFPDF = mat.BSDFPDF(sampleRay, camRay, intsc);
+            curSample.LightPDF = light.GetLightPDF(sampleRay, lightIntsc);
 
             if (abs(lightIntsc.t - nextIntsc.t) < bias)
             {
                 double t = lightIntsc.t;
-                dvec3 color = light.EvalEmission(ray, lightIntsc) / (t * t);
-                curSample.BSDF = mat.EvalBSDF(ray, color, intsc, rayIn);
+                dvec3 color = light.EvalEmission(sampleRay, lightIntsc) / (t * t);
+                curSample.BSDF = mat.EvalBSDF(sampleRay, color, intsc, camRay);
             }
             else continue;
 
             surfSamples[curLightSample++] = curSample;
-            ray.org -= bias * ray.dir;
+            sampleRay.org -= bias * sampleRay.dir;
         }
     }
 

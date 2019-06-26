@@ -21,14 +21,14 @@ RTMaterial::RTMaterial(MatType type, string name, double ks) : type(type), name(
  */
 
 dvec3 RTMaterial::BlinnEvalBSDF(
-    Ray rayIn,
+    Ray sampleRay,
     dvec3 colorIn,
     Intersection intsc,
-    Ray rayOut
+    Ray camRay
 )
 {
-    dvec3 r = normalize(reflect(-rayIn.dir, intsc.normal));
-    double spec = dot(r, -rayOut.dir);
+    dvec3 r = normalize(reflect(-sampleRay.dir, intsc.normal));
+    double spec = dot(r, -camRay.dir);
     spec = pow(spec, ks + 1.0);
     return 0.3 * spec * dvec3(2.0, 2.0, 2.0) * colorIn;
 }
@@ -47,12 +47,12 @@ dvec3 RTMaterial::BlinnEvalBSDF(
 
 uint32_t RTMaterial::BlinnGetBSDFSamples(
     uint32_t numSamples,
-    Ray rayIn,
+    Ray camRay,
     Intersection intsc,
-    vector<Ray> &raysOut
+    vector<Ray> & sampleRays
 )
 {
-    dvec3 org = rayIn.org + intsc.t * rayIn.dir;
+    dvec3 org = camRay.org + intsc.t * camRay.dir;
     dvec3 bitan = cross(intsc.normal, intsc.tan);
     dmat3 tbn = dmat3(intsc.tan, bitan, intsc.normal);
 
@@ -71,15 +71,15 @@ uint32_t RTMaterial::BlinnGetBSDFSamples(
         halfDir.z = cosTheta;
         halfDir = tbn * halfDir;
 
-        dvec3 refl = normalize(reflect(rayIn.dir, intsc.normal));
+        dvec3 refl = normalize(reflect(camRay.dir, intsc.normal));
 
         if (dot(halfDir, intsc.normal) < 0.0)
         {
             halfDir = -halfDir;
         }
 
-        raysOut[i].dir = rayIn.dir + 2.0 * dot(-rayIn.dir, halfDir) * halfDir;;
-        raysOut[i].org = org;
+        sampleRays[i].dir = camRay.dir + 2.0 * dot(-camRay.dir, halfDir) * halfDir;;
+        sampleRays[i].org = org;
     }
 
     return numSamples;
@@ -95,10 +95,10 @@ uint32_t RTMaterial::BlinnGetBSDFSamples(
  * @return        PDF for sample ray.
  */
 
-double RTMaterial::BlinnBSDFPDF(Ray rayIn, Ray rayOut, Intersection intsc)
+double RTMaterial::BlinnBSDFPDF(Ray sampleRay, Ray camRay, Intersection intsc)
 {
-    dvec3 refl      = normalize(reflect(-rayOut.dir, intsc.normal));
-    double cosAlpha = dot(refl, -rayIn.dir);
+    dvec3 refl      = normalize(reflect(-camRay.dir, intsc.normal));
+    double cosAlpha = dot(refl, -sampleRay.dir);
     cosAlpha        = pow(cosAlpha, ks + 1.0);
     double out      = (ks + 1.0) * cosAlpha / (8.0 * pi<double>());
     return out;
