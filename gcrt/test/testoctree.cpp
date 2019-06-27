@@ -7,7 +7,7 @@
 void TestOctree()
 {
     RTRenderSettings settings;
-    settings.outputPath         = "F:/GCRT/gcrt/renders/octreetest/";
+    settings.outputPath         = "D:/Git/GCRT/GCRT/renders/octreetest/";
     settings.frameFilePrefix    = "OctreeFrame";
 
     RTScene scn;
@@ -18,16 +18,25 @@ void TestOctree()
     RTMaterial whiteMat(LAMBERT, "WhiteMatte", { 0.9, 0.8, 0.7 }, 256, 16);
     scn.Add(whiteMat);
     
+    RTMaterial redMat(LAMBERT, "RedMatte", { 0.9, 0.3, 0.3 }, 256, 16);
+    scn.Add(redMat);
+
+    RTMaterial greenMat(LAMBERT, "GreenMatte", { 0.3, 0.9, 0.3 }, 256, 16);
+    scn.Add(greenMat);
+
     SphereLight lightSphWhite;
     lightSphWhite.Init(256, 16);
 
-    lightSphWhite.pos           = { 0.0, 0.0, 8.0 };
+    lightSphWhite.pos           = { 5.0, 0.0, 3.0 };
     lightSphWhite.r             = 0.4;
-    lightSphWhite.pwr           = { 100.0, 90.0, 90.0 };
+    lightSphWhite.pwr           = { 50.0, 45.0, 45.0 };
     scn.lights["WhiteSphere"]   = make_shared<SphereLight>(lightSphWhite);
 
     RTMesh dragon(PLY, scn.GetMaterialIndex("WhiteMatte"), "../asset/models/dragon/dragon_vrip.ply");
     scn.Add(dragon);
+
+    RTMesh cornell(CORNELL, scn.GetMaterialIndex("RedMatte"), scn.GetMaterialIndex("GreenMatte"), scn.GetMaterialIndex("WhiteMatte"));
+    scn.Add(cornell);
 
     RTRenderer rndr(settings);
     rndr.Init();

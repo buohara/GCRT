@@ -24,6 +24,7 @@ struct Octree
     vector<uint32_t> faceIdcs;
     uint32_t depth;
     uint32_t maxDepth;
+    uint32_t depthAllowFaces;
 
     void Insert(dvec3 p0, dvec3 p1, dvec3 p2, uint32_t face);
     

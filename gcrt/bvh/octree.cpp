@@ -380,8 +380,7 @@ void Octree::Insert(dvec3 p0, dvec3 p1, dvec3 p2, uint32_t face)
 
     bool childContainsFace = false;
     bool childIntersectsFace[maxOctreeChildren] = { false };
-    uint32_t depthAllowFaces = 8;
-
+    
     for (uint32_t x = 0; x < 2; x++)
     {
         for (uint32_t y = 0; y < 2; y++)
@@ -408,22 +407,24 @@ void Octree::Insert(dvec3 p0, dvec3 p1, dvec3 p2, uint32_t face)
 
                     if (childBox.Contains(p0, p1, p2) == true)
                     {
-                        childContainsFace           = true;
+                        childContainsFace                   = true;
 
-                        children[child]             = make_shared<Octree>();
-                        children[child]->box        = childBox;
-                        children[child]->depth      = depth + 1;
-                        children[child]->maxDepth   = maxDepth;
+                        children[child]                     = make_shared<Octree>();
+                        children[child]->box                = childBox;
+                        children[child]->depth              = depth + 1;
+                        children[child]->maxDepth           = maxDepth;
+                        children[child]->depthAllowFaces    = depthAllowFaces;
                         children[child]->Insert(p0, p1, p2, face);
 
                         goto exit;
                     }
                     else if (depth < depthAllowFaces && childBox.Overlaps(p0, p1, p2))
                     {
-                        children[child]             = make_shared<Octree>();
-                        children[child]->box        = childBox;
-                        children[child]->depth      = depth + 1;
-                        children[child]->maxDepth   = maxDepth;
+                        children[child]                     = make_shared<Octree>();
+                        children[child]->box                = childBox;
+                        children[child]->depth              = depth + 1;
+                        children[child]->maxDepth           = maxDepth;
+                        children[child]->depthAllowFaces    = depthAllowFaces;
 
                         children[child]->Insert(p0, p1, p2, face);
 

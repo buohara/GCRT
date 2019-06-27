@@ -20,10 +20,7 @@ void RTMesh::SphereIntersect(Ray ray, Intersection &intsc)
 
     double det = b * b - 4.0 * a * c;
 
-    if (det < 0.0)
-    {
-        return;
-    }
+    if (det < 0.0) return;
 
     double t1 = (-b - sqrt(det)) / (2.0 * a);
     double t2 = (-b + sqrt(det)) / (2.0 * a);
@@ -82,10 +79,7 @@ void RTMesh::PlaneIntersect(Ray ray, Intersection &intsc)
 
     dvec3 n = dvec3(normal.x, normal.y, normal.z);
 
-    if (dot(n, ray.dir) == 0.0)
-    {
-        return;
-    }
+    if (dot(n, ray.dir) == 0.0) return;
 
     double d = normal.w;
     intsc.t = (d - dot(n, ray.org)) / (dot(n, ray.dir));
@@ -178,6 +172,7 @@ void RTMesh::CornellBoxIntersect(Ray ray, Intersection &intsc)
 void RTMesh::CreateCornell(uint32_t r, uint32_t g, uint32_t w)
 {
     submeshes.resize(5);
+    for (uint32_t i = 0; i < 5; i++) submeshes[i].root.depthAllowFaces = 0;
     
     dvec3 min = dvec3(-9.0, -5.0, 0.0);
     dvec3 max = dvec3(5.0, 5.0, 5.0);
@@ -620,6 +615,7 @@ void RTMesh::LoadPLYModel(string &file, uint32_t mat)
     submeshes[0].root.depth = 0;
     submeshes[0].root.maxDepth = 10;
     submeshes[0].mat = mat;
+    submeshes[0].root.depthAllowFaces = 8;
 
     mat4 scl    = scale(dvec3(15.0));
     mat4 roty   = rotate(pi<double>() / 2.0, dvec3(0.0, 1.0, 0.0));

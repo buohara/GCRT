@@ -8,7 +8,7 @@
 #include "filter.h"
 #include <iomanip>
 
-const uint32_t maxWorkThreads = 15;
+const uint32_t maxThreads = 16 - 1;
 
 struct RTRenderSettings
 {
@@ -31,28 +31,31 @@ struct RTRenderSettings
     string frameFilePrefix;
 
     RTRenderSettings() :
-        imageW(512),
-        imageH(512),
+        imageW(1920),
+        imageH(1080),
         vLightSets(16),
         vLightSetSize(16),
-        camPathDepth(1),
+        camPathDepth(2),
         lightPathDepth(0),
         pixelSamples(1),
         filterSize(2),
         dofSamples(0),
-#ifdef _DEBUG
-        numThreads(1),
-#else
-        numThreads(8),
-#endif
-        xBlocks(4),
-        yBlocks(4),
+        xBlocks(8),
+        yBlocks(8),
         numBSDFSamples(16),
         numLightSamples(8),
         camType(1),
         outputPath("../../gcrt/renders/"),
         frameFilePrefix("Frame")
-    {}
+    {
+#ifdef _DEBUG
+        numThreads = 1;
+#else
+        uint32_t concur = thread::hardware_concurrency();
+        numThreads = std::max(1u, concur - 2);
+        numThreads = std::min(numThreads, maxThreads);
+#endif
+    }
 };
 
 struct Rect
@@ -65,7 +68,7 @@ struct Rect
 
 struct RTRenderer
 {
-    thread threads[maxWorkThreads];
+    thread threads[maxThreads];
     vector<dvec3> outImage;
 
     Filter filter;
