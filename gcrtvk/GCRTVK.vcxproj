@@ -132,21 +132,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\gcrtvk.h" />
+    <ClInclude Include="include\meshvk.h" />
     <ClInclude Include="include\renderervk.h" />
-    <ClInclude Include="include\utils.h" />
-    <ClInclude Include="passes\mainpass.h" />
+    <ClInclude Include="include\scenevk.h" />
+    <ClInclude Include="include\utilsvk.h" />
     <ClInclude Include="passes\renderpass.h" />
-    <ClInclude Include="scenes\basicscene.h" />
+    <ClInclude Include="scenes\scenes.h" />
     <ClInclude Include="src\sceneselectorvk.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="passes\mainpass.cpp" />
-    <ClCompile Include="passes\renderpass.cpp" />
+    <ClCompile Include="passes\phongpass.cpp" />
     <ClCompile Include="scenes\basicscene.cpp" />
     <ClCompile Include="src\gcrtvkmain.cpp" />
+    <ClCompile Include="src\meshvk.cpp" />
     <ClCompile Include="src\renderervk.cpp" />
-    <ClCompile Include="src\sceneselectorvk.cpp" />
-    <ClCompile Include="src\utils.cpp" />
+    <ClCompile Include="src\utilsvk.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple.frag" />

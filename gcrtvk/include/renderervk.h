@@ -1,5 +1,4 @@
 #include "gcrtvk.h"
-#include "utils.h"
 #include "utilsvk.h"
 #include "renderpass.h"
 
@@ -8,10 +7,14 @@ using namespace glm;
 
 struct RendererVK
 {
+    // VK device objects
+
     VkInstance instance;
     VkPhysicalDeviceProperties deviceProperties;
     VkPhysicalDeviceFeatures deviceFeatures;
     VkPhysicalDeviceMemoryProperties deviceMemoryProperties;
+
+    // Queue objects
 
     uint32_t queueFamilyCount;
     vector<VkQueueFamilyProperties> queueFamilyProperties;
@@ -20,13 +23,14 @@ struct RendererVK
     uint32_t computeQueueIdx    = VK_NULL_HANDLE;
     uint32_t copyQueueIdx       = VK_NULL_HANDLE;
 
+    // Window/swap chain objects
+
     HWND hWnd;
 
     VkSwapchainKHR swapChain    = VK_NULL_HANDLE;
     VkSurfaceKHR surface;
     VkDevice logicalDevice;
     VkPhysicalDevice physicalDevice;
-    VkCommandPool commandPool   = VK_NULL_HANDLE;
     VkSubmitInfo submitInfo;
     VkSemaphore presentComplete;
     VkSemaphore submitComplete;
@@ -35,7 +39,6 @@ struct RendererVK
     VkFormat colorFormat;
     VkFormat depthFormat;
     VkColorSpaceKHR colorSpace;
-    VkCommandPool cmdPool;
 
     uint32_t queueNodeIndex     = UINT32_MAX;
     uint32_t scSize;
@@ -48,10 +51,11 @@ struct RendererVK
     VkImage zImage;
     VkDeviceMemory zMem;
     VkImageView zView;
-
-    vector<VkCommandBuffer> drawCmdBuffers;
-    vector<VkFence> fences;
     
+    // Setup routines.
+
+    RendererVK(HINSTANCE hInstance);
+
     void Init();
     
     void CreateLogicalDevice(
@@ -61,20 +65,17 @@ struct RendererVK
         VkQueueFlags requestedQueueTypes = VK_QUEUE_GRAPHICS_BIT
     );
     
-    map<string, shared_ptr<RenderPassVk>> passes;
+   vector<RenderPassVk> passes;
 
     void CreateVkInstance();
     void CreateRenderWindow(HINSTANCE hInstance);
     void GetPresentSurface(HINSTANCE hInstance);
-    void CreateCommandPool(uint32_t queueIdx);
     void CreateSwapChain();
-    void CreateCommandBuffers();
-    void CreateFenceObjects();
     void CreateDepth();
     void SetupFrameBuffer();
-
     void Render();
 
-    VkCommandBuffer GetCommandBuffer(bool begin);
-    void FlushCommandBuffer(VkCommandBuffer cmdBuf);
+private: 
+
+    RendererVK();
 };

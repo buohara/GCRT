@@ -615,7 +615,7 @@ void RTMesh::LoadPLYModel(string &file, uint32_t mat)
     submeshes[0].root.depth = 0;
     submeshes[0].root.maxDepth = 10;
     submeshes[0].mat = mat;
-    submeshes[0].root.depthAllowFaces = 8;
+    submeshes[0].root.depthAllowFaces = 10;
 
     mat4 scl    = scale(dvec3(15.0));
     mat4 roty   = rotate(pi<double>() / 2.0, dvec3(0.0, 1.0, 0.0));

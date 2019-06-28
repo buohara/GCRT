@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "utilsvk.h"
 
 map<VkResult, string> errorCodes =
 {
@@ -53,26 +53,65 @@ void CHECK_RESULT(VkResult res)
 
 VkShaderModule LoadShader(VkDevice &logicalDevice, string file)
 {
-	size_t shaderSize;
-	char* shaderCode = NULL;
+    size_t shaderSize;
+    char* shaderCode = NULL;
 
-	ifstream is(file, ios::binary | ios::in | ios::ate);
+    ifstream is(file, ios::binary | ios::in | ios::ate);
 
-	shaderSize = is.tellg();
-	is.seekg(0, std::ios::beg);
-	shaderCode = new char[shaderSize];
-	is.read(shaderCode, shaderSize);
-	is.close();
+    shaderSize = is.tellg();
+    is.seekg(0, std::ios::beg);
+    shaderCode = new char[shaderSize];
+    is.read(shaderCode, shaderSize);
+    is.close();
 
-	VkShaderModuleCreateInfo moduleCreateInfo{};
-	moduleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	moduleCreateInfo.codeSize = shaderSize;
-	moduleCreateInfo.pCode = (uint32_t*)shaderCode;
+    VkShaderModuleCreateInfo moduleCreateInfo{};
+    moduleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    moduleCreateInfo.codeSize = shaderSize;
+    moduleCreateInfo.pCode = (uint32_t*)shaderCode;
 
-	VkShaderModule shaderModule;
-	vkCreateShaderModule(logicalDevice, &moduleCreateInfo, NULL, &shaderModule);
+    VkShaderModule shaderModule;
+    vkCreateShaderModule(logicalDevice, &moduleCreateInfo, NULL, &shaderModule);
 
-	delete[] shaderCode;
+    delete[] shaderCode;
 
-	return shaderModule;
+    return shaderModule;
+}
+
+/**
+ * FindProperties Select memory heap from list available device heaps based on
+ * required memory properties.
+ *
+ * @param  memoryTypeBitsRequirement Required memory bits [in].
+ * @param  requiredProperties        Required memory properties [in].
+ * @param  deviceMemoryProperties    List of available memory heaps [in].
+ *
+ * @return                           Index of heap with desired properties if found, ~0 otherwise.
+ */
+
+uint32_t FindProperties(
+    uint32_t memoryTypeBitsRequirement,
+    VkMemoryPropertyFlags requiredProperties,
+    VkPhysicalDeviceMemoryProperties deviceMemoryProperties
+)
+{
+    const uint32_t memoryCount = deviceMemoryProperties.memoryTypeCount;
+
+    for (uint32_t memoryIndex = 0; memoryIndex < memoryCount; memoryIndex++)
+    {
+        const uint32_t memoryTypeBits = (1 << memoryIndex);
+        const bool isRequiredMemoryType = memoryTypeBitsRequirement & memoryTypeBits;
+
+        const VkMemoryPropertyFlags properties =
+            deviceMemoryProperties.memoryTypes[memoryIndex].propertyFlags;
+
+        const bool hasRequiredProperties =
+            (properties & requiredProperties) == requiredProperties;
+
+        if (isRequiredMemoryType && hasRequiredProperties)
+        {
+            return (uint32_t)memoryIndex;
+        }
+    }
+
+    return ~0;
 }

@@ -1,5 +1,4 @@
 #include "gcrtvk.h"
-#include "sceneselectorvk.h"
 
 /**
  * [WinMain description]

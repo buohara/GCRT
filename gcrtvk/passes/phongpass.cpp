@@ -87,7 +87,7 @@ void RenderPassVk::CreateRenderPass(VkDevice &logicalDevice)
     dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
     VkRenderPassCreateInfo renderPassInfo = {};
-
+	
     renderPassInfo.sType            = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount  = static_cast<uint32_t>(attachments.size());
     renderPassInfo.pAttachments     = attachments.data();
@@ -97,7 +97,7 @@ void RenderPassVk::CreateRenderPass(VkDevice &logicalDevice)
     renderPassInfo.pDependencies    = dependencies.data();
 
     vkCreateRenderPass(logicalDevice, &renderPassInfo, nullptr, &renderPass);
-    }
+}
 
 /**
 * [RenderPassVk::CreatePipelineCache description]
@@ -131,7 +131,13 @@ void RenderPassVk::CreateUniformBuffers(VkDevice &logicalDevice)
     vkCreateBuffer(logicalDevice, &bufferInfo, nullptr, &ufmBuf);
     vkGetBufferMemoryRequirements(logicalDevice, ufmBuf, &memReqs);
     allocInfo.allocationSize = memReqs.size;
-    allocInfo.memoryTypeIndex = FindProperties(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    
+    allocInfo.memoryTypeIndex = FindProperties(
+        memReqs.memoryTypeBits,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+        deviceMemoryProperties
+    );
+    
     vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &ufmMem);
 
     vkBindBufferMemory(logicalDevice, ufmBuf, ufmMem, 0);
@@ -140,7 +146,7 @@ void RenderPassVk::CreateUniformBuffers(VkDevice &logicalDevice)
     ufmDesc.offset = 0;
     ufmDesc.range = sizeof(TriangleUniforms);
 
-    UpdateUniforms();
+    UpdateUniforms(logicalDevice);
 }
 
 /**
@@ -160,21 +166,68 @@ void RenderPassVk::UpdateUniforms(VkDevice &logicalDevice)
 }
 
 /**
+ * [RendererVK::CreateFenceObjects description]
+ */
+
+void RenderPassVk::CreateFenceObjects(VkDevice& logicalDevice)
+{
+    VkFenceCreateInfo fenceCreateInfo   = {};
+    fenceCreateInfo.sType               = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceCreateInfo.flags               = VK_FENCE_CREATE_SIGNALED_BIT;
+
+    fences.resize(scSize);
+    for (auto& fence : fences) vkCreateFence(logicalDevice, &fenceCreateInfo, nullptr, &fence);
+}
+
+/**
+ * [RendererVK::CreateCommandBuffers description]
+ */
+
+void RenderPassVk::CreateCommandBuffers(VkDevice& logicalDevice)
+{
+    cmdBuffers.resize(scSize);
+
+    VkCommandBufferAllocateInfo cmdBufferAllocateInfo = {};
+
+    cmdBufferAllocateInfo.sType                 = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    cmdBufferAllocateInfo.commandPool           = cmdPool;
+    cmdBufferAllocateInfo.level                 = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    cmdBufferAllocateInfo.commandBufferCount    = scSize;
+
+    vkAllocateCommandBuffers(logicalDevice, &cmdBufferAllocateInfo, cmdBuffers.data());
+}
+
+/**
+ * RendererVK::CreateCommandPool
+ */
+
+void RenderPassVk::CreateCommandPool(VkDevice& logicalDevice, uint32_t queueIdx)
+{
+    VkCommandPoolCreateInfo cmdPoolInfo = {};
+
+    cmdPoolInfo.sType               = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    cmdPoolInfo.queueFamilyIndex    = queueIdx;
+    cmdPoolInfo.flags               = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+    vkCreateCommandPool(logicalDevice, &cmdPoolInfo, nullptr, &cmdPool);
+}
+
+/**
 * [RenderPassVk::SetupDescriptorPool description]
 */
 
 void RenderPassVk::SetupDescriptorPool(VkDevice &logicalDevice)
 {
     VkDescriptorPoolSize typeCounts[1];
-    typeCounts[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    typeCounts[0].descriptorCount = 1;
+    typeCounts[0].type              = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    typeCounts[0].descriptorCount   = 1;
 
     VkDescriptorPoolCreateInfo descriptorPoolInfo = {};
-    descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    descriptorPoolInfo.pNext = nullptr;
-    descriptorPoolInfo.poolSizeCount = 1;
-    descriptorPoolInfo.pPoolSizes = typeCounts;
-    descriptorPoolInfo.maxSets = 1;
+    descriptorPoolInfo.sType            = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    descriptorPoolInfo.pNext            = nullptr;
+    descriptorPoolInfo.poolSizeCount    = 1;
+    descriptorPoolInfo.pPoolSizes       = typeCounts;
+    descriptorPoolInfo.maxSets          = 1;
 
     vkCreateDescriptorPool(logicalDevice, &descriptorPoolInfo, nullptr, &descriptorPool);
 }
@@ -186,10 +239,11 @@ void RenderPassVk::SetupDescriptorPool(VkDevice &logicalDevice)
 void RenderPassVk::SetupDescriptorSetLayout(VkDevice &logicalDevice)
 {
     VkDescriptorSetLayoutBinding layoutBinding = {};
-    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    layoutBinding.descriptorCount = 1;
-    layoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-    layoutBinding.pImmutableSamplers = nullptr;
+
+    layoutBinding.descriptorType        = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    layoutBinding.descriptorCount       = 1;
+    layoutBinding.stageFlags            = VK_SHADER_STAGE_VERTEX_BIT;
+    layoutBinding.pImmutableSamplers    = nullptr;
 
     VkDescriptorSetLayoutCreateInfo descriptorLayout = {};
     descriptorLayout.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -368,63 +422,121 @@ void RenderPassVk::SetupPipelineState(VkDevice &logicalDevice)
  * RenderPassVk::BuildCommandBuffers
  */
 
-void RenderPassVk::BuildCommandBuffers(VkDevice &logicalDevice, VkCommandBuffer &cmdBuf)
+void RenderPassVk::BuildCommandBuffers(VkDevice &logicalDevice, uint32_t curSCBuf, SceneVk &scn)
 {
     VkCommandBufferBeginInfo cmdBufInfo = {};
     cmdBufInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     cmdBufInfo.pNext = nullptr;
 
     VkClearValue clearValues[2];
-    clearValues[0].color = { { 0.0f, 0.0f, 0.2f, 1.0f } };
+    clearValues[0].color        = { { 0.0f, 0.0f, 0.2f, 1.0f } };
     clearValues[1].depthStencil = { 1.0f, 0 };
 
-    VkRenderPassBeginInfo renderPassBeginInfo = {};
-    renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassBeginInfo.pNext = nullptr;
-    renderPassBeginInfo.renderPass = renderPass;
-    renderPassBeginInfo.renderArea.offset.x = 0;
-    renderPassBeginInfo.renderArea.offset.y = 0;
-    renderPassBeginInfo.renderArea.extent.width = g_settings.winW;
-    renderPassBeginInfo.renderArea.extent.height = g_settings.winH;
-    renderPassBeginInfo.clearValueCount = 2;
-    renderPassBeginInfo.pClearValues = clearValues;
+    VkRenderPassBeginInfo renderPassBeginInfo       = {};
+    renderPassBeginInfo.sType                       = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassBeginInfo.pNext                       = nullptr;
+    renderPassBeginInfo.renderPass                  = renderPass;
+    renderPassBeginInfo.renderArea.offset.x         = 0;
+    renderPassBeginInfo.renderArea.offset.y         = 0;
+    renderPassBeginInfo.renderArea.extent.width     = g_settings.winW;
+    renderPassBeginInfo.renderArea.extent.height    = g_settings.winH;
+    renderPassBeginInfo.clearValueCount             = 2;
+    renderPassBeginInfo.pClearValues                = clearValues;
 
-    for (uint32_t i = 0; i < drawCmdBuffers.size(); ++i)
+    renderPassBeginInfo.framebuffer = frameBuffers[curSCBuf];
+
+    vkBeginCommandBuffer(cmdBuffers[0], &cmdBufInfo);
+    vkCmdBeginRenderPass(cmdBuffers[0], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+    VkViewport viewport     = {};
+    viewport.height         = (float)g_settings.winH;
+    viewport.width          = (float)g_settings.winW;
+    viewport.minDepth       = 0.0f;
+    viewport.maxDepth       = 1.0f;
+
+    vkCmdSetViewport(cmdBuffers[0], 0, 1, &viewport);
+
+    VkRect2D scissor        = {};
+    scissor.extent.width    = g_settings.winW;
+    scissor.extent.height   = g_settings.winH;
+    scissor.offset.x        = 0;
+    scissor.offset.y        = 0;
+
+    vkCmdSetScissor(cmdBuffers[0], 0, 1, &scissor);
+    vkCmdBindDescriptorSets(cmdBuffers[0], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
+    vkCmdBindPipeline(cmdBuffers[0], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+
+    for (auto& mesh : scn.meshes)
     {
-        renderPassBeginInfo.framebuffer = frameBuffers[i];
-
-        vkBeginCommandBuffer(drawCmdBuffers[i], &cmdBufInfo);
-        vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-        VkViewport viewport = {};
-        viewport.height = (float)g_settings.winH;
-        viewport.width = (float)g_settings.winW;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-
-        vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
-
-        VkRect2D scissor = {};
-        scissor.extent.width = g_settings.winW;
-        scissor.extent.height = g_settings.winH;
-        scissor.offset.x = 0;
-        scissor.offset.y = 0;
-
-        vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
-        vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
-        vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-
         VkDeviceSize offsets[1] = { 0 };
-        vkCmdBindVertexBuffers(drawCmdBuffers[i], 0, 1, &vertBuf, offsets);
-        vkCmdBindIndexBuffer(drawCmdBuffers[i], idxBuf, 0, VK_INDEX_TYPE_UINT32);
-
-        vkCmdDrawIndexed(drawCmdBuffers[i], 3, 1, 0, 0, 1);
-        vkCmdEndRenderPass(drawCmdBuffers[i]);
-
-        vkEndCommandBuffer(drawCmdBuffers[i]);
+        vkCmdBindVertexBuffers(cmdBuffers[0], 0, 1, &vertBuf, offsets);
+        vkCmdBindIndexBuffer(cmdBuffers[0], idxBuf, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdDrawIndexed(cmdBuffers[0], 3, 1, 0, 0, 1);
     }
+
+    vkCmdEndRenderPass(cmdBuffers[0]);
+
+    vkEndCommandBuffer(cmdBuffers[0]);
 }
 
+/**
+ * [RendererVK::GetCommandBuffer description]
+ * @param  begin [description]
+ * @return       [description]
+ */
+
+VkCommandBuffer RenderPassVk::GetCommandBuffer(bool begin)
+{
+    VkCommandBuffer cmdBuffer;
+
+    // don't think this code is needed.
+
+    /*VkCommandBufferAllocateInfo cmdBufAllocateInfo = {};
+    cmdBufAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    cmdBufAllocateInfo.commandPool = cmdPool;
+    cmdBufAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    cmdBufAllocateInfo.commandBufferCount = 1;
+
+    vkAllocateCommandBuffers(logicalDevice, &cmdBufAllocateInfo, &cmdBuffer);
+
+    if (begin)
+    {
+        VkCommandBufferBeginInfo cmdBufInfo = {};
+        cmdBufInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        vkBeginCommandBuffer(cmdBuffer, &cmdBufInfo);
+    }*/
+
+    return cmdBuffer;
+}
+
+/**
+ * [RendererVK::FlushCommandBuffer description]
+ * @param cmdBuf [description]
+ */
+
+void RenderPassVk::FlushCommandBuffer(VkCommandBuffer cmdBuf)
+{
+    // Don't think this code is needed.
+
+    /*vkEndCommandBuffer(cmdBuf);
+
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &cmdBuf;
+
+    VkFenceCreateInfo fenceCreateInfo = {};
+    fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceCreateInfo.flags = 0;
+    VkFence fence;
+    vkCreateFence(logicalDevice, &fenceCreateInfo, nullptr, &fence);
+
+    CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
+    vkWaitForFences(logicalDevice, 1, &fence, VK_TRUE, 100000000000);
+
+    vkDestroyFence(logicalDevice, fence, nullptr);
+    vkFreeCommandBuffers(logicalDevice, cmdPool, 1, &cmdBuf);*/
+}
 
 /**
  * RenderPassVk::GetRenderPass - Get render pass info for this pass. Needed by the

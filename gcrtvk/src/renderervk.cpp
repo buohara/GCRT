@@ -2,6 +2,8 @@
 
 RenderSettingsVK g_settings = { 0 };
 
+
+
 /**
  * WndProc Windows message handler.
  * @param  hWnd    Application window handle.
@@ -387,20 +389,6 @@ void RendererVK::GetPresentSurface(HINSTANCE hInstance)
 }
 
 /**
- * RendererVK::CreateCommandPool
- */
-
-void RendererVK::CreateCommandPool(uint32_t queueIdx)
-{
-    VkCommandPoolCreateInfo cmdPoolInfo     = {};
-    cmdPoolInfo.sType                       = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    cmdPoolInfo.queueFamilyIndex            = queueIdx;
-    cmdPoolInfo.flags                       = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-
-    vkCreateCommandPool(logicalDevice, &cmdPoolInfo, nullptr, &cmdPool);
-}
-
-/**
  * [RendererVK::CreateSwapChain description]
  */
 
@@ -558,125 +546,39 @@ void RendererVK::CreateSwapChain()
 }
 
 /**
- * [RendererVK::CreateCommandBuffers description]
- */
-
-void RendererVK::CreateCommandBuffers()
-{
-    drawCmdBuffers.resize(scSize);
-
-    VkCommandBufferAllocateInfo cmdBufferAllocateInfo   = {};
-    cmdBufferAllocateInfo.sType                         = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    cmdBufferAllocateInfo.commandPool                   = cmdPool;
-    cmdBufferAllocateInfo.level                         = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    cmdBufferAllocateInfo.commandBufferCount            = scSize;
-
-    vkAllocateCommandBuffers(logicalDevice, &cmdBufferAllocateInfo, drawCmdBuffers.data());
-}
-
-/**
- * [RendererVK::CreateFenceObjects description]
- */
-
-void RendererVK::CreateFenceObjects()
-{
-    VkFenceCreateInfo fenceCreateInfo   = {};
-    fenceCreateInfo.sType               = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceCreateInfo.flags               = VK_FENCE_CREATE_SIGNALED_BIT;
-
-    fences.resize(drawCmdBuffers.size());
-    
-    for (auto& fence : fences) 
-    {
-        vkCreateFence(logicalDevice, &fenceCreateInfo, nullptr, &fence);
-    }
-}
-
-/**
- * [RendererVK::GetCommandBuffer description]
- * @param  begin [description]
- * @return       [description]
- */
-
-VkCommandBuffer RendererVK::GetCommandBuffer(bool begin)
-{
-    VkCommandBuffer cmdBuffer;
-
-    VkCommandBufferAllocateInfo cmdBufAllocateInfo = {};
-    cmdBufAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    cmdBufAllocateInfo.commandPool = cmdPool;
-    cmdBufAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    cmdBufAllocateInfo.commandBufferCount = 1;
-
-    vkAllocateCommandBuffers(logicalDevice, &cmdBufAllocateInfo, &cmdBuffer);
-
-    if (begin)
-    {
-        VkCommandBufferBeginInfo cmdBufInfo = {};
-        cmdBufInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        vkBeginCommandBuffer(cmdBuffer, &cmdBufInfo);
-    }
-
-    return cmdBuffer;
-}
-
-/**
- * [RendererVK::FlushCommandBuffer description]
- * @param cmdBuf [description]
- */
-
-void RendererVK::FlushCommandBuffer(VkCommandBuffer cmdBuf)
-{
-    vkEndCommandBuffer(cmdBuf);
-
-    VkSubmitInfo submitInfo = {};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &cmdBuf;
-
-    VkFenceCreateInfo fenceCreateInfo = {};
-    fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceCreateInfo.flags = 0;
-    VkFence fence;
-    vkCreateFence(logicalDevice, &fenceCreateInfo, nullptr, &fence);
-
-    CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
-    vkWaitForFences(logicalDevice, 1, &fence, VK_TRUE, 100000000000);
-
-    vkDestroyFence(logicalDevice, fence, nullptr);
-    vkFreeCommandBuffers(logicalDevice, cmdPool, 1, &cmdBuf);
-}
-
-/**
  * RendererVK::Render Acquire next swapchain buffer, execute command buffers, and present.
  */
 
 void RendererVK::Render()
 {
     vkAcquireNextImageKHR(logicalDevice, swapChain, UINT64_MAX, presentComplete, (VkFence)nullptr, &curSCBuf);
-    vkWaitForFences(logicalDevice, 1, &fences[curSCBuf], VK_TRUE, UINT64_MAX);
-    vkResetFences(logicalDevice, 1, &fences[curSCBuf]);
-
-    VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    VkSubmitInfo submitInfo = {};
     
-    submitInfo.sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.pWaitDstStageMask    = &waitStageMask;
-    submitInfo.pWaitSemaphores      = &presentComplete;
-    submitInfo.waitSemaphoreCount   = 1;																	
-    submitInfo.pSignalSemaphores    = &submitComplete;
-    submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pCommandBuffers      = &drawCmdBuffers[curSCBuf];
-    submitInfo.commandBufferCount   = 1;
+    for (auto& pass : passes)
+    {
+        vkWaitForFences(logicalDevice, 1, &pass.fences[curSCBuf], VK_TRUE, UINT64_MAX);
+        vkResetFences(logicalDevice, 1, &pass.fences[curSCBuf]);
 
-    vkQueueSubmit(queue, 1, &submitInfo, fences[curSCBuf]);
+        VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        VkSubmitInfo submitInfo = {};
 
-    VkPresentInfoKHR presentInfo = {};
-    presentInfo.sType           = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    presentInfo.pNext           = NULL;
-    presentInfo.swapchainCount  = 1;
-    presentInfo.pSwapchains     = &swapChain;
-    presentInfo.pImageIndices   = &curSCBuf;
+        submitInfo.sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.pWaitDstStageMask    = &waitStageMask;
+        submitInfo.pWaitSemaphores      = &presentComplete;
+        submitInfo.waitSemaphoreCount   = 1;
+        submitInfo.pSignalSemaphores    = &submitComplete;
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pCommandBuffers      = &pass.cmdBuffers[curSCBuf];
+        submitInfo.commandBufferCount   = 1;
+
+        vkQueueSubmit(queue, 1, &submitInfo, pass.fences[curSCBuf]);
+    }
+
+    VkPresentInfoKHR presentInfo    = {};
+    presentInfo.sType               = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.pNext               = NULL;
+    presentInfo.swapchainCount      = 1;
+    presentInfo.pSwapchains         = &swapChain;
+    presentInfo.pImageIndices       = &curSCBuf;
 
     if (submitComplete != VK_NULL_HANDLE)
     {
@@ -690,23 +592,10 @@ void RendererVK::Render()
 /**
  * RendererVK::SetupFrameBuffer Find final render pass from list of passes and attach
  * default framebuffer to it.
- *
- * @param logicalDevice Device to create framebuffer with.
  */
 
 void RendererVK::SetupFrameBuffer()
 {
-    VkRenderPass outputPass = VK_NULL_HANDLE;
-
-    for (auto &pass : passes)
-    {
-        if (pass.second->renderToFrameBuffer == true)
-        {
-            outputPass = pass.second->GetRenderPass();
-            break;
-        }
-    }
-
     VkImageView attachments[2];
     attachments[1] = zView;
 
@@ -714,7 +603,6 @@ void RendererVK::SetupFrameBuffer()
     
     frameBufferCreateInfo.sType             = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
     frameBufferCreateInfo.pNext             = NULL;
-    frameBufferCreateInfo.renderPass        = outputPass;
     frameBufferCreateInfo.attachmentCount   = 2;
     frameBufferCreateInfo.pAttachments      = attachments;
     frameBufferCreateInfo.width             = g_settings.winW;
@@ -725,7 +613,16 @@ void RendererVK::SetupFrameBuffer()
     for (uint32_t i = 0; i < frameBuffers.size(); i++)
     {
         attachments[0] = scImageViews[i];
-        vkCreateFramebuffer(logicalDevice, &frameBufferCreateInfo, nullptr, &frameBuffers[i]);
+
+        for (auto& pass : passes)
+        {
+            if (pass.renderToFrameBuffer == true)
+            {
+                frameBufferCreateInfo.renderPass = pass.renderPass;
+                vkCreateFramebuffer(logicalDevice, &frameBufferCreateInfo, nullptr, &pass.frameBuffers[i]);
+                break;
+            }
+        }  
     }
 }
 

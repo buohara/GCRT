@@ -7,7 +7,7 @@
 void TestOctree()
 {
     RTRenderSettings settings;
-    settings.outputPath         = "D:/Git/GCRT/GCRT/renders/octreetest/";
+    settings.outputPath         = "F:/GCRT/gcrt/renders/octreetest/";
     settings.frameFilePrefix    = "OctreeFrame";
 
     RTScene scn;

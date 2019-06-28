@@ -37,7 +37,7 @@ struct RTRenderSettings
         vLightSetSize(16),
         camPathDepth(2),
         lightPathDepth(0),
-        pixelSamples(1),
+        pixelSamples(4),
         filterSize(2),
         dofSamples(0),
         xBlocks(8),
