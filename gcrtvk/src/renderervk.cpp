@@ -2,10 +2,24 @@
 
 RenderSettingsVK g_settings = { 0 };
 
+/**
+ * RendererVK::RendererVK
+ */
 
+RendererVK::RendererVK(HINSTANCE hInstance)
+{
+    CreateVkInstance();
+    CreateVkDevices();
+    CreateRenderWindow(hInstance);
+    GetPresentSurface(hInstance);
+    CreateSwapChain();
+    CreateDepth();
+    SetupFrameBuffer();
+}
 
 /**
- * WndProc Windows message handler.
+ * WndProc - Windows message handler.
+ *
  * @param  hWnd    Application window handle.
  * @param  message Message to process.
  * @param  wParam  Message parameters.
@@ -24,7 +38,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_CLOSE:
 
         exit(0);
-    
+ 
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
@@ -33,6 +47,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 /**
  * [RendererVK::CreateLogicalDevice description]
+ *
  * @param enabledFeatures     [description]
  * @param enabledExtensions   [description]
  * @param useSwapChain        [description]
@@ -127,17 +142,14 @@ void RendererVK::CreateLogicalDevice(
     }
 
     vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &logicalDevice);
-    CreateCommandPool(graphicsQueueIdx);
 }
 
 /**
  * [RendererVK::Init description]
  */
 
-void RendererVK::Init()
+void RendererVK::CreateVkDevices()
 {
-    CreateVkInstance();
-
 #ifdef _DEBUG
         VkDebugReportFlagsEXT debugReportFlags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
         //setupDebugging(instance, debugReportFlags, VK_NULL_HANDLE);
@@ -292,11 +304,6 @@ void RendererVK::CreateRenderWindow(HINSTANCE hInstance)
     return;
 }
 
-/**
- * [RendererVK::CreateSwapChain description]
- * @param hInstance [description]
- */
-
 void RendererVK::GetPresentSurface(HINSTANCE hInstance)
 {
     VkResult err = VK_SUCCESS;
@@ -352,7 +359,6 @@ void RendererVK::GetPresentSurface(HINSTANCE hInstance)
             }
         }
     }
-
 
     queueNodeIndex = graphicsQueueNodeIndex;
 
@@ -549,14 +555,16 @@ void RendererVK::CreateSwapChain()
  * RendererVK::Render Acquire next swapchain buffer, execute command buffers, and present.
  */
 
-void RendererVK::Render()
+void RendererVK::Render(SceneVk& scn)
 {
     vkAcquireNextImageKHR(logicalDevice, swapChain, UINT64_MAX, presentComplete, (VkFence)nullptr, &curSCBuf);
-    
+ 
     for (auto& pass : passes)
     {
         vkWaitForFences(logicalDevice, 1, &pass.fences[curSCBuf], VK_TRUE, UINT64_MAX);
         vkResetFences(logicalDevice, 1, &pass.fences[curSCBuf]);
+
+        pass.BuildCommandBuffers(logicalDevice, curSCBuf, scn);
 
         VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
         VkSubmitInfo submitInfo = {};
@@ -585,7 +593,7 @@ void RendererVK::Render()
         presentInfo.pWaitSemaphores     = &submitComplete;
         presentInfo.waitSemaphoreCount  = 1;
     }
-    
+ 
     vkQueuePresentKHR(queue, &presentInfo);
 }
 
@@ -684,4 +692,16 @@ void RendererVK::CreateDepth()
 
     depthStencilView.image = zImage;
     vkCreateImageView(logicalDevice, &depthStencilView, nullptr, &zView);
+}
+
+void RendererVK::Upload(SceneVk& scn)
+{
+    VkSubmitInfo submitInfo = {};
+
+    submitInfo.sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.pCommandBuffers      = &scn.uploadBuf;
+    submitInfo.commandBufferCount   = 1;
+
+    vkQueueSubmit(queue, 1, &submitInfo, scn.uploadFence);
+    vkWaitForFences(logicalDevice, 1, &scn.uploadFence, VK_TRUE, UINT64_MAX);
 }

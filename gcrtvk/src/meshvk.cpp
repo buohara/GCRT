@@ -1,6 +1,6 @@
 #include "meshvk.h"
 
-MeshVk::MeshVk(VkDevice& logicalDevice, VkPhysicalDeviceMemoryProperties& deviceMemoryProperties, MeshTypeVk type)
+MeshVk::MeshVk(VkDevice& logicalDevice, VkPhysicalDeviceMemoryProperties& deviceMemoryProperties, MeshTypeVk type) : type(type)
 {
     assert(type == TRIANGLE);
 

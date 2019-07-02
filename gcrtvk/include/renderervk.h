@@ -13,11 +13,14 @@ struct RendererVK
     VkPhysicalDeviceProperties deviceProperties;
     VkPhysicalDeviceFeatures deviceFeatures;
     VkPhysicalDeviceMemoryProperties deviceMemoryProperties;
+    VkDevice logicalDevice;
+    VkPhysicalDevice physicalDevice;
 
     // Queue objects
 
     uint32_t queueFamilyCount;
     vector<VkQueueFamilyProperties> queueFamilyProperties;
+    VkQueue queue;
 
     uint32_t graphicsQueueIdx   = VK_NULL_HANDLE;
     uint32_t computeQueueIdx    = VK_NULL_HANDLE;
@@ -29,12 +32,9 @@ struct RendererVK
 
     VkSwapchainKHR swapChain    = VK_NULL_HANDLE;
     VkSurfaceKHR surface;
-    VkDevice logicalDevice;
-    VkPhysicalDevice physicalDevice;
     VkSubmitInfo submitInfo;
     VkSemaphore presentComplete;
     VkSemaphore submitComplete;
-    VkQueue queue;
 
     VkFormat colorFormat;
     VkFormat depthFormat;
@@ -52,12 +52,13 @@ struct RendererVK
     VkDeviceMemory zMem;
     VkImageView zView;
     
-    // Setup routines.
 
-    RendererVK(HINSTANCE hInstance);
+    RendererVK(HINSTANCE hInstance);  
+    void Render(SceneVk &scn);
+    void Upload(SceneVk& scn);
 
-    void Init();
-    
+private:
+
     void CreateLogicalDevice(
         VkPhysicalDeviceFeatures enabledFeatures, 
         vector<const char*> enabledExtensions,
@@ -67,13 +68,13 @@ struct RendererVK
     
    vector<RenderPassVk> passes;
 
+    void CreateVkDevices();
     void CreateVkInstance();
     void CreateRenderWindow(HINSTANCE hInstance);
     void GetPresentSurface(HINSTANCE hInstance);
     void CreateSwapChain();
     void CreateDepth();
     void SetupFrameBuffer();
-    void Render();
 
 private: 
 

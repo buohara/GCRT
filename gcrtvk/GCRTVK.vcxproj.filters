@@ -64,6 +64,9 @@
     <ClCompile Include="src\meshvk.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\scenevk.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple.vert">

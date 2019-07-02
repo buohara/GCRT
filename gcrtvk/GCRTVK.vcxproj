@@ -146,6 +146,7 @@
     <ClCompile Include="src\gcrtvkmain.cpp" />
     <ClCompile Include="src\meshvk.cpp" />
     <ClCompile Include="src\renderervk.cpp" />
+    <ClCompile Include="src\scenevk.cpp" />
     <ClCompile Include="src\utilsvk.cpp" />
   </ItemGroup>
   <ItemGroup>

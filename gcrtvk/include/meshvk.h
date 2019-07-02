@@ -18,8 +18,6 @@ struct MeshVk
 
     MeshTypeVk type;
 
-private:
-
     vector<vec3> pos;
     vector<vec3> norm;
     vector<vec2> uv;

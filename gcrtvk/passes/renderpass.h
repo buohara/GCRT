@@ -56,8 +56,6 @@ struct RenderPassVk
     void SetupPipelineState(VkDevice& logicalDevice);
     void BuildCommandBuffers(VkDevice& logicalDevice, uint32_t curSCBuf, SceneVk &scn);
     void CreateCommandPool(VkDevice& logicalDevice, uint32_t queueIdx);
-    VkCommandBuffer GetCommandBuffer(bool begin);
-    void FlushCommandBuffer(VkCommandBuffer cmdBuf);
 
     VkRenderPass GetRenderPass();
 };

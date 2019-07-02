@@ -1,4 +1,5 @@
 #include "gcrtvk.h"
+#include "scenes.h"
 
 /**
  * [WinMain description]
@@ -11,6 +12,6 @@
 
 int main(int argc, char** argv)
 {
-    Launch(argc, argv, GetModuleHandle(NULL));
+    LaunchBasicScene(GetModuleHandle(NULL));
     return 0;
 }

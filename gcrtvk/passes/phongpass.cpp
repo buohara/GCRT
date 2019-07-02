@@ -20,7 +20,6 @@ void RenderPassVk::Init(VkDevice &logicalDevice, bool renderToOutput)
     SetupDescriptorSetLayout(logicalDevice);
     SetupDescriptorSet(logicalDevice);
     SetupPipelineState(logicalDevice);
-    BuildCommandBuffers(logicalDevice);
 }
 
 /**
@@ -289,8 +288,8 @@ void RenderPassVk::SetupDescriptorSet(VkDevice &logicalDevice)
 }
 
 /**
-* [RenderPassVk::SetupPipelineState description]
-*/
+ * [RenderPassVk::SetupPipelineState description]
+ */
 
 void RenderPassVk::SetupPipelineState(VkDevice &logicalDevice)
 {
@@ -445,8 +444,8 @@ void RenderPassVk::BuildCommandBuffers(VkDevice &logicalDevice, uint32_t curSCBu
 
     renderPassBeginInfo.framebuffer = frameBuffers[curSCBuf];
 
-    vkBeginCommandBuffer(cmdBuffers[0], &cmdBufInfo);
-    vkCmdBeginRenderPass(cmdBuffers[0], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkBeginCommandBuffer(cmdBuffers[curSCBuf], &cmdBufInfo);
+    vkCmdBeginRenderPass(cmdBuffers[curSCBuf], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     VkViewport viewport     = {};
     viewport.height         = (float)g_settings.winH;
@@ -463,79 +462,19 @@ void RenderPassVk::BuildCommandBuffers(VkDevice &logicalDevice, uint32_t curSCBu
     scissor.offset.y        = 0;
 
     vkCmdSetScissor(cmdBuffers[0], 0, 1, &scissor);
-    vkCmdBindDescriptorSets(cmdBuffers[0], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
-    vkCmdBindPipeline(cmdBuffers[0], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+    vkCmdBindDescriptorSets(cmdBuffers[curSCBuf], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
+    vkCmdBindPipeline(cmdBuffers[curSCBuf], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 
     for (auto& mesh : scn.meshes)
     {
         VkDeviceSize offsets[1] = { 0 };
-        vkCmdBindVertexBuffers(cmdBuffers[0], 0, 1, &vertBuf, offsets);
-        vkCmdBindIndexBuffer(cmdBuffers[0], idxBuf, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdDrawIndexed(cmdBuffers[0], 3, 1, 0, 0, 1);
+        vkCmdBindVertexBuffers(cmdBuffers[curSCBuf], 0, 1, &mesh.posBuf, offsets);
+        vkCmdBindIndexBuffer(cmdBuffers[curSCBuf], mesh.idxBuf, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdDrawIndexed(cmdBuffers[curSCBuf], 3, 1, 0, 0, 1);
     }
 
-    vkCmdEndRenderPass(cmdBuffers[0]);
-
-    vkEndCommandBuffer(cmdBuffers[0]);
-}
-
-/**
- * [RendererVK::GetCommandBuffer description]
- * @param  begin [description]
- * @return       [description]
- */
-
-VkCommandBuffer RenderPassVk::GetCommandBuffer(bool begin)
-{
-    VkCommandBuffer cmdBuffer;
-
-    // don't think this code is needed.
-
-    /*VkCommandBufferAllocateInfo cmdBufAllocateInfo = {};
-    cmdBufAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    cmdBufAllocateInfo.commandPool = cmdPool;
-    cmdBufAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    cmdBufAllocateInfo.commandBufferCount = 1;
-
-    vkAllocateCommandBuffers(logicalDevice, &cmdBufAllocateInfo, &cmdBuffer);
-
-    if (begin)
-    {
-        VkCommandBufferBeginInfo cmdBufInfo = {};
-        cmdBufInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        vkBeginCommandBuffer(cmdBuffer, &cmdBufInfo);
-    }*/
-
-    return cmdBuffer;
-}
-
-/**
- * [RendererVK::FlushCommandBuffer description]
- * @param cmdBuf [description]
- */
-
-void RenderPassVk::FlushCommandBuffer(VkCommandBuffer cmdBuf)
-{
-    // Don't think this code is needed.
-
-    /*vkEndCommandBuffer(cmdBuf);
-
-    VkSubmitInfo submitInfo = {};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &cmdBuf;
-
-    VkFenceCreateInfo fenceCreateInfo = {};
-    fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceCreateInfo.flags = 0;
-    VkFence fence;
-    vkCreateFence(logicalDevice, &fenceCreateInfo, nullptr, &fence);
-
-    CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
-    vkWaitForFences(logicalDevice, 1, &fence, VK_TRUE, 100000000000);
-
-    vkDestroyFence(logicalDevice, fence, nullptr);
-    vkFreeCommandBuffers(logicalDevice, cmdPool, 1, &cmdBuf);*/
+    vkCmdEndRenderPass(cmdBuffers[curSCBuf]);
+    vkEndCommandBuffer(cmdBuffers[curSCBuf]);
 }
 
 /**
