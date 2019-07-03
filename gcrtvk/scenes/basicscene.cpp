@@ -8,6 +8,10 @@ void LaunchBasicScene(HINSTANCE hInstance)
     g_settings.winH = 1080;
 
     RendererVK rndr(hInstance);
+    RenderPassVk phongPass;
+
+    phongPass.Init(rndr.logicalDevice, true);
+    rndr.Add(phongPass);
 
     SceneVk scn(rndr.logicalDevice, rndr.graphicsQueueIdx);
     MeshVk tri(rndr.logicalDevice, rndr.deviceMemoryProperties, TRIANGLE);

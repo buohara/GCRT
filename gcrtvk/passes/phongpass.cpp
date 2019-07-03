@@ -280,7 +280,7 @@ void RenderPassVk::SetupDescriptorSet(VkDevice &logicalDevice)
     writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     writeDescriptorSet.dstSet = descriptorSet;
     writeDescriptorSet.descriptorCount = 1;
-    writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    //writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     writeDescriptorSet.pBufferInfo = &ufmDesc;
     writeDescriptorSet.dstBinding = 0;
 
@@ -391,12 +391,12 @@ void RenderPassVk::SetupPipelineState(VkDevice &logicalDevice)
 
     shaderStages[0].sType           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[0].stage           = VK_SHADER_STAGE_VERTEX_BIT;
-    shaderStages[0].module          = LoadShader(logicalDevice, "shaders/simple.vert.spv");
+    shaderStages[0].module          = LoadShader(logicalDevice, "F:/GCRT/gcrtvk/shaders/simple.vert.spv");
     shaderStages[0].pName           = "main";
 
     shaderStages[1].sType           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[1].stage           = VK_SHADER_STAGE_FRAGMENT_BIT;
-    shaderStages[1].module          = LoadShader(logicalDevice, "shaders/simple.frag.spv");
+    shaderStages[1].module          = LoadShader(logicalDevice, "F:/GCRT/gcrtvk/shaders/simple.frag.spv");
     shaderStages[1].pName           = "main";
 
     pipelineCreateInfo.stageCount   = static_cast<uint32_t>(shaderStages.size());

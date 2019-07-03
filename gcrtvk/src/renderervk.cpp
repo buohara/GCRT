@@ -2,6 +2,80 @@
 
 RenderSettingsVK g_settings = { 0 };
 
+PFN_vkCreateDebugReportCallbackEXT CreateDebugReportCallback = VK_NULL_HANDLE;
+PFN_vkDestroyDebugReportCallbackEXT DestroyDebugReportCallback = VK_NULL_HANDLE;
+PFN_vkDebugReportMessageEXT dbgBreakCallback = VK_NULL_HANDLE;
+
+VkDebugReportCallbackEXT msgCallback;
+
+VKAPI_ATTR VkBool32 VKAPI_CALL messageCallback(
+    VkDebugReportFlagsEXT flags,
+    VkDebugReportObjectTypeEXT objType,
+    uint64_t srcObject,
+    size_t location,
+    int32_t msgCode,
+    const char* pLayerPrefix,
+    const char* pMsg,
+    void* pUserData)
+{
+    std::string prefix("");
+
+    if (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT)
+    {
+        prefix += "ERROR:";
+    };
+
+    if (flags & VK_DEBUG_REPORT_WARNING_BIT_EXT)
+    {
+        prefix += "WARNING:";
+    };
+
+    if (flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT)
+    {
+        prefix += "PERFORMANCE:";
+    };
+
+    if (flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT)
+    {
+        prefix += "INFO:";
+    }
+
+    if (flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT)
+    {
+        prefix += "DEBUG:";
+    }
+
+
+    return VK_FALSE;
+}
+
+void setupDebugging(VkInstance instance, VkDebugReportFlagsEXT flags, VkDebugReportCallbackEXT callBack)
+{
+    CreateDebugReportCallback = reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT"));
+    DestroyDebugReportCallback = reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT"));
+    dbgBreakCallback = reinterpret_cast<PFN_vkDebugReportMessageEXT>(vkGetInstanceProcAddr(instance, "vkDebugReportMessageEXT"));
+
+    VkDebugReportCallbackCreateInfoEXT dbgCreateInfo = {};
+    dbgCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT;
+    dbgCreateInfo.pfnCallback = (PFN_vkDebugReportCallbackEXT)messageCallback;
+    dbgCreateInfo.flags = flags;
+
+    VkResult err = CreateDebugReportCallback(
+        instance,
+        &dbgCreateInfo,
+        nullptr,
+        (callBack != VK_NULL_HANDLE) ? &callBack : &msgCallback);
+    assert(!err);
+}
+
+void freeDebugCallback(VkInstance instance)
+{
+    if (msgCallback != VK_NULL_HANDLE)
+    {
+        DestroyDebugReportCallback(instance, msgCallback, nullptr);
+    }
+}
+
 /**
  * RendererVK::RendererVK
  */
@@ -263,6 +337,8 @@ void RendererVK::CreateVkInstance()
     instanceCreateInfo.ppEnabledLayerNames  = validationLayerNames;
 
     CHECK_RESULT(vkCreateInstance(&instanceCreateInfo, nullptr, &instance));
+
+    setupDebugging(instance, VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT, VK_NULL_HANDLE);
 }
 
 /**

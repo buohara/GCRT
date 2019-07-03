@@ -70,7 +70,7 @@ VkShaderModule LoadShader(VkDevice &logicalDevice, string file)
     moduleCreateInfo.pCode = (uint32_t*)shaderCode;
 
     VkShaderModule shaderModule;
-    vkCreateShaderModule(logicalDevice, &moduleCreateInfo, NULL, &shaderModule);
+    CHECK_RESULT(vkCreateShaderModule(logicalDevice, &moduleCreateInfo, NULL, &shaderModule));
 
     delete[] shaderCode;
 

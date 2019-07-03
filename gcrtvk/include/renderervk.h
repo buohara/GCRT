@@ -56,6 +56,7 @@ struct RendererVK
     RendererVK(HINSTANCE hInstance);  
     void Render(SceneVk &scn);
     void Upload(SceneVk& scn);
+    void Add(RenderPassVk& pass) { passes.push_back(pass); }
 
 private:
 

@@ -33,7 +33,7 @@ struct RenderPassVk
     VkDescriptorSetLayout descriptorSetLayout;
     VkDescriptorSet descriptorSet;
     VkPipelineLayout pipelineLayout;
-    VkPipeline pipeline;
+    VkPipeline pipeline = VK_NULL_HANDLE;
     VkPipelineCache pipelineCache;
 
     VkPhysicalDeviceMemoryProperties deviceMemoryProperties;
