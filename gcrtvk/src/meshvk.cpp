@@ -138,7 +138,7 @@ void MeshVk::InitVertexObjectsVk(
         posMem,
         deviceMemoryProperties,
         (void*)& pos[0],
-        3 * pos.size() * sizeof(float),
+        (uint32_t)3 * pos.size() * sizeof(float),
         cmdBuf
     );
 
@@ -148,7 +148,7 @@ void MeshVk::InitVertexObjectsVk(
         normMem,
         deviceMemoryProperties,
         (void*)& norms[0],
-        3 * norms.size() * sizeof(float),
+        (uint32_t)3 * norms.size() * sizeof(float),
         cmdBuf
     );
 
@@ -158,7 +158,7 @@ void MeshVk::InitVertexObjectsVk(
         uvMem,
         deviceMemoryProperties,
         (void*)& uvs[0],
-        2 * uvs.size() * sizeof(float),
+        (uint32_t)2 * uvs.size() * sizeof(float),
         cmdBuf
     );
 }

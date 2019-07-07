@@ -17,6 +17,7 @@ struct RenderPassVk
 {
     VkFormat colorFormat;
     VkFormat depthFormat;
+    uint32_t graphicsQueueIdx;
 
     VkDeviceMemory ufmMem;
     VkBuffer ufmBuf;
@@ -55,7 +56,7 @@ struct RenderPassVk
     void SetupDescriptorSet(VkDevice& logicalDevice);
     void SetupPipelineState(VkDevice& logicalDevice);
     void BuildCommandBuffers(VkDevice& logicalDevice, uint32_t curSCBuf, SceneVk &scn);
-    void CreateCommandPool(VkDevice& logicalDevice, uint32_t queueIdx);
+    void CreateCommandPool(VkDevice& logicalDevice);
 
     VkRenderPass GetRenderPass();
 };

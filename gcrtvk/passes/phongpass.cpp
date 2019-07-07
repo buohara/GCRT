@@ -20,6 +20,9 @@ void RenderPassVk::Init(VkDevice &logicalDevice, bool renderToOutput)
     SetupDescriptorSetLayout(logicalDevice);
     SetupDescriptorSet(logicalDevice);
     SetupPipelineState(logicalDevice);
+    CreateCommandPool(logicalDevice);
+    CreateCommandBuffers(logicalDevice);
+    CreateFenceObjects(logicalDevice);
 }
 
 /**
@@ -30,7 +33,7 @@ void RenderPassVk::CreateRenderPass(VkDevice &logicalDevice)
 {
     array<VkAttachmentDescription, 2> attachments = {};
 
-    attachments[0].format           = colorFormat;
+    attachments[0].format           = VK_FORMAT_B8G8R8A8_UNORM;
     attachments[0].samples          = VK_SAMPLE_COUNT_1_BIT;
     attachments[0].loadOp           = VK_ATTACHMENT_LOAD_OP_CLEAR;
     attachments[0].storeOp          = VK_ATTACHMENT_STORE_OP_STORE;
@@ -39,7 +42,7 @@ void RenderPassVk::CreateRenderPass(VkDevice &logicalDevice)
     attachments[0].initialLayout    = VK_IMAGE_LAYOUT_UNDEFINED;
     attachments[0].finalLayout      = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-    attachments[1].format           = depthFormat;
+    attachments[1].format           = VK_FORMAT_D16_UNORM;
     attachments[1].samples          = VK_SAMPLE_COUNT_1_BIT;
     attachments[1].loadOp           = VK_ATTACHMENT_LOAD_OP_CLEAR;
     attachments[1].storeOp          = VK_ATTACHMENT_STORE_OP_STORE;
@@ -49,12 +52,12 @@ void RenderPassVk::CreateRenderPass(VkDevice &logicalDevice)
     attachments[1].finalLayout      = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
     VkAttachmentReference colorReference = {};
-    colorReference.attachment = 0;
-    colorReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    colorReference.attachment       = 0;
+    colorReference.layout           = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     VkAttachmentReference depthReference = {};
-    depthReference.attachment = 1;
-    depthReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    depthReference.attachment       = 1;
+    depthReference.layout           = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
     VkSubpassDescription subpassDescription     = {};
     subpassDescription.pipelineBindPoint        = VK_PIPELINE_BIND_POINT_GRAPHICS;
@@ -86,7 +89,7 @@ void RenderPassVk::CreateRenderPass(VkDevice &logicalDevice)
     dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
     VkRenderPassCreateInfo renderPassInfo = {};
-	
+
     renderPassInfo.sType            = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount  = static_cast<uint32_t>(attachments.size());
     renderPassInfo.pAttachments     = attachments.data();
@@ -200,12 +203,12 @@ void RenderPassVk::CreateCommandBuffers(VkDevice& logicalDevice)
  * RendererVK::CreateCommandPool
  */
 
-void RenderPassVk::CreateCommandPool(VkDevice& logicalDevice, uint32_t queueIdx)
+void RenderPassVk::CreateCommandPool(VkDevice& logicalDevice)
 {
     VkCommandPoolCreateInfo cmdPoolInfo = {};
 
     cmdPoolInfo.sType               = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    cmdPoolInfo.queueFamilyIndex    = queueIdx;
+    cmdPoolInfo.queueFamilyIndex    = graphicsQueueIdx;
     cmdPoolInfo.flags               = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
     vkCreateCommandPool(logicalDevice, &cmdPoolInfo, nullptr, &cmdPool);
@@ -280,7 +283,7 @@ void RenderPassVk::SetupDescriptorSet(VkDevice &logicalDevice)
     writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     writeDescriptorSet.dstSet = descriptorSet;
     writeDescriptorSet.descriptorCount = 1;
-    //writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     writeDescriptorSet.pBufferInfo = &ufmDesc;
     writeDescriptorSet.dstBinding = 0;
 
@@ -391,12 +394,12 @@ void RenderPassVk::SetupPipelineState(VkDevice &logicalDevice)
 
     shaderStages[0].sType           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[0].stage           = VK_SHADER_STAGE_VERTEX_BIT;
-    shaderStages[0].module          = LoadShader(logicalDevice, "F:/GCRT/gcrtvk/shaders/simple.vert.spv");
+    shaderStages[0].module          = LoadShader(logicalDevice, "D:/Git/GCRT/gcrtvk/shaders/simple.vert.spv");
     shaderStages[0].pName           = "main";
 
     shaderStages[1].sType           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[1].stage           = VK_SHADER_STAGE_FRAGMENT_BIT;
-    shaderStages[1].module          = LoadShader(logicalDevice, "F:/GCRT/gcrtvk/shaders/simple.frag.spv");
+    shaderStages[1].module          = LoadShader(logicalDevice, "D:/Git/GCRT/gcrtvk/shaders/simple.frag.spv");
     shaderStages[1].pName           = "main";
 
     pipelineCreateInfo.stageCount   = static_cast<uint32_t>(shaderStages.size());

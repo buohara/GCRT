@@ -20,8 +20,5 @@ struct SceneVk
     void RecordUploadScene(
         VkDevice& logicalDevice,
         VkPhysicalDeviceMemoryProperties& deviceMemoryProperties
-    )
-    {
-        for (auto& mesh : meshes) mesh.RecordUpload(logicalDevice, deviceMemoryProperties, uploadBuf);
-    }
+    );
 };

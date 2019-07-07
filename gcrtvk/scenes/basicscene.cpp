@@ -8,9 +8,15 @@ void LaunchBasicScene(HINSTANCE hInstance)
     g_settings.winH = 1080;
 
     RendererVK rndr(hInstance);
+    
     RenderPassVk phongPass;
-
+    phongPass.scSize = 2;
+    phongPass.graphicsQueueIdx = rndr.graphicsQueueIdx;
     phongPass.Init(rndr.logicalDevice, true);
+
+    phongPass.frameBuffers.push_back(rndr.frameBuffers[0]);
+    phongPass.frameBuffers.push_back(rndr.frameBuffers[1]);
+
     rndr.Add(phongPass);
 
     SceneVk scn(rndr.logicalDevice, rndr.graphicsQueueIdx);

@@ -2,78 +2,35 @@
 
 RenderSettingsVK g_settings = { 0 };
 
-PFN_vkCreateDebugReportCallbackEXT CreateDebugReportCallback = VK_NULL_HANDLE;
-PFN_vkDestroyDebugReportCallbackEXT DestroyDebugReportCallback = VK_NULL_HANDLE;
-PFN_vkDebugReportMessageEXT dbgBreakCallback = VK_NULL_HANDLE;
+VkDebugUtilsMessengerEXT debugMessenger;
 
-VkDebugReportCallbackEXT msgCallback;
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT messageType,
+    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+    void* pUserData) {
 
-VKAPI_ATTR VkBool32 VKAPI_CALL messageCallback(
-    VkDebugReportFlagsEXT flags,
-    VkDebugReportObjectTypeEXT objType,
-    uint64_t srcObject,
-    size_t location,
-    int32_t msgCode,
-    const char* pLayerPrefix,
-    const char* pMsg,
-    void* pUserData)
-{
-    std::string prefix("");
-
-    if (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT)
-    {
-        prefix += "ERROR:";
-    };
-
-    if (flags & VK_DEBUG_REPORT_WARNING_BIT_EXT)
-    {
-        prefix += "WARNING:";
-    };
-
-    if (flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT)
-    {
-        prefix += "PERFORMANCE:";
-    };
-
-    if (flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT)
-    {
-        prefix += "INFO:";
-    }
-
-    if (flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT)
-    {
-        prefix += "DEBUG:";
-    }
-
+    std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
     return VK_FALSE;
 }
 
-void setupDebugging(VkInstance instance, VkDebugReportFlagsEXT flags, VkDebugReportCallbackEXT callBack)
+VkResult setupDebugging(
+    VkInstance instance,
+    const VkAllocationCallbacks* pAllocator
+)
 {
-    CreateDebugReportCallback = reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT"));
-    DestroyDebugReportCallback = reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT"));
-    dbgBreakCallback = reinterpret_cast<PFN_vkDebugReportMessageEXT>(vkGetInstanceProcAddr(instance, "vkDebugReportMessageEXT"));
+    VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
+    createInfo.sType            = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    createInfo.messageSeverity  = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    createInfo.messageType      = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    createInfo.pfnUserCallback   = debugCallback;
+    createInfo.pUserData        = nullptr;
 
-    VkDebugReportCallbackCreateInfoEXT dbgCreateInfo = {};
-    dbgCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT;
-    dbgCreateInfo.pfnCallback = (PFN_vkDebugReportCallbackEXT)messageCallback;
-    dbgCreateInfo.flags = flags;
-
-    VkResult err = CreateDebugReportCallback(
-        instance,
-        &dbgCreateInfo,
-        nullptr,
-        (callBack != VK_NULL_HANDLE) ? &callBack : &msgCallback);
-    assert(!err);
-}
-
-void freeDebugCallback(VkInstance instance)
-{
-    if (msgCallback != VK_NULL_HANDLE)
-    {
-        DestroyDebugReportCallback(instance, msgCallback, nullptr);
-    }
+    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+    
+    if (func != nullptr) return func(instance, &createInfo, pAllocator, &debugMessenger);
+    else return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
 
 /**
@@ -338,7 +295,7 @@ void RendererVK::CreateVkInstance()
 
     CHECK_RESULT(vkCreateInstance(&instanceCreateInfo, nullptr, &instance));
 
-    setupDebugging(instance, VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT, VK_NULL_HANDLE);
+    setupDebugging(instance, nullptr);
 }
 
 /**
@@ -510,26 +467,16 @@ void RendererVK::CreateSwapChain()
             break;
         }
         if ((swapchainPresentMode != VK_PRESENT_MODE_MAILBOX_KHR) && (presentModes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR))
-        {
             swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
-        }
     }
 
     uint32_t desiredNumberOfSwapchainImages = surfCaps.minImageCount + 1;
     if ((surfCaps.maxImageCount > 0) && (desiredNumberOfSwapchainImages > surfCaps.maxImageCount))
-    {
         desiredNumberOfSwapchainImages = surfCaps.maxImageCount;
-    }
 
     VkSurfaceTransformFlagsKHR preTransform;
-    if (surfCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
-    {
-        preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-    }
-    else
-    {
-        preTransform = surfCaps.currentTransform;
-    }
+    if (surfCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+    else preTransform = surfCaps.currentTransform;
 
     VkCompositeAlphaFlagBitsKHR compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 
@@ -570,29 +517,18 @@ void RendererVK::CreateSwapChain()
     swapchainCI.clipped                     = VK_TRUE;
     swapchainCI.compositeAlpha              = compositeAlpha;
 
-    if (surfCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) 
-    {
-        swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-    }
-
-    if (surfCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT) 
-    {
-        swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    }
+    if (surfCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+    if (surfCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT) swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
     CHECK_RESULT(vkCreateSwapchainKHR(logicalDevice, &swapchainCI, nullptr, &swapChain));
 
     if (oldSwapchain != VK_NULL_HANDLE)
     {
-        for (uint32_t i = 0; i < scSize; i++)
-        {
-            vkDestroyImageView(logicalDevice, scImageViews[i], nullptr);
-        }
+        for (uint32_t i = 0; i < scSize; i++) vkDestroyImageView(logicalDevice, scImageViews[i], nullptr);
         vkDestroySwapchainKHR(logicalDevice, oldSwapchain, nullptr);
     }
 
     CHECK_RESULT(vkGetSwapchainImagesKHR(logicalDevice, swapChain, &scSize, NULL));
-
     scImages.resize(scSize);
     CHECK_RESULT(vkGetSwapchainImagesKHR(logicalDevice, swapChain, &scSize, scImages.data()));
 

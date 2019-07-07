@@ -30,3 +30,17 @@ SceneVk::SceneVk(VkDevice& logicalDevice, uint32_t queueIdx)
 
     vkCreateFence(logicalDevice, &fenceCreateInfo, nullptr, &uploadFence);
 }
+
+void SceneVk::RecordUploadScene(
+    VkDevice& logicalDevice,
+    VkPhysicalDeviceMemoryProperties& deviceMemoryProperties
+)
+{
+    VkCommandBufferBeginInfo cmdBufInfo = {};
+    cmdBufInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    cmdBufInfo.pNext = nullptr;
+
+    vkBeginCommandBuffer(uploadBuf, &cmdBufInfo);
+    for (auto& mesh : meshes) mesh.RecordUpload(logicalDevice, deviceMemoryProperties, uploadBuf);
+    vkEndCommandBuffer(uploadBuf);
+}
