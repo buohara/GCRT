@@ -32,21 +32,21 @@ void EnvMapScene::Init(HINSTANCE hInstance)
     g_settings.wireFrame            = false;
     g_settings.useSkyBox            = true;
 
-	rndr.CreateRenderWindow(
-		hInstance,
-		"EnvMapScene"
-	);
+    rndr.CreateRenderWindow(
+        hInstance,
+        "EnvMapScene"
+    );
 
-	rndr.CreateGLContext();
-	rndr.Init();
+    rndr.CreateGLContext();
+    rndr.Init();
 
     g_scn.SetSkyTex(string("F:/GCRT/asset/skypano.jpg"),
         ImgLoader::LoadTexture(string("F:/GCRT/asset/skypano.jpg")));
 
-	MainPass mainPass;
-	mainPass.Init(0, true);
+    MainPass mainPass;
+    mainPass.Init(0, true);
 
-	rndr.passes["MainPass"] = make_shared<MainPass>(mainPass);
+    rndr.passes["MainPass"] = make_shared<MainPass>(mainPass);
 
     LoadScene();
 }
@@ -57,30 +57,30 @@ void EnvMapScene::Init(HINSTANCE hInstance)
 
 void EnvMapScene::Render()
 {
-	MSG msg = { 0 };
+    MSG msg = { 0 };
 
-	while (true)
-	{
-		rndr.Render();
+    while (true)
+    {
+        rndr.Render();
 
-		if (gResized)
-		{
-			RECT rect;
-			GetWindowRect(rndr.hWnd, &rect);
-			g_settings.winW = rect.right - rect.left;
-			g_settings.winH = rect.bottom - rect.top;
+        if (gResized)
+        {
+            RECT rect;
+            GetWindowRect(rndr.hWnd, &rect);
+            g_settings.winW = rect.right - rect.left;
+            g_settings.winH = rect.bottom - rect.top;
 
-			rndr.UpdateViewPorts();
-			gResized = false;
-		}
+            rndr.UpdateViewPorts();
+            gResized = false;
+        }
 
-		while (PeekMessage(&msg, rndr.hWnd, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			rndr.HandleInputs(msg);
-			DispatchMessage(&msg);
-		}
-	}
+        while (PeekMessage(&msg, rndr.hWnd, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(&msg);
+            rndr.HandleInputs(msg);
+            DispatchMessage(&msg);
+        }
+    }
 }
 
 /**

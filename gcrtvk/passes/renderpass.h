@@ -26,7 +26,6 @@ struct RenderPassVk
     VkRenderPass renderPass;
 
     vector<VkCommandBuffer> cmdBuffers;
-    vector<VkFramebuffer> frameBuffers;
     vector<VkFence> fences;
 
     TriangleUniforms uniforms;
@@ -36,6 +35,7 @@ struct RenderPassVk
     VkPipelineLayout pipelineLayout;
     VkPipeline pipeline = VK_NULL_HANDLE;
     VkPipelineCache pipelineCache;
+    vector<VkFramebuffer> frameBuffers;
 
     VkPhysicalDeviceMemoryProperties deviceMemoryProperties;
 
@@ -44,7 +44,21 @@ struct RenderPassVk
 
     VkCommandPool cmdPool;
 
-    void Init(VkDevice& logicalDevice, bool renderToOutput);
+    VkImage zImage;
+    VkDeviceMemory zMem;
+    VkImageView zView;
+
+    RenderPassVk(
+        VkDevice& logicalDevice,
+        VkPhysicalDeviceMemoryProperties &deviceMemoryProperties,
+        uint32_t graphicsQueueIdx,
+        bool renderToOutput,
+        VkFormat colorFormat,
+        VkFormat depthFormat,
+        uint32_t scSize,
+        vector<VkImageView>& scViews
+    );
+
     void CreateRenderPass(VkDevice& logicalDevice);
     void CreatePipelineCache(VkDevice& logicalDevice);
     void CreateUniformBuffers(VkDevice& logicalDevice);
@@ -57,6 +71,8 @@ struct RenderPassVk
     void SetupPipelineState(VkDevice& logicalDevice);
     void BuildCommandBuffers(VkDevice& logicalDevice, uint32_t curSCBuf, SceneVk &scn);
     void CreateCommandPool(VkDevice& logicalDevice);
+    void SetupFrameBuffer(VkDevice& logicalDevice, vector<VkImageView>& scViews);
+    void CreateDepth(VkDevice& logicalDevice);
 
     VkRenderPass GetRenderPass();
 };

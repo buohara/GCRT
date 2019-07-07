@@ -4,6 +4,17 @@ RenderSettingsVK g_settings = { 0 };
 
 VkDebugUtilsMessengerEXT debugMessenger;
 
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param messageSeverity [description]
+ * @param messageType [description]
+ * @param pCallbackData [description]
+ * @param pUserData [description]
+ * @return [description]
+ */
+
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -14,6 +25,10 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 
     return VK_FALSE;
 }
+
+/**
+ * 
+ */
 
 VkResult setupDebugging(
     VkInstance instance,
@@ -34,7 +49,10 @@ VkResult setupDebugging(
 }
 
 /**
- * RendererVK::RendererVK
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param hInstance [description]
  */
 
 RendererVK::RendererVK(HINSTANCE hInstance)
@@ -44,18 +62,17 @@ RendererVK::RendererVK(HINSTANCE hInstance)
     CreateRenderWindow(hInstance);
     GetPresentSurface(hInstance);
     CreateSwapChain();
-    CreateDepth();
-    SetupFrameBuffer();
 }
 
 /**
- * WndProc - Windows message handler.
- *
- * @param  hWnd    Application window handle.
- * @param  message Message to process.
- * @param  wParam  Message parameters.
- * @param  lParam  More message parameters.
- * @return         Status code for message handler.
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param hWnd [description]
+ * @param message [description]
+ * @param wParam [description]
+ * @param lParam [description]
+ * @return [description]
  */
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -77,11 +94,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * [RendererVK::CreateLogicalDevice description]
- *
- * @param enabledFeatures     [description]
- * @param enabledExtensions   [description]
- * @param useSwapChain        [description]
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param enabledFeatures [description]
+ * @param enabledExtensions [description]
+ * @param useSwapChain [description]
  * @param requestedQueueTypes [description]
  */
 
@@ -176,7 +194,8 @@ void RendererVK::CreateLogicalDevice(
 }
 
 /**
- * [RendererVK::Init description]
+ * @brief [brief description]
+ * @details [long description]
  */
 
 void RendererVK::CreateVkDevices()
@@ -259,7 +278,8 @@ void RendererVK::CreateVkDevices()
 }
 
 /**
- * [RendererVK::CreateVkInstance description]
+ * @brief [brief description]
+ * @details [long description]
  */
 
 void RendererVK::CreateVkInstance()
@@ -299,7 +319,9 @@ void RendererVK::CreateVkInstance()
 }
 
 /**
- * [RendererVK::CreateRenderWindow description]
+ * @brief [brief description]
+ * @details [long description]
+ * 
  * @param hInstance [description]
  */
 
@@ -336,6 +358,13 @@ void RendererVK::CreateRenderWindow(HINSTANCE hInstance)
     DWORD err = GetLastError();
     return;
 }
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param hInstance [description]
+ */
 
 void RendererVK::GetPresentSurface(HINSTANCE hInstance)
 {
@@ -428,7 +457,8 @@ void RendererVK::GetPresentSurface(HINSTANCE hInstance)
 }
 
 /**
- * [RendererVK::CreateSwapChain description]
+ * @brief [brief description]
+ * @details [long description]
  */
 
 void RendererVK::CreateSwapChain()
@@ -564,7 +594,15 @@ void RendererVK::CreateSwapChain()
 }
 
 /**
- * RendererVK::Render Acquire next swapchain buffer, execute command buffers, and present.
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param scn [description]
+ * @param n [description]
+ * @param X [description]
+ * @param e [description]
+ * @param r [description]
+ * @param f [description]
  */
 
 void RendererVK::Render(SceneVk& scn)
@@ -610,101 +648,11 @@ void RendererVK::Render(SceneVk& scn)
 }
 
 /**
- * RendererVK::SetupFrameBuffer Find final render pass from list of passes and attach
- * default framebuffer to it.
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param scn [description]
  */
-
-void RendererVK::SetupFrameBuffer()
-{
-    VkImageView attachments[2];
-    attachments[1] = zView;
-
-    VkFramebufferCreateInfo frameBufferCreateInfo = {};
-    
-    frameBufferCreateInfo.sType             = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-    frameBufferCreateInfo.pNext             = NULL;
-    frameBufferCreateInfo.attachmentCount   = 2;
-    frameBufferCreateInfo.pAttachments      = attachments;
-    frameBufferCreateInfo.width             = g_settings.winW;
-    frameBufferCreateInfo.height            = g_settings.winH;
-    frameBufferCreateInfo.layers            = 1;
-
-    frameBuffers.resize(scSize);
-    for (uint32_t i = 0; i < frameBuffers.size(); i++)
-    {
-        attachments[0] = scImageViews[i];
-
-        for (auto& pass : passes)
-        {
-            if (pass.renderToFrameBuffer == true)
-            {
-                frameBufferCreateInfo.renderPass = pass.renderPass;
-                vkCreateFramebuffer(logicalDevice, &frameBufferCreateInfo, nullptr, &pass.frameBuffers[i]);
-                break;
-            }
-        }  
-    }
-}
-
-/**
- * RendererVK::CreateDepth Default frame buffer also has depth attachment. Create it here.
- */
-
-void RendererVK::CreateDepth()
-{
-    VkImageCreateInfo image = {};
-
-    image.sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-    image.pNext         = NULL;
-    image.imageType     = VK_IMAGE_TYPE_2D;
-    image.format        = depthFormat;
-    image.extent        = { g_settings.winW, g_settings.winH, 1 };
-    image.mipLevels     = 1;
-    image.arrayLayers   = 1;
-    image.samples       = VK_SAMPLE_COUNT_1_BIT;
-    image.tiling        = VK_IMAGE_TILING_OPTIMAL;
-    image.usage         = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-    image.flags         = 0;
-
-    VkMemoryAllocateInfo mem_alloc = {};
-
-    mem_alloc.sType             = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    mem_alloc.pNext             = NULL;
-    mem_alloc.allocationSize    = 0;
-    mem_alloc.memoryTypeIndex   = 0;
-
-    VkImageViewCreateInfo depthStencilView = {};
-
-    depthStencilView.sType                              = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    depthStencilView.pNext                              = NULL;
-    depthStencilView.viewType                           = VK_IMAGE_VIEW_TYPE_2D;
-    depthStencilView.format                             = depthFormat;
-    depthStencilView.flags                              = 0;
-    depthStencilView.subresourceRange                   = {};
-    depthStencilView.subresourceRange.aspectMask        = VK_IMAGE_ASPECT_DEPTH_BIT;
-    depthStencilView.subresourceRange.baseMipLevel      = 0;
-    depthStencilView.subresourceRange.levelCount        = 1;
-    depthStencilView.subresourceRange.baseArrayLayer    = 0;
-    depthStencilView.subresourceRange.layerCount        = 1;
-
-    VkMemoryRequirements memReqs;
-
-    vkCreateImage(logicalDevice, &image, nullptr, &zImage);
-    vkGetImageMemoryRequirements(logicalDevice, zImage, &memReqs);
-    mem_alloc.allocationSize = memReqs.size;
-    
-    mem_alloc.memoryTypeIndex = FindProperties(
-        memReqs.memoryTypeBits, 
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        deviceMemoryProperties
-    );
-
-    vkAllocateMemory(logicalDevice, &mem_alloc, nullptr, &zMem);
-    vkBindImageMemory(logicalDevice, zImage, zMem, 0);
-
-    depthStencilView.image = zImage;
-    vkCreateImageView(logicalDevice, &depthStencilView, nullptr, &zView);
-}
 
 void RendererVK::Upload(SceneVk& scn)
 {

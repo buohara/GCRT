@@ -46,12 +46,6 @@ struct RendererVK
 
     vector<VkImage> scImages;
     vector<VkImageView> scImageViews;
-    vector<VkFramebuffer> frameBuffers;
-
-    VkImage zImage;
-    VkDeviceMemory zMem;
-    VkImageView zView;
-    
 
     RendererVK(HINSTANCE hInstance);  
     void Render(SceneVk &scn);
@@ -74,8 +68,6 @@ private:
     void CreateRenderWindow(HINSTANCE hInstance);
     void GetPresentSurface(HINSTANCE hInstance);
     void CreateSwapChain();
-    void CreateDepth();
-    void SetupFrameBuffer();
 
 private: 
 

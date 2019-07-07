@@ -26,7 +26,7 @@ SceneVk::SceneVk(VkDevice& logicalDevice, uint32_t queueIdx)
     // upload fence
 
     VkFenceCreateInfo fenceCreateInfo   = {};
-    fenceCreateInfo.flags               = VK_FENCE_CREATE_SIGNALED_BIT;
+    fenceCreateInfo.sType               = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 
     vkCreateFence(logicalDevice, &fenceCreateInfo, nullptr, &uploadFence);
 }
