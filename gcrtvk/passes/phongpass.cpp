@@ -295,18 +295,18 @@ void RenderPassVk::SetupDescriptorSetLayout(VkDevice &logicalDevice)
     layoutBinding.pImmutableSamplers    = nullptr;
 
     VkDescriptorSetLayoutCreateInfo descriptorLayout = {};
-    descriptorLayout.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    descriptorLayout.pNext = nullptr;
-    descriptorLayout.bindingCount = 1;
-    descriptorLayout.pBindings = &layoutBinding;
+    descriptorLayout.sType          = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    descriptorLayout.pNext          = nullptr;
+    descriptorLayout.bindingCount   = 1;
+    descriptorLayout.pBindings      = &layoutBinding;
 
     vkCreateDescriptorSetLayout(logicalDevice, &descriptorLayout, nullptr, &descriptorSetLayout);
 
     VkPipelineLayoutCreateInfo pPipelineLayoutCreateInfo = {};
-    pPipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pPipelineLayoutCreateInfo.pNext = nullptr;
-    pPipelineLayoutCreateInfo.setLayoutCount = 1;
-    pPipelineLayoutCreateInfo.pSetLayouts = &descriptorSetLayout;
+    pPipelineLayoutCreateInfo.sType             = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pPipelineLayoutCreateInfo.pNext             = nullptr;
+    pPipelineLayoutCreateInfo.setLayoutCount    = 1;
+    pPipelineLayoutCreateInfo.pSetLayouts       = &descriptorSetLayout;
 
     vkCreatePipelineLayout(logicalDevice, &pPipelineLayoutCreateInfo, nullptr, &pipelineLayout);
 }
@@ -351,42 +351,42 @@ void RenderPassVk::SetupPipelineState(VkDevice &logicalDevice)
 {
     VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
 
-    pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineCreateInfo.layout = pipelineLayout;
-    pipelineCreateInfo.renderPass = renderPass;
+    pipelineCreateInfo.sType        = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipelineCreateInfo.layout       = pipelineLayout;
+    pipelineCreateInfo.renderPass   = renderPass;
 
     VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = {};
 
-    inputAssemblyState.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssemblyState.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    inputAssemblyState.sType        = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    inputAssemblyState.topology     = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
     VkPipelineRasterizationStateCreateInfo rasterizationState = {};
 
-    rasterizationState.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-    rasterizationState.polygonMode = VK_POLYGON_MODE_FILL;
-    rasterizationState.cullMode = VK_CULL_MODE_NONE;
-    rasterizationState.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-    rasterizationState.depthClampEnable = VK_FALSE;
-    rasterizationState.rasterizerDiscardEnable = VK_FALSE;
-    rasterizationState.depthBiasEnable = VK_FALSE;
-    rasterizationState.lineWidth = 1.0f;
+    rasterizationState.sType                    = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    rasterizationState.polygonMode              = VK_POLYGON_MODE_FILL;
+    rasterizationState.cullMode                 = VK_CULL_MODE_NONE;
+    rasterizationState.frontFace                = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    rasterizationState.depthClampEnable         = VK_FALSE;
+    rasterizationState.rasterizerDiscardEnable  = VK_FALSE;
+    rasterizationState.depthBiasEnable          = VK_FALSE;
+    rasterizationState.lineWidth                = 1.0f;
 
     VkPipelineColorBlendAttachmentState blendAttachmentState[1] = {};
 
-    blendAttachmentState[0].colorWriteMask = 0xf;
-    blendAttachmentState[0].blendEnable = VK_FALSE;
+    blendAttachmentState[0].colorWriteMask  = 0xf;
+    blendAttachmentState[0].blendEnable     = VK_FALSE;
 
     VkPipelineColorBlendStateCreateInfo colorBlendState = {};
 
-    colorBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    colorBlendState.sType           = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     colorBlendState.attachmentCount = 1;
-    colorBlendState.pAttachments = blendAttachmentState;
+    colorBlendState.pAttachments    = blendAttachmentState;
 
     VkPipelineViewportStateCreateInfo viewportState = {};
 
-    viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-    viewportState.viewportCount = 1;
-    viewportState.scissorCount = 1;
+    viewportState.sType             = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    viewportState.viewportCount     = 1;
+    viewportState.scissorCount      = 1;
 
     vector<VkDynamicState> dynamicStateEnables;
     dynamicStateEnables.push_back(VK_DYNAMIC_STATE_VIEWPORT);
@@ -394,22 +394,22 @@ void RenderPassVk::SetupPipelineState(VkDevice &logicalDevice)
 
     VkPipelineDynamicStateCreateInfo dynamicState = {};
 
-    dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-    dynamicState.pDynamicStates = dynamicStateEnables.data();
-    dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
+    dynamicState.sType              = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamicState.pDynamicStates     = dynamicStateEnables.data();
+    dynamicState.dynamicStateCount  = static_cast<uint32_t>(dynamicStateEnables.size());
 
     VkPipelineDepthStencilStateCreateInfo depthStencilState = {};
 
-    depthStencilState.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-    depthStencilState.depthTestEnable = VK_TRUE;
-    depthStencilState.depthWriteEnable = VK_TRUE;
-    depthStencilState.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+    depthStencilState.sType                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    depthStencilState.depthTestEnable       = VK_TRUE;
+    depthStencilState.depthWriteEnable      = VK_TRUE;
+    depthStencilState.depthCompareOp        = VK_COMPARE_OP_LESS_OR_EQUAL;
     depthStencilState.depthBoundsTestEnable = VK_FALSE;
-    depthStencilState.back.failOp = VK_STENCIL_OP_KEEP;
-    depthStencilState.back.passOp = VK_STENCIL_OP_KEEP;
-    depthStencilState.back.compareOp = VK_COMPARE_OP_ALWAYS;
-    depthStencilState.stencilTestEnable = VK_FALSE;
-    depthStencilState.front = depthStencilState.back;
+    depthStencilState.back.failOp           = VK_STENCIL_OP_KEEP;
+    depthStencilState.back.passOp           = VK_STENCIL_OP_KEEP;
+    depthStencilState.back.compareOp        = VK_COMPARE_OP_ALWAYS;
+    depthStencilState.stencilTestEnable     = VK_FALSE;
+    depthStencilState.front                 = depthStencilState.back;
 
     VkPipelineMultisampleStateCreateInfo multisampleState = {};
 
@@ -443,16 +443,20 @@ void RenderPassVk::SetupPipelineState(VkDevice &logicalDevice)
     vertexInputState.vertexAttributeDescriptionCount = 2;
     vertexInputState.pVertexAttributeDescriptions = vertexInputAttributs.data();
 
-    std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages{};
+    array<VkPipelineShaderStageCreateInfo, 2> shaderStages{};
+
+    auto path = std::experimental::filesystem::current_path();
+    string vShaderPath = path.generic_string() + string("/shaders/simple.vert.spv");
+    string fShaderPath = path.generic_string() + string("/shaders/simple.frag.spv");
 
     shaderStages[0].sType           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[0].stage           = VK_SHADER_STAGE_VERTEX_BIT;
-    shaderStages[0].module          = LoadShader(logicalDevice, "D:/Git/GCRT/gcrtvk/shaders/simple.vert.spv");
+    shaderStages[0].module          = LoadShader(logicalDevice, vShaderPath);
     shaderStages[0].pName           = "main";
 
     shaderStages[1].sType           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[1].stage           = VK_SHADER_STAGE_FRAGMENT_BIT;
-    shaderStages[1].module          = LoadShader(logicalDevice, "D:/Git/GCRT/gcrtvk/shaders/simple.frag.spv");
+    shaderStages[1].module          = LoadShader(logicalDevice, fShaderPath);
     shaderStages[1].pName           = "main";
 
     pipelineCreateInfo.stageCount   = static_cast<uint32_t>(shaderStages.size());

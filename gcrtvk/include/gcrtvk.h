@@ -10,6 +10,7 @@
 #include <map>
 #include <array>
 #include <fstream>
+#include <filesystem>
 
 // GLM headers
 
