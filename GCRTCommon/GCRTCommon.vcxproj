@@ -121,7 +121,7 @@
     <ClInclude Include="include\gcrt.h" />
     <ClInclude Include="include\imgloader.h" />
     <ClInclude Include="include\material.h" />
-    <ClInclude Include="include\mesh.h" />
+    <ClInclude Include="include\meshgl.h" />
     <ClInclude Include="include\model.h" />
     <ClInclude Include="include\plane.h" />
     <ClInclude Include="include\scene.h" />
@@ -136,7 +136,7 @@
     <ClCompile Include="src\cylinder.cpp" />
     <ClCompile Include="src\imgloader.cpp" />
     <ClCompile Include="src\material.cpp" />
-    <ClCompile Include="src\mesh.cpp" />
+    <ClCompile Include="src\meshgl.cpp" />
     <ClCompile Include="src\model.cpp" />
     <ClCompile Include="src\plane.cpp" />
     <ClCompile Include="src\scene.cpp" />

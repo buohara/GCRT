@@ -1,19 +1,18 @@
 #pragma once
 
-#include "mesh.h"
+#include "gcrt.h"
+using namespace std;
+using namespace glm;
 
-struct Cylinder : Mesh
-{
-    uint32_t numSideVerts = 0;
-    uint32_t numCapVerts = 0;
-    uint32_t topOffset = 0;
-    uint32_t bottomOffset = 0;
+void GenPositionsCylinder(
+    vector<vec3>& pos,
+    uint32_t numSectors,
+    uint32_t& numSideVerts,
+    uint32_t& topOffset,
+    uint32_t& bottomOffset,
+    uint32_t& numCapVerts
+);
 
-    void Create(uint32_t numSectors);
-    void Draw();
-
-    void GenPositions(vector<vec3> &pos, uint32_t numSectors);
-    void GenNormals(vector<vec3> &norms, uint32_t numSectors);
-    void GenUVs(vector<vec2> &uvs, uint32_t numSectors);
-    void GenTans(vector<vec3> &tans, uint32_t numSectors);
-};
+void GenNormalsCylinder(vector<vec3>& norms, uint32_t numSectors);
+void GenUVsCylinder(vector<vec2>& uvs, uint32_t numSectors);
+void GenTansCylinder(vector<vec3>& tans, uint32_t numSectors);

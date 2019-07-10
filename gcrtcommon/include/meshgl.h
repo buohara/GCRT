@@ -1,10 +1,24 @@
 #pragma once
 
 #include "GCRT.h"
+#include "plane.h"
+#include "sphere.h"
+#include "cylinder.h"
+#include "box.h"
+#include "skeletalmesh.h"
 #include "utils.h"
 
 using namespace std;
 using namespace glm;
+
+enum MeshType
+{
+    BOX,
+    PLANE,
+    SPHERE,
+    CYLINDER,
+    SKELETAL
+};
 
 struct SubMesh
 {
@@ -22,7 +36,7 @@ struct SubMesh
     GLuint boneWtVboID;
 };
 
-struct Mesh
+struct MeshGL
 {
     vector<SubMesh> subMeshes;
     string name;
@@ -30,10 +44,40 @@ struct Mesh
     bool animated;
     string filePath;
     bool invert = false;
+    MeshType type;
 
-    virtual void Draw() = 0;
+    // How many vertices to draw for simple shapes.
+
+    uint32_t numVerts;
     
-    virtual void GetAnimation(float t, mat4 rootTrans, vector<mat4> &bones) 
+    // How many vertices to draw for different parts of a sphere/cylinder.
+
+    uint32_t numSideVerts   = 0;
+    uint32_t numCapVerts    = 0;
+    uint32_t topOffset      = 0;
+    uint32_t bottomOffset   = 0;
+
+    // Skeletal mesh data structures
+
+    map<string, uint32_t> boneMap;
+    BoneTreeNode root;
+    mat4 globalInverse;
+    static const uint32_t maxBones = 64;
+
+    void LoadVertexAndBoneData(
+        const aiScene& scene,
+        map<string, mat4>& boneOffsets
+    );
+
+    MeshGL(MeshType type, uint32_t rows, uint32_t cols);
+    MeshGL(MeshType type, uint32_t numSectors);
+    MeshGL(MeshType type, string file);
+    MeshGL(MeshType type);
+    MeshGL(MeshType type, uint32_t numSectors, uint32_t numRings, bool invertIn);
+
+    void Draw();
+    
+    void GetAnimation(float t, mat4 rootTrans, vector<mat4> &bones) 
     {
         if (bones.size() != 1) bones.resize(1);
         bones[0] = rootTrans;

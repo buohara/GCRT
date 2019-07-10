@@ -29,9 +29,6 @@
     <ClInclude Include="include\material.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\mesh.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\model.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -51,6 +48,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\utils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\meshgl.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -73,9 +73,6 @@
     <ClCompile Include="src\material.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\mesh.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\model.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -92,6 +89,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\meshgl.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

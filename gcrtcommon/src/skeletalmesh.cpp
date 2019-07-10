@@ -4,8 +4,6 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-mat4 globalInverse;
-
 /**
  * aiMatrix4x4ToGlm Convert an Assimp matrix to GLM matrix.
  *
@@ -13,7 +11,7 @@ mat4 globalInverse;
  * @return      Equivalent GLM matrix.
  */
 
-inline mat4 aiMatrix4x4ToGlm(aiMatrix4x4& from)
+mat4 aiMatrix4x4ToGlm(aiMatrix4x4& from)
 {
     glm::mat4 to;
 
@@ -38,39 +36,7 @@ inline mat4 aiMatrix4x4ToGlm(aiMatrix4x4& from)
 }
 
 /**
- * SkeletalMesh::Create Load an Assimp mesh, including animations, from file.
- *
- * @param file Assimp mesh file (in).
- */
-
-void SkeletalMesh::Create(string file)
-{
-    Assimp::Importer importer;
-    
-    const aiScene &scene = *(importer.ReadFile(
-        file, 
-        aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs
-    ));
- 
-    subMeshes.resize(scene.mNumMeshes);
-    animated = (scene.mNumAnimations > 0);
-    map<string, mat4> boneOffsets;
-
-    LoadVertexAndBoneData(scene, boneOffsets);
-
-    if (animated == true)
-    {
-        aiNode &scnRoot = *(scene.mRootNode);
-        root.name = scnRoot.mName.C_Str();
-
-        globalInverse = aiMatrix4x4ToGlm(scnRoot.mTransformation.Inverse());
-        CreateBoneHierarchy(scnRoot, root, boneOffsets);
-        LoadAnimations(scene);
-    }
-}
-
-/**
- * SkeletalMesh::LoadAnimations Top-level call into skeleton tree to load a bone's
+ * LoadAnimations Top-level call into skeleton tree to load a bone's
  * keyframes. Load first animation in file only.
  
  * Each Assimp animation has a list of "channels", each of which is a sequence of keyframes 
@@ -78,9 +44,12 @@ void SkeletalMesh::Create(string file)
  * skeleton root, which will recursively find the appropriate bone and load its keyframes.
  *
  * @param scene Assimp scene.
+ * @param root Root of the skeleton.
  */
 
-void SkeletalMesh::LoadAnimations(const aiScene &scene)
+void LoadAnimations(
+    const aiScene &scene,
+    BoneTreeNode &root)
 {
     for (uint32_t i = 0; i < scene.mAnimations[0]->mNumChannels; i++)
     {
@@ -134,7 +103,7 @@ bool BoneTreeNode::LoadAnimation(aiNodeAnim &anim)
 }
 
 /**
- * SkeletalMesh::CreateBoneHierarchy Recursively generate the bone tree structure for
+ * CreateBoneHierarchy Recursively generate the bone tree structure for
  * given input mesh. For each input node, add all its child nodes and offset from parent
  * node. Then recurse into each child node and pass its child information.
  *
@@ -143,7 +112,7 @@ bool BoneTreeNode::LoadAnimation(aiNodeAnim &anim)
  * @param boneOffsets List of each bone's offset from mesh space to its local one space (in).
  */
 
-void SkeletalMesh::CreateBoneHierarchy(
+void CreateBoneHierarchy(
     aiNode &aiNode, 
     BoneTreeNode &btNode,
     map<string, mat4> &boneOffsets
@@ -154,14 +123,8 @@ void SkeletalMesh::CreateBoneHierarchy(
         BoneTreeNode child;
         child.name = aiNode.mChildren[i]->mName.C_Str();
 
-        if (boneOffsets.find(child.name) != boneOffsets.end())
-        {
-            child.boneOffset = boneOffsets[child.name];
-        }
-        else
-        {
-            child.boneOffset = mat4(1.0);
-        }
+        if (boneOffsets.find(child.name) != boneOffsets.end()) child.boneOffset = boneOffsets[child.name];
+        else child.boneOffset = mat4(1.0);
 
         child.parentOffset = aiMatrix4x4ToGlm(aiNode.mChildren[i]->mTransformation);
 
@@ -176,56 +139,7 @@ void SkeletalMesh::CreateBoneHierarchy(
 }
 
 /**
- * SkeletalMesh::LoadVertexAndBoneData Load vertex and bone data from an Assimp mesh.
- *
- * @param scene       Input Assimp mesh to load (in)
- * @param boneOffsets List of local bone offsets from mesh space to local space (out).
- */
-
-void SkeletalMesh::LoadVertexAndBoneData(
-    const aiScene &scene,
-    map<string, mat4> &boneOffsets
-)
-{
-    for (uint32 i = 0; i < scene.mNumMeshes; i++)
-    {
-        aiMesh &mesh = *(scene.mMeshes[i]);
-
-        vector<vec3> pos;
-        vector<vec3> norm;
-        vector<vec2> uv;
-        vector<uint32_t> idcs;
-        vector<ivec4> boneIDs;
-        vector<vec4> boneWeights;
-
-        subMeshes[i].numVerts = mesh.mNumVertices;
-        subMeshes[i].numIdcs = 3 * mesh.mNumFaces;
-
-        LoadVertexData(mesh, pos, norm, uv, idcs);
-        //LoadMaterials(scene);
-
-        // If this is a static mesh, default all vertices to point at bone 0 with
-        // weight 1.0. This bone will just be MV matrix of overall mesh (matrix to scale, rotate, 
-        // translate overall mesh into world space).
-
-        if (animated == false)
-        {
-            boneIDs.resize(pos.size(), ivec4(0));
-            boneWeights.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
-
-            InitVertexObjects(i, pos, norm, uv, idcs, boneIDs, boneWeights);
-            continue;
-        }
-
-        // Bone IDs and weights.
-
-        LoadBoneData(mesh, boneIDs, boneWeights, boneOffsets);
-        InitVertexObjects(i, pos, norm, uv, idcs, boneIDs, boneWeights);
-    }
-}
-
-/**
- * SkeletalMesh::LoadVertexData Load an Assimp mesh's vertex data (positions,
+ * LoadVertexData Load an Assimp mesh's vertex data (positions,
  * normals, UVs, and triangle indices).
  *
  * @param mesh Input assimp mesh (in)
@@ -235,7 +149,7 @@ void SkeletalMesh::LoadVertexAndBoneData(
  * @param idcs Triangle vertex indices (out).
  */
 
-void SkeletalMesh::LoadVertexData(
+void LoadVertexData(
     aiMesh &mesh,
     vector<vec3> &pos,
     vector<vec3> &norm,
@@ -278,12 +192,12 @@ void SkeletalMesh::LoadVertexData(
 }
 
 /**
- * SkeletalMesh::LoadMaterials
+ * LoadMaterials
  *
  * @param mesh        Assimp mesh (in).
  */
 
-void SkeletalMesh::LoadMaterials(const aiScene &scene)
+void LoadMaterials(const aiScene &scene)
 {
     for (uint32_t i = 0; i < scene.mNumMaterials; i++)
     {
@@ -327,7 +241,7 @@ void SkeletalMesh::LoadMaterials(const aiScene &scene)
 }
 
 /**
- * SkeletalMesh::LoadBoneData Every vertex in the mesh is influenced by a
+ * LoadBoneData Every vertex in the mesh is influenced by a
  * collection of bones. Loop through each bone in the matrix and load data about
  * which vertices it influences.
  *
@@ -337,11 +251,12 @@ void SkeletalMesh::LoadMaterials(const aiScene &scene)
  * @param boneOffsets Offset of bone from mesh space to local bone space (out).
  */
 
-void SkeletalMesh::LoadBoneData(
+void LoadBoneData(
     aiMesh &mesh,
     vector<ivec4> &boneIDs,
     vector<vec4> &boneWts,
-    map<string, mat4> &boneOffsets
+    map<string, mat4> &boneOffsets,
+    map<string, uint32_t> &boneMap
 )
 {
     vector<uint32_t> boneScratch(mesh.mNumVertices, 0);
@@ -401,34 +316,26 @@ void SkeletalMesh::LoadBoneData(
 }
 
 /**
- * SkeletalMesh::UpdateAnimation Get a list of bone animation matrices interpolated
+ * UpdateAnimation Get a list of bone animation matrices interpolated
  * at input time t.
  *
+ * @param root          Root of a skeletal mesh.
  * @param t             Requested animation time (in).
  * @param rootTrans     Global offset in world space of whole mesh (in).
  * @param bones         List of bone animation matrices at time t (out).
+ * @param boneMap       Bone name to bone index map.
  */
 
-void SkeletalMesh::GetAnimation(float t, mat4 rootTrans, vector<mat4> &bones)
+void GetAnimation(
+    BoneTreeNode &root,
+    float t,
+    mat4 rootTrans,
+    vector<mat4> &bones,
+    map<string, uint32_t> &boneMap
+)
 {
-    if (animated == true)
-    {
-        if (bones.size() != boneMap.size())
-        {
-            bones.resize(boneMap.size());
-        }
-
-        root.GetBoneMatrices(t, bones, rootTrans, boneMap);
-    }
-    else
-    {
-        if (bones.size() != 1)
-        {
-            bones.resize(1);
-        }
-
-        bones[0] = rootTrans;
-    }
+    if (bones.size() != boneMap.size()) bones.resize(boneMap.size());
+    root.GetBoneMatrices(t, bones, rootTrans, boneMap);
 }
 
 /**
@@ -453,34 +360,13 @@ void BoneTreeNode::GetBoneMatrices(
     if (boneMap.find(name) != boneMap.end())
     {
         uint32_t boneIdx = boneMap[name];
-        mat4 boneMat = animation.GetAnimationMatrix(t);
-        
+        mat4 boneMat = animation.GetAnimationMatrix(t);     
         matrices[boneIdx] = parent * boneMat * boneOffset;
 
-        for (uint32_t i = 0; i < children.size(); i++)
-        {
-            children[i]->GetBoneMatrices(t, matrices, parent * boneMat, boneMap);
-        }
+        for (uint32_t i = 0; i < children.size(); i++) children[i]->GetBoneMatrices(t, matrices, parent * boneMat, boneMap);
     }
     else
     {
-        for (uint32_t i = 0; i < children.size(); i++)
-        {
-            children[i]->GetBoneMatrices(t, matrices, parent * boneMat, boneMap);
-        }
-    }
-}
-
-/**
- * SkeletalMesh::Draw Bind this mesh's vertex objects and issue draws.
- */
-
-void SkeletalMesh::Draw()
-{
-    for (uint32_t i = 0; i < subMeshes.size(); i++)
-    {
-        glBindVertexArray(subMeshes[i].vaoID);
-        glDrawElements(GL_TRIANGLES, subMeshes[i].numIdcs, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+        for (uint32_t i = 0; i < children.size(); i++) children[i]->GetBoneMatrices(t, matrices, parent* boneMat, boneMap);
     }
 }

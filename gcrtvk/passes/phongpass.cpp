@@ -419,21 +419,21 @@ void RenderPassVk::SetupPipelineState(VkDevice &logicalDevice)
 
     VkVertexInputBindingDescription vertexInputBinding = {};
 
-    vertexInputBinding.binding = 0;
-    vertexInputBinding.stride = 6 * sizeof(float);
-    vertexInputBinding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+    vertexInputBinding.binding      = 0;
+    vertexInputBinding.stride       = 6 * sizeof(float);
+    vertexInputBinding.inputRate    = VK_VERTEX_INPUT_RATE_VERTEX;
 
     array<VkVertexInputAttributeDescription, 2> vertexInputAttributs;
 
-    vertexInputAttributs[0].binding = 0;
-    vertexInputAttributs[0].location = 0;
-    vertexInputAttributs[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-    vertexInputAttributs[0].offset = 0;
+    vertexInputAttributs[0].binding     = 0;
+    vertexInputAttributs[0].location    = 0;
+    vertexInputAttributs[0].format      = VK_FORMAT_R32G32B32_SFLOAT;
+    vertexInputAttributs[0].offset      = 0;
 
-    vertexInputAttributs[1].binding = 0;
-    vertexInputAttributs[1].location = 1;
-    vertexInputAttributs[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-    vertexInputAttributs[1].offset = 3 * sizeof(float);
+    vertexInputAttributs[1].binding     = 0;
+    vertexInputAttributs[1].location    = 1;
+    vertexInputAttributs[1].format      = VK_FORMAT_R32G32B32_SFLOAT;
+    vertexInputAttributs[1].offset      = 3 * sizeof(float);
 
     VkPipelineVertexInputStateCreateInfo vertexInputState = {};
 

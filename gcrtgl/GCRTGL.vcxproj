@@ -103,7 +103,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\gcrtcommon\include;..\external\glm;..\external\glew\glew\include\GL;include;passes;scenes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\gcrtcommon\include;..\external\vulkan;..\external\glm;..\external\glew\glew\include\GL;include;passes;scenes;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

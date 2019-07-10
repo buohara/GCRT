@@ -1,47 +1,21 @@
 #include "sphere.h"
 
 /**
- * [Sphere::Create description]
- * @param numSectors [description]
- * @param numRings   [description]
- */
-
-void Sphere::Create(
-    uint32_t numSectors,
-    uint32_t numRings,
-    bool invertIn
-)
-{
-    vector<vec3> pos;
-    vector<vec3> norms;
-    vector<vec2> uvs;
-    vector<vec3> tans;
-    vector<ivec4> boneIDs;
-    vector<vec4> boneWts;
-
-    animated = false;
-    invert = invertIn;
-
-    GenPositions(pos, numSectors, numRings);
-    GenNormals(norms, numSectors, numRings);
-    GenUVs(uvs, numSectors, numRings);
-    GenTans(tans, numSectors, numRings);
-
-    boneIDs.resize(pos.size(), ivec4(0));
-    boneWts.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
-
-    subMeshes.resize(1);
-    InitVertexObjects(0, pos, norms, uvs, tans, boneIDs, boneWts);
-}
-
-/**
- * [Sphere::GenPositions description]
+ * [GenPositions description]
  * @param pos        [description]
  * @param numSectors [description]
  * @param numRings   [description]
  */
 
-void Sphere::GenPositions(vector<vec3> &pos, uint32_t numSectors, uint32_t numRings)
+void GenPositionsSphere(
+    vector<vec3> &pos,
+    uint32_t numSectors,
+    uint32_t numRings,
+    uint32_t& numSideVerts,
+    uint32_t& topOffset,
+    uint32_t& bottomOffset,
+    uint32_t& numCapVerts
+)
 {
     float dtheta = pi<float>() / (numRings + 2);
     float dphi = 2.0f * pi<float>() / numSectors;
@@ -110,13 +84,13 @@ void Sphere::GenPositions(vector<vec3> &pos, uint32_t numSectors, uint32_t numRi
 }
 
 /**
- * [Sphere::GenNormals description]
+ * [GenNormals description]
  * @param norms      [description]
  * @param numSectors [description]
  * @param numRings   [description]
  */
 
-void Sphere::GenNormals(vector<vec3> &norms, uint32_t numSectors, uint32_t numRings)
+void GenNormalsSphere(vector<vec3> &norms, uint32_t numSectors, uint32_t numRings)
 {
     float dtheta = pi<float>() / (numRings + 2);
     float dphi = 2.0f * pi<float>() / numSectors;
@@ -174,13 +148,13 @@ void Sphere::GenNormals(vector<vec3> &norms, uint32_t numSectors, uint32_t numRi
 }
 
 /**
- * [Sphere::GenUVs description]
+ * [GenUVs description]
  * @param uvs        [description]
  * @param numSectors [description]
  * @param numRings   [description]
  */
 
-void Sphere::GenUVs(vector<vec2> &uvs, uint32_t numSectors, uint32_t numRings)
+void GenUVsSphere(vector<vec2> &uvs, uint32_t numSectors, uint32_t numRings)
 {
     float du = 1.0f / (float)numSectors;
     float dv = 1.0f / (float)(numRings + 2);
@@ -234,13 +208,13 @@ void Sphere::GenUVs(vector<vec2> &uvs, uint32_t numSectors, uint32_t numRings)
 }
 
 /**
- * [Sphere::GenTans description]
+ * [GenTans description]
  * @param tans       [description]
  * @param numSectors [description]
  * @param numRings   [description]
  */
 
-void Sphere::GenTans(vector<vec3> &tans, uint32_t numSectors, uint32_t numRings)
+void GenTansSphere(vector<vec3> &tans, uint32_t numSectors, uint32_t numRings)
 {
     float dtheta = pi<float>() / (numRings + 2);
     float dphi = 2.0f * pi<float>() / numSectors;
@@ -294,17 +268,4 @@ void Sphere::GenTans(vector<vec3> &tans, uint32_t numSectors, uint32_t numRings)
         float z = 0.0f;
         tans.push_back(normalize(vec3(x, y, z)));
     }
-}
-
-/**
- * [Sphere::Draw description]
- */
-
-void Sphere::Draw()
-{
-    glBindVertexArray(subMeshes[0].vaoID);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, numSideVerts);
-    glDrawArrays(GL_TRIANGLE_FAN, topOffset, numCapVerts);
-    glDrawArrays(GL_TRIANGLE_FAN, bottomOffset, numCapVerts);
-    glBindVertexArray(0);
 }

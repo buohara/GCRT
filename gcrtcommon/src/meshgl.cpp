@@ -1,4 +1,232 @@
-#include "Mesh.h"
+#include "meshgl.h"
+
+MeshGL::MeshGL(MeshType type, uint32_t rows, uint32_t cols)
+{
+    assert(type == PLANE);
+
+    vector<vec3> pos;
+    vector<vec3> norms;
+    vector<vec2> uvs;
+    vector<vec3> tans;
+    vector<ivec4> boneIDs;
+    vector<vec4> boneWts;
+
+    animated = false;
+
+    GenPositionsPlane(pos, rows, cols);
+    GenNormalsPlane(norms, rows, cols);
+    GenUVsPlane(uvs, rows, cols);
+    GenTangentsPlane(tans, rows, cols);
+
+    boneIDs.resize(pos.size(), ivec4(0));
+    boneWts.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
+
+    numVerts = (uint32_t)pos.size();
+    subMeshes.resize(1);
+    InitVertexObjects(0, pos, norms, uvs, boneIDs, boneWts);
+}
+
+MeshGL::MeshGL(MeshType type, uint32_t numSectors)
+{
+    assert(type == CYLINDER);
+
+    vector<vec3> pos;
+    vector<vec3> norms;
+    vector<vec2> uvs;
+    vector<vec3> tans;
+    vector<ivec4> boneIDs;
+    vector<vec4> boneWts;
+
+    animated = false;
+
+    GenPositionsCylinder(pos, numSectors, numSideVerts, topOffset, bottomOffset, numCapVerts);
+    GenNormalsCylinder(norms, numSectors);
+    GenUVsCylinder(uvs, numSectors);
+    GenTansCylinder(tans, numSectors);
+
+    boneIDs.resize(pos.size(), ivec4(0));
+    boneWts.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
+
+    subMeshes.resize(1);
+    InitVertexObjects(0, pos, norms, uvs, tans, boneIDs, boneWts);
+}
+
+MeshGL::MeshGL(MeshType type, string file)
+{
+    assert(type == SKELETAL);
+
+    Assimp::Importer importer;
+
+    const aiScene& scene = *(importer.ReadFile(
+        file,
+        aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs
+    ));
+
+    subMeshes.resize(scene.mNumMeshes);
+    animated = (scene.mNumAnimations > 0);
+    map<string, mat4> boneOffsets;
+
+    LoadVertexAndBoneData(scene, boneOffsets);
+
+    if (animated == true)
+    {
+        aiNode& scnRoot = *(scene.mRootNode);
+        root.name = scnRoot.mName.C_Str();
+
+        globalInverse = aiMatrix4x4ToGlm(scnRoot.mTransformation.Inverse());
+        CreateBoneHierarchy(scnRoot, root, boneOffsets);
+        LoadAnimations(scene);
+    }
+}
+
+MeshGL::MeshGL(MeshType type)
+{
+    assert(type == BOX);
+
+    vector<vec3> pos;
+    vector<vec3> norms;
+    vector<vec2> uvs;
+    vector<vec3> tans;
+    vector<ivec4> boneIDs;
+    vector<vec4> boneWts;
+
+    animated = false;
+
+    GenPositionsBox(pos);
+    GenNormalsBox(norms);
+    GenUVsBox(uvs);
+    GenTansBox(tans);
+
+    boneIDs.resize(pos.size(), ivec4(0));
+    boneWts.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
+
+    numVerts = (uint32_t)pos.size();
+
+    subMeshes.resize(1);
+    InitVertexObjects(0, pos, norms, uvs, tans, boneIDs, boneWts);
+}
+
+MeshGL::MeshGL(MeshType type, uint32_t numSectors, uint32_t numRings, bool invertIn)
+{
+    assert(type == SPHERE);
+
+    vector<vec3> pos;
+    vector<vec3> norms;
+    vector<vec2> uvs;
+    vector<vec3> tans;
+    vector<ivec4> boneIDs;
+    vector<vec4> boneWts;
+
+    animated = false;
+    invert = invertIn;
+
+    GenPositionsSphere(pos, numSectors, numRings, numSideVerts, topOffset, bottomOffset, numCapVerts);
+    GenNormalsSphere(norms, numSectors, numRings);
+    GenUVsSphere(uvs, numSectors, numRings);
+    GenTansSphere(tans, numSectors, numRings);
+
+    boneIDs.resize(pos.size(), ivec4(0));
+    boneWts.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
+
+    subMeshes.resize(1);
+    InitVertexObjects(0, pos, norms, uvs, tans, boneIDs, boneWts);
+}
+
+void MeshGL::Draw()
+{
+    switch (type)
+    {
+    case BOX:
+
+        glBindVertexArray(subMeshes[0].vaoID);
+        glDrawArrays(GL_TRIANGLES, 0, numVerts);
+        glBindVertexArray(0);
+        break;
+
+    case PLANE:
+
+        glBindVertexArray(subMeshes[0].vaoID);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, numVerts);
+        glBindVertexArray(0);
+        break;
+
+    case CYLINDER:
+
+        glBindVertexArray(subMeshes[0].vaoID);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, numSideVerts);
+        glDrawArrays(GL_TRIANGLE_FAN, topOffset, numCapVerts);
+        glDrawArrays(GL_TRIANGLE_FAN, bottomOffset, numCapVerts);
+        glBindVertexArray(0);
+        break;
+
+    case SPHERE:
+
+        glBindVertexArray(subMeshes[0].vaoID);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, numSideVerts);
+        glDrawArrays(GL_TRIANGLE_FAN, topOffset, numCapVerts);
+        glDrawArrays(GL_TRIANGLE_FAN, bottomOffset, numCapVerts);
+        glBindVertexArray(0);
+        break;
+
+    case SKELETAL:
+
+        for (uint32_t i = 0; i < subMeshes.size(); i++)
+        {
+            glBindVertexArray(subMeshes[i].vaoID);
+            glDrawElements(GL_TRIANGLES, subMeshes[i].numIdcs, GL_UNSIGNED_INT, 0);
+            glBindVertexArray(0);
+        }
+        break;
+
+    default:
+
+        break;
+    }
+}
+
+/**
+ * MeshGL::LoadVertexAndBoneData Load vertex and bone data from an Assimp mesh.
+ *
+ * @param scene       Input Assimp mesh to load (in)
+ * @param boneOffsets List of local bone offsets from mesh space to local space (out).
+ */
+
+void MeshGL::LoadVertexAndBoneData(
+    const aiScene& scene,
+    map<string, mat4>& boneOffsets
+)
+{
+    for (uint32 i = 0; i < scene.mNumMeshes; i++)
+    {
+        aiMesh& mesh = *(scene.mMeshes[i]);
+
+        vector<vec3> pos;
+        vector<vec3> norm;
+        vector<vec2> uv;
+        vector<uint32_t> idcs;
+        vector<ivec4> boneIDs;
+        vector<vec4> boneWeights;
+
+        subMeshes[i].numVerts = mesh.mNumVertices;
+        subMeshes[i].numIdcs = 3 * mesh.mNumFaces;
+
+        LoadVertexData(mesh, pos, norm, uv, idcs);
+
+        if (animated == false)
+        {
+            boneIDs.resize(pos.size(), ivec4(0));
+            boneWeights.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
+
+            InitVertexObjects(i, pos, norm, uv, idcs, boneIDs, boneWeights);
+            continue;
+        }
+
+        // Bone IDs and weights.
+
+        LoadBoneData(mesh, boneIDs, boneWeights, boneOffsets);
+        InitVertexObjects(i, pos, norm, uv, idcs, boneIDs, boneWeights);
+    }
+}
 
 /**
  * Mesh::InitVertexObjects Create GL buffers/vertex attributes for a mesh.
@@ -12,7 +240,7 @@
  * @param boneWeights Vertex bone weights.
  */
 
-void Mesh::InitVertexObjects(
+void MeshGL::InitVertexObjects(
     uint32_t subMeshIdx,
     vector<vec3> &pos, 
     vector<vec3> &norms,
@@ -84,7 +312,7 @@ void Mesh::InitVertexObjects(
  * @param boneWeights Vertex bone weights.
  */
 
-void Mesh::InitVertexObjects(
+void MeshGL::InitVertexObjects(
     uint32_t subMeshIdx,
     vector<vec3> &pos,
     vector<vec3> &norms,
@@ -149,7 +377,7 @@ void Mesh::InitVertexObjects(
 * @param boneWeights Vertex bone weights.
 */
 
-void Mesh::InitVertexObjects(
+void MeshGL::InitVertexObjects(
     uint32_t subMeshIdx,
     vector<vec3> &pos,
     vector<vec3> &norms,

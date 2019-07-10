@@ -8,7 +8,10 @@ using namespace glm;
 
 enum MeshTypeVk
 {
-    TRIANGLE
+    TRIANGLE,
+    BOX,
+    PLANE,
+    SPHERE
 };
 
 struct MeshVk

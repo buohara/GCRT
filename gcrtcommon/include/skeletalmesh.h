@@ -1,16 +1,19 @@
 #pragma once
 
-#include "mesh.h"
 #include "animation.h"
+#include "gcrt.h"
 
-// Don't want to include assimp headers here, as other files that include this
-// one will pick them up, even though they don't use assimp. Include actual 
-// assimp headers in cpp file, and just forward declare structs here.
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 struct aiNode;
 struct aiScene;
 struct aiNodeAnim;
 struct aiMesh;
+
+using namespace std;
+using namespace glm;
 
 struct BoneTreeNode
 {
@@ -30,45 +33,29 @@ struct BoneTreeNode
     bool LoadAnimation(aiNodeAnim &anim);
 };
 
-struct SkeletalMesh : Mesh
-{
-    map<string, uint32_t> boneMap;
-    BoneTreeNode root;
+void CreateBoneHierarchy(
+    aiNode& aiNode,
+    BoneTreeNode& btNode,
+    map<string, mat4>& boneOffsets
+);
 
-    static const uint32_t maxBones = 64;
+void LoadVertexData(
+    aiMesh& mesh,
+    vector<vec3>& pos,
+    vector<vec3>& norm,
+    vector<vec2>& UV,
+    vector<uint32_t>& idcs
+);
 
-    void Create(string file);
+void LoadBoneData(
+    aiMesh& mesh,
+    vector<ivec4>& boneIDs,
+    vector<vec4>& boneWts,
+    map<string, mat4>& boneOffsets
+);
 
-    void LoadVertexAndBoneData(
-        const aiScene &scene,
-        map<string, mat4> &boneOffsets
-    );
-    
-    void CreateBoneHierarchy(
-        aiNode &aiNode, 
-        BoneTreeNode &btNode,
-        map<string, mat4> &boneOffsets
-    );
-    
-    void LoadVertexData(
-        aiMesh &mesh,
-        vector<vec3> &pos,
-        vector<vec3> &norm,
-        vector<vec2> &UV,
-        vector<uint32_t> &idcs
-    );
+mat4 aiMatrix4x4ToGlm(aiMatrix4x4& from);
 
-    void LoadBoneData(
-        aiMesh &mesh,
-        vector<ivec4> &boneIDs,
-        vector<vec4> &boneWts,
-        map<string, mat4> &boneOffsets
-    );
-
-    void LoadMaterials(const aiScene &scene);
-
-    void LoadAnimations(const aiScene &scene);
-    void GetAnimation(float t, mat4 rootTrans, vector<mat4> &bones);
-
-    void Draw();
-};
+void LoadMaterials(const aiScene& scene);
+void LoadAnimations(const aiScene& scene);
+void GetAnimation(float t, mat4 rootTrans, vector<mat4>& bones);

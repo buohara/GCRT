@@ -1,48 +1,29 @@
 #include "plane.h"
 
 /**
- * [Plane::Create description]
+ * [Create description]
  * @param rows [description]
  * @param cols [description]
  */
 
-void Plane::Create(
+Plane(
     uint32_t rows,
     uint32_t cols
 )
 {
     // Generate a grid of vertices/normals.
 
-    vector<vec3> pos;
-    vector<vec3> norms;
-    vector<vec2> uvs;
-    vector<vec3> tans;
-    vector<ivec4> boneIDs;
-    vector<vec4> boneWts;
-
-    animated = false;
-
-    GenPositions(pos, rows, cols);
-    GenNormals(norms, rows, cols);
-    GenUVs(uvs, rows, cols);
-    GenTangents(tans, rows, cols);
     
-    boneIDs.resize(pos.size(), ivec4(0));
-    boneWts.resize(pos.size(), vec4(1.0f, 0.0f, 0.0f, 0.0f));
-
-    numVerts = (uint32_t)pos.size();
-    subMeshes.resize(1);
-    InitVertexObjects(0, pos, norms, uvs, boneIDs, boneWts);
 }
 
 /**
- * [Plane::GenPositions description]
+ * [GenPositions description]
  * @param pos  [description]
  * @param rows [description]
  * @param cols [description]
  */
 
-void Plane::GenPositions(vector<vec3> &pos, uint32_t rows, uint32_t cols)
+void GenPositionsPlane(vector<vec3> &pos, uint32_t rows, uint32_t cols)
 {
     float xstride = 2.0f / (float)cols;
     float ystride = 2.0f / (float)rows;
@@ -85,13 +66,13 @@ void Plane::GenPositions(vector<vec3> &pos, uint32_t rows, uint32_t cols)
 }
 
 /**
- * [Plane::GenNormals description]
+ * [GenNormals description]
  * @param norms [description]
  * @param rows  [description]
  * @param cols  [description]
  */
 
-void Plane::GenNormals(vector<vec3> &norms, uint32_t rows, uint32_t cols)
+void GenNormalsPlane(vector<vec3> &norms, uint32_t rows, uint32_t cols)
 {
     for (uint32_t i = 0; i < rows; i++)
     {
@@ -114,13 +95,13 @@ void Plane::GenNormals(vector<vec3> &norms, uint32_t rows, uint32_t cols)
 }
 
 /**
- * [Plane::GenUVs description]
+ * [GenUVs description]
  * @param uvs  [description]
  * @param rows [description]
  * @param cols [description]
  */
 
-void Plane::GenUVs(vector<vec2> &uvs, uint32_t rows, uint32_t cols)
+void GenUVsPlane(vector<vec2> &uvs, uint32_t rows, uint32_t cols)
 {
     float ustride = 1.0f / (float)cols;
     float vstride = 1.0f / (float)rows;
@@ -159,13 +140,13 @@ void Plane::GenUVs(vector<vec2> &uvs, uint32_t rows, uint32_t cols)
 }
 
 /**
- * [Plane::GenTangents description]
+ * [GenTangents description]
  * @param tans [description]
  * @param rows [description]
  * @param cols [description]
  */
 
-void Plane::GenTangents(vector<vec3> &tans, uint32_t rows, uint32_t cols)
+void GenTangentsPlane(vector<vec3> &tans, uint32_t rows, uint32_t cols)
 {
     for (uint32_t i = 0; i < rows; i++)
     {
@@ -183,15 +164,4 @@ void Plane::GenTangents(vector<vec3> &tans, uint32_t rows, uint32_t cols)
 
         tans.push_back(vec3(0.0, 1.0, 0.0));
     }
-}
-
-/**
- * [Plane::Draw description]
- */
-
-void Plane::Draw()
-{
-    glBindVertexArray(subMeshes[0].vaoID);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, numVerts);
-    glBindVertexArray(0);
 }
