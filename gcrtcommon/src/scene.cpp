@@ -67,6 +67,8 @@ void Scene::SetSkyTex(string path, GLuint id)
     skyTex.texID        = id;
 }
 
+#ifdef 0
+
 /**
  * Scene::Save Save scene to file. Loop through all meshes, textures, materials, lights,
  * etc, and write object descriptions to file.
@@ -668,6 +670,8 @@ void Scene::Load(string file)
     fin.close();
 }
 
+#endif
+
 /**
  * Scene::AddMaterial Add a material to the scene's list of available
  * materials.
@@ -695,80 +699,7 @@ void Scene::AddMaterial(string name, RMaterial mat)
  * @param pGeom [description]
  */
 
-void Scene::AddMesh(string name, shared_ptr<Mesh> pGeom)
+void Scene::AddMesh(string name, MeshGL& mesh)
 {
-    meshes[name] = pGeom;
-
-    meshNames.resize(0);
-
-    map<string, shared_ptr<Mesh>>::iterator it;
-
-    for (it = meshes.begin(); it != meshes.end(); it++)
-    {
-        meshNames.push_back((*it).first.c_str());
-    }
-}
-
-/**
- * [Scene::AddModel description]
- * @param name  [description]
- * @param model [description]
- */
-
-void Scene::AddModel(string name, Model model)
-{
-    models[name] = model;
-    modelNames.resize(0);
-
-    map<string, Model>::iterator it;
-
-    for (it = models.begin(); it != models.end(); it++)
-    {
-        modelNames.push_back((*it).first.c_str());
-    }
-}
-
-/**
- * [Scene::LoadModelFromFile description]
- * @param name           [description]
- * @param modelFile      [description]
- * @param diffuseTexFile [description]
- * @param normalTexFile  [description]
- * @param pickerColor    [description]
- * @param meshOnly       [description]
- */
-
-void Scene::LoadModelFromFile(
-    string name,
-    string modelFile,
-    string diffuseTexFile,
-    string normalTexFile,
-    vec3 pickerColor,
-    bool meshOnly
-)
-{
-    SkeletalMesh mesh;
-    mesh.Create(modelFile);
-    mesh.loadFromFile = true;
-    mesh.filePath = modelFile;
-    mesh.name = name;
-
-    AddMesh(name, make_shared<SkeletalMesh>(mesh));
-
-    if (meshOnly)
-    {
-        return;
-    }
-
-    Model model;
-    model.InitModelMatrices();
-    model.Scale(vec3(0.05, 0.05, 0.05));
-    model.Rotate(vec3(1.56, 0, 0));
-    model.meshName = name;
-    model.matName = string("Mirror");
-    model.pickerColor = pickerColor;
-
-    //model.Rotate(vec3(0.0, pi<float>(), 0.0));
-
-    AddModel(name, model);
+    meshes[name] = mesh;
 }

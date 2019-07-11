@@ -1,4 +1,4 @@
-#include "gcrt.h"
+#include "gcrtcommon.h"
 #include "sceneselector.h"
 
 /**

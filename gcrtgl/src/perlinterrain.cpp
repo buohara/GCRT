@@ -1,5 +1,7 @@
 #include "perlinterrain.h"
 
+#ifdef 0
+
 /**
  * PerlinTerrain::Create Create a heightmap grid with spacing 1/ndiv, and height
  * generated with perlin noise.
@@ -77,3 +79,5 @@ void PerlinTerrain::Draw()
 {
 
 }
+
+#endif

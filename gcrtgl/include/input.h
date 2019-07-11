@@ -1,5 +1,5 @@
 #pragma once
 
-#include "gcrt.h"
+#include "gcrtcommon.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

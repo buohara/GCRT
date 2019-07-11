@@ -80,7 +80,6 @@ void PickerPass::Init()
 
 void PickerPass::Render()
 {
-    map<string, Model> models = g_scn.models;
     Camera cam = g_scn.cam;
 
     glBindFramebuffer(GL_FRAMEBUFFER, pickerFbo);
@@ -109,15 +108,13 @@ void PickerPass::Render()
         pMesh->Draw();
     }*/
 
-    for (auto &pair : models)
+    for (auto &mesh : g_scn.meshes)
     {
-        Model &model        = pair.second;
-        vec3 pickerColor    = model.pickerColor;
+        vec3 pickerColor    = mesh.second.pickerColor;
         GLuint pickerID     = glGetUniformLocation(pickerProgram, "pickerColor");
         glUniform3fv(pickerID, 1, &pickerColor[0]);
 
-        shared_ptr<Mesh> pMesh = g_scn.meshes[model.meshName];
-        model.SetAnimMatrices(pickerProgram);
-        pMesh->Draw();
+        mesh.second.SetAnimMatrices(pickerProgram);
+        mesh.second.Draw();
     }
 }

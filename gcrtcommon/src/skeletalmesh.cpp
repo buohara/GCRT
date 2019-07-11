@@ -1,9 +1,5 @@
 #include "skeletalmesh.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 /**
  * aiMatrix4x4ToGlm Convert an Assimp matrix to GLM matrix.
  *
@@ -15,22 +11,22 @@ mat4 aiMatrix4x4ToGlm(aiMatrix4x4& from)
 {
     glm::mat4 to;
 
-    to[0][0] = (GLfloat)from.a1;
-    to[0][1] = (GLfloat)from.b1;  
-    to[0][2] = (GLfloat)from.c1; 
-    to[0][3] = (GLfloat)from.d1;
-    to[1][0] = (GLfloat)from.a2; 
-    to[1][1] = (GLfloat)from.b2;
-    to[1][2] = (GLfloat)from.c2;
-    to[1][3] = (GLfloat)from.d2;
-    to[2][0] = (GLfloat)from.a3; 
-    to[2][1] = (GLfloat)from.b3;
-    to[2][2] = (GLfloat)from.c3;
-    to[2][3] = (GLfloat)from.d3;
-    to[3][0] = (GLfloat)from.a4;
-    to[3][1] = (GLfloat)from.b4;
-    to[3][2] = (GLfloat)from.c4;
-    to[3][3] = (GLfloat)from.d4;
+    to[0][0] = (float)from.a1;
+    to[0][1] = (float)from.b1;  
+    to[0][2] = (float)from.c1; 
+    to[0][3] = (float)from.d1;
+    to[1][0] = (float)from.a2; 
+    to[1][1] = (float)from.b2;
+    to[1][2] = (float)from.c2;
+    to[1][3] = (float)from.d2;
+    to[2][0] = (float)from.a3; 
+    to[2][1] = (float)from.b3;
+    to[2][2] = (float)from.c3;
+    to[2][3] = (float)from.d3;
+    to[3][0] = (float)from.a4;
+    to[3][1] = (float)from.b4;
+    to[3][2] = (float)from.c4;
+    to[3][3] = (float)from.d4;
 
     return to;
 }
@@ -49,7 +45,8 @@ mat4 aiMatrix4x4ToGlm(aiMatrix4x4& from)
 
 void LoadAnimations(
     const aiScene &scene,
-    BoneTreeNode &root)
+    BoneTreeNode &root
+)
 {
     for (uint32_t i = 0; i < scene.mAnimations[0]->mNumChannels; i++)
     {
@@ -92,7 +89,7 @@ bool BoneTreeNode::LoadAnimation(aiNodeAnim &anim)
     {
         for (uint32_t i = 0; i < children.size(); i++)
         {
-            if (children[i]->LoadAnimation(anim))
+            if (children[i].LoadAnimation(anim))
             {
                 return true;
             }
@@ -128,11 +125,11 @@ void CreateBoneHierarchy(
 
         child.parentOffset = aiMatrix4x4ToGlm(aiNode.mChildren[i]->mTransformation);
 
-        btNode.children.push_back(make_shared<BoneTreeNode>(child));
+        btNode.children.push_back(child);
         
         CreateBoneHierarchy(
             *aiNode.mChildren[i],
-            *btNode.children[i],
+            btNode.children[i],
             boneOffsets
         );
     }
@@ -363,10 +360,10 @@ void BoneTreeNode::GetBoneMatrices(
         mat4 boneMat = animation.GetAnimationMatrix(t);     
         matrices[boneIdx] = parent * boneMat * boneOffset;
 
-        for (uint32_t i = 0; i < children.size(); i++) children[i]->GetBoneMatrices(t, matrices, parent * boneMat, boneMap);
+        for (uint32_t i = 0; i < children.size(); i++) children[i].GetBoneMatrices(t, matrices, parent * boneMat, boneMap);
     }
     else
     {
-        for (uint32_t i = 0; i < children.size(); i++) children[i]->GetBoneMatrices(t, matrices, parent* boneMat, boneMap);
+        for (uint32_t i = 0; i < children.size(); i++) children[i].GetBoneMatrices(t, matrices, parent* boneMat, boneMap);
     }
 }

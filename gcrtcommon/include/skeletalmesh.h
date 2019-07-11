@@ -1,7 +1,7 @@
 #pragma once
 
 #include "animation.h"
-#include "gcrt.h"
+#include "gcrtcommon.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -15,10 +15,12 @@ struct aiMesh;
 using namespace std;
 using namespace glm;
 
+const uint32_t maxBones = 64;
+
 struct BoneTreeNode
 {
     string name;
-    vector<shared_ptr<BoneTreeNode>> children;
+    vector<BoneTreeNode> children;
     Animation animation;
     mat4 boneOffset;
     mat4 parentOffset;
@@ -31,6 +33,14 @@ struct BoneTreeNode
     );
 
     bool LoadAnimation(aiNodeAnim &anim);
+};
+
+struct Skeleton
+{
+    vector<mat4> bones;
+    map<string, uint32_t> boneMap;
+    BoneTreeNode root;
+    mat4 globalInverse;
 };
 
 void CreateBoneHierarchy(
@@ -51,11 +61,19 @@ void LoadBoneData(
     aiMesh& mesh,
     vector<ivec4>& boneIDs,
     vector<vec4>& boneWts,
-    map<string, mat4>& boneOffsets
+    map<string, mat4>& boneOffsets,
+    map<string, uint32_t>& boneMap
 );
 
 mat4 aiMatrix4x4ToGlm(aiMatrix4x4& from);
 
 void LoadMaterials(const aiScene& scene);
-void LoadAnimations(const aiScene& scene);
-void GetAnimation(float t, mat4 rootTrans, vector<mat4>& bones);
+void LoadAnimations(const aiScene& scene, BoneTreeNode& root);
+
+void GetAnimation(
+    BoneTreeNode& root,
+    float t,
+    mat4 rootTrans,
+    vector<mat4>& bones,
+    map<string, uint32_t>& boneMap
+);

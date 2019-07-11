@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gcrt.h"
+#include "gcrtcommon.h"
 #include "scene.h"
 #include "renderpass.h"
 #include "pickerpass.h"

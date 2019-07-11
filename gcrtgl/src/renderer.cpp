@@ -213,25 +213,14 @@ void Renderer::Render()
     g_scn.cam.Update();
     float dt = 20.0f * (t2 - t1);
     
-    for (auto &model : g_scn.models)
-    {
-        auto pMesh = g_scn.meshes[model.second.meshName];
-        model.second.UpdateAnimation(dt, pMesh);
-    }
-
-    for (auto &pass : passes)
-    {
-        pass.second->Render();
-    }
+    for (auto &mesh : g_scn.meshes) mesh.second.GetAnimation(dt, pMesh);
+    for (auto &pass : passes) pass.second->Render();
 
     SwapBuffers(hDC);
 
     t2 = (float)GetMilliseconds() / 1000.0f;
 
-    if (dt > 150.0)
-    {
-        t1 = t2;
-    }
+    if (dt > 150.0) t1 = t2;
 }
 
 /**
@@ -246,10 +235,7 @@ void Renderer::HandleInputs(MSG &msg)
 
     case WM_KEYDOWN:
 
-        if (msg.wParam == 0x46)
-        {
-            g_settings.wireFrame = !g_settings.wireFrame;
-        }
+        if (msg.wParam == 0x46) g_settings.wireFrame = !g_settings.wireFrame;
 
         g_scn.cam.HandleKeyDown(msg.wParam);
         break;
@@ -308,14 +294,14 @@ void Renderer::DoPick(LPARAM mouseCoord)
 
         static bool firstHit = true;
 
-        for (auto &model : g_scn.models)
+        for (auto &mesh : g_scn.meshes)
         {
-            vec3 pickerColor = model.second.pickerColor;
+            vec3 pickerColor = mesh.second.pickerColor;
             if (abs(pickerColor.x - pixel.x) < 0.05 &&
                 abs(pickerColor.y - pixel.y) < 0.05 &&
                 abs(pickerColor.z - pixel.z) < 0.05)
             {
-                model.second.selected = true;
+                mesh.second.selected = true;
 
                 if (firstHit == true)
                 {
@@ -323,9 +309,9 @@ void Renderer::DoPick(LPARAM mouseCoord)
                 }
                 else
                 {
-                    if (model.first != selected)
+                    if (mesh.first != selected)
                     {
-                        g_scn.models[selected].selected = false;
+                        g_scn.meshes[selected].selected = false;
                     }
                 }
 

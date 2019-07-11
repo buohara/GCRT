@@ -1,7 +1,6 @@
 #pragma once
 
-#include "GCRT.h"
-#include "model.h"
+#include "gcrtcommon.h"
 #include "shader.h"
 #include "scene.h"
 

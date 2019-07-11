@@ -23,13 +23,7 @@
     <ClInclude Include="include\cylinder.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\imgloader.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\material.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\model.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\plane.h">
@@ -44,13 +38,7 @@
     <ClInclude Include="include\sphere.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\gcrt.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\utils.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\meshgl.h">
+    <ClInclude Include="include\gcrtcommon.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -67,13 +55,7 @@
     <ClCompile Include="src\cylinder.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\imgloader.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\material.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\model.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\plane.cpp">
@@ -86,12 +68,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\sphere.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\utils.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\meshgl.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

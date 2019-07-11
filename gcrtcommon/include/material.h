@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GCRT.h"
+#include "gcrtcommon.h"
 #include "imgloader.h"
 #include "light.h"
 

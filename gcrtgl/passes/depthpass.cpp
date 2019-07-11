@@ -64,7 +64,6 @@ void DepthPass::Init()
 
 void DepthPass::Render()
 {
-    map<string, Model> &models = g_scn.models;
     vector<DirectionalLight> &dirLights = g_scn.dirLights;
 
     glBindFramebuffer(GL_FRAMEBUFFER, dbFbo);
@@ -85,12 +84,8 @@ void DepthPass::Render()
     GLuint projID = glGetUniformLocation(depthProgram, "proj");
     glUniformMatrix4fv(projID, 1, false, &depthProj[0][0]);
 
-    map<string, Model>::iterator it;
-
-    for (it = models.begin(); it != models.end(); it++)
+    for (auto &mesh : g_scn.meshes)
     {
-        shared_ptr<Mesh> pMesh = g_scn.meshes[(*it).second.meshName];
-        (*it).second.SetAnimMatrices(depthProgram);
-        pMesh->Draw();
+        mesh.second.Draw();
     }
 }

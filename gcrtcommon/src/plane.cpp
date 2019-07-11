@@ -1,22 +1,6 @@
 #include "plane.h"
 
 /**
- * [Create description]
- * @param rows [description]
- * @param cols [description]
- */
-
-Plane(
-    uint32_t rows,
-    uint32_t cols
-)
-{
-    // Generate a grid of vertices/normals.
-
-    
-}
-
-/**
  * [GenPositions description]
  * @param pos  [description]
  * @param rows [description]

@@ -1,12 +1,11 @@
 #pragma once
 
-#include "GCRT.h"
+#include "gcrtgl.h"
 #include "plane.h"
 #include "sphere.h"
 #include "cylinder.h"
 #include "box.h"
 #include "skeletalmesh.h"
-#include "utils.h"
 
 using namespace std;
 using namespace glm;
@@ -59,15 +58,14 @@ struct MeshGL
 
     // Skeletal mesh data structures
 
-    map<string, uint32_t> boneMap;
-    BoneTreeNode root;
-    mat4 globalInverse;
-    static const uint32_t maxBones = 64;
+    Skeleton skeleton;
 
     void LoadVertexAndBoneData(
         const aiScene& scene,
         map<string, mat4>& boneOffsets
     );
+
+    // Mesh constructors by type (sphere, box, skeletal, etc)
 
     MeshGL(MeshType type, uint32_t rows, uint32_t cols);
     MeshGL(MeshType type, uint32_t numSectors);
@@ -77,11 +75,31 @@ struct MeshGL
 
     void Draw();
     
-    void GetAnimation(float t, mat4 rootTrans, vector<mat4> &bones) 
-    {
-        if (bones.size() != 1) bones.resize(1);
-        bones[0] = rootTrans;
-    };
+    void GetAnimation(float t, mat4 rootTrans, vector<mat4>& bones);
+    void SetAnimMatrices(GLuint renderProgram);
+
+    string meshName;
+    string matName;
+    vec3 pickerColor;
+    bool selected;
+
+    vec3 pos;
+    vec3 dims;
+    vec3 angles;
+
+    mat4 scl;
+    mat4 trans;
+    mat4 rot;
+
+    mat4 model;
+    mat4 modelInv;
+
+    void InitModelMatrices();
+    void Translate(vec3 tx);
+    void Scale(vec3 dimsIn);
+    void Rotate(vec3 thetas);
+
+    // Create GL buffers and upload data to GPU.
 
     void InitVertexObjects(
         uint32_t subMeshIdx,

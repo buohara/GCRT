@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef 0
+
 #include "mesh.h"
 #include "noise.h"
 
@@ -15,3 +17,5 @@ struct PerlinTerrain : Mesh
     void GenUVs(vector<vec2> &uvs);
     void GenTans(vector<vec3> &uvs);
 };
+
+#endif

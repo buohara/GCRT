@@ -167,7 +167,6 @@ void MainPass::CreateRenderFbo()
 
 void MainPass::Render()
 {
-    map<string, Model> &models = g_scn.models;
     Camera cam = g_scn.cam;
     vector<DirectionalLight> dirLights = g_scn.dirLights;
 
@@ -240,30 +239,19 @@ void MainPass::Render()
 
     // 3. Material uniforms and draw.
 
-    map<string, Model>::iterator it;
-
-    for (it = models.begin(); it != models.end(); it++)
+    for (auto &mesh : g_scn.meshes)
     {
-        RMaterial mat = g_scn.materials[(*it).second.matName];
+        RMaterial mat = g_scn.materials[mesh.second.matName];
         mat.ApplyMaterial(renderProgram);
 
         GLuint selectedID = glGetUniformLocation(renderProgram, "selected");
-        glUniform1i(selectedID, (*it).second.selected);
+        glUniform1i(selectedID, mesh.second.selected);
 
-        shared_ptr<Mesh> pMesh = g_scn.meshes[(*it).second.meshName];
-        (*it).second.SetAnimMatrices(renderProgram);
+        mesh.second.SetAnimMatrices(renderProgram);
 
-        if (pMesh->invert)
-        {
-            glCullFace(GL_FRONT);
-        }
-
-        pMesh->Draw();
-
-        if (pMesh->invert)
-        {
-            glCullFace(GL_BACK);
-        }
+        if (mesh.second.invert) glCullFace(GL_FRONT);
+        mesh.second.Draw();
+        if (mesh.second.invert) glCullFace(GL_BACK);
     }
 
     // Resolve MSAA buffer.
