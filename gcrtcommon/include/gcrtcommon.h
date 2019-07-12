@@ -31,16 +31,3 @@
 #include "glm/gtc/matrix_inverse.hpp"
 #include "glm/gtx/quaternion.hpp"
 #include <glm/gtc/type_ptr.hpp>
-
-struct RenderSettings
-{
-    uint32_t winW;
-    uint32_t winH;
-    bool wireFrame;
-    bool useDOF;
-    bool useBloom;
-    bool useSkyBox;
-    uint32_t msaaSamples;
-    bool loadSceneFromFile;
-    std::string sceneName;
-};

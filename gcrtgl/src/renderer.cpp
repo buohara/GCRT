@@ -3,24 +3,8 @@
 #define GLEW_STATIC
 
 RenderSettings g_settings = { 0 };
-Scene g_scn = {};
 
-static long long GetMilliseconds()
-{
-    static LARGE_INTEGER frequency;
-    static BOOL useQpc = QueryPerformanceFrequency(&frequency);
-
-    if (useQpc)
-    {
-        LARGE_INTEGER now;
-        QueryPerformanceCounter(&now);
-        return (1000LL * now.QuadPart) / frequency.QuadPart;
-    }
-    else
-    {
-        return GetTickCount();
-    }
-}
+Renderer::Renderer(HINSTANCE hInstance, string windowName) {}
 
 /**
  * Renderer::CreateGLContext Create OpenGL context and swapchain.
@@ -57,10 +41,7 @@ void Renderer::CreateGLContext()
 
     GLenum err = glewInit();
 
-    if (err != GLEW_OK)
-    {
-        MessageBoxA(0, "Coult not initialize GLEW.", "Error", 0);
-    }
+    if (err != GLEW_OK) MessageBoxA(0, "Coult not initialize GLEW.", "Error", 0);
 
     // Real 3.1 context.
 
@@ -124,7 +105,7 @@ void Renderer::CreateRenderWindow(
  * camera and render passes.
  */
 
-void Renderer::Init()
+void Renderer::Init(Scene& scn)
 {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -147,7 +128,7 @@ void Renderer::Init()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClearDepth(1.0f);
 
-    CreateNoiseTexture();
+    CreateNoiseTexture(scn);
 }
 
 /**
@@ -182,11 +163,11 @@ vec3 Renderer::nextPickerColor()
  * @param h New window height.
  */
 
-void Renderer::UpdateViewPorts()
+void Renderer::UpdateViewPorts(Scene& scn)
 {
-    uint32_t w = g_settings.winW;
-    uint32_t h = g_settings.winH;
-    g_scn.cam.aspect = (float)w / (float)h;
+    uint32_t w          = g_settings.winW;
+    uint32_t h          = g_settings.winH;
+    scn.cam.aspect      = (float)w / (float)h;
 }
 
 /**
@@ -208,18 +189,16 @@ void Renderer::ResizeRenderFbo()
  * @param hDC Device context handle (for flipping back buffers).
  */
 
-void Renderer::Render()
+void Renderer::Render(Scene &scn)
 {
-    g_scn.cam.Update();
+    scn.cam.Update();
     float dt = 20.0f * (t2 - t1);
     
-    for (auto &mesh : g_scn.meshes) mesh.second.GetAnimation(dt, pMesh);
-    for (auto &pass : passes) pass.second->Render();
+    for (auto &mesh : scn.meshes) mesh.second.GetAnimation(dt);
+    for (auto &pass : passes) pass.second->Render(scn);
 
     SwapBuffers(hDC);
-
     t2 = (float)GetMilliseconds() / 1000.0f;
-
     if (dt > 150.0) t1 = t2;
 }
 
@@ -228,7 +207,7 @@ void Renderer::Render()
  * @param msg Input message.
  */
 
-void Renderer::HandleInputs(MSG &msg)
+void Renderer::HandleInputs(MSG &msg, Scene &scn)
 {
     switch (msg.message)
     {
@@ -237,25 +216,25 @@ void Renderer::HandleInputs(MSG &msg)
 
         if (msg.wParam == 0x46) g_settings.wireFrame = !g_settings.wireFrame;
 
-        g_scn.cam.HandleKeyDown(msg.wParam);
+        scn.cam.HandleKeyDown(msg.wParam);
         break;
 
     case WM_KEYUP:
 
-        g_scn.cam.HandleKeyUp(msg.wParam);
+        scn.cam.HandleKeyUp(msg.wParam);
         break;
 
     case WM_MOUSEMOVE:
 
-        g_scn.cam.HandleMouseMove(msg.lParam);
+        scn.cam.HandleMouseMove(msg.lParam);
         mousePos[0] = (double)GET_X_LPARAM(msg.lParam);
         mousePos[1] = (double)GET_Y_LPARAM(msg.lParam) + 40.0;
         break;
 
     case WM_LBUTTONDOWN:
 
-        g_scn.cam.HandleMouseDown(msg.lParam);
-        DoPick(msg.lParam);
+        scn.cam.HandleMouseDown(msg.lParam);
+        DoPick(msg.lParam, scn);
         mouseDown[0] = true;
         mousePos[0] = (double)GET_X_LPARAM(msg.lParam);
         mousePos[1] = (double)GET_Y_LPARAM(msg.lParam) + 40.0;
@@ -263,7 +242,7 @@ void Renderer::HandleInputs(MSG &msg)
 
     case WM_LBUTTONUP:
 
-        g_scn.cam.HandleMouseUp();
+        scn.cam.HandleMouseUp();
         mouseDown[0] = false;
         break;
 
@@ -279,7 +258,7 @@ void Renderer::HandleInputs(MSG &msg)
  * @param mouseCoord (x, y) coordinates of mouse click.
  */
 
-void Renderer::DoPick(LPARAM mouseCoord)
+void Renderer::DoPick(LPARAM mouseCoord, Scene &scn)
 {
     if (passes.count("PickerPass") > 0)
     {
@@ -294,7 +273,7 @@ void Renderer::DoPick(LPARAM mouseCoord)
 
         static bool firstHit = true;
 
-        for (auto &mesh : g_scn.meshes)
+        for (auto &mesh : scn.meshes)
         {
             vec3 pickerColor = mesh.second.pickerColor;
             if (abs(pickerColor.x - pixel.x) < 0.05 &&
@@ -303,19 +282,13 @@ void Renderer::DoPick(LPARAM mouseCoord)
             {
                 mesh.second.selected = true;
 
-                if (firstHit == true)
-                {
-                    firstHit = false;
-                }
+                if (firstHit == true) firstHit = false;
                 else
                 {
-                    if (mesh.first != selected)
-                    {
-                        g_scn.meshes[selected].selected = false;
-                    }
+                    if (mesh.first != selected) scn.meshes[selected].selected = false;
                 }
 
-                selected = model.first;
+                selected = mesh.first;
             }
         }
     }
@@ -326,7 +299,7 @@ void Renderer::DoPick(LPARAM mouseCoord)
  * for effects that require random samples at each pixel.
  */
 
-void Renderer::CreateNoiseTexture()
+void Renderer::CreateNoiseTexture(Scene &scn)
 {
     uint32_t w = 1024;
     uint32_t h = 1024;
@@ -334,10 +307,7 @@ void Renderer::CreateNoiseTexture()
     vector<BYTE> pixels;
     pixels.resize(w * h);
 
-    for (uint32 i = 0; i < w * h; i++)
-    {
-        pixels[i] = (BYTE)(256 * (float)rand() / (float)RAND_MAX);
-    }
+    for (uint32 i = 0; i < w * h; i++) pixels[i] = (BYTE)(256 * (float)rand() / (float)RAND_MAX);
 
     GLuint noiseTexID;
     glGenTextures(1, &noiseTexID);
@@ -349,5 +319,5 @@ void Renderer::CreateNoiseTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    g_scn.AddDiffTexture("NoiseTex", "", noiseTexID);
+    scn.AddDiffTexture("NoiseTex", "", noiseTexID);
 }

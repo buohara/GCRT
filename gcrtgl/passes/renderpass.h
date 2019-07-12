@@ -6,5 +6,5 @@
 
 struct RenderPass
 {
-    virtual void Render() = 0;
+    virtual void Render(Scene &scn) = 0;
 };

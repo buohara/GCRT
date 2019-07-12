@@ -7,6 +7,8 @@ using namespace glm;
 
 struct Camera
 {
+    Camera(uint32_t w, uint32_t h);
+
     vec3 pos;
     vec3 lookDir;
     vec3 up;
@@ -19,27 +21,17 @@ struct Camera
     float nclip;
     float fclip;
 
-    const float txSpeed = 0.2f;
-    const float fovSpeed = 0.2f;
-    const float rotSpeed = 0.01f;
+    const float txSpeed;
+    const float fovSpeed;
+    const float rotSpeed;
 
-    bool downKeys[256] = { false };
-    bool bMouseDown = false;
+    bool downKeys[256];
+    bool bMouseDown;
 
     mat4 projection;
     mat4 view;
 
     double mouseTime;
-
-    void Init(
-        vec3 posIn, 
-        vec3 lookAtIn,
-        vec3 upIn,
-        float aspectIn,
-        float fovIn,
-        float nclipIn,
-        float fclipIn
-    );
 
     void HandleMouseDown(LPARAM mouse);
     void HandleMouseUp();
@@ -50,4 +42,8 @@ struct Camera
     void Update();
     mat4 GetProjection();
     mat4 GetView();
+
+private:
+
+    Camera();
 };

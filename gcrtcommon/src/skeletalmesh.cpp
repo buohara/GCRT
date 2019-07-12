@@ -274,10 +274,7 @@ void LoadBoneData(
             boneOffset = aiMatrix4x4ToGlm(bone.mOffsetMatrix);          
             boneOffsets[bone.mName.C_Str()] = boneOffset;
         }
-        else
-        {
-            boneID = boneMap[bone.mName.C_Str()];
-        }
+        else boneID = boneMap[bone.mName.C_Str()];
 
         for (uint32_t k = 0; k < mesh.mBones[j]->mNumWeights; k++)
         {

@@ -16,7 +16,8 @@ enum MeshType
     PLANE,
     SPHERE,
     CYLINDER,
-    SKELETAL
+    SKELETAL,
+    MESHTYPE_INVALID
 };
 
 struct SubMesh
@@ -67,6 +68,7 @@ struct MeshGL
 
     // Mesh constructors by type (sphere, box, skeletal, etc)
 
+    MeshGL() : type(MESHTYPE_INVALID) {}
     MeshGL(MeshType type, uint32_t rows, uint32_t cols);
     MeshGL(MeshType type, uint32_t numSectors);
     MeshGL(MeshType type, string file);
@@ -75,7 +77,7 @@ struct MeshGL
 
     void Draw();
     
-    void GetAnimation(float t, mat4 rootTrans, vector<mat4>& bones);
+    void GetAnimation(float t);
     void SetAnimMatrices(GLuint renderProgram);
 
     string meshName;
@@ -94,7 +96,6 @@ struct MeshGL
     mat4 model;
     mat4 modelInv;
 
-    void InitModelMatrices();
     void Translate(vec3 tx);
     void Scale(vec3 dimsIn);
     void Rotate(vec3 thetas);

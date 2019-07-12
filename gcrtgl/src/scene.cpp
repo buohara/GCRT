@@ -4,9 +4,7 @@
  * Scene::Scene Default constructor.
  */
 
-Scene::Scene()
-{
-}
+Scene::Scene(uint32_t w, uint32_t h) : cam(w, h) {}
 
 /**
  * Scene::AddDiffTexture Add a diffuse texture to the scene's list
@@ -19,16 +17,8 @@ Scene::Scene()
 
 void Scene::AddDiffTexture(string name, string path, GLuint id)
 {
-    diffTextures[name].texID = id;
-    diffTextures[name].imagePath = path;
-    diffTexNames.resize(0);
-
-    map<string, Tex>::iterator it;
-
-    for (it = diffTextures.begin(); it != diffTextures.end(); it++)
-    {
-        diffTexNames.push_back((*it).first.c_str());
-    }
+    diffTextures[name].texID        = id;
+    diffTextures[name].imagePath    = path;
 }
 
 /**
@@ -44,14 +34,6 @@ void Scene::AddNormTexture(string name, string path, GLuint id)
 {
     normTextures[name].texID = id;
     normTextures[name].imagePath = path;
-    normTexNames.resize(0);
-
-    map<string, Tex>::iterator it;
-
-    for (it = normTextures.begin(); it != normTextures.end(); it++)
-    {
-        normTexNames.push_back((*it).first.c_str());
-    }
 }
 
 /**
@@ -67,7 +49,7 @@ void Scene::SetSkyTex(string path, GLuint id)
     skyTex.texID        = id;
 }
 
-#ifdef 0
+#if 0
 
 /**
  * Scene::Save Save scene to file. Loop through all meshes, textures, materials, lights,
@@ -683,14 +665,6 @@ void Scene::Load(string file)
 void Scene::AddMaterial(string name, RMaterial mat)
 {
     materials[name] = mat;
-    materialNames.resize(0);
-
-    map<string, RMaterial>::iterator it;
-
-    for (it = materials.begin(); it != materials.end(); it++)
-    {
-        materialNames.push_back((*it).first.c_str());
-    }
 }
 
 /**

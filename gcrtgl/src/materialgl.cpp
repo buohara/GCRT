@@ -1,4 +1,4 @@
-#include "material.h"
+#include "materialgl.h"
 
 /**
  * [RMaterial::RMaterial description]
@@ -103,20 +103,23 @@ void RMaterial::ApplyMaterial(GLuint program)
  * @param program   [description]
  */
 
-void RMaterial::SetLights(vector<DirectionalLight> &dirLights, vector<PointLight> &ptLights, GLuint program)
+void RMaterial::SetLights(vector<Light> &lights, GLuint program)
 {
-    vec3 dirLightPos = dirLights[0].pos;
-    vec3 dirLightLook = dirLights[0].look;
+    if (lights[0].type == DIRECTIONAL)
+    {
+        vec3 dir = lights[0].dir;
+        vec3 pos = -dir;
 
-    mat4 depthView = lookAt(dirLightPos, dirLightLook, vec3(0.0, 1.0, 0.0));
-    mat4 depthProj = ortho(-10.0, 10.0, -10.0, 10.0, 1.0, 100.0);
+        mat4 depthView = lookAt(-dir, dir, vec3(0.0, 1.0, 0.0));
+        mat4 depthProj = ortho(-10.0, 10.0, -10.0, 10.0, 1.0, 100.0);
 
-    GLuint lightPosID = glGetUniformLocation(program, "lightPos");
-    glUniform3fv(lightPosID, 1, &dirLightPos[0]);
+        GLuint lightPosID = glGetUniformLocation(program, "lightPos");
+        glUniform3fv(lightPosID, 1, &pos[0]);
 
-    GLuint lightViewID = glGetUniformLocation(program, "lightView");
-    glUniformMatrix4fv(lightViewID, 1, false, &depthView[0][0]);
+        GLuint lightViewID = glGetUniformLocation(program, "lightView");
+        glUniformMatrix4fv(lightViewID, 1, false, &depthView[0][0]);
 
-    GLuint lightProjID = glGetUniformLocation(program, "lightProj");
-    glUniformMatrix4fv(lightProjID, 1, false, &depthProj[0][0]);
+        GLuint lightProjID = glGetUniformLocation(program, "lightProj");
+        glUniformMatrix4fv(lightProjID, 1, false, &depthProj[0][0]);
+    }
 }

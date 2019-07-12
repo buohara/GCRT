@@ -65,28 +65,15 @@ vec4 getDiffuse()
             vec3 nmNorm = tbn * (2 * texture2D(normalTex, passUV).rgb - 1);
             norm        = normalize(passModelInv * vec4(nmNorm, 1)).xyz;
         }
-        else
-        {
-            norm = normalize((passModelInv * passNorm).xyz);
-        }
-
+        else norm = normalize((passModelInv * passNorm).xyz);
         theta = max(dot(norm, lightVec), 0) / (dist * dist);
     }
-    else
-    {
-        theta = 1.0;
-    }
+    else theta = 1.0;
 
     theta = min(1.0, theta + 0.3);
 
-    if (useDiffuseMap == 1)
-    {
-        return theta * vec4(texture2D(diffuseTex, passUV).rgb, 1);
-    }
-    else
-    {
-        return theta * vec4(kd, 1);
-    }
+    if (useDiffuseMap == 1) return theta * vec4(texture2D(diffuseTex, passUV).rgb, 1);
+    else return theta * vec4(kd, 1);
 }
 
 /**
@@ -109,28 +96,16 @@ vec4 getSpecular()
             vec3 nmNorm = tbn * (2 * texture2D(normalTex, passUV).rgb - 1);
             norm        = normalize(passModelInv * vec4(nmNorm, 1)).xyz;
         }
-        else
-        {
-            norm = normalize((passModelInv * passNorm).xyz);
-        }
+        else norm = normalize((passModelInv * passNorm).xyz);
 
         vec3 camVec = normalize(camPos - pos.xyz);
         vec3 rflc   = reflect(-camVec, norm);
     
-        if (dot(lightVec, norm) > 0)
-        {
-            spec = pow(max(dot(camVec, rflc), 0), shininess) * dot(lightVec, norm); 
-        }
+        if (dot(lightVec, norm) > 0) spec = pow(max(dot(camVec, rflc), 0), shininess) * dot(lightVec, norm);
     }
 
-    if (useDiffuseMap == 1)
-    {
-        return spec * vec4(texture2D(diffuseTex, passUV).rgb, 1);
-    }
-    else
-    {
-        return spec * vec4(kd, 1);
-    }
+    if (useDiffuseMap == 1) return spec * vec4(texture2D(diffuseTex, passUV).rgb, 1);
+    else return spec * vec4(kd, 1);
 }
 
 /**
@@ -148,10 +123,7 @@ float getVisibility()
     float visibility = 1.0;
     float bias = 0.005;
 
-    if (posLightSpace.z - bias > shadowDepth)
-    {
-        visibility = 0.25;
-    }
+    if (posLightSpace.z - bias > shadowDepth) visibility = 0.25;
 
     return visibility;
 }
@@ -248,32 +220,12 @@ void main()
     float visibility  = getVisibility();
     vec4 envMap       = vec4(0.0, 0.0, 0.0, 0.0);
 
-    if (useEnvMap == 1)
-    {
-        envMap = SampleEnvMap();
-    }
+    if (useEnvMap == 1) envMap = SampleEnvMap();
+    if (selected == 1) diffuseColor += vec4(0.2, 0.2, 0.2, 0.0);
+    if (useSSS == 1) diffuseColor += getSSSFactor();
 
-    if (selected == 1)
-    {
-        diffuseColor += vec4(0.2, 0.2, 0.2, 0.0);
-    }
+    if (useEnvMap == 1) color = envMap;
+    else color = (diffuseColor + specColor);
 
-    if (useSSS == 1)
-    {
-        diffuseColor += getSSSFactor();
-    }
-
-    if (useEnvMap == 1)
-    {
-        color = envMap;
-    }
-    else
-    {
-        color = (diffuseColor + specColor);
-    }
-
-    if (useDOF == 1)
-    {
-        color.a = getDOFBlur();
-    }
+    if (useDOF == 1) color.a = getDOFBlur();
 }

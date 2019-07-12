@@ -7,9 +7,11 @@
 
 struct EnvMapScene
 {
-	Renderer rndr;
-	static void LaunchEnvMapScene(HINSTANCE hInstance);
-	void Init(HINSTANCE hInstance);
-	void Render();
+    Renderer rndr;
+    Scene scn;
+
+    static void LaunchEnvMapScene(HINSTANCE hInstance);
+    EnvMapScene(HINSTANCE hInstance);
+    void Render();
     void LoadScene();
 };

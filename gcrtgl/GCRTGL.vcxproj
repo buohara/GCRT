@@ -154,10 +154,12 @@
     <ClInclude Include="include\gcrtgl.h" />
     <ClInclude Include="include\imgloader.h" />
     <ClInclude Include="include\input.h" />
+    <ClInclude Include="include\materialgl.h" />
     <ClInclude Include="include\meshgl.h" />
     <ClInclude Include="include\noise.h" />
     <ClInclude Include="include\perlinterrain.h" />
     <ClInclude Include="include\renderer.h" />
+    <ClInclude Include="include\scene.h" />
     <ClInclude Include="include\sceneselector.h" />
     <ClInclude Include="include\shader.h" />
     <ClInclude Include="passes\bloompass.h" />
@@ -183,10 +185,12 @@
     <ClCompile Include="src\gcrtmain.cpp" />
     <ClCompile Include="src\imgloader.cpp" />
     <ClCompile Include="src\input.cpp" />
+    <ClCompile Include="src\materialgl.cpp" />
     <ClCompile Include="src\meshgl.cpp" />
     <ClCompile Include="src\noise.cpp" />
     <ClCompile Include="src\perlinterrain.cpp" />
     <ClCompile Include="src\renderer.cpp" />
+    <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="src\sceneselector.cpp" />
     <ClCompile Include="src\shader.cpp" />
   </ItemGroup>

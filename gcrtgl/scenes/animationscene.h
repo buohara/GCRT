@@ -8,8 +8,12 @@
 struct AnimationScene
 {
     Renderer rndr;
+    Scene scn;
     static void LaunchAnimationScene(HINSTANCE hInstance);
-    void Init(HINSTANCE hInstance);
+    AnimationScene(HINSTANCE hInstance);
+
+private:
+
     void Render();
     void LoadScene();
 };

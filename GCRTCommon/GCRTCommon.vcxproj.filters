@@ -23,13 +23,7 @@
     <ClInclude Include="include\cylinder.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\material.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\plane.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\scene.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\skeletalmesh.h">
@@ -39,6 +33,12 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\gcrtcommon.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utilscommon.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\light.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -55,13 +55,7 @@
     <ClCompile Include="src\cylinder.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\material.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\plane.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scene.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\skeletalmesh.cpp">

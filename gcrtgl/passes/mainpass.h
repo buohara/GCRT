@@ -4,7 +4,7 @@
 
 struct MainPass : RenderPass
 {
-    void Render();
+    void Render(Scene &scn);
 
     GLuint renderProgram;
     bool wireFrame;
@@ -21,7 +21,8 @@ struct MainPass : RenderPass
 
     void Init(
         GLuint depthTexInput,
-        bool renderToScreen
+        bool renderToScreen,
+        Scene &scn
     );
 
     void CreateRenderFbo();

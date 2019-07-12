@@ -1,6 +1,6 @@
 #include "meshgl.h"
 
-MeshGL::MeshGL(MeshType type, uint32_t rows, uint32_t cols) : 
+MeshGL::MeshGL(MeshType type, uint32_t rows, uint32_t cols) : type(type),
     pos(vec3(0.0)), dims(vec3(1.0)), angles(vec3(0.0)),
     scl(mat4(1.0)), rot(mat4(1.0)), trans(mat4(1.0)),
     model(mat4(1.0)), modelInv(mat4(1.0)), animated(false)
@@ -27,9 +27,11 @@ MeshGL::MeshGL(MeshType type, uint32_t rows, uint32_t cols) :
     numVerts = (uint32_t)pos.size();
     subMeshes.resize(1);
     InitVertexObjects(0, pos, norms, uvs, boneIDs, boneWts);
+
+    skeleton.bones.push_back(mat4(1.0));
 }
 
-MeshGL::MeshGL(MeshType type, uint32_t numSectors) :
+MeshGL::MeshGL(MeshType type, uint32_t numSectors) : type(type),
     pos(vec3(0.0)), dims(vec3(1.0)), angles(vec3(0.0)),
     scl(mat4(1.0)), rot(mat4(1.0)), trans(mat4(1.0)),
     model(mat4(1.0)), modelInv(mat4(1.0)), animated(false)
@@ -55,9 +57,11 @@ MeshGL::MeshGL(MeshType type, uint32_t numSectors) :
 
     subMeshes.resize(1);
     InitVertexObjects(0, pos, norms, uvs, tans, boneIDs, boneWts);
+
+    skeleton.bones.push_back(mat4(1.0));
 }
 
-MeshGL::MeshGL(MeshType type, string file) :
+MeshGL::MeshGL(MeshType type, string file) : type(type),
     pos(vec3(0.0)), dims(vec3(1.0)), angles(vec3(0.0)),
     scl(mat4(1.0)), rot(mat4(1.0)), trans(mat4(1.0)),
     model(mat4(1.0)), modelInv(mat4(1.0)), animated(false)
@@ -86,9 +90,10 @@ MeshGL::MeshGL(MeshType type, string file) :
         CreateBoneHierarchy(scnRoot, skeleton.root, boneOffsets);
         LoadAnimations(scene, skeleton.root);
     }
+    else skeleton.bones.push_back(mat4(1.0));
 }
 
-MeshGL::MeshGL(MeshType type) : scl(mat4(1.0)), rot(mat4(1.0)), trans(mat4(1.0)),
+MeshGL::MeshGL(MeshType type) : type(type), scl(mat4(1.0)), rot(mat4(1.0)), trans(mat4(1.0)),
 model(mat4(1.0)), modelInv(mat4(1.0)), animated(false)
 {
     assert(type == BOX);
@@ -114,9 +119,11 @@ model(mat4(1.0)), modelInv(mat4(1.0)), animated(false)
 
     subMeshes.resize(1);
     InitVertexObjects(0, pos, norms, uvs, tans, boneIDs, boneWts);
+
+    skeleton.bones.push_back(mat4(1.0));
 }
 
-MeshGL::MeshGL(MeshType type, uint32_t numSectors, uint32_t numRings, bool invertIn)
+MeshGL::MeshGL(MeshType type, uint32_t numSectors, uint32_t numRings, bool invertIn) : type(type)
 {
     assert(type == SPHERE);
 
@@ -127,8 +134,8 @@ MeshGL::MeshGL(MeshType type, uint32_t numSectors, uint32_t numRings, bool inver
     vector<ivec4> boneIDs;
     vector<vec4> boneWts;
 
-    animated = false;
-    invert = invertIn;
+    animated    = false;
+    invert      = invertIn;
 
     GenPositionsSphere(pos, numSectors, numRings, numSideVerts, topOffset, bottomOffset, numCapVerts);
     GenNormalsSphere(norms, numSectors, numRings);
@@ -140,6 +147,13 @@ MeshGL::MeshGL(MeshType type, uint32_t numSectors, uint32_t numRings, bool inver
 
     subMeshes.resize(1);
     InitVertexObjects(0, pos, norms, uvs, tans, boneIDs, boneWts);
+
+    skeleton.bones.push_back(mat4(1.0));
+}
+
+void MeshGL::GetAnimation(float t)
+{
+    if (animated == true) skeleton.root.GetBoneMatrices(t, skeleton.bones, model, skeleton.boneMap);
 }
 
 /**
@@ -164,10 +178,10 @@ void MeshGL::Translate(vec3 tx)
 
 void MeshGL::Scale(vec3 dimsIn)
 {
-    dims = dimsIn;
-    scl = scale(mat4(1.0f), dimsIn);
-    model = trans * rot * scl;
-    modelInv = inverseTranspose(model);
+    dims        = dimsIn;
+    scl         = scale(mat4(1.0f), dimsIn);
+    model       = trans * rot * scl;
+    modelInv    = inverseTranspose(model);
 }
 
 /**
@@ -179,14 +193,14 @@ void MeshGL::Scale(vec3 dimsIn)
 
 void MeshGL::Rotate(vec3 thetas)
 {
-    angles = thetas;
-    mat4 rotx = rotate(thetas[0], vec3(1.0, 0.0, 0.0));
-    mat4 roty = rotate(thetas[1], vec3(0.0, 1.0, 0.0));
-    mat4 rotz = rotate(thetas[2], vec3(0.0, 0.0, 1.0));
+    angles      = thetas;
+    mat4 rotx   = rotate(thetas[0], vec3(1.0, 0.0, 0.0));
+    mat4 roty   = rotate(thetas[1], vec3(0.0, 1.0, 0.0));
+    mat4 rotz   = rotate(thetas[2], vec3(0.0, 0.0, 1.0));
 
-    rot = rotz * roty * rotx;
-    model = trans * rot * scl;
-    modelInv = inverseTranspose(model);
+    rot         = rotz * roty * rotx;
+    model       = trans * rot * scl;
+    modelInv    = inverseTranspose(model);
 }
 
 /**
@@ -293,7 +307,7 @@ void MeshGL::LoadVertexAndBoneData(
 
         // Bone IDs and weights.
 
-        LoadBoneData(mesh, boneIDs, boneWeights, boneOffsets);
+        LoadBoneData(mesh, boneIDs, boneWeights, boneOffsets, skeleton.boneMap);
         InitVertexObjects(i, pos, norm, uv, idcs, boneIDs, boneWeights);
     }
 }

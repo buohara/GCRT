@@ -2,7 +2,6 @@
 
 extern RenderSettings g_settings;
 extern bool gResized;
-extern Scene g_scn;
 
 /**
  * EnvMapScene::LaunchEnvMapScene Create scene instance and launch it.
@@ -11,9 +10,8 @@ extern Scene g_scn;
 
 void EnvMapScene::LaunchEnvMapScene(HINSTANCE hInstance)
 {
-	EnvMapScene animScn;
-	animScn.Init(hInstance);
-	animScn.Render();
+    EnvMapScene envScn(hInstance);
+    envScn.Render();
 }
 
 /**
@@ -21,7 +19,8 @@ void EnvMapScene::LaunchEnvMapScene(HINSTANCE hInstance)
  * @param hInstance Process handle to create GL context.
  */
 
-void EnvMapScene::Init(HINSTANCE hInstance)
+EnvMapScene::EnvMapScene(HINSTANCE hInstance) : scn(1920, 1080),
+    rndr(hInstance, "EnvMapScene")
 {
     g_settings.loadSceneFromFile    = false;
     g_settings.msaaSamples          = 4;
@@ -32,19 +31,15 @@ void EnvMapScene::Init(HINSTANCE hInstance)
     g_settings.wireFrame            = false;
     g_settings.useSkyBox            = true;
 
-    rndr.CreateRenderWindow(
-        hInstance,
-        "EnvMapScene"
-    );
-
+    rndr.Init(scn);
+    rndr.CreateRenderWindow(hInstance, "AnimationScene");
     rndr.CreateGLContext();
-    rndr.Init();
 
-    g_scn.SetSkyTex(string("F:/GCRT/asset/skypano.jpg"),
+    scn.SetSkyTex(string("F:/GCRT/asset/skypano.jpg"),
         ImgLoader::LoadTexture(string("F:/GCRT/asset/skypano.jpg")));
 
     MainPass mainPass;
-    mainPass.Init(0, true);
+    mainPass.Init(0, true, scn);
 
     rndr.passes["MainPass"] = make_shared<MainPass>(mainPass);
 
@@ -61,7 +56,7 @@ void EnvMapScene::Render()
 
     while (true)
     {
-        rndr.Render();
+        rndr.Render(scn);
 
         if (gResized)
         {
@@ -70,14 +65,14 @@ void EnvMapScene::Render()
             g_settings.winW = rect.right - rect.left;
             g_settings.winH = rect.bottom - rect.top;
 
-            rndr.UpdateViewPorts();
+            rndr.UpdateViewPorts(scn);
             gResized = false;
         }
 
         while (PeekMessage(&msg, rndr.hWnd, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
-            rndr.HandleInputs(msg);
+            rndr.HandleInputs(msg, scn);
             DispatchMessage(&msg);
         }
     }
@@ -91,7 +86,7 @@ void EnvMapScene::LoadScene()
 {
     // Textures.
 
-    g_scn.AddDiffTexture(
+    scn.AddDiffTexture(
         "SkyPano",
         string("F:/GCRT/asset/skypano.jpg"),
         ImgLoader::LoadTexture(string("F:/GCRT/asset/skypano.jpg"))
@@ -99,26 +94,24 @@ void EnvMapScene::LoadScene()
 
     // Lights
 
-    DirectionalLight dirLight;
-    dirLight.pos = vec3(0.0, -25.0, 25.0);
-    dirLight.look = vec3(0.0, 0.0, 0.0);
-    g_scn.dirLights.push_back(dirLight);
+    Light dirLight(DIRECTIONAL, vec3(10.0, 10.0, 10.0));
+    scn.lights.push_back(dirLight);
 
-    PointLight ptLight;
+    Light ptLight(POINTLIGHT, vec3(0.0, 15.0, 15.0));
     ptLight.pos = vec3(0.0, 15.0, 15.0);
-    g_scn.ptLights.push_back(ptLight);
+    scn.lights.push_back(ptLight);
 
     // Materials
 
     RMaterial skyMat;
     skyMat.name = "SkyMat";
-    skyMat.SetDiffuseTex(g_scn.diffTextures["SkyPano"].texID, "SkyPano");
+    skyMat.SetDiffuseTex(scn.diffTextures["SkyPano"].texID, "SkyPano");
 
     skyMat.UseShadows(false);
     skyMat.UsePhong(false);
     skyMat.UseEnvMap(false);
 
-    g_scn.AddMaterial("SkyMat", skyMat);
+    scn.AddMaterial("SkyMat", skyMat);
 
     RMaterial defaultMat;
     defaultMat.name = "Default";
@@ -129,7 +122,7 @@ void EnvMapScene::LoadScene()
     defaultMat.UseEnvMap(false);
     defaultMat.spec = 1.0;
 
-    g_scn.AddMaterial("Default", defaultMat);
+    scn.AddMaterial("Default", defaultMat);
 
     RMaterial mirrorMat;
     mirrorMat.name = "Mirror";
@@ -138,60 +131,23 @@ void EnvMapScene::LoadScene()
     mirrorMat.UsePhong(false);
     mirrorMat.UseEnvMap(true);
 
-    g_scn.AddMaterial("Mirror", mirrorMat);
+    scn.AddMaterial("Mirror", mirrorMat);
 
     // Meshes
 
-    Sphere sph;
-    sph.Create(100, 100, true);
+    MeshGL sph(SPHERE, 100, 100, true);
     sph.name = "SkySphere";
-    
-    g_scn.AddMesh("SkySphere", make_shared<Sphere>(sph));
+    sph.Scale(vec3(500.0, 500.0, 500.0));
+    scn.AddMesh("SkySphere", sph);
+    sph.pickerColor = rndr.nextPickerColor();
 
-    Box box;
-    box.Create();
+    MeshGL box(BOX);
     box.name = "Box";
+    scn.AddMesh("Box", box);
 
-    g_scn.AddMesh("Box", make_shared<Box>(box));
-
-    // Models
-
-    Model skySphere;
-    skySphere.InitModelMatrices();
-    skySphere.Scale(vec3(500.0, 500.0, 500.0));
-    skySphere.meshName = string("SkySphere");
-    skySphere.matName = string("SkyMat");
-    skySphere.pickerColor = rndr.nextPickerColor();
-    
-    g_scn.AddModel("SkySphere0", skySphere);
-
-    /*Model boxModel;
-    boxModel.InitModelMatrices();
-    boxModel.Scale(vec3(1.0, 1.0, 1.0));
-    boxModel.meshName = string("Box");
-    boxModel.matName = string("Mirror");
-    boxModel.pickerColor = rndr.nextPickerColor();
-
-    g_scn.AddModel("Box0", boxModel);*/
-
-    g_scn.LoadModelFromFile(
-        "Table",
-        "F:/GCRT/asset/models/table/table.obj",
-        "",
-        "",
-        rndr.nextPickerColor(),
-        false
-    );
-
-    // Camera
-
-    g_scn.cam.Init(
-        vec3(5.0, 5.0, 5.0),
-        vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 0.0, 1.0),
-        (float)g_settings.winW / (float)g_settings.winH,
-        75.0f,
-        1.0f,
-        1000.0f
-    );
+    MeshGL tbl(SKELETAL, "F:/GCRT/asset/models/table/table.obj");
+    tbl.name = "Table";
+    tbl.pickerColor = rndr.nextPickerColor();
+    tbl.invert = false;
+    scn.AddMesh("Table", tbl);
 }

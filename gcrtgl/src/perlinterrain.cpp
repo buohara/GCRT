@@ -1,6 +1,6 @@
 #include "perlinterrain.h"
 
-#ifdef 0
+#if 0
 
 /**
  * PerlinTerrain::Create Create a heightmap grid with spacing 1/ndiv, and height

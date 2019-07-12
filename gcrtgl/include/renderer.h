@@ -24,8 +24,10 @@ struct Renderer
 
     static const uint32_t RENDER_TO_SCREEN = 0;
     
-    void HandleInputs(MSG &msg);
-    void Init();
+    Renderer::Renderer(HINSTANCE hInstance, string windowName);
+
+    void HandleInputs(MSG &msg, Scene &scn);
+    void Init(Scene &scn);
     
     void CreateGLContext();
     void CreateRenderWindow(
@@ -33,14 +35,14 @@ struct Renderer
         string title
     );
     
-    void Render();
-    void DoPick(LPARAM mouseCoord);
-    void UpdateViewPorts();
+    void Render(Scene &scn);
+    void DoPick(LPARAM mouseCoord, Scene &scn);
+    void UpdateViewPorts(Scene &scn);
 
     float nextPickClr[3];
     uint32_t nextPickIdx;
     vec3 nextPickerColor();
 
-    void CreateNoiseTexture();
+    void CreateNoiseTexture(Scene &scn);
     void ResizeRenderFbo();
 };

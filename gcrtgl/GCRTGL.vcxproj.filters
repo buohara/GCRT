@@ -74,6 +74,12 @@
     <ClInclude Include="include\imgloader.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\scene.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\materialgl.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="passes\bloompass.cpp">
@@ -128,6 +134,12 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\imgloader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\materialgl.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

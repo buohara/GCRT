@@ -4,13 +4,21 @@
 
 using namespace glm;
 
-struct DirectionalLight
+enum LightType
 {
-    vec3 pos;
-    vec3 look;
+    POINTLIGHT,
+    DIRECTIONAL
 };
 
-struct PointLight
+struct Light
 {
+    Light(LightType type, vec3 val) : type(type)
+    {
+        if (type == POINTLIGHT) pos = val;
+        if (type == DIRECTIONAL) dir = val;
+    }
+
+    LightType type;
     vec3 pos;
+    vec3 dir;
 };

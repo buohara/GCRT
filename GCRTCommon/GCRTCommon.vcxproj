@@ -119,20 +119,18 @@
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\cylinder.h" />
     <ClInclude Include="include\gcrtcommon.h" />
-    <ClInclude Include="include\material.h" />
+    <ClInclude Include="include\light.h" />
     <ClInclude Include="include\plane.h" />
-    <ClInclude Include="include\scene.h" />
     <ClInclude Include="include\skeletalmesh.h" />
     <ClInclude Include="include\sphere.h" />
+    <ClInclude Include="include\utilscommon.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\animation.cpp" />
     <ClCompile Include="src\box.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\cylinder.cpp" />
-    <ClCompile Include="src\material.cpp" />
     <ClCompile Include="src\plane.cpp" />
-    <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="src\skeletalmesh.cpp" />
     <ClCompile Include="src\sphere.cpp" />
   </ItemGroup>

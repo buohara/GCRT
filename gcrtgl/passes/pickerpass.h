@@ -10,5 +10,5 @@ struct PickerPass : RenderPass
     void Init();
     void GenFrameBuffers();
     void Resize();
-    void Render();
+    void Render(Scene& scn);
 };

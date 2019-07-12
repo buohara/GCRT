@@ -1,7 +1,5 @@
 #include "depthpass.h"
 
-extern Scene g_scn;
-
 /**
  * [DepthPass::Init description]
  */
@@ -62,9 +60,9 @@ void DepthPass::Init()
  * @param scn Scene to render.
  */
 
-void DepthPass::Render()
+void DepthPass::Render(Scene &scn)
 {
-    vector<DirectionalLight> &dirLights = g_scn.dirLights;
+    vector<Light> &lights = scn.lights;
 
     glBindFramebuffer(GL_FRAMEBUFFER, dbFbo);
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -72,8 +70,8 @@ void DepthPass::Render()
 
     glUseProgram(depthProgram);
 
-    vec3 lightPos = dirLights[0].pos;
-    vec3 lightLook = dirLights[0].look;
+    vec3 lightPos   = lights[0].pos;
+    vec3 lightLook  = lights[0].dir;
 
     mat4 depthView = lookAt(lightPos, lightLook, vec3(0.0, 1.0, 0.0));
     mat4 depthProj = ortho(-10.0, 10.0, -10.0, 10.0, 1.0, 100.0);
@@ -84,8 +82,5 @@ void DepthPass::Render()
     GLuint projID = glGetUniformLocation(depthProgram, "proj");
     glUniformMatrix4fv(projID, 1, false, &depthProj[0][0]);
 
-    for (auto &mesh : g_scn.meshes)
-    {
-        mesh.second.Draw();
-    }
+    for (auto &mesh : scn.meshes) mesh.second.Draw();
 }

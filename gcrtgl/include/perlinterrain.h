@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef 0
+#if 0
 
 #include "mesh.h"
 #include "noise.h"

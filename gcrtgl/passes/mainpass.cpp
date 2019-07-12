@@ -1,7 +1,6 @@
 #include "mainpass.h"
 
 extern RenderSettings g_settings;
-extern Scene g_scn;
 
 /**
  * MainPass::Init Initialize main render pass.
@@ -15,7 +14,8 @@ extern Scene g_scn;
 
 void MainPass::Init(
     GLuint depthTexInput,
-    bool renderToScreen
+    bool renderToScreen,
+    Scene& scn
 )
 {
     Shader renderShader;
@@ -31,15 +31,12 @@ void MainPass::Init(
     renderProgram   = renderShader.program;
     depthTexIn      = depthTexInput;
 
-    if (useMSAA)
-    {
-        CreateMSAAFbo();
-    }
+    if (useMSAA) CreateMSAAFbo();
 
     if (g_settings.useSkyBox)
     {
         GLuint envMapID = glGetUniformLocation(renderProgram, "envMapTex");
-        glUniform1i(envMapID, g_scn.skyTex.texID);
+        glUniform1i(envMapID, scn.skyTex.texID);
     }
 
     renderToScreen ? renderFbo = 0 : CreateRenderFbo();
@@ -165,10 +162,10 @@ void MainPass::CreateRenderFbo()
  * @param scn [description]
  */
 
-void MainPass::Render()
+void MainPass::Render(Scene &scn)
 {
-    Camera cam = g_scn.cam;
-    vector<DirectionalLight> dirLights = g_scn.dirLights;
+    Camera cam = scn.cam;
+    vector<Light> &lights = scn.lights;
 
     glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
     glBindFramebuffer(GL_FRAMEBUFFER, useMSAA ? multisampleFboID : renderFbo);
@@ -221,8 +218,8 @@ void MainPass::Render()
     // 2. Lighting uniforms
 
     {
-        vec3 dirLightPos = dirLights[0].pos;
-        vec3 dirLightLook = dirLights[0].look;
+        vec3 dirLightPos    = lights[0].pos;
+        vec3 dirLightLook   = lights[0].dir;
 
         mat4 depthView = lookAt(dirLightPos, dirLightLook, vec3(0.0, 1.0, 0.0));
         mat4 depthProj = ortho(-10.0, 10.0, -10.0, 10.0, 1.0, 100.0);
@@ -239,9 +236,9 @@ void MainPass::Render()
 
     // 3. Material uniforms and draw.
 
-    for (auto &mesh : g_scn.meshes)
+    for (auto &mesh : scn.meshes)
     {
-        RMaterial mat = g_scn.materials[mesh.second.matName];
+        RMaterial mat = scn.materials[mesh.second.matName];
         mat.ApplyMaterial(renderProgram);
 
         GLuint selectedID = glGetUniformLocation(renderProgram, "selected");

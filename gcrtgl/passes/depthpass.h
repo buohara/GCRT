@@ -10,5 +10,5 @@ struct DepthPass : RenderPass
     GLuint depthMapSize = 2048;
 
     void Init();
-    void Render();
+    void Render(Scene &scn);
 };

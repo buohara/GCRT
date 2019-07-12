@@ -2,7 +2,6 @@
 
 extern RenderSettings g_settings;
 extern bool gResized;
-extern Scene g_scn;
 
 /**
  * AnimationScene::LaunchAnimationScene Create scene instance and launch it.
@@ -11,8 +10,7 @@ extern Scene g_scn;
 
 void AnimationScene::LaunchAnimationScene(HINSTANCE hInstance)
 {
-    AnimationScene animScn;
-    animScn.Init(hInstance);
+    AnimationScene animScn(hInstance);
     animScn.Render();
 }
 
@@ -21,29 +19,24 @@ void AnimationScene::LaunchAnimationScene(HINSTANCE hInstance)
  * @param hInstance Process handle to create GL context.
  */
 
-void AnimationScene::Init(HINSTANCE hInstance)
+AnimationScene::AnimationScene(HINSTANCE hInstance) : scn(1920, 1080),
+    rndr(hInstance, "AnimationScene")
 {
     g_settings.loadSceneFromFile    = false;
     g_settings.msaaSamples          = 4;
     g_settings.useBloom             = false;
     g_settings.useDOF               = false;
-    g_settings.winH                 = 1080;
-    g_settings.winW                 = 1920;
     g_settings.wireFrame            = false;
 
-    rndr.CreateRenderWindow(
-        hInstance,
-        "AnimationScene"
-    );
-
+    rndr.Init(scn);
+    rndr.CreateRenderWindow(hInstance, "AnimationScene");
     rndr.CreateGLContext();
-    rndr.Init();
 
     DepthPass depthPass;
     depthPass.Init();
 
     MainPass mainPass;
-    mainPass.Init(depthPass.depthTexOut, true);
+    mainPass.Init(depthPass.depthTexOut, true, scn);
 
     rndr.passes["DepthPass"]    = make_shared<DepthPass>(depthPass);
     rndr.passes["MainPass"]     = make_shared<MainPass>(mainPass);
@@ -61,7 +54,7 @@ void AnimationScene::Render()
 
     while (true)
     {
-        rndr.Render();
+        rndr.Render(scn);
 
         if (gResized)
         {
@@ -71,14 +64,14 @@ void AnimationScene::Render()
             g_settings.winW = rect.right - rect.left;
             g_settings.winH = rect.bottom - rect.top;
 
-            rndr.UpdateViewPorts();
+            rndr.UpdateViewPorts(scn);
             gResized = false;
         }
 
         while (PeekMessage(&msg, rndr.hWnd, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
-            rndr.HandleInputs(msg);
+            rndr.HandleInputs(msg, scn);
             DispatchMessage(&msg);
         }
     }
@@ -92,13 +85,13 @@ void AnimationScene::LoadScene()
 {
     // Textures.
 
-    g_scn.AddDiffTexture(
+    scn.AddDiffTexture(
         "DirtDiffuse",
         string("../../asset/dirtdiffuse.jpg"),
         ImgLoader::LoadTexture(string("../../asset/dirtdiffuse.jpg"))
     );
 
-    g_scn.AddNormTexture(
+    scn.AddNormTexture(
         "DirtNormal",
         string("../../asset/dirtnormal.jpg"),
         ImgLoader::LoadTexture(string("../../asset/dirtnormal.jpg"))
@@ -106,14 +99,11 @@ void AnimationScene::LoadScene()
 
     // Lights
 
-    DirectionalLight dirLight;
-    dirLight.pos            = vec3(0.0, -25.0, 25.0);
-    dirLight.look           = vec3(0.0, 0.0, 0.0);
-    g_scn.dirLights.push_back(dirLight);
+    Light dirLight(DIRECTIONAL, vec3(0.0, -25.0, 25.0));
+    scn.lights.push_back(dirLight);
 
-    PointLight ptLight;
-    ptLight.pos             = vec3(0.0, 15.0, 15.0);
-    g_scn.ptLights.push_back(ptLight);
+    Light ptLight(POINTLIGHT, vec3(0.0, 15.0, 15.0));
+    scn.lights.push_back(ptLight);
 
     // Materials
 
@@ -125,46 +115,21 @@ void AnimationScene::LoadScene()
     defaultMat.UsePhong(true);
     defaultMat.spec         = 1.0;
     
-    g_scn.AddMaterial("Default", defaultMat);
+    scn.AddMaterial("Default", defaultMat);
 
     // Meshes
 
-    Plane pln;
-    pln.Create(10, 10);
+    MeshGL pln(PLANE, 10, 10);
+
     pln.name                = "Plane";
     pln.loadFromFile        = false;
     pln.filePath            = "NA";
+    pln.Scale(vec3(10.0, 10.0, 1.0));
 
-    g_scn.AddMesh("Plane", make_shared<Plane>(pln));
+    scn.AddMesh("Plane", pln);
 
-    // Models
+    pln.matName           = string("Default");
+    pln.pickerColor       = rndr.nextPickerColor();
 
-    Model plane;
-    plane.InitModelMatrices();
-    plane.Scale(vec3(10.0, 10.0, 1.0));
-    plane.meshName          = string("Plane");
-    plane.matName           = string("Default");
-    plane.pickerColor       = rndr.nextPickerColor();
-    g_scn.AddModel("Plane0", plane);
-
-    g_scn.LoadModelFromFile(
-        "LampGuy",
-        "../asset/models/boblampclean/boblampclean.md5mesh",
-        "",
-        "",
-        rndr.nextPickerColor(),
-        false
-    );
-
-    // Camera
-
-    g_scn.cam.Init(
-        vec3(5.0, 5.0, 5.0),
-        vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 0.0, 1.0),
-        (float)g_settings.winW / (float)g_settings.winH,
-        90.0f,
-        1.0f,
-        100.0f
-    );
+    MeshGL lampGuy(SKELETAL, "../asset/models/boblampclean/boblampclean.md5mesh");
 }

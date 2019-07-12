@@ -1,7 +1,6 @@
 #include "pickerpass.h"
 
 extern RenderSettings g_settings;
-extern Scene g_scn;
 
 /**
  * [PickerPass::GenFrameBuffers description]
@@ -78,9 +77,9 @@ void PickerPass::Init()
  * @param scn [description]
  */
 
-void PickerPass::Render()
+void PickerPass::Render(Scene &scn)
 {
-    Camera cam = g_scn.cam;
+    Camera cam = scn.cam;
 
     glBindFramebuffer(GL_FRAMEBUFFER, pickerFbo);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -108,7 +107,7 @@ void PickerPass::Render()
         pMesh->Draw();
     }*/
 
-    for (auto &mesh : g_scn.meshes)
+    for (auto &mesh : scn.meshes)
     {
         vec3 pickerColor    = mesh.second.pickerColor;
         GLuint pickerID     = glGetUniformLocation(pickerProgram, "pickerColor");
