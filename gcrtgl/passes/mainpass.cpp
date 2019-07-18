@@ -171,6 +171,7 @@ void MainPass::Render(Scene &scn)
     glBindFramebuffer(GL_FRAMEBUFFER, useMSAA ? multisampleFboID : renderFbo);
 
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
     glViewport(0, 0, g_settings.winW, g_settings.winH);
     glUseProgram(renderProgram);
 
@@ -238,7 +239,7 @@ void MainPass::Render(Scene &scn)
 
     for (auto &mesh : scn.meshes)
     {
-        RMaterial mat = scn.materials[mesh.second.matName];
+        RMaterial mat = scn.materials[mesh.second.matIdx];
         mat.ApplyMaterial(renderProgram);
 
         GLuint selectedID = glGetUniformLocation(renderProgram, "selected");

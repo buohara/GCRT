@@ -23,22 +23,7 @@
     <ClInclude Include="include\cylinder.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\imgloader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\material.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\mesh.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\model.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\plane.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\scene.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\skeletalmesh.h">
@@ -47,10 +32,13 @@
     <ClInclude Include="include\sphere.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\gcrt.h">
+    <ClInclude Include="include\gcrtcommon.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\utils.h">
+    <ClInclude Include="include\utilscommon.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\light.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -67,31 +55,13 @@
     <ClCompile Include="src\cylinder.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\imgloader.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\material.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\mesh.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\model.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\plane.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scene.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\skeletalmesh.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\sphere.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\utils.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

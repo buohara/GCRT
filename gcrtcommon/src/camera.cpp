@@ -17,9 +17,9 @@ const uint32_t KEY_7 = 0x37;
 const uint32_t KEY_8 = 0x38;
 const uint32_t KEY_9 = 0x39;
 
-Camera::Camera(uint32_t w, uint32_t h) : pos(vec3(1.0)), lookDir(normalize(vec3(-1.0))), up(vec3(0.0, 0.0, 1.0)),
+Camera::Camera(uint32_t w, uint32_t h) : pos(vec3(10.0)), lookDir(normalize(vec3(-1.0))), up(vec3(0.0, 0.0, 1.0)),
     p1(0.0), p2(40.0), txSpeed(0.2), fovSpeed(0.2), rotSpeed(0.01), downKeys{false},
-    bMouseDown(false), aspect((double)w / (double)h)
+    bMouseDown(false), aspect((double)w / (double)h), fov(90.0), nclip(1.0), fclip(10000.0)
 {
 }
 

@@ -74,7 +74,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\vulkan;..\external\glm;..\external\glew\glew\include\GL;..\external\devil\include;include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\glew\glew\include\GL;include;</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -82,7 +82,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\vulkan;..\external\glm;..\external\glew\glew\include\GL;..\external\devil\include;include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\glew\glew\include\GL;include;</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -92,7 +92,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\vulkan;..\external\glm;..\external\glew\glew\include\GL;..\external\devil\include;include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\glew\glew\include\GL;include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -106,7 +106,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\vulkan;..\external\glm;..\external\glew\glew\include\GL;..\external\devil\include;include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\external\glm;..\external\glew\glew\include\GL;include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -118,31 +118,21 @@
     <ClInclude Include="include\box.h" />
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\cylinder.h" />
-    <ClInclude Include="include\gcrt.h" />
-    <ClInclude Include="include\imgloader.h" />
-    <ClInclude Include="include\material.h" />
-    <ClInclude Include="include\mesh.h" />
-    <ClInclude Include="include\model.h" />
+    <ClInclude Include="include\gcrtcommon.h" />
+    <ClInclude Include="include\light.h" />
     <ClInclude Include="include\plane.h" />
-    <ClInclude Include="include\scene.h" />
     <ClInclude Include="include\skeletalmesh.h" />
     <ClInclude Include="include\sphere.h" />
-    <ClInclude Include="include\utils.h" />
+    <ClInclude Include="include\utilscommon.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\animation.cpp" />
     <ClCompile Include="src\box.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\cylinder.cpp" />
-    <ClCompile Include="src\imgloader.cpp" />
-    <ClCompile Include="src\material.cpp" />
-    <ClCompile Include="src\mesh.cpp" />
-    <ClCompile Include="src\model.cpp" />
     <ClCompile Include="src\plane.cpp" />
-    <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="src\skeletalmesh.cpp" />
     <ClCompile Include="src\sphere.cpp" />
-    <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

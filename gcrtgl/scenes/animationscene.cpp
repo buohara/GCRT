@@ -128,8 +128,8 @@ void AnimationScene::LoadScene()
 
     scn.AddMesh("Plane", pln);
 
-    pln.matName           = string("Default");
-    pln.pickerColor       = rndr.nextPickerColor();
+    pln.matIdx              = scn.GetMaterialIdx("Default");
+    pln.pickerColor         = rndr.nextPickerColor();
 
     MeshGL lampGuy(SKELETAL, "../asset/models/boblampclean/boblampclean.md5mesh");
 }

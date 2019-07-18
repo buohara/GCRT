@@ -664,7 +664,15 @@ void Scene::Load(string file)
 
 void Scene::AddMaterial(string name, RMaterial mat)
 {
-    materials[name] = mat;
+    uint32_t idx = materials.size();
+    materials.push_back(mat);
+    materialMap[name] = idx;
+}
+
+uint32_t Scene::GetMaterialIdx(string name)
+{
+    assert(materialMap.count(name) > 0);
+    return materialMap[name];
 }
 
 /**

@@ -23,7 +23,7 @@ EnvMapScene::EnvMapScene(HINSTANCE hInstance) : scn(1920, 1080),
     rndr(hInstance, "EnvMapScene")
 {
     g_settings.loadSceneFromFile    = false;
-    g_settings.msaaSamples          = 4;
+    g_settings.msaaSamples          = 1;
     g_settings.useBloom             = false;
     g_settings.useDOF               = false;
     g_settings.winH                 = 1080;
@@ -31,12 +31,14 @@ EnvMapScene::EnvMapScene(HINSTANCE hInstance) : scn(1920, 1080),
     g_settings.wireFrame            = false;
     g_settings.useSkyBox            = true;
 
-    rndr.Init(scn);
     rndr.CreateRenderWindow(hInstance, "AnimationScene");
     rndr.CreateGLContext();
+    rndr.Init(scn);
 
-    scn.SetSkyTex(string("F:/GCRT/asset/skypano.jpg"),
-        ImgLoader::LoadTexture(string("F:/GCRT/asset/skypano.jpg")));
+    scn.SetSkyTex(
+        string("F:/GCRT/asset/skypano.jpg"),
+        ImgLoader::LoadTexture(string("F:/GCRT/asset/skypano.jpg"))
+    );
 
     MainPass mainPass;
     mainPass.Init(0, true, scn);
@@ -135,19 +137,22 @@ void EnvMapScene::LoadScene()
 
     // Meshes
 
-    MeshGL sph(SPHERE, 100, 100, true);
+    MeshGL sph(SPHERE, 100, 100, false);
     sph.name = "SkySphere";
-    sph.Scale(vec3(500.0, 500.0, 500.0));
-    scn.AddMesh("SkySphere", sph);
+    sph.Scale(vec3(100.0, 100.0, 100.0));
     sph.pickerColor = rndr.nextPickerColor();
+    sph.matIdx = scn.GetMaterialIdx("SkyMat");
+    scn.AddMesh("SkySphere", sph);
 
     MeshGL box(BOX);
     box.name = "Box";
+    box.matIdx = scn.GetMaterialIdx("Default");
     scn.AddMesh("Box", box);
 
     MeshGL tbl(SKELETAL, "F:/GCRT/asset/models/table/table.obj");
     tbl.name = "Table";
     tbl.pickerColor = rndr.nextPickerColor();
     tbl.invert = false;
+    tbl.matIdx = scn.GetMaterialIdx("Mirror");
     scn.AddMesh("Table", tbl);
 }

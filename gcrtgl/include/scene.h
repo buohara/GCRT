@@ -11,7 +11,10 @@ struct Scene
 
     map<string, Tex> diffTextures;
     map<string, Tex> normTextures;
-    map<string, RMaterial> materials;
+
+    vector<RMaterial> materials;
+    map<string, uint32_t> materialMap;
+
     vector<Light> lights;
     map<string, MeshGL> meshes;
 
@@ -29,6 +32,7 @@ struct Scene
 #endif
 
     void AddMaterial(string name, RMaterial mat);
+    uint32_t GetMaterialIdx(string name);
     void AddMesh(string name, MeshGL &mesh);
 
 private:

@@ -46,6 +46,8 @@ struct MeshGL
     bool invert = false;
     MeshType type;
 
+    uint32_t matIdx;
+
     // How many vertices to draw for simple shapes.
 
     uint32_t numVerts;
@@ -81,7 +83,6 @@ struct MeshGL
     void SetAnimMatrices(GLuint renderProgram);
 
     string meshName;
-    string matName;
     vec3 pickerColor;
     bool selected;
 
