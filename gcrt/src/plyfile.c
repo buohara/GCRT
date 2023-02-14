@@ -32,6 +32,8 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+#pragma warning( disable : 4996 4267 4101 4244 )
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>

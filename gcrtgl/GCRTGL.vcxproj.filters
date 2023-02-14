@@ -109,7 +109,7 @@
     <ClCompile Include="scenes\terrainscene.cpp">
       <Filter>scenes</Filter>
     </ClCompile>
-    <ClCompile Include="src\gcrtmain.cpp">
+    <ClCompile Include="src\gcrtglmain.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\input.cpp">

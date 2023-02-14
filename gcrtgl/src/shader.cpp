@@ -7,7 +7,7 @@
  * @param fsFileName [description]
  */
 
-void Shader::Create(string &nameIn, string &vsFileName, string &fsFileName)
+void Shader::Create(string nameIn, string vsFileName, string fsFileName)
 {
     name = nameIn;
 
@@ -21,9 +21,6 @@ void Shader::Create(string &nameIn, string &vsFileName, string &fsFileName)
     string fsShaderTxt;
     fsShaderTxt.assign(istreambuf_iterator<char>(fifs), istreambuf_iterator<char>());
 
-    GLint isCompiled = 0;
-    GLchar compileBuf[512];
-
     // Compile VS.
 
     const char* vsSource = vsShaderTxt.c_str();
@@ -33,6 +30,10 @@ void Shader::Create(string &nameIn, string &vsFileName, string &fsFileName)
     glCompileShader(vsID);
 
 #ifdef _DEBUG
+
+    GLint isCompiled = 0;
+    GLchar compileBuf[512];
+
     glGetShaderiv(vsID, GL_COMPILE_STATUS, &isCompiled);
     if (isCompiled == GL_FALSE)
     {

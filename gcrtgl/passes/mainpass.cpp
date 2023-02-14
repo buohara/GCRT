@@ -39,7 +39,10 @@ void MainPass::Init(
         glUniform1i(envMapID, scn.skyTex.texID);
     }
 
-    renderToScreen ? renderFbo = 0 : CreateRenderFbo();
+    if (renderToScreen)
+        renderFbo = 0;
+    else
+        CreateRenderFbo();
 }
 
 /**

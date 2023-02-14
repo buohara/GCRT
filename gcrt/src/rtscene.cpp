@@ -61,7 +61,7 @@ void RTScene::Add(RTMaterial mat)
 {
     assert(matIdcs.count(mat.name) == 0);
     mats.push_back(mat);
-    matIdcs[mat.name] = mats.size() - 1;
+    matIdcs[mat.name] = (uint32_t)mats.size() - 1;
 }
 
 /**

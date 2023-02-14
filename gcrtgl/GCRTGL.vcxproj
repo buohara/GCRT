@@ -29,26 +29,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -75,12 +75,16 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -88,7 +92,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\gcrtcommon\include;..\external\devil\include;..\external\glm;..\external\glew\glew\include\GL;include;passes;scenes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\gcrtcommon\inc;..\external\devil\include;..\external\glm;..\external\glew\glew\include\GL;inc;passes;scenes;</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -103,7 +108,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\gcrtcommon\include;..\external\devil\include;..\external\assimp\include;..\external\vulkan;..\external\glm;..\external\glew\glew\include\GL;include;passes;scenes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\gcrtcommon\inc;..\external\devil\include;..\external\glm;..\external\glew\glew\include\GL;inc;passes;scenes;</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,7 +126,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\gcrtcommon\include;..\external\devil\include;..\external\glm;..\external\glew\glew\include\GL;include;passes;scenes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\gcrtcommon\inc;..\external\devil\include;..\external\glm;..\external\glew\glew\include\GL;inc;passes;scenes;</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -139,7 +146,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\assimp\include;..\gcrtcommon\include;..\external\devil\include;..\external\glm;..\external\glew\glew\include\GL;include;passes;scenes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\assimp\include;..\gcrtcommon\inc;..\external\devil\include;..\external\glm;..\external\glew\glew\include\GL;inc;passes;scenes;</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -182,7 +190,7 @@
     <ClCompile Include="scenes\animationscene.cpp" />
     <ClCompile Include="scenes\envmapscene.cpp" />
     <ClCompile Include="scenes\terrainscene.cpp" />
-    <ClCompile Include="src\gcrtmain.cpp" />
+    <ClCompile Include="src\gcrtglmain.cpp" />
     <ClCompile Include="src\imgloader.cpp" />
     <ClCompile Include="src\input.cpp" />
     <ClCompile Include="src\materialgl.cpp" />

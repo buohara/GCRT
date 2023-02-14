@@ -10,7 +10,7 @@
  * @return          [description]
  */
 
-GLuint ImgLoader::LoadTexture(string &fileName)
+GLuint ImgLoader::LoadTexture(string fileName)
 {
     ilInit();
 

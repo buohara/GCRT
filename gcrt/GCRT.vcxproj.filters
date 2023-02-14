@@ -5,10 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="include">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="light">
       <UniqueIdentifier>{75ce671b-285c-4dcf-9326-fbc1c1cab163}</UniqueIdentifier>
     </Filter>
@@ -27,40 +23,44 @@
     <Filter Include="bvh">
       <UniqueIdentifier>{cd2814e1-164c-431a-aeab-384adf9b4f04}</UniqueIdentifier>
     </Filter>
+    <Filter Include="inc">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\animation.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\filter.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\ply.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\ray.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\rtmesh.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\rtrenderer.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\rtscene.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\sampler.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\surfaceintegrator.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\texture.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\timeline.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="light\light.h">
       <Filter>light</Filter>
@@ -78,7 +78,7 @@
       <Filter>sampler</Filter>
     </ClInclude>
     <ClInclude Include="include\gcrt.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="camera\rtcamera.h">
       <Filter>camera</Filter>
@@ -124,7 +124,7 @@
     <ClCompile Include="src\plyfile.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\raytrace.cpp">
+    <ClCompile Include="src\gcrtmain.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\rtmesh.cpp">

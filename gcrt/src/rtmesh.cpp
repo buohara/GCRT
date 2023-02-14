@@ -595,14 +595,14 @@ void RTMesh::LoadPLYModel(string &file, uint32_t mat)
 
     PlyProperty vert_props[] = 
     {
-        { "x", PLY_FLOAT, PLY_FLOAT, offsetof(Vertex,x), 0, 0, 0, 0 },
-        { "y", PLY_FLOAT, PLY_FLOAT, offsetof(Vertex,y), 0, 0, 0, 0 },
-        { "z", PLY_FLOAT, PLY_FLOAT, offsetof(Vertex,z), 0, 0, 0, 0 },
+        { (char*)"x", PLY_FLOAT, PLY_FLOAT, offsetof(Vertex,x), 0, 0, 0, 0},
+        { (char*)"y", PLY_FLOAT, PLY_FLOAT, offsetof(Vertex,y), 0, 0, 0, 0 },
+        { (char*)"z", PLY_FLOAT, PLY_FLOAT, offsetof(Vertex,z), 0, 0, 0, 0 },
     };
 
     PlyProperty face_props[] = 
     {
-        { "vertex_indices", PLY_UCHAR, PLY_INT, offsetof(Face,verts),
+        { (char*)"vertex_indices", PLY_UCHAR, PLY_INT, offsetof(Face,verts),
         1, PLY_UCHAR, PLY_UCHAR, offsetof(Face,nverts) },
     };
 
@@ -637,7 +637,7 @@ void RTMesh::LoadPLYModel(string &file, uint32_t mat)
         dvec3 max = { -1000.0, -1000.0, -1000.0 };
         dvec3 min = { 1000.0, 1000.0, 1000.0 };
 
-        if (equal_strings("vertex", elem_name)) 
+        if (equal_strings((char*)"vertex", elem_name))
         {
             vector<Vertex> vlist(num_elems);
             ply_get_property(ply, elem_name, &vert_props[0]);
@@ -680,7 +680,7 @@ void RTMesh::LoadPLYModel(string &file, uint32_t mat)
             bbox.max = max;
         }
 
-        if (equal_strings("face", elem_name)) 
+        if (equal_strings((char*)"face", elem_name))
         {
             vector<Face> flist(num_elems);
             ply_get_property(ply, elem_name, &face_props[0]);

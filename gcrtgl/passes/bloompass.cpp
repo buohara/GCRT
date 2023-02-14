@@ -98,7 +98,10 @@ void BloomPass::Init(
 
     GenFrameBuffers();
 
-    renderToScreen ? renderFbo = 0 : CreateRenderFbo();
+    if (renderToScreen)
+        renderFbo = 0;
+    else
+        CreateRenderFbo();
 }
 
 /**

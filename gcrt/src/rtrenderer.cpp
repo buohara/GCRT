@@ -267,8 +267,10 @@ void RTRenderer::Render(RTScene &scn)
         GenerateImageBlocks();
         scn.UpdateAnimations(curAnimTime);
 
-        for (uint32_t i = 0; i < settings.numThreads; i++) threads[i] = thread(RenderThreadFunc, settings, scn, i, integrator);
-        for (uint32_t i = 0; i < settings.numThreads; i++) threads[i].join();
+        for (uint32_t i = 0; i < settings.numThreads; i++) 
+            threads[i] = thread(RenderThreadFunc, std::ref(settings), std::ref(scn), i, std::ref(integrator));
+        for (uint32_t i = 0; i < settings.numThreads; i++)
+            threads[i].join();
 
         FilterSamples();
 

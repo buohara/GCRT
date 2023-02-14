@@ -97,7 +97,10 @@ void DOFPass::Init(
 
     dofProgram = dofShader.program;
 
-    renderToScreen ? renderFbo = 0 : CreateRenderFbo();
+    if (renderToScreen)
+        renderFbo = 0;
+    else
+        CreateRenderFbo();
 }
 
 /**
