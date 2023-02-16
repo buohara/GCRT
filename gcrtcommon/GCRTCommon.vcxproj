@@ -125,19 +125,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\animation.h" />
-    <ClInclude Include="include\assetmanager.h" />
-    <ClInclude Include="include\box.h" />
-    <ClInclude Include="include\camera.h" />
-    <ClInclude Include="include\cylinder.h" />
-    <ClInclude Include="include\gcrtcommon.h" />
-    <ClInclude Include="include\light.h" />
-    <ClInclude Include="include\plane.h" />
-    <ClInclude Include="include\skeletalmesh.h" />
-    <ClInclude Include="include\sphere.h" />
-    <ClInclude Include="include\utilscommon.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\animation.cpp" />
     <ClCompile Include="src\box.cpp" />
     <ClCompile Include="src\camera.cpp" />
@@ -145,6 +132,19 @@
     <ClCompile Include="src\plane.cpp" />
     <ClCompile Include="src\skeletalmesh.cpp" />
     <ClCompile Include="src\sphere.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="inc\animation.h" />
+    <ClInclude Include="inc\assetmanager.h" />
+    <ClInclude Include="inc\box.h" />
+    <ClInclude Include="inc\camera.h" />
+    <ClInclude Include="inc\cylinder.h" />
+    <ClInclude Include="inc\gcrtcommon.h" />
+    <ClInclude Include="inc\light.h" />
+    <ClInclude Include="inc\plane.h" />
+    <ClInclude Include="inc\skeletalmesh.h" />
+    <ClInclude Include="inc\sphere.h" />
+    <ClInclude Include="inc\utilscommon.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

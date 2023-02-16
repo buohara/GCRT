@@ -11,41 +11,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\animation.h">
-      <Filter>inc</Filter>
-    </ClInclude>
-    <ClInclude Include="include\box.h">
-      <Filter>inc</Filter>
-    </ClInclude>
-    <ClInclude Include="include\camera.h">
-      <Filter>inc</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cylinder.h">
-      <Filter>inc</Filter>
-    </ClInclude>
-    <ClInclude Include="include\plane.h">
-      <Filter>inc</Filter>
-    </ClInclude>
-    <ClInclude Include="include\skeletalmesh.h">
-      <Filter>inc</Filter>
-    </ClInclude>
-    <ClInclude Include="include\sphere.h">
-      <Filter>inc</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gcrtcommon.h">
-      <Filter>inc</Filter>
-    </ClInclude>
-    <ClInclude Include="include\utilscommon.h">
-      <Filter>inc</Filter>
-    </ClInclude>
-    <ClInclude Include="include\light.h">
-      <Filter>inc</Filter>
-    </ClInclude>
-    <ClInclude Include="include\assetmanager.h">
-      <Filter>inc</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\animation.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -67,5 +32,40 @@
     <ClCompile Include="src\sphere.cpp">
       <Filter>src</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="inc\animation.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\assetmanager.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\box.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\camera.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\cylinder.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\gcrtcommon.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\light.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\plane.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\skeletalmesh.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\sphere.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\utilscommon.h">
+      <Filter>inc</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

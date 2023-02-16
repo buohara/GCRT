@@ -9,7 +9,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GCRTGL", "gcrtgl\GCRTGL.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GCRTCommon", "GCRTCommon\GCRTCommon.vcxproj", "{68C9B5A1-7B95-4EEE-B5A1-8F541D943935}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GCRT12", "GCRT12\GCRT12.vcxproj", "{4125ECDD-41DF-4A18-ABA1-234C7C135437}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GCRT12", "gcrt12\GCRT12.vcxproj", "{4125ECDD-41DF-4A18-ABA1-234C7C135437}"
+	ProjectSection(ProjectDependencies) = postProject
+		{68C9B5A1-7B95-4EEE-B5A1-8F541D943935} = {68C9B5A1-7B95-4EEE-B5A1-8F541D943935}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

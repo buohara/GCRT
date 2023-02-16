@@ -13,6 +13,7 @@
 #include <map>
 #include <chrono>
 #include <filesystem>
+#include <assert.h>
 
 // Windows headers
 
@@ -32,3 +33,8 @@
 #include "glm/gtc/matrix_inverse.hpp"
 #include "glm/gtx/quaternion.hpp"
 #include <glm/gtc/type_ptr.hpp>
+
+enum GCRT_RESULT
+{
+	GCRT_OK
+};

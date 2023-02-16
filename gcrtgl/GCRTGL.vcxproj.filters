@@ -14,7 +14,7 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="include">
+    <Filter Include="inc">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
@@ -48,37 +48,37 @@
       <Filter>scenes</Filter>
     </ClInclude>
     <ClInclude Include="include\input.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\noise.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\perlinterrain.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\renderer.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\sceneselector.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\shader.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\meshgl.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\gcrtgl.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\imgloader.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\scene.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="include\materialgl.h">
-      <Filter>include</Filter>
+      <Filter>inc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
