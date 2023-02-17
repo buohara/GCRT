@@ -5,6 +5,11 @@
 using Microsoft::WRL::ComPtr;
 using namespace std;
 
+enum AdapterSelectMethod
+{
+	PREFER_DISCRETE
+};
+
 struct GCRTAdapter
 {
 	string description;
@@ -13,6 +18,7 @@ struct GCRTAdapter
 	uint64_t sharedMemBytes;
 	bool bHardware;
 	bool bIntegrated;
+	uint32_t dxCoreIdx;
 };
 
 struct Renderer12
@@ -23,5 +29,6 @@ struct Renderer12
 	Renderer12();
 
 	GCRT_RESULT GetSystemAdapters();
-	GCRT_RESULT SelectAdapter();
+	GCRT_RESULT SelectAdapter(AdapterSelectMethod method);
+	GCRT_RESULT InitializeDevice();
 };
