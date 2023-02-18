@@ -9,6 +9,12 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="passes">
+      <UniqueIdentifier>{586ff06e-b608-4857-b9ac-872294c02ed9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="passes\phong">
+      <UniqueIdentifier>{0bdedcfb-0697-4d77-9de1-7ee89bee391b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gcrt12main.cpp">
@@ -17,12 +23,24 @@
     <ClCompile Include="src\renderer12.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\phong.cpp">
+      <Filter>passes\phong</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderpass.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\renderer12.h">
       <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="inc\gcrtcommon12.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\phong.h">
+      <Filter>passes\phong</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderpass.h">
       <Filter>inc</Filter>
     </ClInclude>
   </ItemGroup>

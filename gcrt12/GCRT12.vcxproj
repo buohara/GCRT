@@ -136,11 +136,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\gcrt12main.cpp" />
+    <ClCompile Include="src\phong.cpp" />
     <ClCompile Include="src\renderer12.cpp" />
+    <ClCompile Include="src\renderpass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\gcrtcommon12.h" />
+    <ClInclude Include="inc\phong.h" />
     <ClInclude Include="inc\renderer12.h" />
+    <ClInclude Include="src\renderpass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

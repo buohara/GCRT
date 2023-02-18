@@ -26,9 +26,14 @@ struct Renderer12
 	ComPtr<ID3D12Device> pDevice;
 	vector<GCRTAdapter> adapters;
 
+	ComPtr<ID3D12CommandQueue> gfxCQ;
+	ComPtr<ID3D12CommandQueue> computeCQ;
+	ComPtr<ID3D12CommandQueue> copyCQ;
+
 	Renderer12();
 
 	GCRT_RESULT GetSystemAdapters();
 	GCRT_RESULT SelectAdapter(AdapterSelectMethod method);
 	GCRT_RESULT InitializeDevice();
+	GCRT_RESULT InitializeCQs();
 };

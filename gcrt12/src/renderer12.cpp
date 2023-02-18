@@ -46,7 +46,9 @@ GCRT_RESULT Renderer12::SelectAdapter(AdapterSelectMethod method)
     {
         case PREFER_DISCRETE:
         default:
+
             sort(adapters.begin(), adapters.end(), CompareDiscrete);
+            break;
     }
 
     return GCRT_OK;
@@ -142,6 +144,35 @@ GCRT_RESULT Renderer12::InitializeDevice()
 #endif
 
     assert(D3D12CreateDevice(pAdapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&pDevice)) == S_OK);
+
+    return GCRT_OK;
+}
+
+/**
+ * @brief Initialize renderer command queues.
+ *
+ * @return GCRT_OK
+ */
+
+GCRT_RESULT Renderer12::InitializeCQs()
+{
+    D3D12_COMMAND_QUEUE_DESC directQueueDesc = {};
+    directQueueDesc.Flags   = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    directQueueDesc.Type    = D3D12_COMMAND_LIST_TYPE_DIRECT;
+
+    assert(pDevice->CreateCommandQueue(&directQueueDesc, IID_PPV_ARGS(&gfxCQ)) == S_OK);
+
+    D3D12_COMMAND_QUEUE_DESC copyQueueDesc = {};
+    copyQueueDesc.Flags     = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    copyQueueDesc.Type      = D3D12_COMMAND_LIST_TYPE_COPY;
+
+    assert(pDevice->CreateCommandQueue(&copyQueueDesc, IID_PPV_ARGS(&gfxCQ)) == S_OK);
+
+    D3D12_COMMAND_QUEUE_DESC computeQueueDesc = {};
+    computeQueueDesc.Flags  = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    computeQueueDesc.Type   = D3D12_COMMAND_LIST_TYPE_COMPUTE;
+
+    assert(pDevice->CreateCommandQueue(&computeQueueDesc, IID_PPV_ARGS(&gfxCQ)) == S_OK);
 
     return GCRT_OK;
 }
