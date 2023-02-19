@@ -12,6 +12,13 @@ Renderer12::Renderer12()
     GetSystemAdapters();
     SelectAdapter(PREFER_DISCRETE);
     InitializeDevice();
+
+    char path[512];
+    GetModuleFileName(nullptr, path, _countof(path));
+
+    psoCachePath = string(path);
+
+    //InitializeEffects();
 }
 
 /**
@@ -173,6 +180,30 @@ GCRT_RESULT Renderer12::InitializeCQs()
     computeQueueDesc.Type   = D3D12_COMMAND_LIST_TYPE_COMPUTE;
 
     assert(pDevice->CreateCommandQueue(&computeQueueDesc, IID_PPV_ARGS(&gfxCQ)) == S_OK);
+
+    return GCRT_OK;
+}
+
+/**
+ * @brief Initialize shaders/PSOs/render effects.
+ *
+ * @return GCRT_OK
+ */
+
+GCRT_RESULT Renderer12::InitializeEffects()
+{
+    FILE *pPsoLibraryFile = fopen(&psoCachePath[0], "r");
+    fseek(pPsoLibraryFile, 0, SEEK_END);
+    SIZE_T libSize = ftell(pPsoLibraryFile);
+    rewind(pPsoLibraryFile);
+
+    vector<BYTE> libBlob(libSize);
+    fread(&libBlob[0], 1, libSize, pPsoLibraryFile);
+
+    ComPtr<ID3D12Device1> pDevice1;
+    assert(pDevice->QueryInterface(IID_PPV_ARGS(&pDevice1)) == S_OK);
+
+    pDevice1->CreatePipelineLibrary((void*)&libBlob[0], libSize, IID_PPV_ARGS(&pipelineLibrary));
 
     return GCRT_OK;
 }

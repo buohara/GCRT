@@ -30,10 +30,15 @@ struct Renderer12
 	ComPtr<ID3D12CommandQueue> computeCQ;
 	ComPtr<ID3D12CommandQueue> copyCQ;
 
+	ComPtr<ID3D12PipelineLibrary> pipelineLibrary;
+
+	string psoCachePath;
+
 	Renderer12();
 
 	GCRT_RESULT GetSystemAdapters();
 	GCRT_RESULT SelectAdapter(AdapterSelectMethod method);
 	GCRT_RESULT InitializeDevice();
 	GCRT_RESULT InitializeCQs();
+	GCRT_RESULT InitializeEffects();
 };

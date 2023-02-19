@@ -15,6 +15,9 @@
     <Filter Include="passes\phong">
       <UniqueIdentifier>{0bdedcfb-0697-4d77-9de1-7ee89bee391b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="hlsl">
+      <UniqueIdentifier>{84fc5cba-6706-489e-9cd2-68ed45678ce4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gcrt12main.cpp">
@@ -43,5 +46,13 @@
     <ClInclude Include="src\renderpass.h">
       <Filter>inc</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="hlsl\phongPS.hlsl">
+      <Filter>hlsl</Filter>
+    </FxCompile>
+    <FxCompile Include="hlsl\phongVS.hlsl">
+      <Filter>hlsl</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
