@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gcrtcommon12.h"
+#include "renderpass.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace std;
@@ -35,6 +36,7 @@ struct Renderer12
 	string psoCachePath;
 
 	Renderer12();
+	~Renderer12();
 
 	GCRT_RESULT GetSystemAdapters();
 	GCRT_RESULT SelectAdapter(AdapterSelectMethod method);

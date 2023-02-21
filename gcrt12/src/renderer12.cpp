@@ -16,9 +16,32 @@ Renderer12::Renderer12()
     char path[512];
     GetModuleFileName(nullptr, path, _countof(path));
 
-    psoCachePath = string(path);
+    char* lastSlash = strrchr(path, L'\\');
+    if (lastSlash)
+    {
+        *(lastSlash + 1) = L'\0';
+    }
 
-    //InitializeEffects();
+    psoCachePath = string(path) + "psolib.cache";
+
+    InitializeEffects();
+}
+
+/**
+ * @brief Renderer destructor. Seralize pipeline library to disk.
+ */
+
+Renderer12::~Renderer12()
+{
+    SIZE_T size = pipelineLibrary->GetSerializedSize();
+    vector<BYTE> serializedLib(size);
+
+    pipelineLibrary->Serialize(&serializedLib[0], size);
+
+    FILE* pPsoLibraryFile = fopen(&psoCachePath[0], "wb");
+
+    fwrite(&serializedLib[0], 1, size, pPsoLibraryFile);
+    fclose(pPsoLibraryFile);
 }
 
 /**
@@ -192,18 +215,34 @@ GCRT_RESULT Renderer12::InitializeCQs()
 
 GCRT_RESULT Renderer12::InitializeEffects()
 {
-    FILE *pPsoLibraryFile = fopen(&psoCachePath[0], "r");
-    fseek(pPsoLibraryFile, 0, SEEK_END);
-    SIZE_T libSize = ftell(pPsoLibraryFile);
-    rewind(pPsoLibraryFile);
-
-    vector<BYTE> libBlob(libSize);
-    fread(&libBlob[0], 1, libSize, pPsoLibraryFile);
-
     ComPtr<ID3D12Device1> pDevice1;
     assert(pDevice->QueryInterface(IID_PPV_ARGS(&pDevice1)) == S_OK);
 
-    pDevice1->CreatePipelineLibrary((void*)&libBlob[0], libSize, IID_PPV_ARGS(&pipelineLibrary));
+    FILE* pPsoLibraryFile = fopen(&psoCachePath[0], "rb");
+
+    if (pPsoLibraryFile)
+    {
+        fseek(pPsoLibraryFile, 0, SEEK_END);
+        SIZE_T libSize = ftell(pPsoLibraryFile);
+        rewind(pPsoLibraryFile);
+
+        vector<BYTE> libBlob(libSize);
+        fread(&libBlob[0], 1, libSize, pPsoLibraryFile);
+ 
+        assert(pDevice1->CreatePipelineLibrary(
+            (void*)&libBlob[0], libSize, IID_PPV_ARGS(&pipelineLibrary)) == S_OK
+        );
+
+        fclose(pPsoLibraryFile);
+    }
+    else
+    {
+        assert(pDevice1->CreatePipelineLibrary(
+            nullptr, 0, IID_PPV_ARGS(&pipelineLibrary)) == S_OK
+        );
+    }
+
+    Effect12 phong(PHONG, pDevice, pipelineLibrary);
 
     return GCRT_OK;
 }

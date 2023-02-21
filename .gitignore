@@ -287,3 +287,5 @@ ModelManifest.xml
 /assimp-3.3.1/*.yml
 /asset/textures
 /asset/models/thing
+/gcrt12/inc/phongVS_bc.h
+/gcrt12/inc/phongPS_bc.h

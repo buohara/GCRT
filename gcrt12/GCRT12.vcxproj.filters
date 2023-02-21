@@ -40,18 +40,18 @@
     <ClInclude Include="inc\gcrtcommon12.h">
       <Filter>inc</Filter>
     </ClInclude>
-    <ClInclude Include="inc\phong.h">
-      <Filter>passes\phong</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderpass.h">
+    <ClInclude Include="inc\renderpass.h">
       <Filter>inc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="hlsl\phongPS.hlsl">
+    <FxCompile Include="hlsl\phong.hlsli">
       <Filter>hlsl</Filter>
     </FxCompile>
     <FxCompile Include="hlsl\phongVS.hlsl">
+      <Filter>hlsl</Filter>
+    </FxCompile>
+    <FxCompile Include="hlsl\phongPS.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
   </ItemGroup>
