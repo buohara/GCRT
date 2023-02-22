@@ -31,6 +31,12 @@ struct Renderer12
 	ComPtr<ID3D12CommandQueue> computeCQ;
 	ComPtr<ID3D12CommandQueue> copyCQ;
 
+	HWND hWnd;
+	ComPtr<IDXGISwapChain3> swapChain;
+	ComPtr<ID3D12Fence> pFence;
+	uint32_t fenceVal;
+	HANDLE fenceEvent;
+
 	ComPtr<ID3D12PipelineLibrary> pipelineLibrary;
 
 	string psoCachePath;
@@ -43,4 +49,6 @@ struct Renderer12
 	GCRT_RESULT InitializeDevice();
 	GCRT_RESULT InitializeCQs();
 	GCRT_RESULT InitializeEffects();
+	GCRT_RESULT CreateRenderWindow();
+	GCRT_RESULT CreateSwapChain();
 };

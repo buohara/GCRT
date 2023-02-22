@@ -12,6 +12,7 @@ Renderer12::Renderer12()
     GetSystemAdapters();
     SelectAdapter(PREFER_DISCRETE);
     InitializeDevice();
+    InitializeCQs();
 
     char path[512];
     GetModuleFileName(nullptr, path, _countof(path));
@@ -25,6 +26,8 @@ Renderer12::Renderer12()
     psoCachePath = string(path) + "psolib.cache";
 
     InitializeEffects();
+    CreateRenderWindow();
+    CreateSwapChain();
 }
 
 /**
@@ -196,13 +199,13 @@ GCRT_RESULT Renderer12::InitializeCQs()
     copyQueueDesc.Flags     = D3D12_COMMAND_QUEUE_FLAG_NONE;
     copyQueueDesc.Type      = D3D12_COMMAND_LIST_TYPE_COPY;
 
-    assert(pDevice->CreateCommandQueue(&copyQueueDesc, IID_PPV_ARGS(&gfxCQ)) == S_OK);
+    assert(pDevice->CreateCommandQueue(&copyQueueDesc, IID_PPV_ARGS(&copyCQ)) == S_OK);
 
     D3D12_COMMAND_QUEUE_DESC computeQueueDesc = {};
     computeQueueDesc.Flags  = D3D12_COMMAND_QUEUE_FLAG_NONE;
     computeQueueDesc.Type   = D3D12_COMMAND_LIST_TYPE_COMPUTE;
 
-    assert(pDevice->CreateCommandQueue(&computeQueueDesc, IID_PPV_ARGS(&gfxCQ)) == S_OK);
+    assert(pDevice->CreateCommandQueue(&computeQueueDesc, IID_PPV_ARGS(&computeCQ)) == S_OK);
 
     return GCRT_OK;
 }
@@ -243,6 +246,104 @@ GCRT_RESULT Renderer12::InitializeEffects()
     }
 
     Effect12 phong(PHONG, pDevice, pipelineLibrary);
+
+    return GCRT_OK;
+}
+
+/**
+ * @brief Window procedures for app window events. Just pass through to the default
+ * window proc.
+ * 
+ * @return Default windows procedure result.
+ */
+
+static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+/**
+ * @brief Create app window.
+ *
+ * @return GCRT_OK
+ */
+
+GCRT_RESULT Renderer12::CreateRenderWindow()
+{
+    WNDCLASSEX windowClass      = { 0 };
+    windowClass.cbSize          = sizeof(WNDCLASSEX);
+    windowClass.style           = CS_HREDRAW | CS_VREDRAW;
+    windowClass.lpfnWndProc     = WindowProc;
+    windowClass.hInstance       = GetModuleHandle(NULL);
+    windowClass.hCursor         = LoadCursor(NULL, IDC_ARROW);
+    windowClass.lpszClassName   = "GCRT12";
+
+    RegisterClassEx(&windowClass);
+
+    RECT windowRect = { 0, 0, 1920, 1080 };
+    AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
+
+    hWnd = CreateWindow(
+        windowClass.lpszClassName,
+        "GCRT12",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        windowRect.right - windowRect.left,
+        windowRect.bottom - windowRect.top,
+        nullptr,
+        nullptr,
+        GetModuleHandle(NULL),
+        NULL
+    );
+
+    ShowWindow(hWnd, 1);
+
+    return GCRT_OK;
+}
+
+/**
+ * @brief Create app window.
+ *
+ * @return GCRT_OK
+ */
+
+GCRT_RESULT Renderer12::CreateSwapChain()
+{
+    DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+    swapChainDesc.BufferCount           = 2;
+    swapChainDesc.Width                 = 1920;
+    swapChainDesc.Height                = 1080;
+    swapChainDesc.Format                = DXGI_FORMAT_R8G8B8A8_UNORM;
+    swapChainDesc.BufferUsage           = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swapChainDesc.SwapEffect            = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    swapChainDesc.SampleDesc.Count      = 1;
+    swapChainDesc.Flags                 = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+
+    ComPtr<IDXGIFactory4> factory;
+    CreateDXGIFactory2(0, IID_PPV_ARGS(&factory));
+
+    ComPtr<IDXGISwapChain1> swapChain;
+    assert(factory->CreateSwapChainForHwnd(
+        gfxCQ.Get(),
+        hWnd,
+        &swapChainDesc,
+        nullptr,
+        nullptr,
+        &swapChain
+    ) == S_OK);
+
+    swapChain.As(&(this->swapChain));
+
+    pDevice->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&pFence));
+    fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+    fenceVal++;
+
+    swapChain->Present(1, 0);
+    gfxCQ->Signal(pFence.Get(), fenceVal);
+    pFence->SetEventOnCompletion(fenceVal, fenceEvent);
+    fenceVal++;
+    WaitForSingleObject(fenceEvent, INFINITE);
 
     return GCRT_OK;
 }
