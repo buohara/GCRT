@@ -178,6 +178,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\gcrtcommon12.h" />
+    <ClInclude Include="inc\phong.h" />
     <ClInclude Include="inc\renderer12.h" />
     <ClInclude Include="inc\renderpass.h" />
   </ItemGroup>

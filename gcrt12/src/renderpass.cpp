@@ -19,23 +19,24 @@ Effect12::Effect12(
  * @brief Initialize this effect's pipeline state and shaders.
  * 
  * @param type				[in] Type of effect/pipeline state to initialize.
- * @param pipelineLibrary	[in/out] If pipeline state for effect is already cached, 
- * load it. Otherwise create and store it.
+ * @param pDevice			[in] D3D device to create root signature/PSO.
+ * @param pPipelineLibrary	[in/out] If pipeline state for effect is already cached, 
+ *							load it. Otherwise create and store it.
  *  
  * @return GCRT_OK
  */
 
 GCRT_RESULT Effect12::InitPipelineState(
 	const EffectType type,
-	ComPtr<ID3D12Device> device,
-	ComPtr<ID3D12PipelineLibrary> pipelineLibrary
+	ComPtr<ID3D12Device> pDevice,
+	ComPtr<ID3D12PipelineLibrary> pPipelineLibrary
 )
 {
 	switch (type)
 	{
 		case PHONG:
 
-			InitPhongPSO(device, pipelineLibrary);
+			InitPhongPSO(pDevice, pPipelineLibrary);
 			break;
 
 	default:

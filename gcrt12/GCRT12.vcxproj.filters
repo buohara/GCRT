@@ -43,6 +43,9 @@
     <ClInclude Include="inc\renderpass.h">
       <Filter>inc</Filter>
     </ClInclude>
+    <ClInclude Include="inc\phong.h">
+      <Filter>passes\phong</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="hlsl\phong.hlsli">

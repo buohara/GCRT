@@ -70,6 +70,7 @@ bool CompareDiscrete(GCRTAdapter& a1, GCRTAdapter& a2)
  * input heuristic.
  * 
  * @param method Input heuristic for adapter selction.
+ * 
  * @return GCRT_OK
  */
 
@@ -303,7 +304,7 @@ GCRT_RESULT Renderer12::CreateRenderWindow()
 }
 
 /**
- * @brief Create app window.
+ * @brief Create app swapchain.
  *
  * @return GCRT_OK
  */
